@@ -1,0 +1,130 @@
+\hypertarget{group__BC__m}{
+\section{Block ciphers}
+\label{group__BC__m}\index{Block ciphers@{Block ciphers}}
+}
+\subsection*{Files}
+\begin{CompactItemize}
+\item 
+file \hyperlink{aes_8h}{aes.h}
+\begin{CompactList}\small\item\em AES block cipher, as specified by NIST FIPS 197. \item\end{CompactList}
+
+\item 
+file \hyperlink{beecrypt_8h}{beecrypt.h}
+\begin{CompactList}\small\item\em Bee\-Crypt API, headers. \item\end{CompactList}
+
+\item 
+file \hyperlink{blockmode_8h}{blockmode.h}
+\begin{CompactList}\small\item\em Blockcipher operation modes. \item\end{CompactList}
+
+\item 
+file \hyperlink{blockpad_8h}{blockpad.h}
+\begin{CompactList}\small\item\em Blockcipher padding algorithms. \item\end{CompactList}
+
+\item 
+file \hyperlink{blowfish_8h}{blowfish.h}
+\begin{CompactList}\small\item\em Blowfish block cipher. \item\end{CompactList}
+
+\end{CompactItemize}
+\subsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \hyperlink{structblockCipher}{block\-Cipher}
+\begin{CompactList}\small\item\em Holds information and pointers to code specific to each cipher. \item\end{CompactList}\item 
+struct \hyperlink{structblockCipherContext}{block\-Cipher\-Context}
+\begin{CompactList}\small\item\em Holds a pointer to a blockcipher as well as its parameters. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Typedefs}
+\begin{CompactItemize}
+\item 
+typedef int($\ast$ \hyperlink{group__BC__m_ga0}{block\-Cipher\-Setup} )(\hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t, \hyperlink{beecrypt_8h_a73}{cipher\-Operation})
+\begin{CompactList}\small\item\em Prototype definition for a setup function. \item\end{CompactList}\item 
+typedef void \hyperlink{group__BC__m_ga1}{block\-Cipher\-Param}
+\begin{CompactList}\small\item\em Placeholder type definition for blockcipher parameters. \item\end{CompactList}\item 
+typedef int($\ast$ \hyperlink{group__BC__m_ga2}{block\-Cipher\-Set\-IV} )(\hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)
+\begin{CompactList}\small\item\em Prototype definition for an initialization vector setup function. \item\end{CompactList}\item 
+typedef int($\ast$ \hyperlink{group__BC__m_ga3}{block\-Cipher\-Rawcrypt} )(\hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$, uint32\_\-t $\ast$, const uint32\_\-t $\ast$)
+\begin{CompactList}\small\item\em Prototype for a {\em raw\/} encryption or decryption function. \item\end{CompactList}\item 
+typedef int($\ast$ \hyperlink{group__BC__m_ga4}{block\-Cipher\-Modcrypt} )(\hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$, uint32\_\-t $\ast$, const uint32\_\-t $\ast$, unsigned int)
+\begin{CompactList}\small\item\em Prototype for a {\em encryption\/} or decryption function which operates on multiple blocks in a certain mode. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{group__BC__m_ga4}{
+\index{BC_m@{BC\_\-m}!blockCipherModcrypt@{blockCipherModcrypt}}
+\index{blockCipherModcrypt@{blockCipherModcrypt}!BC_m@{BC\_\-m}}
+\subsubsection[blockCipherModcrypt]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ \hyperlink{group__BC__m_ga4}{block\-Cipher\-Modcrypt})(\hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$bp, uint32\_\-t $\ast$dst, const uint32\_\-t $\ast$src, unsigned int nblocks)}}
+\label{group__BC__m_ga4}
+
+
+Prototype for a {\em encryption\/} or decryption function which operates on multiple blocks in a certain mode. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bp}]The blockcipher's parameters. \item[{\em dst}]The ciphertext address; must be aligned on 32-bit boundary. \item[{\em src}]The cleartext address; must be aligned on 32-bit boundary. \item[{\em nblocks}]The number of blocks to process. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \item[{\em -1}]on failure. \end{description}
+\end{Desc}
+Definition at line 536 of file beecrypt.h.\hypertarget{group__BC__m_ga1}{
+\index{BC_m@{BC\_\-m}!blockCipherParam@{blockCipherParam}}
+\index{blockCipherParam@{blockCipherParam}!BC_m@{BC\_\-m}}
+\subsubsection[blockCipherParam]{\setlength{\rightskip}{0pt plus 5cm}void \hyperlink{group__BC__m_ga1}{block\-Cipher\-Param}}}
+\label{group__BC__m_ga1}
+
+
+Placeholder type definition for blockcipher parameters. 
+
+\begin{Desc}
+\item[See also:]\hyperlink{structaesParam}{aes\-Param}, \hyperlink{structblowfishParam}{blowfish\-Param}. \end{Desc}
+Definition at line 496 of file beecrypt.h.\hypertarget{group__BC__m_ga3}{
+\index{BC_m@{BC\_\-m}!blockCipherRawcrypt@{blockCipherRawcrypt}}
+\index{blockCipherRawcrypt@{blockCipherRawcrypt}!BC_m@{BC\_\-m}}
+\subsubsection[blockCipherRawcrypt]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ \hyperlink{group__BC__m_ga3}{block\-Cipher\-Rawcrypt})(\hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$bp, uint32\_\-t $\ast$dst, const uint32\_\-t $\ast$src)}}
+\label{group__BC__m_ga3}
+
+
+Prototype for a {\em raw\/} encryption or decryption function. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bp}]The blockcipher's parameters. \item[{\em dst}]The ciphertext address; must be aligned on 32-bit boundary. \item[{\em src}]The cleartext address; must be aligned on 32-bit boundary. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \item[{\em -1}]on failure. \end{description}
+\end{Desc}
+Definition at line 523 of file beecrypt.h.\hypertarget{group__BC__m_ga2}{
+\index{BC_m@{BC\_\-m}!blockCipherSetIV@{blockCipherSetIV}}
+\index{blockCipherSetIV@{blockCipherSetIV}!BC_m@{BC\_\-m}}
+\subsubsection[blockCipherSetIV]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ \hyperlink{group__BC__m_ga2}{block\-Cipher\-Set\-IV})(block\-Cipher\-Patam $\ast$bp, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$iv)}}
+\label{group__BC__m_ga2}
+
+
+Prototype definition for an initialization vector setup function. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bp}]The blockcipher's parameters. \item[{\em iv}]The blockciphers' IV value. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Note:]iv length must be equal to the cipher's block size. \end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \item[{\em -1}]on failure. \end{description}
+\end{Desc}
+Definition at line 512 of file beecrypt.h.\hypertarget{group__BC__m_ga0}{
+\index{BC_m@{BC\_\-m}!blockCipherSetup@{blockCipherSetup}}
+\index{blockCipherSetup@{blockCipherSetup}!BC_m@{BC\_\-m}}
+\subsubsection[blockCipherSetup]{\setlength{\rightskip}{0pt plus 5cm}typedef int($\ast$ \hyperlink{group__BC__m_ga0}{block\-Cipher\-Setup})(\hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t, \hyperlink{beecrypt_8h_a73}{cipher\-Operation})}}
+\label{group__BC__m_ga0}
+
+
+Prototype definition for a setup function. 
+
+Definition at line 501 of file beecrypt.h.

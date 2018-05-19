@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# Exit if package was removed but not purged.
+test -x /usr/sbin/dnrd || exit 0
+
+case "$PPP_IFACE" in
+	ippp0)	#dnrd -s 123.45.67.89
+		;;
+	*)
+		DNS=
+
+		# Since version 2.3.7 of the ppp daemon, the option
+		# "usepeerdns" sets environment variables $DNS1 and $DNS2.
+
+		for ns in "$DNS1" "$DNS2" "$MS_DNS1" "$MS_DNS2" ; do
+			if [ -n "$ns" ]; then
+				DNS="$DNS -s $ns"
+			fi
+		done
+		
+	# Uncomment the following lines if you want to use automatically
+	# assigned DNS servers.
+	# Note: You have to run the ppp/ippp daemon with the option
+	# "usepeerdns" or "ms-get-dns" respectively in order to use this
+	# feature.
+
+	#	if [ -n "$DNS" ]; then
+	#		dnrd $DNS
+	#	fi
+		;;
+esac

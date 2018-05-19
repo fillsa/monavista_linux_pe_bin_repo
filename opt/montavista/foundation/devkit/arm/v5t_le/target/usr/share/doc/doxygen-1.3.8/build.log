@@ -1,0 +1,178 @@
+  Autodetected platform linux-g++... 
+  Checking for GNU make tool... using /usr/bin/gmake
+  Checking for GNU install tool... using install
+  Checking for dot (part of GraphViz)... not found!
+  Checking for perl... using /usr/bin/perl
+  Created Makefile from Makefile.in...
+  Created qtools/Makefile from qtools/Makefile.in...
+  Created src/Makefile from src/Makefile.in...
+  Created examples/Makefile from examples/Makefile.in...
+  Created doc/Makefile from doc/Makefile.in...
+  Created addon/doxywizard/Makefile from addon/doxywizard/Makefile.in...
+  Created addon/doxmlparser/src/Makefile from addon/doxmlparser/src/Makefile.in...
+  Created addon/doxmlparser/test/Makefile from addon/doxmlparser/test/Makefile.in...
+  Created addon/doxmlparser/examples/metrics/Makefile from addon/doxmlparser/examples/metrics/Makefile.in...
+  Created libmd5/Makefile from libmd5/Makefile.in...
+  Created qtools/qtools.pro from qtools/qtools.pro.in...
+  Created src/libdoxygen.pro from src/libdoxygen.pro.in...
+  Created src/libdoxycfg.pro from src/libdoxycfg.pro.in...
+  Created src/doxygen.pro from src/doxygen.pro.in...
+  Created src/doxytag.pro from src/doxytag.pro.in...
+  Created addon/doxywizard/doxywizard.pro from addon/doxywizard/doxywizard.pro.in...
+  Created addon/doxmlparser/src/doxmlparser.pro from addon/doxmlparser/src/doxmlparser.pro.in...
+  Created addon/doxmlparser/test/xmlparse.pro from addon/doxmlparser/test/xmlparse.pro.in...
+  Created addon/doxmlparser/examples/metrics/metrics.pro from addon/doxmlparser/examples/metrics/metrics.pro.in...
+  Created libmd5/libmd5.pro from libmd5/libmd5.pro.in...
+  Generating src/lang_cfg.h...
+echo "char versionString[]=\"1.3.8\";" > src/version.cpp
+/usr/bin/gmake -C qtools
+gmake[1]: Entering directory `/var/tmp/BUILD/doxygen-1.3.8.orig/qtools'
+env TMAKEPATH=/var/tmp/BUILD/doxygen-1.3.8.orig/tmake/lib/linux-g++ /usr/bin/perl /var/tmp/BUILD/doxygen-1.3.8.orig/tmake/bin/tmake qtools.pro >Makefile.qtools
+/usr/bin/gmake -f Makefile.qtools    all
+gmake[2]: Entering directory `/var/tmp/BUILD/doxygen-1.3.8.orig/qtools'
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qbuffer.o qbuffer.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qcollection.o qcollection.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qcstring.o qcstring.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qdatastream.o qdatastream.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qdatetime.o qdatetime.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qdir.o qdir.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qfile.o qfile.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qfileinfo.o qfileinfo.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qgarray.o qgarray.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qgcache.o qgcache.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qgdict.o qgdict.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qglist.o qglist.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qglobal.o qglobal.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qgvector.o qgvector.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qiodevice.o qiodevice.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qregexp.o qregexp.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qstring.o qstring.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qtextstream.o qtextstream.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qtextcodec.o qtextcodec.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qstringlist.o qstringlist.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qxml.o qxml.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qmap.o qmap.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qfile_unix.o qfile_unix.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qdir_unix.o qdir_unix.cpp
+arm_v5t_le-g++  -c -pipe -DQT_NO_CODECS -DQT_LITE_UNICODE -Wall -W -fno-exceptions -O2 -I. -o ../objects/qfileinfo_unix.o qfileinfo_unix.cpp
+rm -f ../lib/libqtools.a
+arm_v5t_le-ar cqs ../lib/libqtools.a ../objects/qbuffer.o ../objects/qcollection.o ../objects/qcstring.o ../objects/qdatastream.o ../objects/qdatetime.o ../objects/qdir.o ../objects/qfile.o ../objects/qfileinfo.o ../objects/qgarray.o ../objects/qgcache.o ../objects/qgdict.o ../objects/qglist.o ../objects/qglobal.o ../objects/qgvector.o ../objects/qiodevice.o ../objects/qregexp.o ../objects/qstring.o ../objects/qtextstream.o ../objects/qtextcodec.o ../objects/qstringlist.o ../objects/qxml.o ../objects/qmap.o ../objects/qfile_unix.o ../objects/qdir_unix.o ../objects/qfileinfo_unix.o 
+gmake[2]: Leaving directory `/var/tmp/BUILD/doxygen-1.3.8.orig/qtools'
+gmake[1]: Leaving directory `/var/tmp/BUILD/doxygen-1.3.8.orig/qtools'
+/usr/bin/gmake -C libmd5
+gmake[1]: Entering directory `/var/tmp/BUILD/doxygen-1.3.8.orig/libmd5'
+env TMAKEPATH=/var/tmp/BUILD/doxygen-1.3.8.orig/tmake/lib/linux-g++ /usr/bin/perl /var/tmp/BUILD/doxygen-1.3.8.orig/tmake/bin/tmake libmd5.pro >Makefile.libmd5
+/usr/bin/gmake -f Makefile.libmd5
+gmake[2]: Entering directory `/var/tmp/BUILD/doxygen-1.3.8.orig/libmd5'
+arm_v5t_le-gcc  -c -pipe -Wall -W -fno-exceptions -O2  -o ../objects/md5.o md5.c
+rm -f ../lib/libmd5.a
+arm_v5t_le-ar cqs ../lib/libmd5.a ../objects/md5.o 
+gmake[2]: Leaving directory `/var/tmp/BUILD/doxygen-1.3.8.orig/libmd5'
+gmake[1]: Leaving directory `/var/tmp/BUILD/doxygen-1.3.8.orig/libmd5'
+/usr/bin/gmake -C src
+gmake[1]: Entering directory `/var/tmp/BUILD/doxygen-1.3.8.orig/src'
+env TMAKEPATH=/var/tmp/BUILD/doxygen-1.3.8.orig/tmake/lib/linux-g++ /usr/bin/perl /var/tmp/BUILD/doxygen-1.3.8.orig/tmake/bin/tmake libdoxygen.pro >Makefile.libdoxygen
+env TMAKEPATH=/var/tmp/BUILD/doxygen-1.3.8.orig/tmake/lib/linux-g++ /usr/bin/perl /var/tmp/BUILD/doxygen-1.3.8.orig/tmake/bin/tmake libdoxycfg.pro >Makefile.libdoxycfg
+env TMAKEPATH=/var/tmp/BUILD/doxygen-1.3.8.orig/tmake/lib/linux-g++ /usr/bin/perl /var/tmp/BUILD/doxygen-1.3.8.orig/tmake/bin/tmake doxygen.pro >Makefile.doxygen
+env TMAKEPATH=/var/tmp/BUILD/doxygen-1.3.8.orig/tmake/lib/linux-g++ /usr/bin/perl /var/tmp/BUILD/doxygen-1.3.8.orig/tmake/bin/tmake doxytag.pro >Makefile.doxytag
+/usr/bin/gmake -f Makefile.libdoxycfg PERL=/usr/bin/perl all
+gmake[2]: Entering directory `/var/tmp/BUILD/doxygen-1.3.8.orig/src'
+flex -PconfigYY -t config.l >config.cpp 
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -o ../objects/config.o config.cpp
+rm -f ../lib/libdoxycfg.a
+arm_v5t_le-ar cqs ../lib/libdoxycfg.a ../objects/config.o 
+gmake[2]: Leaving directory `/var/tmp/BUILD/doxygen-1.3.8.orig/src'
+/usr/bin/gmake -f Makefile.libdoxygen PERL=/usr/bin/perl all
+gmake[2]: Entering directory `/var/tmp/BUILD/doxygen-1.3.8.orig/src'
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/ce_lex.o ce_lex.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/ce_parse.o ce_parse.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/classdef.o classdef.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/classlist.o classlist.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/cmdmapper.o cmdmapper.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/code.o code.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/commentcnv.o commentcnv.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/cppvalue.o cppvalue.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/debug.o debug.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/defgen.o defgen.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/declinfo.o declinfo.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/defargs.o defargs.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/define.o define.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/definition.o definition.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/diagram.o diagram.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/docparser.o docparser.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/doctokenizer.o doctokenizer.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/dot.o dot.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/doxygen.o doxygen.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/entry.o entry.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/filedef.o filedef.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/filename.o filename.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/formula.o formula.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/ftvhelp.o ftvhelp.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/groupdef.o groupdef.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/htmldocvisitor.o htmldocvisitor.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/htmlgen.o htmlgen.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/htmlhelp.o htmlhelp.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/image.o image.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/index.o index.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/instdox.o instdox.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/language.o language.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/latexdocvisitor.o latexdocvisitor.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/latexgen.o latexgen.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/logos.o logos.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/mandocvisitor.o mandocvisitor.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/mangen.o mangen.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/memberdef.o memberdef.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/membergroup.o membergroup.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/memberlist.o memberlist.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/membername.o membername.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/message.o message.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/namespacedef.o namespacedef.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/outputgen.o outputgen.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/outputlist.o outputlist.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/pagedef.o pagedef.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/perlmodgen.o perlmodgen.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/pngenc.o pngenc.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/pre.o pre.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/reflist.o reflist.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/rtfdocvisitor.o rtfdocvisitor.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/rtfgen.o rtfgen.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/rtfstyle.o rtfstyle.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/scanner.o scanner.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/searchindex.o searchindex.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/tagreader.o tagreader.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/translator.o translator.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/util.o util.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/version.o version.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/xmldocvisitor.o xmldocvisitor.cpp
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -o ../objects/xmlgen.o xmlgen.cpp
+rm -f ../lib/libdoxygen.a
+arm_v5t_le-ar cqs ../lib/libdoxygen.a ../objects/ce_lex.o ../objects/ce_parse.o ../objects/classdef.o ../objects/classlist.o ../objects/cmdmapper.o ../objects/code.o ../objects/commentcnv.o ../objects/cppvalue.o ../objects/debug.o ../objects/defgen.o ../objects/declinfo.o ../objects/defargs.o ../objects/define.o ../objects/definition.o ../objects/diagram.o ../objects/docparser.o ../objects/doctokenizer.o ../objects/dot.o ../objects/doxygen.o ../objects/entry.o ../objects/filedef.o ../objects/filename.o ../objects/formula.o ../objects/ftvhelp.o ../objects/groupdef.o ../objects/htmldocvisitor.o ../objects/htmlgen.o ../objects/htmlhelp.o ../objects/image.o ../objects/index.o ../objects/instdox.o ../objects/language.o ../objects/latexdocvisitor.o ../objects/latexgen.o ../objects/logos.o ../objects/mandocvisitor.o ../objects/mangen.o ../objects/memberdef.o ../objects/membergroup.o ../objects/memberlist.o ../objects/membername.o ../objects/message.o ../objects/namespacedef.o ../objects/outputgen.o ../objects/outputlist.o ../objects/pagedef.o ../objects/perlmodgen.o ../objects/pngenc.o ../objects/pre.o ../objects/reflist.o ../objects/rtfdocvisitor.o ../objects/rtfgen.o ../objects/rtfstyle.o ../objects/scanner.o ../objects/searchindex.o ../objects/tagreader.o ../objects/translator.o ../objects/util.o ../objects/version.o ../objects/xmldocvisitor.o ../objects/xmlgen.o 
+gmake[2]: Leaving directory `/var/tmp/BUILD/doxygen-1.3.8.orig/src'
+/usr/bin/gmake -f Makefile.doxygen    PERL=/usr/bin/perl all
+gmake[2]: Entering directory `/var/tmp/BUILD/doxygen-1.3.8.orig/src'
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -I../libmd5 -I. -o ../objects/main.o main.cpp
+arm_v5t_le-g++   -o ../bin/doxygen ../objects/main.o  -L../lib -ldoxygen -ldoxycfg -lqtools -lpng -lmd5 
+gmake[2]: Leaving directory `/var/tmp/BUILD/doxygen-1.3.8.orig/src'
+/usr/bin/gmake -f Makefile.doxytag    PERL=/usr/bin/perl all
+gmake[2]: Entering directory `/var/tmp/BUILD/doxygen-1.3.8.orig/src'
+arm_v5t_le-g++  -c -pipe -Wall -W -fno-exceptions -O2 -I../qtools -o ../objects/doxytag.o doxytag.cpp
+arm_v5t_le-g++   -o ../bin/doxytag ../objects/doxytag.o ../objects/logos.o ../objects/version.o  -L../lib -lqtools 
+gmake[2]: Leaving directory `/var/tmp/BUILD/doxygen-1.3.8.orig/src'
+gmake[1]: Leaving directory `/var/tmp/BUILD/doxygen-1.3.8.orig/src'
+install -d /var/tmp/doxygen-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/bin
+install -m 755 bin/doxygen    /var/tmp/doxygen-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/bin
+install -m 755 bin/doxytag    /var/tmp/doxygen-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/bin
+install -d install/docs
+cp -r doc install/docs
+cp -r src install/docs
+cp -r VERSION install/docs
+cp -r examples install/docs
+echo "DOXYGEN  = /var/tmp/doxygen-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr" >  install/docs/doc/Makefile
+echo "DOXYDOCS = .."      >> install/docs/doc/Makefile
+echo "VERSION  = 1.3.8" >> install/docs/doc/Makefile
+echo "PERL     = /usr/bin/perl"    >> install/docs/doc/Makefile
+cat doc/Makefile.in          >> install/docs/doc/Makefile
+cd install/docs/examples ; /usr/bin/gmake
+gmake[1]: Entering directory `/var/tmp/BUILD/doxygen-1.3.8.orig/install/docs/examples'
+/var/tmp/BUILD/doxygen-1.3.8.orig/bin/doxygen class.cfg
+gmake[1]: Leaving directory `/var/tmp/BUILD/doxygen-1.3.8.orig/install/docs/examples'

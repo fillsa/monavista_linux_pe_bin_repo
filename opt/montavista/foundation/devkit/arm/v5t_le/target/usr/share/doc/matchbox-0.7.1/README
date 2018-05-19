@@ -1,0 +1,875 @@
+Matchbox 0.7 Documentation
+
+Matthew Allum
+
+Copyright © 2003 Openedhand Ltd
+
+-------------------------------------------------------------------------------
+
+Table of Contents
+1. Introduction
+   
+    1.1. Full feature list
+   
+2. Building Matchbox
+   
+    2.1. Configure Options
+    2.2. Build examples
+    2.3. CVS
+   
+3. Running Matchbox
+4. Matchbox Window Manager
+   
+    4.1. Usage And Configuration
+    4.2. Themes
+    4.3. Shortcut keys
+   
+5. Matchbox Panel
+   
+    5.1. Usage And Configuration
+    5.2. Panel Applications
+    5.3. mbmenu
+    5.4. monolaunch
+    5.5. minitime
+    5.6. minivol
+    5.7. miniwave
+    5.8. minisys
+    5.9. miniapm
+   
+6. Matchbox Desktop
+   
+    6.1. Usage And Configuration
+    6.2. Plugin Modules
+    6.3. Adding Icons And Folders
+   
+7. Other binaries
+   
+    7.1. LibMB
+    7.2. mbsession
+    7.3. mbcontrol
+   
+8. Themeing
+9. Testing
+10. License
+11. Credits
+
+1. Introduction
+
+Matchbox is a suite of tools for the user management of X11 applications.
+Typically designed to be used on computers with little screen real estate,
+limited input devices and low cpu/storage resources. PDA's, for example, fit
+well into this category. 
+
+ Matchbox consists of 5 main components - A window manager, a panel, a desktop,
+a shared utility library, and a number of small panel applications. As well as
+all working well together, they are also designed to work independently of each
+other. They adhere to freedesktop.org standards and they can be mixed and
+matched with components from other supporting desktop environments ( such as
+KDE3 and Gnome2 ). 
+
+ Matchbox's core application is a window manager, which is restrictive in
+nature as it maximizes application windows to all available display space and
+allows just a single one to be visible at any time. The user navigates
+applications by paging through them as if they were a stack of cards. 
+
+ The panel provides a home for application launchers ( such as mbmenu and
+monolaunch ) and basic monitoring / notification tools that provide information
+such as battery power levels ( miniapm ). A number of panel apps are included
+with the distribution. 
+
+ The desktop, through the the use of dynamically loadable modules, provides a
+simple item browser. The distribution contains such modules for applications,
+tasks and files. 
+
+ All programs ( optional for Window Manager ) use libMB, an included shared
+library which provides common functionality such as image manipulation, a panel
+applet toolkit and other shared utility code. 
+
+-------------------------------------------------------------------------------
+
+1.1. Full feature list
+
+  * Small, fast and light ( WM can be as little as 50k )
+  * Numerous compile time features
+  * Optionally dependent only on xlib
+  * No GUI toolkit dependencies
+  * Fully Themeable and Flexible
+  * Keyboard shortcut support
+  * Optional GPE / Gnome2 / KDE 3 integration
+  * Freedesktop.org standards support
+   
+      + NETWM window hints
+      + _NET_WM_PING support
+      + SYSTEM TRAY and XEMBED ( panel )
+      + XSETTINGS
+      + Startup Notification
+      + Icon spec support
+      + .desktop / vfolders
+   
+  * XRandR aware
+  * Xft1 / Xft2 ( anti-aliased text support )
+  * PNG and JPEG Support
+  * WM can compiled to be stand-alone, requiring no external files
+  * UTF8 / NLS support
+  * Dnotify support ( Linux only )
+  * Experimental support for Gconf and Pango
+
+-------------------------------------------------------------------------------
+
+2. Building Matchbox
+
+ Matchbox 0.7 has many features, some of which are directed at build time. This
+allows for fine grained control over both base binary size and dependencies. 
+
+matchbox uses GNU autotools, so building it should be straightforward:
+        $./configure [options - see below]
+        $make
+        # This next step might require root access
+        $make install
+See the INSTALL file for standard details regarding autoconf. 
+
+ Matchbox's configure script does little auto detection of library's. The main
+reason for this is not hamper cross compiling. This can however be a double
+edged sword. If a build fails you have to check manually that you have required
+dependencies installed. 
+
+ There is also an 'ipkg' make target which build an ipkg package of the built
+binarys etc, suitable for use with embedded distributions which use this format
+( Familiar, OpenZaurus ). 
+
+-------------------------------------------------------------------------------
+
+2.1. Configure Options
+
+  --disable-xft 
+
+Xft is a X11 client side API for rendering high quality anti-aliased fonts. Xft
+is included with XFree86 4.x with the most recent versions available from http:
+//www.fontconfig.org.
+
+  There are 2 versions of Xft available, Matchbox should compile happily with
+either, though it is recommended you use Xft2 if at all possible. 
+
+  Building with Xft also enables support for UTF8 text.  
+
+  Xft support is enabled by default. Use this option to disable it and use old
+style server fonts.  
+
+  --disable-png 
+
+  Enables support for 'portable network graphics' compressed image format.
+Requires the libPNG library.  
+
+  PNG support is enabled by default. Use this option to disable it and fall
+back to using the more basic and less visually impressive XPM image format.  
+
+  --enable-jpeg 
+
+  Enables support for jpeg images. Mainly used so mbdesktop can use jpeg
+backgrounds. Requires libjpeg. 
+
+  --enable-dnotify 
+
+  Dnotify is a Linux only 2.4.x kernel feature that allows apps to get signaled
+when a requested directory or file is changed. 
+
+  The app launcher menu and desktop take advantage of this feature to
+repopulate themselves automatically when the configuration files change on
+disk. The additional code is very small. 
+
+  --enable-message-wins 
+
+Enable support for 'special' Matchbox only message window types. This fairly
+new option allows for the management of queued notification windows. See the 
+matchbox communication document for the mechanics. 
+
+  --enable-expat  
+
+  Matchbox has its own very simple internal XML parser for it's theme files.
+Selecting this option, it will use the more featured Expat library instead.  
+
+  With Expat you will get support for UTF8 theme files and more verbose error
+messages.  
+
+  Worth enabling if you are using Xft as that is already dependent on Expat. 
+
+  --enable-nls  
+
+  Enables native language support ( ie gettext ) . 
+
+  --enable-pango  
+
+  Enables pango support for rendering text. This is useful is you are running
+matchbox in a language that needs right to left text rendering etc. Beware
+current pango support is only currently in the matchbox WM and should be
+considered experimental.  
+
+ To get this option to work, you will currently need to also pass --disbale-xft
+to configure. 
+
+  --enable-gconf  
+
+ Enables support for gconf. Currently, gconf allows for keyboard shortcuts to
+be changed on the fly.  
+
+  --enable-libsn  
+
+  This allows matchbox, mbmenu, mbdesktop to participate in 'startup
+notification'. This gives you a busy cursor for toolkits that support startup
+notification ( GTK2.2 ) , and solid 'single instance application' support. 
+
+  You can get the library from; http://www.freedesktop.org/software/ 
+
+  --disable-keyboard 
+
+  Disables support for keyboard shortcuts. Saves a few bytes.  
+
+  --enable-standalone  
+
+  Builds Matchbox window manager as a standalone binary, requiring no external
+files ( i.e. theme config files. ). Useful for testing as you can just run the
+matchbox binary without having to install anything else. 
+
+  This option will disable themeing and produce a very simple looking Matchbox,
+but it reduces the final binary size of the window manager quite considerably.
+
+--enable-debug  
+
+  Builds Matchbox with gdb debugger support and enables debug messages on
+stdout. 
+
+--enable-xsettings  
+
+  Enables use of XSettings, a protocol for simple config settings. You can grab
+the lib from http://handhelds.org/~mallum/downloadables/
+Xsettings-client-0.10.tar.gz . Matchbox uses the XSettings Net/ThemeName key to
+get the current theme. Also see http://www.freedesktop.org/standards/
+xsettings.html. 
+
+-------------------------------------------------------------------------------
+
+2.2. Build examples
+
+  Build a fully featured matchbox;  
+
+  ./configure --enable-jpeg --enable-dnotify --enable-expat --enable-libsn
+--enable-xsettings
+
+  Build a tiny 'plain' matchbox. 
+
+  ./configure --enable-standalone --disable-keyboard --disable-xft
+--disable-png 
+
+-------------------------------------------------------------------------------
+
+2.3. CVS
+
+If you are building from CVS, you will need automake 1.4, autoconf, aclocal 1.4
+and libtool.
+
+Before running ./configure, be sure to run ./autoconfigure.sh.
+
+Some things to remember when building CVS;
+
+  * All configure option combinations may not work. Check the source of
+    'buildarm.sh' to see what options I'm currently using to build snapshot
+    ipkgs - these are probably safe.
+  * Remember its development code and bad things may happen.
+
+-------------------------------------------------------------------------------
+
+3. Running Matchbox
+
+ Add something like the following to your .xinitrc / .xsession files; 
+
+mbdesktop &
+mbdock --orientation south &
+exec matchbox
+or simply;
+exec mbsession
+and restart X Windows.
+
+Alternatively, if you are running a desktop environment such as GNOME, run the
+following command before starting X windows ( you may need to add it to ~
+/.profile )
+export WINDOW_MANAGER=/usr/bin/matchbox
+
+-------------------------------------------------------------------------------
+
+4. Matchbox Window Manager
+
+ Matchbox manages windows in a restrictive PDA style way where applications are
+arranged in a stack with only one visible at any time. Application dialog
+windows are kept on the stack with there parents.  
+
+Matchbox also supports other 'non-applcation' window types such as panels,
+desktops and toolbar windows.
+
+ As well as being useful for handheld devices, the window manager should also
+be of use on platforms such as kiosks, or media/set-top box's where only basic
+window management is needed. 
+
+-------------------------------------------------------------------------------
+
+4.1. Usage And Configuration
+
+ 
+matchbox [options]
+Matchbox supports optional configuration via command line options and/or X
+Resource settings.
+
+X Resources are usually set options per user in ~/.Xdefaults and globally in
+(install prefix)/share/matchbox/defaults.
+
+Command line options take precedence over both of these.
+
+Options, are;
+
+Table 1. Matchbox options
+
++------------------------------------------------------------------------------------------+
+|  Command Line   |  XResource Key  |Value Type |               Description                |
+|     Switch      |                 |           |                                          |
+|-----------------+-----------------+-----------+------------------------------------------|
+|                 |                 |           |Specify the X Server for matchbox to      |
+|-display         |matchbox.display |string     |connect to. Defaults to $DISPLAY          |
+|                 |                 |           |environmental variable.                   |
+|-----------------+-----------------+-----------+------------------------------------------|
+|                 |                 |           |Specify the theme name to use. The        |
+|                 |                 |           |directory's;                              |
+|                 |                 |           |                                          |
+|                 |                 |           |~/.theme/[theme name]/matchbox            |
+|                 |                 |           |$PREFIX/share/themes/[theme name]/matchbox|
+|                 |                 |           |                                          |
+|-theme           |matchbox.theme   |string     |will be checked for a valid theme.xml     |
+|                 |                 |           |file. If the file is not found or invalid,|
+|                 |                 |           |matchbox will revert to its default theme.|
+|                 |                 |           |                                          |
+|                 |                 |           |This option will not work if matchbox is  |
+|                 |                 |           |compiled with the --enable-standalone     |
+|                 |                 |           |option.                                   |
+|-----------------+-----------------+-----------+------------------------------------------|
+|                 |                 |           |Specify whether or not the main windows   |
+|                 |                 |           |have titlebars. Defaults to yes.          |
+|                 |                 |           |                                          |
+|                 |                 |           |This option is useful if you are running  |
+|                 |                 |           |Matchbox on platforms where you intend to |
+|                 |                 |           |run just one application, or you want all |
+|                 |                 |           |applications to run 'full screen' - a     |
+|-use_titlebar    |matchbox.titlebar|yes|no     |set-top box style enviroment for example. |
+|                 |                 |           |                                          |
+|                 |                 |           |The advantage of this, rather than running|
+|                 |                 |           |no window manager is that dialog windows  |
+|                 |                 |           |still get decorations and you do actually |
+|                 |                 |           |have window management. Remember you can  |
+|                 |                 |           |use keyboard shortcuts to navigate        |
+|                 |                 |           |applications.                             |
+|-----------------+-----------------+-----------+------------------------------------------|
+|                 |                 |           |Enables an effect to make modal dialog    |
+|                 |                 |           |windows 'super' modal. All other windows  |
+|-use_lowlight    |matchbox.lowlight|yes|no     |are lowlighted out.                       |
+|                 |                 |           |                                          |
+|                 |                 |           |Dialog windows must specify they are modal|
+|                 |                 |           |for this option to work.                  |
+|-----------------+-----------------+-----------+------------------------------------------|
+|                 |                 |           |Decides the strategy Matchbox uses to     |
+|                 |                 |           |position and resize dialogs. 'free', will |
+|                 |                 |           |remove any Matchbox intervention. 'const',|
+|                 |                 |free|const||( the default ) will make Matchbox        |
+|-use_dialog_mode |matchbox.dialog  |const-horiz|restrain oversized dialog windows to the  |
+|                 |                 |           |available screen space. 'const-horiz' is  |
+|                 |                 |           |like the 'const' option but will make all |
+|                 |                 |           |dialogs the full screen width and allow   |
+|                 |                 |           |movement only in the vertical.            |
+|-----------------+-----------------+-----------+------------------------------------------|
+|                 |                 |           |Decides if Matchbox decorates 'desktop'   |
+|-use_desktop_mode|matchbox.desktop |decorated| |windows ( such as Nautilus or mbdesktop ).|
+|                 |                 |plain      |                                          |
+|                 |                 |           |Defaults to plain.                        |
+|-----------------+-----------------+-----------+------------------------------------------|
+|                 |                 |           |Supply the name of an application to      |
+|                 |                 |           |handle a hung application ( that supports |
+|                 |                 |           |the _NET_WM_PING spec such as gtk2 apps ).|
+|                 |                 |           |On detection of a hung application, the   |
+|                 |                 |           |passed application will be launched with '|
+|-ping_handler    |matchbox.ping    |string     |<PID> <Window XID>' as arguments. See     |
+|                 |                 |           |tests/test-hung-ping-handler.c for a      |
+|                 |                 |           |simple example application.               |
+|                 |                 |           |                                          |
+|                 |                 |           |Defaults to nothing, having matchbox kill |
+|                 |                 |           |-9 supporting apps which fail to respond  |
+|                 |                 |           |to a ping in 30 seconds.                  |
+|-----------------+-----------------+-----------+------------------------------------------|
+|                 |                 |           |If enabled, Matchbox attempts to hide the |
+|                 |                 |           |mouse cursor completely. This can be      |
+|                 |                 |           |overridden by applications such as xterms.|
+|                 |                 |           |                                          |
+|                 |                 |           |*NOTE* This option will likely be         |
+|-use_cursor      |matchbox.cursor  |yes|no     |depreciated in future versions of         |
+|                 |                 |           |Matchbox, as it does not provide a 100%   |
+|                 |                 |           |solution. An improved way of providing    |
+|                 |                 |           |this effect is to use libXcursor with a   |
+|                 |                 |           |'blank' ( eg all cursors are fully alpha )|
+|                 |                 |           |theme.                                    |
+|-----------------+-----------------+-----------+------------------------------------------|
+|-help            |n/a              |n/a        |Display a brief help message and build    |
+|                 |                 |           |details.                                  |
++------------------------------------------------------------------------------------------+
+
+-------------------------------------------------------------------------------
+
+4.2. Themes
+
+ The window manager is fully themeable. Themeing is configured by simple XML
+files found in; $PREFIX/share/themes/[selected theme name]/matchbox See the
+'blondie' theme.xml file for details on the format or read the Matchbox
+Themeing-Howto.
+
+ As well as being selected on startup, themes can be changed on the fly. There
+are various ways to do this.  
+
+ If you compiled Matchbox without libxsettings support, use mbcontrol to change
+the current theme. 
+
+mbcontrol -t <theme name>
+
+Alternatively if you compiled with XSettings support, you will be able to use
+the Gnome2 / GPE / KDE3 desktop configuration tools to change the theme.
+
+The Matchbox distribution tarball contains three themes: blondie - a bells and
+whistles PNG based theme for PDA's, bluebox - a lighter XPM image based theme
+and gorilla - a theme for larger displays.
+
+-------------------------------------------------------------------------------
+
+4.3. Shortcut keys
+
+Matchbox has redefinable shortcut keys which can be used to perform window
+operations or launch applications. The location of the config file is PREFIX/
+share/matchbox/kbdconfig , this can be overridden by the user having a
+.matchbox/kdbconfig file in there home directory.
+
+The config file is made up of one definition per line each in the format
+<keys definition>=<action>
+
+'Keys Definition' consists of an optional series of modifier keys in angle
+brackets followed by the actual key symbol. Action can be one of next, prev,
+close, taskmenu, hidetitle, fullscreen and desktop for various window
+operations.
+
+The action can be prefixed with special characters to launch applications.
+Prefixes are;
+
+  * ! Launch application with just a standard fork-exec.
+  * !! Launch application with 'startup-notification' [1] - You get a busy
+    cursor during startup
+  * !$ Launch or raise preexisting application, keeping just a single instance
+    running. [1]
+
+ 
+
+For example
+ <ctrl><alt>p=prev;
+Binds the combination of alt, ctrl and p to show the previous window.
+ <ctrl>x=!xterm;
+Binds the combination of ctrl x to launch an xterm.
+
+See the installed kbdconfig file for more examples.
+
+ With Matchbox 0.7, Matchbox can be configured to use gconf to store keyboard
+shortcuts - the kbdconfig file will then be ignored.  
+
+ The 'action' syntax is the same as above. You should use gconftool or
+gconf-editor to set documented keys under /apps/matchbox. 
+
+[1] - Application must support startup notification ( eg use gtk 2.2 toolkit )
+
+-------------------------------------------------------------------------------
+
+5. Matchbox Panel
+
+The Matchbox panel is a small, always visible, area of the display which holds
+application launchers, and simple user information type tools, such as a
+battery power level monitor.
+
+It features simple session management to remember what apps are 'parented', and
+a popup menu to add / remove apps. Both of these options can be disabled.
+
+-------------------------------------------------------------------------------
+
+5.1. Usage And Configuration
+
+mbdock [options]
+
+Table 2. Matchbox Panel command line options
+
++-----------------------------------------------------------------------------+
+|   Command Line   |  Value Type   |               Description                |
+|      Switch      |               |                                          |
+|------------------+---------------+------------------------------------------|
+|                  |string - X11   |Specify the X Server for the panel to     |
+|-display, -d      |Display name   |connect to. Defaults to $DISPLAY          |
+|                  |               |environmental variable.                   |
+|------------------+---------------+------------------------------------------|
+|                  |               |Consider using --size and --orientation   |
+|                  |               |rather than this option. If used this     |
+|-geometry, -g     |string - X11   |option will create an overide redirect    |
+|                  |geometry spec  |panel with the dimensions given. This is  |
+|                  |               |intended as a hack to 'embed' the panel   |
+|                  |               |into window titlebars. Use with care.     |
+|------------------+---------------+------------------------------------------|
+|--id              |integer        |Specify a unique id for the panel. This is|
+|                  |               |needed if you wish to run multiple panels.|
+|------------------+---------------+------------------------------------------|
+|--orientation     |north|east|    |Specify what edge on the display the panel|
+|                  |south|west     |should be located                         |
+|------------------+---------------+------------------------------------------|
+|--size            |size in pixels |Specify the height/width of panel         |
+|------------------+---------------+------------------------------------------|
+|--no-session, -ns |na             |Disable the panels sessioning mechanism   |
+|------------------+---------------+------------------------------------------|
+|                  |Comma separated|Specify a list of apps to be started in   |
+|--default-apps,   |list of panel  |order when a session file does not exist. |
+|-da               |apps or 'none' |If set to 'none' no default panel apps are|
+|                  |               |started.                                  |
+|------------------+---------------+------------------------------------------|
+|--no-menu, -nm    |na             |Diable the panels popup menu              |
+|------------------+---------------+------------------------------------------|
+|--overide-bubbles,|               |If panel message bubbles are decorated by |
+|-o                |na             |the window manager ( not Matchbox ),      |
+|                  |               |provide this option                       |
+|------------------+---------------+------------------------------------------|
+|--bgcolor, -c     |#rrggbb        |Specify a background color for the dock   |
+|------------------+---------------+------------------------------------------|
+|                  |image filename |                                          |
+|--bgpixmap, -b    |( xpm | png -  |Specify a tiled background for the panel  |
+|                  |if png support |                                          |
+|                  |compiled in )  |                                          |
+|------------------+---------------+------------------------------------------|
+|                  |               |Specify the panel transparency. For this  |
+|                  |'yes'|         |to work you need either mbdesktop running,|
+|--bgtrans, -bt    |transparency   |or a program that sets the root window    |
+|                  |percentage     |pixmap and exports it Pixmap ID ( esetroot|
+|                  |               |is an example of this ).                  |
++-----------------------------------------------------------------------------+
+
+Some examples of panel usage ;
+
+A transparent 60 pixel wide side panel
+mbdock --size 60 --orientaion east --bgtrans yes &
+Running 2 panels at the top and bottom of the display
+mbdock --orientaion north &
+mbdock --id 2--orientaion south &
+An 'embedded titlebar' clock panel with no sessioning and no menu.
+mbdock -g 40x20+100+2 --no-menu --no-session --default-apps minitime &
+
+Setting a background option on the command line will override any external
+theme settings having an effect of the panel background.
+
+-------------------------------------------------------------------------------
+
+5.2. Panel Applications
+
+Matchbox includes a number of simple panel apps. All understand the following
+options
+
+Table 3. General Panel App command line options
+
++-----------------------------------------------------------------------------+
+|Command Line | Value |                      Description                      |
+|   Switch    | Type  |                                                       |
+|-------------+-------+-------------------------------------------------------|
+|--display, -d|string |X11 Display to connect to                              |
+|-------------+-------+-------------------------------------------------------|
+|             |       |Specify the number of pixels to position the app from  |
+|             |       |the trays origin. Note its unlikely many trays will    |
+|             |       |allow free positioning. The matchbox tray ( mbdock )   |
+|--offset, -o |integer|uses positive/negative offset values to determine what |
+|             |       |side of the tray the app is stacked. Negative values   |
+|             |       |will stack the app at the beginning of the panel,      |
+|             |       |anything else will stack from the end.                 |
+|-------------+-------+-------------------------------------------------------|
+|--no-session,|na     |Stops the panel from storing the application in its    |
+|-ns          |       |session file.                                          |
++-----------------------------------------------------------------------------+
+-------------------------------------------------------------------------------
+
+5.3. mbmenu
+
+A menu based application launcher. Reads .desktop files found in $PREFIX/share/
+applications/ ( and ~/.applications ).
+
+The menu structure is defined by .directory files found in $PREFIX/share/
+matchbox/vfolders ( See the section on mbdesktop for more info ).
+
+Mbmenu reads theme settings from the theme.desktop file as the panel.
+
+Mbmenu will also participate in single instance / startup notification
+protocols. Just like the keyboard shortcuts.
+
+ Menu entrys from debian style /usr/lib/menu entry's will also be used if the
+MB_USE_DEB_MENUS enviromental var is set. 
+
+-------------------------------------------------------------------------------
+
+5.4. monolaunch
+
+monolaunch can be used to create simple panel launchers.
+monolaunch [options..] [ [ <xpm|png filename> <command> ] [ --desktop <.desktop file> ]
+
+Table 4. monolaunch command line options
+
++-----------------------------------------------------------------------------+
+|   Command Line   | Value  |                   Description                   |
+|      Switch      |  Type  |                                                 |
+|------------------+--------+-------------------------------------------------|
+|--title           |str     |Set the panel apps title, defaults to command    |
+|                  |        |line string.                                     |
+|------------------+--------+-------------------------------------------------|
+|-icon-dimension,  |integer |Set maximum size of panel icon                   |
+|-i                |        |                                                 |
+|------------------+--------+-------------------------------------------------|
+|--kill, -k        |na.     |Toggle app by destroying, rather than iconizing  |
+|------------------+--------+-------------------------------------------------|
+|--respawn, -l     |na.     |Launch multiple copies of the command line       |
+|------------------+--------+-------------------------------------------------|
+|--no-animation,-na|na.     |Disables launch animation.                       |
+|------------------+--------+-------------------------------------------------|
+|                  |        |Capture the output of the command and send it as |
+|--message, -m     |na      |a message bubble to the dock when the applet is  |
+|                  |        |clicked.                                         |
+|------------------+--------+-------------------------------------------------|
+|--desktop         |.desktop|Use just this option to create a launcher from an|
+|                  |filename|existing .desktop file.                          |
++-----------------------------------------------------------------------------+
+ 
+
+Examples
+
+-------------------------------------------------------------------------------
+
+5.5. minitime
+
+A simple clock. Run with -h to see simple options available.  
+-------------------------------------------------------------------------------
+
+5.6. minivol
+
+A volume control. 
+-------------------------------------------------------------------------------
+
+5.7. miniwave
+
+Monitors the strength of wireless connections.  
+-------------------------------------------------------------------------------
+
+5.8. minisys
+
+A memory / cpu usage monitor.  
+-------------------------------------------------------------------------------
+
+5.9. miniapm
+
+A battery power level monitor - it requires libapm to build. 
+-------------------------------------------------------------------------------
+
+6. Matchbox Desktop
+
+The desktop is kept at the very bottom of the window stack. It is provided as
+an application launcher and task switcher.
+
+Mbdesktop should be considered alpha software. It is still in it's early stages
+but it's usable.
+
+-------------------------------------------------------------------------------
+
+6.1. Usage And Configuration
+
+mbdesktop [options]
+
+Table 5. Matchbox Desktop command line options
+
++-----------------------------------------------------------------------------+
+| Command Line |  Value Type   |                 Description                  |
+|    Switch    |               |                                              |
+|--------------+---------------+----------------------------------------------|
+|-display      |               |Display to connect to                         |
+|--------------+---------------+----------------------------------------------|
+|              |               |The value can be used to define various       |
+|              |               |background types in the following formats.    |
+|              |               |                                              |
+|              |               |  * img-stretched:[filename]                  |
+|              |               |  * img-tiled:[filename]                      |
+|--bg          |str            |  * img-centered:[filename]                   |
+|              |               |  * col-solid:[color definition]              |
+|              |               |  * col-gradient-vertical:[start color],[end  |
+|              |               |    color]                                    |
+|              |               |  * col-gradient-horizontal:[start color],[end|
+|              |               |    color]                                    |
+|--------------+---------------+----------------------------------------------|
+|--iconsize    |integer        |Icon size                                     |
+|--------------+---------------+----------------------------------------------|
+|--font        |font definition|Icon font                                     |
+|--------------+---------------+----------------------------------------------|
+|--titlefont   |font definition|Title font                                    |
+|--------------+---------------+----------------------------------------------|
+|              |color          |                                              |
+|--fontcol     |definition (#  |Font color                                    |
+|              |rrggbb)        |                                              |
+|--------------+---------------+----------------------------------------------|
+|--no-outline  |               |Text is drawn without outline                 |
+|--------------+---------------+----------------------------------------------|
+|--icon-padding|integer        |Spacing in pixels between icons               |
++-----------------------------------------------------------------------------+
+-------------------------------------------------------------------------------
+
+6.2. Plugin Modules
+
+Mbdesktop uses dynamically loadable modules to populate itself with icons.
+
+Matchbox comes with 3 modules. A main application launcher which uses .desktop
+files, a simple tasks manager and an in progress simple file browser.
+
+What modules are used are set in $PREFIX/share/matchbox/mbdesktop_modules or
+set per user in ~/.matchbox/mbdesktop_modules.
+
+ Its quite easy to write your own modules. Please refer to the desktop/modules
+directory for examples. 
+
+-------------------------------------------------------------------------------
+
+6.3. Adding Icons And Folders
+
+( Note: The following is also true for mbmenu, except mbmenu also reads Debian
+style /usr/lib/menu entries. )
+
+ The directory's $PREFIX/share/applications and $HOME/applications are checked
+for the existence of 'INI style' .desktop files. A .desktop contains
+information about a program entry including its name, icon, executable string
+etc.
+
+ A simple hopefully self explanatory example is;
+[Desktop Entry]
+Name=Figment
+Comment=An Outliner
+Exec=figment
+Icon=figment.png
+Terminal=0
+Type=Application
+Categories=Application;Core;
+
+Information for what and how mbdesktop should create folders for the above
+entries is stored in $PREFIX/share/matchbox/vfolder and overridden by $HOME
+/.matchbox/vfolders/ .
+
+The directory should contain a root.order file, a root.directory file, and
+optionally a number of other .directory files describing each folder.
+
+ The .directory files are just like .desktop files but describe a folder rather
+than a application. The root.order files specifys which and what order the
+directory files should be displayed in.
+
+A .directory file should have a 'match' key of which its value is used to
+compare against .desktop files Categories key value. This decides which folder
+a .desktop file ends up in. If the match key is set to 'fallback', any
+Categories that are not matched will end up here.  
+
+ NOTE: The vfolder setup installed by default with Matchbox is mainly suitable
+for a PDA style enviroment ( such as GPE ). The distribution contains an
+alternate set up in data/vfolders-desktop. 
+
+The fill desktop entry spec can be found at freedesktop.org, also a nice
+introduction to .desktop files can be found at Suns developer site. Note
+Matchbox currently support only the 'core' of the specification.
+
+-------------------------------------------------------------------------------
+
+7. Other binaries
+
+-------------------------------------------------------------------------------
+
+7.1. LibMB
+
+  * Shared code for numerous applications.
+  * Includes Simple image composition tools, system tray app toolkit,
+    freedesktop.org standards utility's, a menu widget and more.
+  * Current interface should be considered stable.
+  * Doxygen generated documentation
+
+-------------------------------------------------------------------------------
+
+7.2. mbsession
+
+A very simple shell script to start Matchbox window manager, desktop and panel.
+
+The file will check for in order and exec the following files if they exist.
+$HOME/.matchbox/session
+/etc/matchbox/session
+
+ If they don't exist sensible defaults will be run. The reasoning behind this
+file is that distributions containing Matchbox can easily tailor startup
+options ( by supplying a /etc/matchbox/session ) for their platform. 
+
+-------------------------------------------------------------------------------
+
+7.3. mbcontrol
+
+A command line tool to externally control Matchbox.
+
++-----------------------------------------------------------------------------+
+|  Command Line  | Value  |                    Description                    |
+|     Switch     |  Type  |                                                   |
+|----------------+--------+---------------------------------------------------|
+|-theme          |Theme   |switch Matchbox theme                              |
+|                |name    |                                                   |
+|----------------+--------+---------------------------------------------------|
+|-r              |na.     |Print current Matchbox theme to stdout             |
+|----------------+--------+---------------------------------------------------|
+|-exit           |na.     |Request Matchbox window manager to exit            |
+|----------------+--------+---------------------------------------------------|
+|-next           |na.     |Request Matchbox window manager to 'page' to next  |
+|                |        |window                                             |
+|----------------+--------+---------------------------------------------------|
+|-prev           |na.     |Request Matchbox window manager to 'page' to       |
+|                |        |previous window                                    |
+|----------------+--------+---------------------------------------------------|
+|-desktop        |na.     |Request Matchbox window manager to toggle desktop  |
+|                |        |visibility                                         |
+|----------------+--------+---------------------------------------------------|
+|-mbmenu         |na.     |activate mbmenu ( if running )                     |
++-----------------------------------------------------------------------------+
+
+-------------------------------------------------------------------------------
+
+8. Themeing
+
+Please refer to the Matchbox Themeing-Howto.
+
+-------------------------------------------------------------------------------
+
+9. Testing
+
+Please refer to the Matchbox Testing documentation.
+
+-------------------------------------------------------------------------------
+
+10. License
+
+Matchbox is free software released under the terms of the GNU General Public
+License, (GPL). You can redistribute it and/or modify it under the terms of the
+GNU General Public License as published by the Free Software Foundation; either
+version 2, or (at your option) any later version.
+
+Matchbox is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+-------------------------------------------------------------------------------
+
+11. Credits
+
+Matchbox is written by Matthew Allum. It was originally based on aewm, but has
+since undergone rewrites and now bares little resemblance. Thanks also go to
+Carl Worth and Nils Faerber for initial help with the project.
+
+Matchbox is copyright OpenedHand Ltd 2003. 

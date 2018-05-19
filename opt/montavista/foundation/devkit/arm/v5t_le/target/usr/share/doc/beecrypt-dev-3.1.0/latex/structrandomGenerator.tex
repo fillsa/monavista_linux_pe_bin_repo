@@ -1,0 +1,89 @@
+\hypertarget{structrandomGenerator}{
+\section{random\-Generator Struct Reference}
+\label{structrandomGenerator}\index{randomGenerator@{randomGenerator}}
+}
+This struct holds information and pointers to code specific to each pseudo-random number generator.  
+
+
+{\tt \#include $<$beecrypt.h$>$}
+
+\subsection*{Data Fields}
+\begin{CompactItemize}
+\item 
+const char $\ast$ \hyperlink{structrandomGenerator_o0}{name}
+\begin{CompactList}\small\item\em The random generator's name. \item\end{CompactList}\item 
+const size\_\-t \hyperlink{structrandomGenerator_o1}{paramsize}
+\begin{CompactList}\small\item\em The size of the random generator's parameters. \item\end{CompactList}\item 
+const \hyperlink{beecrypt_8h_a2}{random\-Generator\-Setup} \hyperlink{structrandomGenerator_o2}{setup}
+\begin{CompactList}\small\item\em Points to the setup function. \item\end{CompactList}\item 
+const \hyperlink{beecrypt_8h_a3}{random\-Generator\-Seed} \hyperlink{structrandomGenerator_o3}{seed}
+\begin{CompactList}\small\item\em Points to the cleanup function. \item\end{CompactList}\item 
+const \hyperlink{beecrypt_8h_a4}{random\-Generator\-Next} \hyperlink{structrandomGenerator_o4}{next}
+\item 
+const \hyperlink{beecrypt_8h_a5}{random\-Generator\-Cleanup} \hyperlink{structrandomGenerator_o5}{cleanup}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+This struct holds information and pointers to code specific to each pseudo-random number generator. 
+
+Definition at line 152 of file beecrypt.h.
+
+\subsection{Field Documentation}
+\hypertarget{structrandomGenerator_o5}{
+\index{randomGenerator@{random\-Generator}!cleanup@{cleanup}}
+\index{cleanup@{cleanup}!randomGenerator@{random\-Generator}}
+\subsubsection[cleanup]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{beecrypt_8h_a5}{random\-Generator\-Cleanup} \hyperlink{structrandomGenerator_o5}{random\-Generator::cleanup}}}
+\label{structrandomGenerator_o5}
+
+
+Definition at line 179 of file beecrypt.h.\hypertarget{structrandomGenerator_o0}{
+\index{randomGenerator@{random\-Generator}!name@{name}}
+\index{name@{name}!randomGenerator@{random\-Generator}}
+\subsubsection[name]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structrandomGenerator_o0}{random\-Generator::name}}}
+\label{structrandomGenerator_o0}
+
+
+The random generator's name. 
+
+\hypertarget{structrandomGenerator_o4}{
+\index{randomGenerator@{random\-Generator}!next@{next}}
+\index{next@{next}!randomGenerator@{random\-Generator}}
+\subsubsection[next]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{beecrypt_8h_a4}{random\-Generator\-Next} \hyperlink{structrandomGenerator_o4}{random\-Generator::next}}}
+\label{structrandomGenerator_o4}
+
+
+Definition at line 175 of file beecrypt.h.\hypertarget{structrandomGenerator_o1}{
+\index{randomGenerator@{random\-Generator}!paramsize@{paramsize}}
+\index{paramsize@{paramsize}!randomGenerator@{random\-Generator}}
+\subsubsection[paramsize]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structrandomGenerator_o1}{random\-Generator::paramsize}}}
+\label{structrandomGenerator_o1}
+
+
+The size of the random generator's parameters. 
+
+\begin{Desc}
+\item[Note:]The implementor should set this by using sizeof($<$struct holding random generator's parameters$>$). \end{Desc}
+\hypertarget{structrandomGenerator_o3}{
+\index{randomGenerator@{random\-Generator}!seed@{seed}}
+\index{seed@{seed}!randomGenerator@{random\-Generator}}
+\subsubsection[seed]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structrandomGenerator_o3}{random\-Generator::seed}}}
+\label{structrandomGenerator_o3}
+
+
+Points to the cleanup function. 
+
+\hypertarget{structrandomGenerator_o2}{
+\index{randomGenerator@{random\-Generator}!setup@{setup}}
+\index{setup@{setup}!randomGenerator@{random\-Generator}}
+\subsubsection[setup]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structrandomGenerator_o2}{random\-Generator::setup}}}
+\label{structrandomGenerator_o2}
+
+
+Points to the setup function. 
+
+
+
+The documentation for this struct was generated from the following file:\begin{CompactItemize}
+\item 
+\hyperlink{beecrypt_8h}{beecrypt.h}\end{CompactItemize}

@@ -1,0 +1,33 @@
+Making all in .
+make[1]: Entering directory `/var/tmp/BUILD/libtool-1.5.8/objdir'
+CONFIG_FILES=libtoolize CONFIG_HEADERS= /bin/sh ./config.status
+config.status: creating libtoolize
+config.status: executing depfiles commands
+chmod +x libtoolize
+make[1]: Leaving directory `/var/tmp/BUILD/libtool-1.5.8/objdir'
+Making all in libltdl
+make[1]: Entering directory `/var/tmp/BUILD/libtool-1.5.8/objdir/libltdl'
+make  all-am
+make[2]: Entering directory `/var/tmp/BUILD/libtool-1.5.8/objdir/libltdl'
+/bin/sh ./libtool --mode=compile arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I../../libltdl -I.     -O2 -c -o ltdl.lo ../../libltdl/ltdl.c
+mkdir .libs
+ arm_v5t_le-gcc -DHAVE_CONFIG_H -I. -I../../libltdl -I. -O2 -c ../../libltdl/ltdl.c  -fPIC -DPIC -o .libs/ltdl.o
+ arm_v5t_le-gcc -DHAVE_CONFIG_H -I. -I../../libltdl -I. -O2 -c ../../libltdl/ltdl.c -o ltdl.o >/dev/null 2>&1
+/bin/sh ./libtool --mode=link arm_v5t_le-gcc   -O2   -o libltdl.la -rpath /usr/lib -no-undefined -version-info 4:0:1 ltdl.lo -ldl 
+arm_v5t_le-gcc  -shared  .libs/ltdl.o  -ldl  -Wl,-soname -Wl,libltdl.so.3 -o .libs/libltdl.so.3.1.0
+(cd .libs && rm -f libltdl.so.3 && ln -s libltdl.so.3.1.0 libltdl.so.3)
+(cd .libs && rm -f libltdl.so && ln -s libltdl.so.3.1.0 libltdl.so)
+arm_v5t_le-ar cru .libs/libltdl.a  ltdl.o
+arm_v5t_le-ranlib .libs/libltdl.a
+creating libltdl.la
+(cd .libs && rm -f libltdl.la && ln -s ../libltdl.la libltdl.la)
+make[2]: Leaving directory `/var/tmp/BUILD/libtool-1.5.8/objdir/libltdl'
+make[1]: Leaving directory `/var/tmp/BUILD/libtool-1.5.8/objdir/libltdl'
+Making all in doc
+make[1]: Entering directory `/var/tmp/BUILD/libtool-1.5.8/objdir/doc'
+make[1]: Nothing to be done for `all'.
+make[1]: Leaving directory `/var/tmp/BUILD/libtool-1.5.8/objdir/doc'
+Making all in tests
+make[1]: Entering directory `/var/tmp/BUILD/libtool-1.5.8/objdir/tests'
+make[1]: Nothing to be done for `all'.
+make[1]: Leaving directory `/var/tmp/BUILD/libtool-1.5.8/objdir/tests'

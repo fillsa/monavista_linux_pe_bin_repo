@@ -1,0 +1,217 @@
+<html>
+<head>
+<title>The Exim FAQ Section 14</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_13.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_15.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC302">14. DIAL-UP AND ISDN</a></h2>
+<p>
+<a name="TOC303" href="FAQ.html#TOC303">Q1401:</a>&nbsp;&nbsp;When I'm not connected to the Internet, how can I arrange for mail to
+other hosts on my local network to be delivered, while at the
+same time mail to Internet hosts is queued without any delivery
+attempts?
+</p>
+<p>
+<font color="#00BB00">A1401:</font>&nbsp;&nbsp;Use the <tt>queue_domains</tt> option to control which domains are held
+on the queue for later delivery. For example,
+</p>
+<pre>
+   queue_domains = ! *.localnet</pre>
+<p>
+allows delivery to domains ending in <i>.localnet</i>, while queueing all the
+others.
+</p>
+<p>
+<a name="TOC304" href="FAQ.html#TOC304">Q1402:</a>&nbsp;&nbsp;I have a dial-up machine, and I use the <tt>queue_smtp_domains</tt> option so
+that remote mail only goes out when I do a queue run. However, any email
+I send with an address <i>anything@aol.com</i> is returned within about 15
+minutes saying <i>retry time exceeded</i>, and all addresses are affected.
+</p>
+<p>
+<font color="#00BB00">A1402:</font>&nbsp;&nbsp;You should be using <tt>queue_domains</tt> rather than <tt>queue_smtp_domains</tt>.
+With the latter, Exim is trying to route the addresses, which involves a
+DNS lookup. This is presumably timing out, causing a retry time to be
+set for the domain, and somehow a valid lookup never happened before the
+maximum retry time (default of 4 days) passed. Hence the bounce. The
+fact that it is <i>aol.com</i> is probably not relevant. You should probably
+also be using <b>-qq</b> to do your queue run rather than <b>-q</b>.
+</p>
+<p>
+<a name="TOC305" href="FAQ.html#TOC305">Q1403:</a>&nbsp;&nbsp;How should Exim be configured when it is acting as a temporary storage
+system for a domain on a dial-up host?
+</p>
+<p>
+<font color="#00BB00">A1403:</font>&nbsp;&nbsp;Exim isn't really designed for this, but... The lowest-numbered MX
+record for the domain should be pointing to the dial-up host. A higher
+numbered MX record (lower priority) should point to the Exim server that
+is acting as a temporary storage system.
+</p>
+<p>
+You should set a large retry time for the domain, so that Exim doesn't
+keep trying to deliver when the host is offline. When the host comes
+online, the waiting messages have to be kicked somehow. This can be done
+by calling Exim with the <b>-R</b> option, or via the SMTP ETRN command.
+</p>
+<p>
+This works provided the number of messages is low. If you are handling
+lots of mail, keeping messages waiting for their host to connect and
+those that are having delivery problems to remote hosts all in the same
+queue doesn't work so well. It is better in this case to get Exim to
+deliver the mail for the dial-in hosts into some local files which then
+get transmitted by other software when the host connects. One tool for
+doing this can be found at <a href="http://cr.yp.to/serialmail.html">http://cr.yp.to/serialmail.html</a>.
+</p>
+<p>
+For further discussion, see section entitled <i>Intermittently connected
+hosts</i> in the manual, and also the section in the Exim book with the
+same name.
+</p>
+<p>
+<a name="TOC306" href="FAQ.html#TOC306">Q1404:</a>&nbsp;&nbsp;I have <tt>queue_domains</tt> or <tt>queue_smtp_domains</tt> set, and use <b>-qf</b> to
+force delivery of waiting mail when I dial in. How can I arrange for any
+new messages that arrive while I'm connected to be delivered immediately?
+</p>
+<p>
+<font color="#00BB00">A1404:</font>&nbsp;&nbsp;Instead of <tt>queue_domains</tt> or <tt>queue_smtp_domains</tt>, use the <tt>queue_only_file</tt>
+option. This causes messages to be queued if a particular file exists.
+If you put the word &#147;smtp&#148; before the file name, the queueing applies
+only to domains that are delivered by SMTP, thus not affecting local
+deliveries:
+</p>
+<pre>
+   queue_only_file = smtp/etc/present/when/not/connected</pre>
+<p>
+Then, in the scripts which are run when you connect and disconnect,
+arrange to remove the file after connection, and create it just before
+disconnection.
+</p>
+<p>
+<a name="TOC307" href="FAQ.html#TOC307">Q1405:</a>&nbsp;&nbsp;I have an ISDN connection and would like a way of running the queue
+automatically when it is up.
+</p>
+<p>
+<font color="#00BB00">A1405:</font>&nbsp;&nbsp;The following shell commands test for the interface being up and then
+run the queue:
+</p>
+<pre>
+   ifconfig ppp0 | fgrep UP &#62;/dev/null
+   if [ $? -eq 0 ] ; then exim -q ; fi</pre>
+<p>
+You could put these commands into a script which runs them at regular
+intervals. You might want to use <b>-qq</b> instead of <b>-q</b>.
+</p>
+<p>
+With Linux, the script <i>/etc/ppp/ip-up</i> is run after a ISDN connection
+or a more general PPP connection has been established. If you are using
+Linux, you could put the call to Exim in that script.
+</p>
+<p>
+<a name="TOC308" href="FAQ.html#TOC308">Q1406:</a>&nbsp;&nbsp;When I dial up to collect mail from my ISP, only the first 10 messages
+get delivered immediately; the remainder just sit on the queue until a
+queue runner process finds them.
+</p>
+<p>
+<font color="#00BB00">A1406:</font>&nbsp;&nbsp;See <a href="FAQ_0.html#TOC49">Q0049</a>.
+</p>
+<p>
+<a name="TOC309" href="FAQ.html#TOC309">Q1407:</a>&nbsp;&nbsp;RFC 1985 specifies that the SMTP command <tt>ETRN host.domain</tt> causes all
+mail queued for that host, no matter what domain it's for, to be
+delivered. Why doesn't Exim support this?
+</p>
+<p>
+<font color="#00BB00">A1407:</font>&nbsp;&nbsp;Exim does not keep queues of mail for specific destinations. It just
+keeps one pool of undelivered messages. What is more, once you start a
+delivery of a message, it tries to deliver to all the addresses in the
+message, not just the one you may be interested in. (Of course, this
+doesn't usually do any harm.)
+</p>
+<p>
+The only way it could be done within Exim would be, for every message
+on the queue, to go through the motions of routing each undelivered
+address and see if that resulted in a delivery to the host of interest.
+This could be extremely expensive (e.g. 1,000 messages on the queue,
+only 1 for the given host).
+</p>
+<p>
+The bottom line is that Exim just wasn't designed for this kind of
+operation, that is, holding messages for intermittently connected hosts.
+The queueing arrangements are designed for handling delivery problems
+that are not expected to be common.
+</p>
+<p>
+A better way to do this is to implement the required queues separately.
+After all, keeping such mail on an active queue (where Exim will keep
+trying to deliver) is silly. If there is a lot of mail for these hosts,
+it also masks genuine delivery problems when you inspect the queue.
+</p>
+<p>
+Large ISPs who provide this kind of functionality do not usually leave
+waiting mail on the MTA's queue. Instead, they get it delivered into
+per-host directories, one message per file, in one of the special
+formats (BSMTP, maildir, or mailstore) and when an ETRN arrives, it
+kicks off some completely different program that establishes an SMTP
+connection to the host and shovels the waiting mail down it. That seems
+to me to be a much neater way of doing this. It means you can easily add
+additional functionality such as archiving or throwing away uncollected
+mail.
+</p>
+<p>
+One program that has this functionality is <i>ssmtp</i>, which can be
+found in <a href="ftp://metalab.unc.edu/pub/Linux/system/mail/mta/">ftp://metalab.unc.edu/pub/Linux/system/mail/mta/</a>.
+Alternatively, sample configuration <a href="C037.txt">C037</a> demonstrates an elegant way of
+using Exim itself to deliver the saved messages when the client issues
+an ETRN.
+</p>
+<p>
+<a name="TOC310" href="FAQ.html#TOC310">Q1408:</a>&nbsp;&nbsp;If email has been deferred to a member on a local mailing list
+(implemented through forward files), and one of our ETRN clients is on
+this mailing list, the <b>-R</b> won't flush the mailing list message for
+that client.
+</p>
+<p>
+<font color="#00BB00">A1408:</font>&nbsp;&nbsp;That is because <b>-R</b> matches only original recipient addresses, not those
+produced as a result of expansion, because these are not (by default)
+preserved from delivery to delivery. You can get round this by setting
+<tt>one_time</tt> on the forwarding router, but you are not allowed to have
+expansions to pipes or files on routers that have <tt>one_time</tt> set.
+Therefore, you will have to have a separate router for mailing lists
+(with <tt>one_time</tt> set) to the one used for normal forward files that might
+specify pipe or file deliveries. However, the problem will still be
+present for any user who sets up a <i>.forward</i> file to redirect to any of
+the ETRN domains. See the last 3 paragraphs of <a href="FAQ_14.html#TOC309">Q1407</a> for a discussion of
+an alternative approach.
+</p>
+<p>
+<a name="TOC311" href="FAQ.html#TOC311">Q1409:</a>&nbsp;&nbsp;I would like to have a separate queue per domain for hosts which dial
+in to collect their mail.
+</p>
+<p>
+<font color="#00BB00">A1409:</font>&nbsp;&nbsp;Exim isn't really designed for this kind of operation. The only way to
+do this would be to cause it to send those messages to a differently
+configured version of Exim with its own spool area. This could be done
+via a pipe or SMTP to a private port. The main Exim, listening on port
+25, would then be configured to run an appropriate command to prod one
+of the others when it received ETRN, by means of the <tt>smtp_etrn_command</tt>
+option.
+</p>
+<p>
+You could probably manage this with a single Exim binary and a number of
+different configuration files, passed to the special versions using the
+<b>-C</b> option. For this application they could all run as <i>exim</i>, since no
+root privilege would be needed.
+</p>
+<p>
+An alternative approach id to get Exim to deliver mail for such hosts
+in batch SMTP format into some directory, and have the ETRN run
+something to pass such messages to the dialled-in host. See also <a href="FAQ_14.html#TOC305">Q1403</a>.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_13.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_15.html">Next</a>
+</body>
+</html>

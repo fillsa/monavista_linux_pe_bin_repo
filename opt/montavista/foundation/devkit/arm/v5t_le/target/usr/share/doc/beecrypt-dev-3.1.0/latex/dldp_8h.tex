@@ -1,0 +1,162 @@
+\hypertarget{dldp_8h}{
+\section{dldp.h File Reference}
+\label{dldp_8h}\index{dldp.h@{dldp.h}}
+}
+Discrete Logarithm domain parameters, headers. 
+
+{\tt \#include \char`\"{}mpbarrett.h\char`\"{}}\par
+\subsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \hyperlink{structdldp__p}{dldp\_\-p}
+\begin{CompactList}\small\item\em Discrete Logarithm Domain Parameters over a prime field. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{dldp_8h_a0}{dldp\_\-p\-Init} (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$)
+\item 
+int \hyperlink{dldp_8h_a1}{dldp\_\-p\-Free} (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$)
+\item 
+int \hyperlink{dldp_8h_a2}{dldp\_\-p\-Copy} (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$, const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$)
+\item 
+int \hyperlink{dldp_8h_a3}{dldp\_\-p\-Private} (const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+int \hyperlink{dldp_8h_a4}{dldp\_\-p\-Public} (const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+int \hyperlink{dldp_8h_a5}{dldp\_\-p\-Pair} (const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+int \hyperlink{dldp_8h_a6}{dldp\_\-p\-Equal} (const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$, const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$)
+\item 
+int \hyperlink{dldp_8h_a7}{dldp\_\-pgoq\-Make} (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t, size\_\-t, int)
+\item 
+int \hyperlink{dldp_8h_a8}{dldp\_\-pgoq\-Make\-Safe} (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t)
+\item 
+int \hyperlink{dldp_8h_a9}{dldp\_\-pgoq\-Generator} (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$)
+\item 
+int \hyperlink{dldp_8h_a10}{dldp\_\-pgoq\-Validate} (const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, int)
+\item 
+int \hyperlink{dldp_8h_a11}{dldp\_\-pgon\-Make} (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t, size\_\-t)
+\item 
+int \hyperlink{dldp_8h_a12}{dldp\_\-pgon\-Make\-Safe} (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t)
+\item 
+int \hyperlink{dldp_8h_a13}{dldp\_\-pgon\-Generator} (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$)
+\item 
+int \hyperlink{dldp_8h_a14}{dldp\_\-pgon\-Validate} (const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$)
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Discrete Logarithm domain parameters, headers. 
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{dldp_8h-source}{dldp.h}.
+
+\subsection{Function Documentation}
+\hypertarget{dldp_8h_a2}{
+\index{dldp.h@{dldp.h}!dldp_pCopy@{dldp\_\-pCopy}}
+\index{dldp_pCopy@{dldp\_\-pCopy}!dldp.h@{dldp.h}}
+\subsubsection[dldp\_\-pCopy]{\setlength{\rightskip}{0pt plus 5cm}int dldp\_\-p\-Copy (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$, const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$)}}
+\label{dldp_8h_a2}
+
+
+\hypertarget{dldp_8h_a6}{
+\index{dldp.h@{dldp.h}!dldp_pEqual@{dldp\_\-pEqual}}
+\index{dldp_pEqual@{dldp\_\-pEqual}!dldp.h@{dldp.h}}
+\subsubsection[dldp\_\-pEqual]{\setlength{\rightskip}{0pt plus 5cm}int dldp\_\-p\-Equal (const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$, const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$)}}
+\label{dldp_8h_a6}
+
+
+\hypertarget{dldp_8h_a1}{
+\index{dldp.h@{dldp.h}!dldp_pFree@{dldp\_\-pFree}}
+\index{dldp_pFree@{dldp\_\-pFree}!dldp.h@{dldp.h}}
+\subsubsection[dldp\_\-pFree]{\setlength{\rightskip}{0pt plus 5cm}int dldp\_\-p\-Free (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$)}}
+\label{dldp_8h_a1}
+
+
+\hypertarget{dldp_8h_a13}{
+\index{dldp.h@{dldp.h}!dldp_pgonGenerator@{dldp\_\-pgonGenerator}}
+\index{dldp_pgonGenerator@{dldp\_\-pgonGenerator}!dldp.h@{dldp.h}}
+\subsubsection[dldp\_\-pgonGenerator]{\setlength{\rightskip}{0pt plus 5cm}int dldp\_\-pgon\-Generator (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$)}}
+\label{dldp_8h_a13}
+
+
+\hypertarget{dldp_8h_a11}{
+\index{dldp.h@{dldp.h}!dldp_pgonMake@{dldp\_\-pgonMake}}
+\index{dldp_pgonMake@{dldp\_\-pgonMake}!dldp.h@{dldp.h}}
+\subsubsection[dldp\_\-pgonMake]{\setlength{\rightskip}{0pt plus 5cm}int dldp\_\-pgon\-Make (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t, size\_\-t)}}
+\label{dldp_8h_a11}
+
+
+\hypertarget{dldp_8h_a12}{
+\index{dldp.h@{dldp.h}!dldp_pgonMakeSafe@{dldp\_\-pgonMakeSafe}}
+\index{dldp_pgonMakeSafe@{dldp\_\-pgonMakeSafe}!dldp.h@{dldp.h}}
+\subsubsection[dldp\_\-pgonMakeSafe]{\setlength{\rightskip}{0pt plus 5cm}int dldp\_\-pgon\-Make\-Safe (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t)}}
+\label{dldp_8h_a12}
+
+
+\hypertarget{dldp_8h_a14}{
+\index{dldp.h@{dldp.h}!dldp_pgonValidate@{dldp\_\-pgonValidate}}
+\index{dldp_pgonValidate@{dldp\_\-pgonValidate}!dldp.h@{dldp.h}}
+\subsubsection[dldp\_\-pgonValidate]{\setlength{\rightskip}{0pt plus 5cm}int dldp\_\-pgon\-Validate (const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$)}}
+\label{dldp_8h_a14}
+
+
+\hypertarget{dldp_8h_a9}{
+\index{dldp.h@{dldp.h}!dldp_pgoqGenerator@{dldp\_\-pgoqGenerator}}
+\index{dldp_pgoqGenerator@{dldp\_\-pgoqGenerator}!dldp.h@{dldp.h}}
+\subsubsection[dldp\_\-pgoqGenerator]{\setlength{\rightskip}{0pt plus 5cm}int dldp\_\-pgoq\-Generator (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$)}}
+\label{dldp_8h_a9}
+
+
+\hypertarget{dldp_8h_a7}{
+\index{dldp.h@{dldp.h}!dldp_pgoqMake@{dldp\_\-pgoqMake}}
+\index{dldp_pgoqMake@{dldp\_\-pgoqMake}!dldp.h@{dldp.h}}
+\subsubsection[dldp\_\-pgoqMake]{\setlength{\rightskip}{0pt plus 5cm}int dldp\_\-pgoq\-Make (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t, size\_\-t, int)}}
+\label{dldp_8h_a7}
+
+
+\hypertarget{dldp_8h_a8}{
+\index{dldp.h@{dldp.h}!dldp_pgoqMakeSafe@{dldp\_\-pgoqMakeSafe}}
+\index{dldp_pgoqMakeSafe@{dldp\_\-pgoqMakeSafe}!dldp.h@{dldp.h}}
+\subsubsection[dldp\_\-pgoqMakeSafe]{\setlength{\rightskip}{0pt plus 5cm}int dldp\_\-pgoq\-Make\-Safe (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t)}}
+\label{dldp_8h_a8}
+
+
+\hypertarget{dldp_8h_a10}{
+\index{dldp.h@{dldp.h}!dldp_pgoqValidate@{dldp\_\-pgoqValidate}}
+\index{dldp_pgoqValidate@{dldp\_\-pgoqValidate}!dldp.h@{dldp.h}}
+\subsubsection[dldp\_\-pgoqValidate]{\setlength{\rightskip}{0pt plus 5cm}int dldp\_\-pgoq\-Validate (const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, int)}}
+\label{dldp_8h_a10}
+
+
+\hypertarget{dldp_8h_a0}{
+\index{dldp.h@{dldp.h}!dldp_pInit@{dldp\_\-pInit}}
+\index{dldp_pInit@{dldp\_\-pInit}!dldp.h@{dldp.h}}
+\subsubsection[dldp\_\-pInit]{\setlength{\rightskip}{0pt plus 5cm}int dldp\_\-p\-Init (\hyperlink{structdldp__p}{dldp\_\-p} $\ast$)}}
+\label{dldp_8h_a0}
+
+
+\hypertarget{dldp_8h_a5}{
+\index{dldp.h@{dldp.h}!dldp_pPair@{dldp\_\-pPair}}
+\index{dldp_pPair@{dldp\_\-pPair}!dldp.h@{dldp.h}}
+\subsubsection[dldp\_\-pPair]{\setlength{\rightskip}{0pt plus 5cm}int dldp\_\-p\-Pair (const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{dldp_8h_a5}
+
+
+\hypertarget{dldp_8h_a3}{
+\index{dldp.h@{dldp.h}!dldp_pPrivate@{dldp\_\-pPrivate}}
+\index{dldp_pPrivate@{dldp\_\-pPrivate}!dldp.h@{dldp.h}}
+\subsubsection[dldp\_\-pPrivate]{\setlength{\rightskip}{0pt plus 5cm}int dldp\_\-p\-Private (const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{dldp_8h_a3}
+
+
+\hypertarget{dldp_8h_a4}{
+\index{dldp.h@{dldp.h}!dldp_pPublic@{dldp\_\-pPublic}}
+\index{dldp_pPublic@{dldp\_\-pPublic}!dldp.h@{dldp.h}}
+\subsubsection[dldp\_\-pPublic]{\setlength{\rightskip}{0pt plus 5cm}int dldp\_\-p\-Public (const \hyperlink{structdldp__p}{dldp\_\-p} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{dldp_8h_a4}
+
+

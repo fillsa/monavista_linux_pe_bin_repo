@@ -1,0 +1,57 @@
+<html>
+<head>
+<title>The Exim FAQ Section 21</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_20.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_22.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC367">92. FREEBSD</a></h2>
+<p>
+<a name="TOC368" href="FAQ.html#TOC368">Q9201:</a>&nbsp;&nbsp;On FreeBSD, <i>/usr/sbin/sendmail</i> is a symbolic link to
+<i>/usr/sbin/mailwrapper</i>; it doesn't contain the Sendmail binary. How
+should I replace Sendmail with Exim on FreeBSD?
+</p>
+<p>
+<font color="#00BB00">A9201:</font>&nbsp;&nbsp;There is a file called <i>/etc/mail/mailer.conf</i> which selects what to
+run for various MTA calls. Instead of changing <i>/usr/sbin/sendmail</i>,
+you should edit this file instead, to read something like this:
+</p>
+<pre>
+   sendmail          /usr/exim/bin/exim
+   send-mail         /usr/exim/bin/exim
+   mailq             /usr/exim/bin/exim -bp
+   newaliases        /usr/bin/true</pre>
+<p>
+You probably also need to edit <i>/etc/periodic.conf</i>; see <a href="FAQ_21.html#TOC369">Q9202</a>.
+</p>
+<p>
+<a name="TOC369" href="FAQ.html#TOC369">Q9202:</a>&nbsp;&nbsp;A script that FreeBSD runs nightly uses <i>mailq</i> with the <b>-Ac</b>
+parameter. Why doesn't Exim recognize this?
+</p>
+<p>
+<font color="#00BB00">A9202:</font>&nbsp;&nbsp;<b>-Ac</b> is a Sendmail option that requests that mailq ``Show the mail
+submission queue specified in <i>/etc/mail/submit.cf</i> instead of the
+MTA queue specified in <i>/etc/mail/sendmail.cf</i>''. Exim doesn't have
+the concept of a &#147;submission queue&#148;. You can disable this feature
+of the nightly script by adding the line
+</p>
+<pre>
+   daily_status_include_submit_mailq="NO"  # No separate 'submit' queue</pre>
+<p>
+to the file <i>/etc/periodic.conf</i>.
+</p>
+<p>
+<a name="TOC370" href="FAQ.html#TOC370">Q9203:</a>&nbsp;&nbsp;How can I use Exim for authenticated SMTP using Cyrus on FreeBSD?
+</p>
+<p>
+<font color="#00BB00">A9203:</font>&nbsp;&nbsp;This web page may help: <a href="http://www.munk.nu/exim/exim-freebsd-asmtp.php">http://www.munk.nu/exim/exim-freebsd-asmtp.php</a>.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_20.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_22.html">Next</a>
+</body>
+</html>

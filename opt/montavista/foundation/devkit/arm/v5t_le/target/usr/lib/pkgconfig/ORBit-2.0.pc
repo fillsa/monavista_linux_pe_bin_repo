@@ -1,0 +1,13 @@
+prefix=/usr
+exec_prefix=/usr
+libdir=/usr/lib
+includedir=/usr/include
+orbit_idl=/usr/bin/orbit-idl-2
+
+
+Name: ORBit-2.0
+Description: High-performance CORBA Object Request Broker.
+Version: 2.10.2
+Requires: glib-2.0 gmodule-2.0 gthread-2.0
+Libs: -L${libdir} -lORBit-2 -pthread -Wl,--export-dynamic -lgobject-2.0 -lgthread-2.0 -lgmodule-2.0 -ldl -lglib-2.0    -lm
+Cflags: -I${includedir}/orbit-2.0 -DORBIT2=1

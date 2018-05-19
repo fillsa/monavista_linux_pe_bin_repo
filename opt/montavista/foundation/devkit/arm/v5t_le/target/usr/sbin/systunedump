@@ -1,0 +1,92 @@
+#!/bin/sh
+
+# Copyright (C) 1998 Daniel Podlejski <underley@zakopane.top.pl>
+#               1999 Piotr Roszatycki <dexter@debian.org>
+# 
+#     This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; version 2 dated June, 1991.
+# 
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+# 
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+#    02111-1307, USA.
+
+
+help () {
+cat << EOT
+systunedump 0.5 - Kernel tuning utility
+Usage: $0 [-c|--config <configfile>] [-p|--path <dumppath>] [-h|--help]
+
+Parameters:
+  -c|--config <configfile>    - alternative config file; 
+                                the default is /etc/systune.dump
+  -h|--help                   - this help text
+  -p|--path <dumppath>        - path to be included in the dump, in addition
+				to the items listed in <configfile>
+  
+EOT
+}
+
+
+CONF=/etc/systune.dump
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+	--config|-c)
+	    CONF=$2
+	    shift
+	    shift
+	    ;;
+	--help|-h)
+	    help
+	    exit 0
+	    ;;
+	--path|-p)
+	    DUMP="$DUMP $2"
+	    shift
+	    shift
+	    ;;
+	--verbose|-v)
+	    VERBOSE="yes"
+	    shift
+	    ;;
+    esac
+done
+
+test -f $CONF || exit 0
+
+DUMP="$DUMP $(cat $CONF | sed 's/[ 	]*#.*$//' | sed 's/:.*//' )"
+                                  #space+tab
+
+for dump in $DUMP; do
+
+    if [ -e "$dump" -a "${dump#/proc/sys/}" != "$dump" ]; then
+	for sysctlname in $(find $dump -type f -perm -600); do
+
+	    # don't check if file is writable when verbose mode
+	    if [ -n "$VERBOSE" ]; then
+		sysctlcontent=$(cat $sysctlname)
+	    else
+		test -w "$sysctlname" && sysctlcontent=$(cat $sysctlname \
+		    2> /dev/null)
+	    fi
+
+	    test -n "$sysctlcontent" && test -n "$sysctlname" && \
+		echo "$sysctlname:$sysctlcontent"
+	done
+    else
+	if [ -n "$VERBOSE" ]; then
+	    # generate error
+	    echo -n "" > $dump
+	fi
+    fi
+    
+done
+
+exit 0

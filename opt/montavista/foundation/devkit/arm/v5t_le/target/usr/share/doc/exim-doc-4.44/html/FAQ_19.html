@@ -1,0 +1,590 @@
+<html>
+<head>
+<title>The Exim FAQ Section 19</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_18.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_20.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC330">50. MISCELLANEOUS</a></h2>
+<p>
+<a name="TOC331" href="FAQ.html#TOC331">Q5001:</a>&nbsp;&nbsp;How can I arrange to allow a limited set of users to perform a limited
+set of Exim administration functions? I don't want to put them all in
+the <i>exim</i> group.
+</p>
+<p>
+<font color="#00BB00">A5001:</font>&nbsp;&nbsp;See <a href="http://www.chiark.greenend.org.uk/~ian/userv/">http://www.chiark.greenend.org.uk/~ian/userv/</a>. Using <i>userv</i> you can
+arrange (for example) for certain users to be able to invoke <i>mailq</i> or
+<i>runq</i> or other preset commands as <i>exim</i> (or any other user, as configured)
+with only <i>userv</i> configuration. If you want to check the particular Exim
+options available you can easily do it with shell or Perl scripts and
+<i>userv</i> configuration, and provided you know how to do argument
+&#147;unparsing&#148; properly in shell or Perl it will be secure.
+</p>
+<p>
+<a name="TOC332" href="FAQ.html#TOC332">Q5002:</a>&nbsp;&nbsp;I want to &#147;tail&#148; the Exim log, but I have a number of other logs I also
+want to &#147;tail&#148;, and the number of tailing windows is getting to be a
+nuisance.
+</p>
+<p>
+<font color="#00BB00">A5002:</font>&nbsp;&nbsp;Look for a program called <i>xtail</i> (despite its name, it's not an
+X-windows application). It allows you to do multiple tails, even of
+entire directories.
+</p>
+<p>
+Alternately, get the GNU version of <i>tail</i>, from the GNU textutils
+package (<a href="ftp://ftp.gnu.org/gnu/textutils/">ftp://ftp.gnu.org/gnu/textutils/</a>). GNU tail lets you run
+<tt>"tail -f</tt>" on multiple files at the same time, although it doesn't work
+on entire directories like <i>xtail</i> can. If you are running Linux, you
+probably already have a version of GNU <i>tail</i> that can follow multiple
+files.
+</p>
+<p>
+<a name="TOC333" href="FAQ.html#TOC333">Q5003:</a>&nbsp;&nbsp;How can I persuade Exim to accept ETRN commands without the leading
+# character?
+</p>
+<p>
+<font color="#00BB00">A5003:</font>&nbsp;&nbsp;Set the option
+</p>
+<pre>
+   smtp_etrn_command = /usr/lib/sendmail -R $domain</pre>
+<p>
+This causes Exim to run that command, with <i>$domain</i> replaced by the
+argument of ETRN. The default action of Exim is to require the # sign
+in order to be RFC-compliant, and to run the equivalent of
+</p>
+<pre>
+   smtp_etrn_command = /usr/lib/sendmail -R ${substr_1:$domain}</pre>
+<p>
+which uses the argument without the leading # as the value for the <b>-R</b>
+option. You aren't restricted to running Exim with the <b>-R</b> option, of
+course. You can specify any command you like, with any number of
+arguments. In particular, you can pass over the IP address of the caller
+via <i>$sender_host_address</i>. However, if you make use of expansion strings
+in the arguments, each one must be entirely contained in a single
+argument. For example, if you want to remove the first character of the
+ETRN argument when it is @ or #, you could use
+</p>
+<pre>
+   smtp_etrn_command = "/usr/lib/sendmail -R \
+     \"${if match {$domain}{^[@#]}{${substr_1:$domain}}{$domain}}\""</pre>
+<p>
+The internal quotes are necessary because of the white space inside the
+expansion string.
+</p>
+<p>
+<a name="TOC334" href="FAQ.html#TOC334">Q5004:</a>&nbsp;&nbsp;I've recently noticed that emails I send with a <i>Bcc:</i> line are being
+delivered to their final destination with the <i>Bcc:</i> line still present.
+</p>
+<p>
+<font color="#00BB00">A5004:</font>&nbsp;&nbsp;Exim removes <i>Bcc:</i> lines only if you call it with the <b>-t</b> option (i.e.
+when it is acting partly as an MUA). It does not remove <i>Bcc:</i> lines that
+are present in incoming SMTP mail or command-line mail that does not
+use <b>-t</b>. Indeed, it should not remove them, because only the
+initiating software (i.e. the MUA) can tell what to do with <i>Bcc:</i>
+lines; any MTA software has to leave them alone. This is what RFC 2822
+has to say about <i>Bcc:</i>
+</p>
+<p>
+<i>The <i>Bcc:</i> field (where the &#147;Bcc&#148; means &#147;Blind Carbon Copy&#148;) contains
+addresses of recipients of the message whose addresses are not to be
+revealed to other recipients of the message.  There are three ways in
+which the <i>Bcc:</i> field is used.  In the first case, when a message
+containing a <i>Bcc:</i> field is prepared to be sent, the <i>Bcc:</i> line is
+removed even though all of the recipients (including those specified
+in the <i>Bcc:</i> field) are sent a copy of the message.  In the second
+case, recipients specified in the <i>To:</i> and <i>Cc:</i> lines each are sent
+a copy of the message with the <i>Bcc:</i> line removed as above, but the
+recipients on the <i>Bcc:</i> line get a separate copy of the message
+containing a <i>Bcc:</i> line.  (When there are multiple recipient
+addresses in the <i>Bcc:</i> field, some implementations actually send a
+separate copy of the message to each recipient with a <i>Bcc:</i>
+containing only the address of that particular recipient.) Finally,
+since a <i>Bcc:</i> field may contain no addresses, a <i>Bcc:</i> field can be
+sent without any addresses indicating to the recipients that blind
+copies were sent to someone.  Which method to use with <i>Bcc:</i> fields
+is implementation dependent, but refer to the ``Security
+Considerations'' section of this document for a discussion of each.</i>
+</p>
+<p>
+<a name="TOC335" href="FAQ.html#TOC335">Q5005:</a>&nbsp;&nbsp;I used <i>gv</i> 3.5.8 (<i>ghostview</i>) to try printing <i>spec.ps</i>. After every
+printed page, the printer ejects a blank sheet. Is this something to do
+with using &#147;letter&#148; rather than A4 paper?
+</p>
+<p>
+<font color="#00BB00">A5005:</font>&nbsp;&nbsp;This seems to be an effect of using <i>ghostview</i>. Although the PostScript
+is generated for A4 pages, the size of the page images is such that they
+should fit on a letter page (they are shorter than would normally be
+used on A4 paper). If the PostScript file is sent directly to a
+PostScript printer, there is no problem. An alternative is to get hold
+of the <i>psutils</i> toolset, which is available from
+<a href="ftp://ftp.dcs.ed.ac.uk/pub/psutils/psutils.tar.gz">ftp://ftp.dcs.ed.ac.uk/pub/psutils/psutils.tar.gz</a>.
+It contains utilities for extracting pages (which can be useful for
+double-sided printing) and for resizing pages. If you resize from A4 to
+letter the text shrinks a bit, but should then be printable via
+<i>ghostview</i>.
+</p>
+<p>
+<a name="TOC336" href="FAQ.html#TOC336">Q5006:</a>&nbsp;&nbsp;Why aren't there any man pages for Exim? I don't always carry my printed
+documentation.
+</p>
+<p>
+<font color="#00BB00">A5006:</font>&nbsp;&nbsp;A single man page which lists the command line options is provided in
+file <i>doc/exim.8</i> in the Exim distribution. Several other forms of
+online documentation are available. As well as plain ASCII text, the
+there are two forms - Texinfo and HTML - which have a certain amount of
+built-in indexing for ease of finding your way around. There are no man
+pages apart from the command line one because the author of Exim hasn't
+the time (or desire :-) to maintain yet another documentation format.
+Besides, it is hard to know how to split the Exim manual up.
+</p>
+<p>
+<a name="TOC337" href="FAQ.html#TOC337">Q5007:</a>&nbsp;&nbsp;When I send a message using the <b>-t</b> command line option, Exim sends only
+to the addresses within the message, not to those on the command line.
+</p>
+<p>
+<font color="#00BB00">A5007:</font>&nbsp;&nbsp;There seems to be some confusion in the Sendmail community about the
+interpretation of recipient addresses on the command line if the <b>-t</b>
+option is used. Some versions do one thing, and some another. Here is an
+except from one version of the Sendmail documentation for <b>-t</b>:
+</p>
+<p>
+<i>Read message for recipients. <i>To:</i>, <i>Cc:</i>, and <i>Bcc:</i> lines will
+be scanned for recipient addresses. The <i>Bcc:</i> line will be
+deleted before transmission. Any addresses in the argument
+list will be suppressed, that is, they will not receive
+copies even if listed in the message header.</i>
+</p>
+<p>
+By default Exim follows this specification, and interprets addresses on
+the command line as addresses not to send to. You can set
+</p>
+<pre>
+   extract_addresses_remove_arguments = false</pre>
+<p>
+to change this behaviour so that command line addresses are added to the
+addresses that are taken from the header lines.
+</p>
+<p>
+<a name="TOC338" href="FAQ.html#TOC338">Q5008:</a>&nbsp;&nbsp;If I set up a domain list to contain <i>*customer.com</i>, it matches
+<i>customer.com</i> and <i>abc.customer.com</i> as required, but it also matches
+<i>noncustomer.com</i>, which is wrong. How can I get round this?
+</p>
+<p>
+<font color="#00BB00">A5008:</font>&nbsp;&nbsp;You have to specify two entries in the list:
+</p>
+<pre>
+   customer.com : *.customer.com</pre>
+<p>
+because * in a domain list matches any characters, including <tt>.</tt> and
+including a null sequence.
+</p>
+<p>
+<a name="TOC339" href="FAQ.html#TOC339">Q5009:</a>&nbsp;&nbsp;I want to match all domains of the form <i>*.oyoy.org</i> but want a few
+exceptions. For instance I don't want <i>foo.oyoy.org</i> or <i>bar.oyoy.org</i> to be
+included. What is the best way to do this?
+</p>
+<p>
+<font color="#00BB00">A5009:</font>&nbsp;&nbsp;Use negative items in the domain list, like this:
+</p>
+<pre>
+   domainlist local_domains = !foo.oyoy.org : !bar.oyoy.org : *.oyoy.org</pre>
+<p>
+If there are many exceptions, you can use a lookup instead of listing
+them all inline. If there are a number of exceptions that match a
+particular pattern, you could use a regular expression.
+</p>
+<p>
+<a name="TOC340" href="FAQ.html#TOC340">Q5010:</a>&nbsp;&nbsp;I can't seem to find a pre-built version of Exim anywhere. The machine
+is a Sparc 5 running Solaris 2.6.
+</p>
+<p>
+<font color="#00BB00">A5010:</font>&nbsp;&nbsp;The primary distribution is source-only. However, some people have built
+and distributed RPMs and debs for Linux systems, and ports for FreeBSD.
+I haven't heard of anyone doing this for Solaris. The main problem with
+binary distributions is that there are a number of build-time options,
+requiring the answers to questions like:
+</p>
+<p>
+. Which DBM library do you have? (On Solaris probably ndbm, but no easy
+default on some other systems.)
+</p>
+<p>
+. Which uid/gid do you want to use for Exim?
+</p>
+<p>
+. Where do you want the configuration file to be? (Many different
+answers, even on the same OS, depending on local policy.)
+</p>
+<p>
+. Ditto for the binaries.
+</p>
+<p>
+. Which optional bits of Exim do you want to include?
+</p>
+<p>
+<a name="TOC341" href="FAQ.html#TOC341">Q5011:</a>&nbsp;&nbsp;Is there a version of Exim available that runs under Windows?
+</p>
+<p>
+<font color="#00BB00">A5011:</font>&nbsp;&nbsp;A long time ago somebody took a copy of the Exim source with the aim of
+trying to port it to Windows NT. However, I never heard anything more.
+However, current versions of Exim can be made to run under Cygwin.
+</p>
+<p>
+<a name="TOC342" href="FAQ.html#TOC342">Q5012:</a>&nbsp;&nbsp;Does Exim support Delivery Status Notification (DSN), Message Status
+Notification (MSN), or any other form of delivery acknowledgement?
+</p>
+<p>
+<font color="#00BB00">A5012:</font>&nbsp;&nbsp;See <a href="FAQ_6.html#TOC201">Q0607</a>.
+</p>
+<p>
+<a name="TOC343" href="FAQ.html#TOC343">Q5013:</a>&nbsp;&nbsp;What does &#147;Exim&#148; stand for?
+</p>
+<p>
+<font color="#00BB00">A5013:</font>&nbsp;&nbsp;Originally, it was &#147;EXperimental Internet Mailer&#148;, which was the best I
+could come up with when I was starting out. At that point it was
+experimental - I wanted to see if the ideas I had for extending Smail's
+approach actually worked. Then somebody discovered about it and wanted
+to start using it, and told other people about it...
+</p>
+<p>
+<a name="TOC344" href="FAQ.html#TOC344">Q5014:</a>&nbsp;&nbsp;Although I haven't set <tt>check_spool_space</tt>, Exim is still checking the
+amount of space on the spool for incoming SMTP messages that use the
+SIZE option. Can I suppress this?
+</p>
+<p>
+<font color="#00BB00">A5014:</font>&nbsp;&nbsp;The RFC for the SIZE option says:
+</p>
+<p>
+<i>If the server currently lacks sufficient resources to accept a
+message of the indicated size, but may be able to accept the
+message at a later time, it responds with code ``452
+insufficient system storage''.</i>
+</p>
+<p>
+and that is what Exim is trying to implement. This is entirely
+independent from <tt>check_spool_space</tt>, which says <i>don't accept any mail
+if there is less than so much space in the spool partition</i>, though the
+code is optimised to do both checks at the same time if required.
+However, you can suppress the SIZE check if you want to, by unsetting
+<tt>smtp_check_spool_space</tt>.
+</p>
+<p>
+<a name="TOC345" href="FAQ.html#TOC345">Q5015:</a>&nbsp;&nbsp;I just noticed log entries that start off <tt>&#60;= &#60;&#62;</tt>. Am I correct in
+assuming that the <tt>&#60;&#62;</tt> indicates that the envelope did not contain any
+&#147;From&#148; data?
+</p>
+<p>
+<font color="#00BB00">A5015:</font>&nbsp;&nbsp;Yes. This indicates a delivery failure report (aka a &#147;bounce message&#148;),
+as specified in RFC 2821. The reason for using empty sender addresses is
+to identify bounce messages so that they themselves do not cause further
+bounces. Empty senders are also used for other kinds of report which
+should not themselves cause the generation of bounce messages. For
+example, Exim uses them when sending out warnings about delivery delays.
+</p>
+<p>
+<a name="TOC346" href="FAQ.html#TOC346">Q5016:</a>&nbsp;&nbsp;I've received a message which does not have my address in the <i>To:</i>
+line. It is a spam message with the same address in both the <i>From:</i> and
+the <i>To:</i> headers. How can this happen, and why doesn't Exim reject it?
+</p>
+<p>
+<font color="#00BB00">A5016:</font>&nbsp;&nbsp;There is an important distinction between the &#147;envelope&#148; from and to and
+the &#147;header&#148; from and to. The former are sometimes called the &#147;sender&#148;
+and &#147;recipient&#148;. An email message needs an &#147;envelope&#148; for the same
+reason that paper mail does - the envelope tells the delivery mechanism
+what to do with this copy of the message, whereas the <i>To:</i> header lists
+all the recipients, including those who have been sent different copies
+of the message because their mailbox is on some other host.
+</p>
+<p>
+An MTA such as Exim works entirely with the &#147;envelope&#148; addresses, not
+with those in the header lines. Don't try to block mail where envelope
+from and the header from differ. There are common legitimate cases where
+this happens, for example, messages forwarded from mailing lists and
+delivery failure reports.
+</p>
+<p>
+<a name="TOC347" href="FAQ.html#TOC347">Q5017:</a>&nbsp;&nbsp;Can (or will) Exim ever handle a message delivery purely in memory,
+that is, it is handled without it ever hitting the disk?
+</p>
+<p>
+<font color="#00BB00">A5017:</font>&nbsp;&nbsp;It doesn't, and never will. Accepting and delivering a message are two
+entirely separate, independent processes, which communicate only by
+writing/reading the message on the disk.
+</p>
+<p>
+<a name="TOC348" href="FAQ.html#TOC348">Q5018:</a>&nbsp;&nbsp;If I am using dbm files for data that Exim reads, can I rebuild them
+on the fly, or do I need to restart Exim every time I make a change?
+</p>
+<p>
+<font color="#00BB00">A5018:</font>&nbsp;&nbsp;Exim re-reads the file every time it consults it, so if you are using a
+cdb or a DBM library that uses just a single file (i.e. not ndbm),
+you can just build the new file with a temporary file name, and use
+<i>mv</i> to rename it into the correct place on the fly. If there are two
+files to rename, there is a window of time during which the DBM database
+is inconsistent. On lightly loaded systems this may not matter.
+</p>
+<p>
+<a name="TOC349" href="FAQ.html#TOC349">Q5019:</a>&nbsp;&nbsp;I need an option that is the opposite of <b>-bpa</b>, that is, a listing of
+those addresses generated from a top-level address that have not yet
+been delivered.
+</p>
+<p>
+<font color="#00BB00">A5019:</font>&nbsp;&nbsp;Exim does not keep this information. It saves only the top-level
+addresses and the list of addresses that are finished with. At each
+delivery attempt, generated addresses are recomputed from scratch. This
+makes it possible to correct errors in redirection data that is
+causing delivery delays. However, there is an option you can set on a
+<tt>redirect</tt> router that changes things. It is called <tt>one_time</tt>, and if
+it is set, the list of generated addresses gets added to the top-level
+list at the first delivery attempt, and is never regenerated. Because
+top-level address lists must be real email addresses, this option cannot
+be used if any of the generated addresses are pipes, files, or
+autoreplies.
+</p>
+<p>
+<a name="TOC350" href="FAQ.html#TOC350">Q5020:</a>&nbsp;&nbsp;How can I make Exim receive incoming mail, queue it, but not attempt to
+deliver it? I want to be in this state while moving some mailboxes.
+</p>
+<p>
+<font color="#00BB00">A5020:</font>&nbsp;&nbsp;Set <tt>queue_only</tt> in the Exim configuration. Then kill your daemon,
+and restart it without the <b>-q</b> option (i.e. with just the <b>-bd</b> option),
+so that it does not spawn any queue runners. This stops all deliveries,
+remote as well as local.
+</p>
+<p>
+<a name="TOC351" href="FAQ.html#TOC351">Q5021:</a>&nbsp;&nbsp;What does Exim use for POP and IMAP as a default?  Do I have to install
+anything else?
+</p>
+<p>
+<font color="#00BB00">A5021:</font>&nbsp;&nbsp;Yes. Exim provides MTA functionality. That is, it delivers mail. POP and
+IMAP are two of several ways of reading previously-delivered mail. Exim
+does not provide that functionality. You need to install POP and/or IMAP
+daemons; there are several to choose from. There is a mailing list at
+<i>pop-imap@exim.org</i> for the discussion of POP/IMAP issues.
+</p>
+<p>
+<a name="TOC352" href="FAQ.html#TOC352">Q5022:</a>&nbsp;&nbsp;Is there an easy way of removing all queued messages at once in a safe
+way?
+</p>
+<p>
+<font color="#00BB00">A5022:</font>&nbsp;&nbsp;Try this command:
+</p>
+<pre>
+   exim -bp | awk '/^ *[0-9]+[mhd]/{print "exim -Mrm " $3}' | sh</pre>
+<p>
+<a name="TOC353" href="FAQ.html#TOC353">Q5023:</a>&nbsp;&nbsp;Why does Exim do <i>ident</i> callbacks by default? Isn't this just a waste
+of resources? I've been told this is an ancient way of authentication.
+Is it obsolete?
+</p>
+<p>
+<font color="#00BB00">A5023:</font>&nbsp;&nbsp;This is a common misunderstanding, at least partially resulting from the
+incorrect naming of the protocol when it was first published.
+The service on port 113 is an identification service, which allows a
+target host to record information identifying the user responsible for
+making a connection to it. The information may not be intelligible to
+the recording host - it could, for example, be encrypted so that only
+someone on the calling host can make sense of it. It is useful for
+providing additional information in an audit trail.
+</p>
+<p>
+At least one site has found <i>ident</i> effective against two rather
+prevalent kinds of open proxy (whether already blacklisted at the RBLs
+or not). An ACL statement is used to reject mail from servers that
+return <i>ident</i> strings of <tt>squid</tt> and <tt>CacheFlow Server</tt>.
+Snippets such as this in the RCPT ACL do the trick:
+</p>
+<pre>
+   deny  condition = ${if eq{$sender_ident}{CacheFlow Server}{1}{0}}
+     message = Rejected - appears to be an unsecured proxy: $sender_ident</pre>
+<p>
+The likelihood that a genuine mail process would return those specific
+ident strings is vanishingly small.
+</p>
+<p>
+The <i>ident</i> data should not be used for authentication in any form
+except on a closed secure network between cooperating hosts (probably
+not even then). The information from the source host is only as reliable
+as the host itself. If it's not under your control then you have to
+treat the information as opaque data that can be used only by the
+sysadmin of the source system to trace back connection data. Some
+<i>ident</i> implementations send out opaque cookies or DES encrypted
+information. <i>Ident</i> is hugely useful at times - especially for
+checking back on connections from multiuser machines (as opposed to
+one-person desktop boxes).
+</p>
+<p>
+You can stop Exim making ident calls by adding
+</p>
+<pre>
+   rfc1413_query_timeout = 0s</pre>
+<p>
+to its configuration, but it is better to leave it active (reducing the
+timeout to 10s or less if it is causing problems) - it costs very
+little, and in cases of mail forgery from a multiuser system can track
+the sinner concerned very quickly.
+</p>
+<p>
+<a name="TOC354" href="FAQ.html#TOC354">Q5024:</a>&nbsp;&nbsp;I often have the problem that a message gets stuck in the mail queue and
+I want it to be bounced to a certain address.
+</p>
+<p>
+<font color="#00BB00">A5024:</font>&nbsp;&nbsp;You can do this using a combination of four command line options, like
+this:
+</p>
+<pre>
+   exim -Mf   14Fdlq-0003kM-00
+   exim -Mmad 14Fdlq-0003kM-00
+   exim -Mar  14Fdlq-0003kM-00  new@ddress
+   exim -M    14Fdlq-0003kM-00</pre>
+<p>
+The first command freezes the message so that a queue runner won't start
+to deliver it while you are changing things. The second command marks
+all existing recipients as delivered. The third command adds a new
+recipient, and the fourth command forces a delivery of the message,
+which will cause it to be delivered to the new address, and then
+deleted.
+</p>
+<p>
+<a name="TOC355" href="FAQ.html#TOC355">Q5025:</a>&nbsp;&nbsp;What precautions should I take when editing Exim's run time
+configuration file?
+</p>
+<p>
+<font color="#00BB00">A5025:</font>&nbsp;&nbsp;Edit the file and save the result in a new file. Test the syntax of
+the new file by running a command like this:
+</p>
+<pre>
+   exim -bV -C exim.conf.new</pre>
+<p>
+That will check for syntax errors without disturbing your running
+configuration. If you are paranoid enough, run, as <i>root</i>,
+</p>
+<pre>
+   exim -C exim.conf.new &#60;some address&#62;
+   &#60;some message&#62;
+   .</pre>
+<p>
+and see if it delivers it. Carry on testing until happy. When happy,
+</p>
+<pre>
+   mv exim.conf.new exim.conf
+   kill -HUP `cat /var/spool/exim/exim-daemon.pid`</pre>
+<p>
+Then check the Exim log to be sure the daemon restarted OK. Watch the
+log for a bit to see that mail is flowing.
+</p>
+<p>
+<a name="TOC356" href="FAQ.html#TOC356">Q5026:</a>&nbsp;&nbsp;Is exim able to use RFC 2645, <i>On-demand Mail Relay</i> (ODMR)?
+</p>
+<p>
+<font color="#00BB00">A5026:</font>&nbsp;&nbsp;No.
+</p>
+<p>
+<a name="TOC357" href="FAQ.html#TOC357">Q5027:</a>&nbsp;&nbsp;Is there any way I can send bounces to the postmaster, and nobody else?
+Basically, I want to receive them, and I don't want the reply/from
+person to get them. If I think they need it I will forward it myself.
+</p>
+<p>
+<font color="#00BB00">A5027:</font>&nbsp;&nbsp;Put <tt>errors_to=postmaster</tt> on every router.
+</p>
+<p>
+<a name="TOC358" href="FAQ.html#TOC358">Q5028:</a>&nbsp;&nbsp;When I HUP the Exim daemon, the name shown in the process table changes
+from <i>/usr/lib/sendmail</i> (which is a symlink) to the real binary name.
+Can I change this?
+</p>
+<p>
+<font color="#00BB00">A5028:</font>&nbsp;&nbsp;Add this to your Exim configuration:
+</p>
+<pre>
+   exim_path = /usr/lib/sendmail</pre>
+<p>
+<a name="TOC359" href="FAQ.html#TOC359">Q5029:</a>&nbsp;&nbsp;A message with a recipient address that contains a non-printing character
+is stuck on my mail queue. How can I remove this address?
+</p>
+<p>
+<font color="#00BB00">A5029:</font>&nbsp;&nbsp;You can use the <b>-Mmd</b> command line option to mark a recipient address
+&#147;delivered&#148;, which effectively removes it. If you are using the Bash
+shell, you can enter non-printing characters using an escape sequence.
+For example:
+</p>
+<pre>
+   exim -Mmd 15HKvU-00013Q-00 $'\240'abc@x.y.z</pre>
+<p>
+In this example, the first character of the local part has a code value
+of 240. If you are using a shell that does not support this, create the
+command in a file and run it as a shell script.
+</p>
+<p>
+<a name="TOC360" href="FAQ.html#TOC360">Q5030:</a>&nbsp;&nbsp;I am using exim in a two queues scenario, with two different
+configuration files. How can I run a second copy of <i>eximon</i> to
+inspect and modify the alternate queue?
+</p>
+<p>
+<font color="#00BB00">A5030:</font>&nbsp;&nbsp;Use these commands (or put them in a script):
+</p>
+<pre>
+   EXIMON_EXIM_CONFIG=/your/path/exim/configure.alternate
+   export EXIMON_EXIM_CONFIG
+   /your/path/exim/bin/eximon</pre>
+<p>
+<a name="TOC361" href="FAQ.html#TOC361">Q5031:</a>&nbsp;&nbsp;Why is there no sender address on bounce messages? It shows up as "&#60;&#62;".
+</p>
+<p>
+<font color="#00BB00">A5031:</font>&nbsp;&nbsp;See the answer to <a href="FAQ_0.html#TOC42">Q0042</a>.
+</p>
+<p>
+<a name="TOC362" href="FAQ.html#TOC362">Q5032:</a>&nbsp;&nbsp;Are there any Exim web-based administration scripts?
+</p>
+<p>
+<font color="#00BB00">A5032:</font>&nbsp;&nbsp;No (as far as is known). It seems likely that producing one that is
+generic enough would be a difficult task.
+</p>
+<p>
+<a name="TOC363" href="FAQ.html#TOC363">Q5033:</a>&nbsp;&nbsp;How can I send a copy of all outgoing messages to another mailbox?
+</p>
+<p>
+<font color="#00BB00">A5033:</font>&nbsp;&nbsp;The most straightforward way is to set up a system filter, and include
+a command such as:
+</p>
+<pre>
+   unseen deliver mailbox@whatever.domain</pre>
+<p>
+This sends a copy of every message to <i>mailbox@whatever.domain</i>
+(unless the message already has that recipient - Exim never does
+duplicate deliveries).
+</p>
+<p>
+To save only &#147;outgoing&#148; messages, you need to come up with a
+definition of what &#147;outgoing&#148; means. Typically, this might be a check
+on the sender address and/or on the originating host. Here is an
+example:
+</p>
+<pre>
+   if $sender_address_domain is mydomain.com and
+      ${mask:$sender_host_address/24} is 192.168.324.0/24
+   then
+     unseen deliver mailbox@whatever.domain
+   endif</pre>
+<p>
+<a name="TOC364" href="FAQ.html#TOC364">Q5034:</a>&nbsp;&nbsp;Is there any way to make the <tt>queue_only</tt> option conditional? I would
+like the ability to queue messages from external sources while deliver
+locally generated email as normal.
+</p>
+<p>
+<font color="#00BB00">A5034:</font>&nbsp;&nbsp;There is no direct way of doing this. However, you can achieve the
+effect. In one of your ACLs that checks incoming mail from external
+sources, put
+</p>
+<pre>
+   warn  control = queue_only</pre>
+<p>
+You can add other conditions as well, of course.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_18.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_20.html">Next</a>
+</body>
+</html>

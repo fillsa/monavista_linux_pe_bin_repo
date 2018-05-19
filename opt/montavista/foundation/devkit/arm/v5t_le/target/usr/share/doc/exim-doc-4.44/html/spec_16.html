@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 16</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_15.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_17.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX1645"></a>
+<a name="IX1646"></a>
+<h1>
+<a name="CHAP16" href="spec_toc.html#TOC166">
+16. The accept router
+</a></h1>
+<p>
+The <b>accept</b> router has no private options of its own. Unless it is being used
+purely for verification (see <tt>verify&#095;only</tt>) a transport is required to be
+defined by the generic <tt>transport</tt> option. If the preconditions that are
+specified by generic options are met, the router accepts the address and queues
+it for the given transport. The most common use of this router is for setting
+up deliveries to local mailboxes. For example:
+<pre>
+&nbsp;&nbsp;localusers:
+&nbsp;&nbsp;  driver = accept
+&nbsp;&nbsp;  domains = mydomain.example
+&nbsp;&nbsp;  check_local_user
+&nbsp;&nbsp;  transport = local_delivery
+</pre>
+</p>
+<p>
+The <tt>domains</tt> condition in this example checks the domain of the address, and
+<tt>check&#095;local&#095;user</tt> checks that the local part is the login of a local user.
+When both preconditions are met, the <b>accept</b> router runs, and queues the
+address for the <b>local&#095;delivery</b> transport.
+<hr>
+</p>
+<font size=2>
+<a href="spec_15.html">Previous</a>&nbsp;&nbsp;<a href="spec_17.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

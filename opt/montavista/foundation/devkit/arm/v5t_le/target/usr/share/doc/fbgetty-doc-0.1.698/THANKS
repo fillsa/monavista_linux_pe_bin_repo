@@ -1,0 +1,21 @@
+This the people which have been helping to make fbgetty
+
+Most of the code is derivated from mingetty (mingetty-0.9.4) 
+Thanks to Florian La Roche (florian@suse.de).
+
+A bit from agetty (util-linux-2.9h)
+
+The VT ioctl from XFree86 3.3.3
+
+framebuffer information taken from fbset.
+
+Thanks to Jakob 'sparky' Kaivo <jake@nodomainname.net> 
+ for rungetty-1.2
+
+Thanks to Christian Kurz <shorty@debian.org> for his support.
+
+Thanks to Hartmut Koptein <koptein@et-inf.fho-emden.de> for earlier debugging.
+
+Thanks to Max Berger for his patch submission (long tag support).
+
+Thanks to TuxFamily for hosting the project (http://www.tuxfamily.org)

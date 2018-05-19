@@ -1,0 +1,124 @@
+\hypertarget{sha1_8h}{
+\section{sha1.h File Reference}
+\label{sha1_8h}\index{sha1.h@{sha1.h}}
+}
+SHA-1 hash function, headers. 
+
+{\tt \#include \char`\"{}beecrypt.h\char`\"{}}\par
+{\tt \#include \char`\"{}sha1opt.h\char`\"{}}\par
+\subsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \hyperlink{structsha1Param}{sha1Param}
+\begin{CompactList}\small\item\em Holds all the parameters necessary for the SHA-1 algorithm. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \hyperlink{sha1_8h_a1}{sha1Process} (\hyperlink{structsha1Param}{sha1Param} $\ast$sp)
+\begin{CompactList}\small\item\em This function performs the core of the SHA-1 hash algorithm; it processes a block of 64 bytes. \item\end{CompactList}\item 
+int \hyperlink{sha1_8h_a2}{sha1Reset} (\hyperlink{structsha1Param}{sha1Param} $\ast$sp)
+\begin{CompactList}\small\item\em This function resets the parameter block so that it's ready for a new hash. \item\end{CompactList}\item 
+int \hyperlink{sha1_8h_a3}{sha1Update} (\hyperlink{structsha1Param}{sha1Param} $\ast$sp, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$data, size\_\-t size)
+\begin{CompactList}\small\item\em This function should be used to pass successive blocks of data to be hashed. \item\end{CompactList}\item 
+int \hyperlink{sha1_8h_a4}{sha1Digest} (\hyperlink{structsha1Param}{sha1Param} $\ast$sp, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$digest)
+\begin{CompactList}\small\item\em This function finishes the current hash computation and copies the digest value into {\em digest\/}. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+const \hyperlink{structhashFunction}{hash\-Function} \hyperlink{sha1_8h_a0}{sha1}
+\begin{CompactList}\small\item\em Holds the full API description of the MD5 algorithm. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+SHA-1 hash function, headers. 
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{sha1_8h-source}{sha1.h}.
+
+\subsection{Function Documentation}
+\hypertarget{sha1_8h_a4}{
+\index{sha1.h@{sha1.h}!sha1Digest@{sha1Digest}}
+\index{sha1Digest@{sha1Digest}!sha1.h@{sha1.h}}
+\subsubsection[sha1Digest]{\setlength{\rightskip}{0pt plus 5cm}int sha1Digest (\hyperlink{structsha1Param}{sha1Param} $\ast$ {\em sp}, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$ {\em digest})}}
+\label{sha1_8h_a4}
+
+
+This function finishes the current hash computation and copies the digest value into {\em digest\/}. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em sp}]The hash function's parameter block. \item[{\em digest}]The place to store the 20-byte digest. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}
+\hypertarget{sha1_8h_a1}{
+\index{sha1.h@{sha1.h}!sha1Process@{sha1Process}}
+\index{sha1Process@{sha1Process}!sha1.h@{sha1.h}}
+\subsubsection[sha1Process]{\setlength{\rightskip}{0pt plus 5cm}void sha1Process (\hyperlink{structsha1Param}{sha1Param} $\ast$ {\em sp})}}
+\label{sha1_8h_a1}
+
+
+This function performs the core of the SHA-1 hash algorithm; it processes a block of 64 bytes. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em sp}]The hash function's parameter block. \end{description}
+\end{Desc}
+\hypertarget{sha1_8h_a2}{
+\index{sha1.h@{sha1.h}!sha1Reset@{sha1Reset}}
+\index{sha1Reset@{sha1Reset}!sha1.h@{sha1.h}}
+\subsubsection[sha1Reset]{\setlength{\rightskip}{0pt plus 5cm}int sha1Reset (\hyperlink{structsha1Param}{sha1Param} $\ast$ {\em sp})}}
+\label{sha1_8h_a2}
+
+
+This function resets the parameter block so that it's ready for a new hash. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em sp}]The hash function's parameter block. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}
+\hypertarget{sha1_8h_a3}{
+\index{sha1.h@{sha1.h}!sha1Update@{sha1Update}}
+\index{sha1Update@{sha1Update}!sha1.h@{sha1.h}}
+\subsubsection[sha1Update]{\setlength{\rightskip}{0pt plus 5cm}int sha1Update (\hyperlink{structsha1Param}{sha1Param} $\ast$ {\em sp}, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$ {\em data}, size\_\-t {\em size})}}
+\label{sha1_8h_a3}
+
+
+This function should be used to pass successive blocks of data to be hashed. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em sp}]The hash function's parameter block. \item[{\em data}]\item[{\em size}]\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}
+
+
+\subsection{Variable Documentation}
+\hypertarget{sha1_8h_a0}{
+\index{sha1.h@{sha1.h}!sha1@{sha1}}
+\index{sha1@{sha1}!sha1.h@{sha1.h}}
+\subsubsection[sha1]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{sha1_8h_a0}{sha1}}}
+\label{sha1_8h_a0}
+
+
+Holds the full API description of the MD5 algorithm. 
+

@@ -1,0 +1,697 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification Options</title>
+<base target="body">
+</head>
+<body bgcolor="#FFFFDF" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h3>Options</h3>
+<p>
+&nbsp;<a href="#A" target="index">A</a>
+&nbsp;<a href="#B" target="index">B</a>
+&nbsp;<a href="#C" target="index">C</a>
+&nbsp;<a href="#D" target="index">D</a>
+&nbsp;<a href="#E" target="index">E</a>
+&nbsp;<a href="#F" target="index">F</a>
+&nbsp;<a href="#G" target="index">G</a>
+&nbsp;<a href="#H" target="index">H</a>
+&nbsp;<a href="#I" target="index">I</a>
+&nbsp;<a href="#K" target="index">K</a>
+&nbsp;<a href="#L" target="index">L</a>
+&nbsp;<a href="#M" target="index">M</a>
+&nbsp;<a href="#N" target="index">N</a>
+&nbsp;<a href="#O" target="index">O</a>
+&nbsp;<a href="#P" target="index">P</a>
+&nbsp;<a href="#Q" target="index">Q</a>
+&nbsp;<a href="#R" target="index">R</a>
+&nbsp;<a href="#S" target="index">S</a>
+&nbsp;<a href="#T" target="index">T</a>
+&nbsp;<a href="#U" target="index">U</a>
+&nbsp;<a href="#V" target="index">V</a>
+&nbsp;<a href="#W" target="index">W</a>
+<hr></p>
+<p>
+<a href="spec_5.html#IX215">-&#045;</a><br>
+<a href="spec_5.html#IX217">--help</a><br>
+<a href="spec_46.html#IX2716">-b</a><br>
+<a href="spec_5.html#IX218">-B&nbsp;</a><br>
+<a href="spec_5.html#IX221">-bd</a><br>
+<a href="spec_5.html#IX228">-bdf</a><br>
+<a href="spec_5.html#IX229">-be</a><br>
+<a href="spec_5.html#IX232">-bF&nbsp;</a><br>
+<a href="spec_5.html#IX235">-bf&nbsp;</a><br>
+<a href="spec_5.html#IX244">-bh&nbsp;</a><br>
+<a href="spec_5.html#IX252">-bhc&nbsp;</a><br>
+<a href="spec_5.html#IX253">-bi</a><br>
+<a href="spec_5.html#IX257">-bm</a><br>
+<a href="spec_5.html#IX266">-bnq</a><br>
+<a href="spec_5.html#IX268">-bP</a><br>
+<a href="spec_5.html#IX275">-bp</a><br>
+<a href="spec_5.html#IX281">-bpa</a><br>
+<a href="spec_5.html#IX282">-bpc</a><br>
+<a href="spec_5.html#IX284">-bpr</a><br>
+<a href="spec_5.html#IX285">-bpra</a><br>
+<a href="spec_5.html#IX286">-bpru</a><br>
+<a href="spec_5.html#IX287">-bpu</a><br>
+<a href="spec_5.html#IX288">-brt</a><br>
+<a href="spec_5.html#IX291">-brw</a><br>
+<a href="spec_5.html#IX294">-bS</a><br>
+<a href="spec_5.html#IX298">-bs</a><br>
+<a href="spec_5.html#IX303">-bt</a><br>
+<a href="spec_5.html#IX308">-bV</a><br>
+<a href="spec_5.html#IX310">-bv</a><br>
+<a href="spec_5.html#IX314">-bvs</a><br>
+<a href="spec_46.html#IX2729">-bydomain</a><br>
+<a href="spec_46.html#IX2730">-byedomain</a><br>
+<a href="spec_46.html#IX2731">-byemail</a><br>
+<a href="spec_46.html#IX2732">-byemaildomain</a><br>
+<a href="spec_46.html#IX2733">-byhost</a><br>
+<a href="spec_46.html#IX2713">-c</a><br>
+<a href="spec_5.html#IX315">-C&nbsp;</a><br>
+<a href="spec_46.html#IX2734">-cache</a><br>
+<a href="spec_46.html#IX2735">-chartdir&nbsp;</a><br>
+<a href="spec_46.html#IX2736">-chartrel&nbsp;</a><br>
+<a href="spec_46.html#IX2737">-charts</a><br>
+<a href="spec_46.html#IX2738">-d</a><br>
+<a href="spec_5.html#IX319">-D&nbsp;</a><br>
+<a href="spec_5.html#IX321">-d&nbsp;</a><br>
+<a href="spec_5.html#IX326">-dropcr</a><br>
+<a href="spec_5.html#IX327">-E</a><br>
+<a href="spec_5.html#IX329">-e<em>x</em></a><br>
+<a href="spec_5.html#IX330">-F&nbsp;</a><br>
+<a href="spec_5.html#IX333">-f&nbsp;</a> &nbsp;<a href="spec_46.html#IX2706">[2]</a><br>
+<a href="spec_46.html#IX2773">-fcntl</a><br>
+<a href="spec_46.html#IX2774">-flock</a><br>
+<a href="spec_5.html#IX340">-G</a><br>
+<a href="spec_5.html#IX342">-h&nbsp;</a> &nbsp;<a href="spec_46.html#IX2740">[2]</a><br>
+<a href="spec_46.html#IX2739">-help</a><br>
+<a href="spec_46.html#IX2741">-html</a><br>
+<a href="spec_5.html#IX344">-i</a> &nbsp;<a href="spec_46.html#IX2715">[2]</a><br>
+<a href="spec_46.html#IX2775">-interval</a><br>
+<a href="spec_46.html#IX2714">-l</a><br>
+<a href="spec_46.html#IX2776">-lockfile</a><br>
+<a href="spec_5.html#IX402">-m</a><br>
+<a href="spec_5.html#IX347">-M&nbsp;</a><br>
+<a href="spec_5.html#IX352">-Mar&nbsp;</a><br>
+<a href="spec_46.html#IX2777">-mbx</a><br>
+<a href="spec_5.html#IX358">-MC&nbsp;</a><br>
+<a href="spec_5.html#IX364">-Mc&nbsp;</a><br>
+<a href="spec_5.html#IX359">-MCA</a><br>
+<a href="spec_5.html#IX360">-MCP</a><br>
+<a href="spec_5.html#IX361">-MCQ&nbsp;</a><br>
+<a href="spec_5.html#IX362">-MCS</a><br>
+<a href="spec_5.html#IX363">-MCT</a><br>
+<a href="spec_46.html#IX2742">-merge</a><br>
+<a href="spec_5.html#IX367">-Mes&nbsp;</a><br>
+<a href="spec_5.html#IX370">-Mf&nbsp;</a><br>
+<a href="spec_5.html#IX373">-Mg&nbsp;</a><br>
+<a href="spec_5.html#IX377">-Mmad&nbsp;</a><br>
+<a href="spec_5.html#IX379">-Mmd&nbsp;</a><br>
+<a href="spec_5.html#IX383">-Mrm&nbsp;</a><br>
+<a href="spec_5.html#IX387">-Mt&nbsp;</a><br>
+<a href="spec_5.html#IX392">-Mvb&nbsp;</a><br>
+<a href="spec_5.html#IX395">-Mvh&nbsp;</a><br>
+<a href="spec_5.html#IX399">-Mvl&nbsp;</a><br>
+<a href="spec_5.html#IX403">-N</a><br>
+<a href="spec_5.html#IX406">-n</a><br>
+<a href="spec_46.html#IX2743">-ne</a><br>
+<a href="spec_46.html#IX2744">-nr</a><br>
+<a href="spec_46.html#IX2745">-nr&nbsp;/pattern/</a><br>
+<a href="spec_46.html#IX2746">-nt</a><br>
+<a href="spec_46.html#IX2747">-nt/</a><br>
+<a href="spec_5.html#IX408">-O&nbsp;</a><br>
+<a href="spec_46.html#IX2710">-o&nbsp;</a><br>
+<a href="spec_5.html#IX409">-oA&nbsp;</a><br>
+<a href="spec_5.html#IX412">-oB&nbsp;</a><br>
+<a href="spec_5.html#IX415">-odb</a><br>
+<a href="spec_5.html#IX418">-odf</a><br>
+<a href="spec_5.html#IX421">-odi</a><br>
+<a href="spec_5.html#IX422">-odq</a><br>
+<a href="spec_5.html#IX426">-odqs</a><br>
+<a href="spec_5.html#IX428">-oee</a><br>
+<a href="spec_5.html#IX431">-oem</a><br>
+<a href="spec_5.html#IX434">-oep</a><br>
+<a href="spec_5.html#IX437">-oeq</a><br>
+<a href="spec_5.html#IX439">-oew</a><br>
+<a href="spec_5.html#IX441">-oi</a><br>
+<a href="spec_5.html#IX443">-oitrue</a><br>
+<a href="spec_5.html#IX460">-om</a><br>
+<a href="spec_5.html#IX444">-oMa&nbsp;</a><br>
+<a href="spec_5.html#IX446">-oMaa&nbsp;</a><br>
+<a href="spec_5.html#IX448">-oMai&nbsp;</a><br>
+<a href="spec_5.html#IX450">-oMas&nbsp;</a><br>
+<a href="spec_5.html#IX452">-oMi&nbsp;</a><br>
+<a href="spec_5.html#IX454">-oMr&nbsp;</a><br>
+<a href="spec_5.html#IX456">-oMs&nbsp;</a><br>
+<a href="spec_5.html#IX458">-oMt&nbsp;</a><br>
+<a href="spec_5.html#IX462">-oo</a><br>
+<a href="spec_5.html#IX464">-oP&nbsp;</a><br>
+<a href="spec_5.html#IX467">-or&nbsp;</a><br>
+<a href="spec_5.html#IX469">-os&nbsp;</a><br>
+<a href="spec_5.html#IX472">-ov</a><br>
+<a href="spec_5.html#IX473">-oX&nbsp;</a><br>
+<a href="spec_5.html#IX481">-p</a><br>
+<a href="spec_46.html#IX2748">-pattern"&nbsp;"</a><br>
+<a href="spec_5.html#IX477">-pd</a><br>
+<a href="spec_5.html#IX479">-ps</a><br>
+<a href="spec_5.html#IX482">-q</a> &nbsp;<a href="spec_46.html#IX2778">[2]</a><br>
+<a href="spec_5.html#IX488">-q&nbsp;</a> &nbsp;<a href="spec_5.html#IX506">[2]</a> &nbsp;<a href="spec_5.html#IX508">[3]</a> &nbsp;<a href="spec_46.html#IX2750">[4]</a><br>
+<a href="spec_46.html#IX2749">-q0</a><br>
+<a href="spec_5.html#IX504">-q[q][i][f[f]]l</a><br>
+<a href="spec_5.html#IX499">-q[q][i]f...</a><br>
+<a href="spec_5.html#IX502">-q[q][i]ff...</a><br>
+<a href="spec_5.html#IX497">-q[q]i...</a><br>
+<a href="spec_5.html#IX489">-qq...</a><br>
+<a href="spec_5.html#IX511">-qR&nbsp;</a><br>
+<a href="spec_5.html#IX512">-qS&nbsp;</a><br>
+<a href="spec_46.html#IX2717">-R</a><br>
+<a href="spec_5.html#IX518">-r</a><br>
+<a href="spec_5.html#IX513">-R&nbsp;</a><br>
+<a href="spec_46.html#IX2707">-r&nbsp;</a><br>
+<a href="spec_46.html#IX2780">-restore&#095;time</a><br>
+<a href="spec_46.html#IX2779">-retries</a><br>
+<a href="spec_5.html#IX520">-S&nbsp;</a><br>
+<a href="spec_46.html#IX2708">-s&nbsp;</a><br>
+<a href="spec_5.html#IX523">-t</a><br>
+<a href="spec_46.html#IX2751">-t&nbsp;</a><br>
+<a href="spec_46.html#IX2753">-t&#095;remote&#095;users</a><br>
+<a href="spec_5.html#IX530">-ti</a><br>
+<a href="spec_46.html#IX2781">-timeout</a><br>
+<a href="spec_5.html#IX531">-tls-on-connect</a><br>
+<a href="spec_46.html#IX2752">-tnl</a><br>
+<a href="spec_5.html#IX522">-Tqt</a><br>
+<a href="spec_5.html#IX534">-U</a><br>
+<a href="spec_5.html#IX536">-v</a> &nbsp;<a href="spec_46.html#IX2782">[2]</a><br>
+<a href="spec_5.html#IX537">-x</a> &nbsp;<a href="spec_46.html#IX2712">[2]</a><br>
+<a href="spec_46.html#IX2709">-y&nbsp;</a><br>
+<a href="spec_46.html#IX2711">-z</a><br>
+<br>
+<a name="A"></a>
+<font size="+1">A</font><br>
+<a href="spec_14.html#IX1020">accept_8bitmime</a><br>
+<a href="spec_14.html#IX1023">acl_not_smtp</a><br>
+<a href="spec_14.html#IX1028">acl_smtp_auth</a><br>
+<a href="spec_14.html#IX1025">acl_smtp_connect</a><br>
+<a href="spec_14.html#IX1030">acl_smtp_data</a><br>
+<a href="spec_14.html#IX1032">acl_smtp_etrn</a><br>
+<a href="spec_14.html#IX1034">acl_smtp_expn</a><br>
+<a href="spec_14.html#IX1037">acl_smtp_helo</a><br>
+<a href="spec_14.html#IX1039">acl_smtp_mail</a><br>
+<a href="spec_14.html#IX1041">acl_smtp_mailauth</a><br>
+<a href="spec_14.html#IX1043">acl_smtp_rcpt</a><br>
+<a href="spec_14.html#IX1045">acl_smtp_starttls</a><br>
+<a href="spec_14.html#IX1047">acl_smtp_vrfy</a><br>
+<a href="spec_15.html#IX1522">address_data</a><br>
+<a href="spec_15.html#IX1524">address_test</a><br>
+<a href="spec_14.html#IX1048">admin_groups</a><br>
+<a href="spec_29.html#IX2079">allow_commands</a><br>
+<a href="spec_22.html#IX1757">allow_defer</a><br>
+<a href="spec_14.html#IX1050">allow_domain_literals</a><br>
+<a href="spec_22.html#IX1758">allow_fail</a><br>
+<a href="spec_26.html#IX1928">allow_fifo</a><br>
+<a href="spec_22.html#IX1760">allow_filter</a><br>
+<a href="spec_22.html#IX1763">allow_freeze</a><br>
+<a href="spec_30.html#IX2132">allow_localhost</a><br>
+<a href="spec_14.html#IX1052">allow_mx_to_ip</a><br>
+<a href="spec_26.html#IX1932">allow_symlink</a><br>
+<a href="spec_14.html#IX1056">allow_utf8_domains</a><br>
+<a href="spec_14.html#IX1057">auth_advertise_hosts</a><br>
+<a href="spec_30.html#IX2135">authenticated_sender</a><br>
+<a href="spec_14.html#IX1061">auto_thaw</a><br>
+<br>
+<a name="B"></a>
+<font size="+1">B</font><br>
+<a href="spec_26.html#IX1935">batch_id</a> &nbsp;<a href="spec_28.html#IX2062">[2]</a> &nbsp;<a href="spec_29.html#IX2081">[3]</a><br>
+<a href="spec_26.html#IX1936">batch_max</a> &nbsp;<a href="spec_28.html#IX2063">[2]</a> &nbsp;<a href="spec_29.html#IX2082">[3]</a><br>
+<a href="spec_27.html#IX2040">bcc</a><br>
+<a href="spec_14.html#IX1064">bi_command</a><br>
+<a href="spec_24.html#IX1845">body_only</a><br>
+<a href="spec_14.html#IX1066">bounce_message_file</a><br>
+<a href="spec_14.html#IX1069">bounce_message_text</a><br>
+<a href="spec_14.html#IX1071">bounce_return_body</a><br>
+<a href="spec_14.html#IX1073">bounce_return_message</a><br>
+<a href="spec_14.html#IX1074">bounce_return_size_limit</a><br>
+<a href="spec_14.html#IX1081">bounce_sender_authentication</a><br>
+<br>
+<a name="C"></a>
+<font size="+1">C</font><br>
+<a href="spec_14.html#IX1084">callout_domain_negative_expire</a><br>
+<a href="spec_14.html#IX1085">callout_domain_positive_expire</a><br>
+<a href="spec_14.html#IX1086">callout_negative_expire</a><br>
+<a href="spec_14.html#IX1087">callout_positive_expire</a><br>
+<a href="spec_14.html#IX1088">callout_random_local_part</a><br>
+<a href="spec_15.html#IX1527">cannot_route_message</a><br>
+<a href="spec_15.html#IX1530">caseful_local_part</a><br>
+<a href="spec_27.html#IX2041">cc</a><br>
+<a href="spec_22.html#IX1765">check_ancestor</a><br>
+<a href="spec_22.html#IX1766">check_group</a> &nbsp;<a href="spec_26.html#IX1937">[2]</a><br>
+<a href="spec_15.html#IX1533">check_local_user</a><br>
+<a href="spec_14.html#IX1089">check_log_inodes</a><br>
+<a href="spec_14.html#IX1090">check_log_space</a><br>
+<a href="spec_22.html#IX1767">check_owner</a> &nbsp;<a href="spec_26.html#IX1938">[2]</a><br>
+<a href="spec_17.html#IX1653">check_secondary_mx</a><br>
+<a href="spec_14.html#IX1091">check_spool_inodes</a><br>
+<a href="spec_14.html#IX1092">check_spool_space</a><br>
+<a href="spec_17.html#IX1655">check_srv</a><br>
+<a href="spec_26.html#IX1939">check_string</a> &nbsp;<a href="spec_29.html#IX2083">[2]</a><br>
+<a href="spec_36.html#IX2324">client_domain</a><br>
+<a href="spec_35.html#IX2312">client_name</a><br>
+<a href="spec_36.html#IX2325">client_password</a><br>
+<a href="spec_35.html#IX2313">client_secret</a><br>
+<a href="spec_34.html#IX2303">client_send</a><br>
+<a href="spec_36.html#IX2326">client_username</a><br>
+<a href="spec_21.html#IX1713">command</a> &nbsp;<a href="spec_28.html#IX2064">[2]</a> &nbsp;<a href="spec_29.html#IX2084">[3]</a><br>
+<a href="spec_21.html#IX1714">command_group</a><br>
+<a href="spec_30.html#IX2137">command_timeout</a><br>
+<a href="spec_21.html#IX1716">command_user</a><br>
+<a href="spec_15.html#IX1536">condition</a><br>
+<a href="spec_30.html#IX2138">connect_timeout</a><br>
+<a href="spec_30.html#IX2142">connection_max_messages</a><br>
+<a href="spec_26.html#IX1944">create_directory</a><br>
+<a href="spec_26.html#IX1945">create_file</a><br>
+<a href="spec_21.html#IX1718">current_directory</a> &nbsp;<a href="spec_24.html#IX1849">[2]</a><br>
+<br>
+<a name="D"></a>
+<font size="+1">D</font><br>
+<a href="spec_14.html#IX1098">daemon_smtp_ports</a><br>
+<a href="spec_22.html#IX1768">data</a><br>
+<a href="spec_30.html#IX2143">data_timeout</a><br>
+<a href="spec_15.html#IX1538">debug_print</a> &nbsp;<a href="spec_24.html#IX1852">[2]</a><br>
+<a href="spec_30.html#IX2144">delay_after_cutoff</a><br>
+<a href="spec_14.html#IX1099">delay_warning</a><br>
+<a href="spec_14.html#IX1102">delay_warning_condition</a><br>
+<a href="spec_14.html#IX1105">deliver_drop_privilege</a><br>
+<a href="spec_14.html#IX1108">deliver_queue_load_max</a><br>
+<a href="spec_24.html#IX1854">delivery_date_add</a><br>
+<a href="spec_14.html#IX1109">delivery_date_remove</a><br>
+<a href="spec_26.html#IX1946">directory</a><br>
+<a href="spec_26.html#IX1947">directory_file</a><br>
+<a href="spec_26.html#IX1949">directory_mode</a><br>
+<a href="spec_22.html#IX1769">directory_transport</a><br>
+<a href="spec_15.html#IX1540">disable_logging</a> &nbsp;<a href="spec_24.html#IX1851">[2]</a><br>
+<a href="spec_14.html#IX1112">dns_again_means_nonexist</a><br>
+<a href="spec_14.html#IX1114">dns_check_names_pattern</a><br>
+<a href="spec_14.html#IX1115">dns_ipv4_lookup</a><br>
+<a href="spec_30.html#IX2145">dns_qualify_single</a><br>
+<a href="spec_14.html#IX1118">dns_retrans</a><br>
+<a href="spec_14.html#IX1120">dns_retry</a><br>
+<a href="spec_30.html#IX2146">dns_search_parents</a><br>
+<a href="spec_15.html#IX1541">domains</a><br>
+<a href="spec_15.html#IX1543">driver</a> &nbsp;<a href="spec_24.html#IX1856">[2]</a> &nbsp;<a href="spec_33.html#IX2273">[3]</a><br>
+<a href="spec_14.html#IX1121">drop_cr</a><br>
+<br>
+<a name="E"></a>
+<font size="+1">E</font><br>
+<a href="spec_24.html#IX1857">envelope_to_add</a><br>
+<a href="spec_14.html#IX1122">envelope_to_remove</a><br>
+<a href="spec_29.html#IX2085">environment</a><br>
+<a href="spec_14.html#IX1124">errors_copy</a><br>
+<a href="spec_14.html#IX1128">errors_reply_to</a><br>
+<a href="spec_15.html#IX1544">errors_to</a><br>
+<a href="spec_26.html#IX1950">escape_string</a> &nbsp;<a href="spec_29.html#IX2088">[2]</a><br>
+<a href="spec_14.html#IX1130">exim_group</a><br>
+<a href="spec_14.html#IX1133">exim_path</a><br>
+<a href="spec_14.html#IX1135">exim_user</a><br>
+<a href="spec_15.html#IX1547">expn</a><br>
+<a href="spec_14.html#IX1138">extra_local_interfaces</a><br>
+<a href="spec_14.html#IX1140">extract_addresses_remove_arguments</a><br>
+<br>
+<a name="F"></a>
+<font size="+1">F</font><br>
+<a href="spec_15.html#IX1552">fail_verify</a><br>
+<a href="spec_15.html#IX1554">fail_verify_recipient</a><br>
+<a href="spec_15.html#IX1555">fail_verify_sender</a><br>
+<a href="spec_15.html#IX1556">fallback_hosts</a> &nbsp;<a href="spec_30.html#IX2148">[2]</a><br>
+<a href="spec_22.html#IX1770">file</a> &nbsp;<a href="spec_26.html#IX1951">[2]</a> &nbsp;<a href="spec_27.html#IX2042">[3]</a><br>
+<a href="spec_27.html#IX2043">file_expand</a><br>
+<a href="spec_26.html#IX1956">file_format</a><br>
+<a href="spec_26.html#IX1958">file_must_exist</a><br>
+<a href="spec_27.html#IX2044">file_optional</a><br>
+<a href="spec_22.html#IX1772">file_transport</a><br>
+<a href="spec_30.html#IX2150">final_timeout</a><br>
+<a href="spec_14.html#IX1144">finduser_retries</a><br>
+<a href="spec_22.html#IX1773">forbid_blackhole</a><br>
+<a href="spec_22.html#IX1774">forbid_file</a><br>
+<a href="spec_22.html#IX1778">forbid_filter_existstest</a><br>
+<a href="spec_22.html#IX1780">forbid_filter_logwrite</a><br>
+<a href="spec_22.html#IX1781">forbid_filter_lookup</a><br>
+<a href="spec_22.html#IX1782">forbid_filter_perl</a><br>
+<a href="spec_22.html#IX1783">forbid_filter_readfile</a><br>
+<a href="spec_22.html#IX1784">forbid_filter_readsocket</a><br>
+<a href="spec_22.html#IX1785">forbid_filter_reply</a><br>
+<a href="spec_22.html#IX1786">forbid_filter_run</a><br>
+<a href="spec_22.html#IX1787">forbid_include</a><br>
+<a href="spec_22.html#IX1788">forbid_pipe</a><br>
+<a href="spec_29.html#IX2089">freeze_exec_fail</a><br>
+<a href="spec_14.html#IX1146">freeze_tell</a><br>
+<a href="spec_27.html#IX2045">from</a><br>
+<br>
+<a name="G"></a>
+<font size="+1">G</font><br>
+<a href="spec_14.html#IX1148">gecos_name</a><br>
+<a href="spec_14.html#IX1152">gecos_pattern</a><br>
+<a href="spec_30.html#IX2151">gethostbyname</a><br>
+<a href="spec_15.html#IX1559">group</a> &nbsp;<a href="spec_24.html#IX1859">[2]</a><br>
+<br>
+<a name="H"></a>
+<font size="+1">H</font><br>
+<a href="spec_14.html#IX1157">header_line_maxsize</a><br>
+<a href="spec_14.html#IX1154">header_maxsize</a><br>
+<a href="spec_27.html#IX2046">headers</a><br>
+<a href="spec_15.html#IX1564">headers_add</a> &nbsp;<a href="spec_24.html#IX1861">[2]</a><br>
+<a href="spec_14.html#IX1153">headers_charset</a><br>
+<a href="spec_24.html#IX1864">headers_only</a><br>
+<a href="spec_15.html#IX1567">headers_remove</a> &nbsp;<a href="spec_24.html#IX1868">[2]</a><br>
+<a href="spec_24.html#IX1871">headers_rewrite</a><br>
+<a href="spec_14.html#IX1160">helo_accept_junk_hosts</a><br>
+<a href="spec_14.html#IX1163">helo_allow_chars</a><br>
+<a href="spec_30.html#IX2154">helo_data</a><br>
+<a href="spec_14.html#IX1167">helo_lookup_domains</a><br>
+<a href="spec_14.html#IX1170">helo_try_verify_hosts</a><br>
+<a href="spec_14.html#IX1175">helo_verify_hosts</a><br>
+<a href="spec_22.html#IX1790">hide_child_in_errmsg</a><br>
+<a href="spec_14.html#IX1178">hold_domains</a><br>
+<a href="spec_24.html#IX1874">home_directory</a><br>
+<a href="spec_20.html#IX1692">host_find_failed</a><br>
+<a href="spec_14.html#IX1181">host_lookup</a><br>
+<a href="spec_14.html#IX1183">host_lookup_order</a><br>
+<a href="spec_14.html#IX1184">host_reject_connection</a><br>
+<a href="spec_19.html#IX1679">hosts</a> &nbsp;<a href="spec_30.html#IX2155">[2]</a><br>
+<a href="spec_30.html#IX2156">hosts_avoid_esmtp</a><br>
+<a href="spec_30.html#IX2161">hosts_avoid_tls</a><br>
+<a href="spec_30.html#IX2163">hosts_max_try</a><br>
+<a href="spec_30.html#IX2168">hosts_nopass_tls</a><br>
+<a href="spec_30.html#IX2172">hosts_override</a><br>
+<a href="spec_20.html#IX1694">hosts_randomize</a> &nbsp;<a href="spec_30.html#IX2173">[2]</a><br>
+<a href="spec_30.html#IX2178">hosts_require_auth</a><br>
+<a href="spec_30.html#IX2179">hosts_require_tls</a><br>
+<a href="spec_14.html#IX1186">hosts_treat_as_local</a><br>
+<a href="spec_30.html#IX2182">hosts_try_auth</a><br>
+<br>
+<a name="I"></a>
+<font size="+1">I</font><br>
+<a href="spec_14.html#IX1189">ignore_bounce_errors_after</a><br>
+<a href="spec_22.html#IX1792">ignore_eacces</a><br>
+<a href="spec_22.html#IX1794">ignore_enotdir</a><br>
+<a href="spec_14.html#IX1192">ignore_fromline_hosts</a><br>
+<a href="spec_14.html#IX1195">ignore_fromline_local</a><br>
+<a href="spec_29.html#IX2093">ignore_status</a><br>
+<a href="spec_15.html#IX1570">ignore_target_hosts</a><br>
+<a href="spec_22.html#IX1796">include_directory</a><br>
+<a href="spec_15.html#IX1577">initgroups</a> &nbsp;<a href="spec_24.html#IX1879">[2]</a><br>
+<a href="spec_30.html#IX2185">interface</a><br>
+<br>
+<a name="K"></a>
+<font size="+1">K</font><br>
+<a href="spec_14.html#IX1196">keep_malformed</a><br>
+<a href="spec_30.html#IX2186">keepalive</a><br>
+<br>
+<a name="L"></a>
+<font size="+1">L</font><br>
+<a href="spec_14.html#IX1197">ldap_default_servers</a><br>
+<a href="spec_14.html#IX1199">ldap_version</a><br>
+<a href="spec_14.html#IX1201">local_from_check</a><br>
+<a href="spec_14.html#IX1205">local_from_prefix</a><br>
+<a href="spec_14.html#IX1206">local_from_suffix</a><br>
+<a href="spec_14.html#IX1207">local_interfaces</a><br>
+<a href="spec_15.html#IX1578">local_part_prefix</a><br>
+<a href="spec_15.html#IX1583">local_part_prefix_optional</a><br>
+<a href="spec_15.html#IX1584">local_part_suffix</a><br>
+<a href="spec_15.html#IX1587">local_part_suffix_optional</a><br>
+<a href="spec_15.html#IX1588">local_parts</a><br>
+<a href="spec_14.html#IX1208">local_scan_timeout</a><br>
+<a href="spec_14.html#IX1211">local_sender_retain</a><br>
+<a href="spec_14.html#IX1213">localhost_number</a><br>
+<a href="spec_26.html#IX1959">lock_fcntl_timeout</a><br>
+<a href="spec_26.html#IX1963">lock_flock_timeout</a><br>
+<a href="spec_26.html#IX1964">lock_interval</a><br>
+<a href="spec_26.html#IX1965">lock_retries</a><br>
+<a href="spec_26.html#IX1966">lockfile_mode</a><br>
+<a href="spec_26.html#IX1967">lockfile_timeout</a><br>
+<a href="spec_27.html#IX2047">log</a><br>
+<a href="spec_15.html#IX1591">log_as_local</a><br>
+<a href="spec_29.html#IX2094">log_defer_output</a><br>
+<a href="spec_29.html#IX2096">log_fail_output</a><br>
+<a href="spec_14.html#IX1216">log_file_path</a><br>
+<a href="spec_29.html#IX2097">log_output</a><br>
+<a href="spec_14.html#IX1218">log_selector</a><br>
+<a href="spec_14.html#IX1220">log_timezone</a><br>
+<a href="spec_14.html#IX1222">lookup_open_max</a><br>
+<br>
+<a name="M"></a>
+<font size="+1">M</font><br>
+<a href="spec_26.html#IX1969">maildir_format</a><br>
+<a href="spec_26.html#IX1971">maildir_quota_directory_regex</a><br>
+<a href="spec_26.html#IX1974">maildir_retries</a><br>
+<a href="spec_26.html#IX1975">maildir_tag</a><br>
+<a href="spec_26.html#IX1976">maildir_use_size_file</a><br>
+<a href="spec_26.html#IX1978">mailstore_format</a><br>
+<a href="spec_26.html#IX1980">mailstore_prefix</a><br>
+<a href="spec_26.html#IX1981">mailstore_suffix</a><br>
+<a href="spec_29.html#IX2098">max_output</a><br>
+<a href="spec_30.html#IX2188">max_rcpt</a><br>
+<a href="spec_14.html#IX1228">max_username_length</a><br>
+<a href="spec_26.html#IX1982">mbx_format</a><br>
+<a href="spec_14.html#IX1232">message_body_visible</a><br>
+<a href="spec_14.html#IX1235">message_id_header_domain</a><br>
+<a href="spec_14.html#IX1237">message_id_header_text</a><br>
+<a href="spec_14.html#IX1238">message_logs</a><br>
+<a href="spec_26.html#IX1987">message_prefix</a> &nbsp;<a href="spec_29.html#IX2099">[2]</a><br>
+<a href="spec_14.html#IX1241">message_size_limit</a> &nbsp;<a href="spec_24.html#IX1880">[2]</a><br>
+<a href="spec_26.html#IX1989">message_suffix</a> &nbsp;<a href="spec_29.html#IX2103">[2]</a><br>
+<a href="spec_26.html#IX1990">mode</a> &nbsp;<a href="spec_27.html#IX2048">[2]</a><br>
+<a href="spec_26.html#IX1991">mode_fail_narrower</a><br>
+<a href="spec_22.html#IX1797">modemask</a><br>
+<a href="spec_15.html#IX1594">more</a><br>
+<a href="spec_14.html#IX1245">move_frozen_messages</a><br>
+<a href="spec_30.html#IX2190">multi_domain</a><br>
+<a href="spec_17.html#IX1657">mx_domains</a><br>
+<a href="spec_14.html#IX1247">mysql_servers</a><br>
+<br>
+<a name="N"></a>
+<font size="+1">N</font><br>
+<a href="spec_14.html#IX1249">never_users</a><br>
+<a href="spec_26.html#IX1992">notify_comsat</a><br>
+<br>
+<a name="O"></a>
+<font size="+1">O</font><br>
+<a href="spec_27.html#IX2049">once</a><br>
+<a href="spec_27.html#IX2050">once_file_size</a><br>
+<a href="spec_27.html#IX2051">once_repeat</a><br>
+<a href="spec_22.html#IX1798">one_time</a><br>
+<a href="spec_19.html#IX1680">optional</a><br>
+<a href="spec_14.html#IX1250">oracle_servers</a><br>
+<a href="spec_22.html#IX1804">owners</a><br>
+<a href="spec_22.html#IX1809">owngroups</a><br>
+<br>
+<a name="P"></a>
+<font size="+1">P</font><br>
+<a href="spec_15.html#IX1596">pass_on_timeout</a><br>
+<a href="spec_15.html#IX1599">pass_router</a><br>
+<a href="spec_29.html#IX2104">path</a><br>
+<a href="spec_14.html#IX1252">percent_hack_domains</a><br>
+<a href="spec_14.html#IX1256">perl_at_start</a><br>
+<a href="spec_14.html#IX1257">perl_startup</a><br>
+<a href="spec_14.html#IX1258">pgsql_servers</a><br>
+<a href="spec_14.html#IX1260">pid_file_path</a><br>
+<a href="spec_29.html#IX2105">pipe_as_creator</a><br>
+<a href="spec_22.html#IX1811">pipe_transport</a><br>
+<a href="spec_14.html#IX1263">pipelining_advertise_hosts</a><br>
+<a href="spec_19.html#IX1681">port</a> &nbsp;<a href="spec_30.html#IX2191">[2]</a><br>
+<a href="spec_14.html#IX1265">preserve_message_logs</a><br>
+<a href="spec_14.html#IX1267">primary_hostname</a><br>
+<a href="spec_14.html#IX1271">print_topbitchars</a><br>
+<a href="spec_14.html#IX1274">process_log_path</a><br>
+<a href="spec_14.html#IX1278">prod_requires_admin</a><br>
+<a href="spec_19.html#IX1683">protocol</a> &nbsp;<a href="spec_30.html#IX2194">[2]</a><br>
+<a href="spec_33.html#IX2274">public_name</a><br>
+<br>
+<a name="Q"></a>
+<font size="+1">Q</font><br>
+<a href="spec_14.html#IX1282">qualify_domain</a> &nbsp;<a href="spec_22.html#IX1810">[2]</a><br>
+<a href="spec_22.html#IX1812">qualify_preserve_domain</a><br>
+<a href="spec_14.html#IX1285">qualify_recipient</a><br>
+<a href="spec_17.html#IX1660">qualify_single</a><br>
+<a href="spec_19.html#IX1684">query</a><br>
+<a href="spec_14.html#IX1286">queue_domains</a><br>
+<a href="spec_14.html#IX1290">queue_list_requires_admin</a><br>
+<a href="spec_14.html#IX1292">queue_only</a><br>
+<a href="spec_14.html#IX1295">queue_only_file</a><br>
+<a href="spec_14.html#IX1298">queue_only_load</a><br>
+<a href="spec_14.html#IX1302">queue_only_override</a><br>
+<a href="spec_14.html#IX1304">queue_run_in_order</a><br>
+<a href="spec_14.html#IX1306">queue_run_max</a><br>
+<a href="spec_14.html#IX1308">queue_smtp_domains</a><br>
+<a href="spec_26.html#IX1993">quota</a><br>
+<a href="spec_26.html#IX1995">quota_directory</a><br>
+<a href="spec_26.html#IX1996">quota_filecount</a><br>
+<a href="spec_26.html#IX1997">quota_is_inclusive</a><br>
+<a href="spec_26.html#IX1998">quota_size_regex</a><br>
+<a href="spec_26.html#IX1999">quota_warn_message</a><br>
+<a href="spec_26.html#IX2000">quota_warn_threshold</a><br>
+<br>
+<a name="R"></a>
+<font size="+1">R</font><br>
+<a href="spec_24.html#IX1884">rcpt_include_affixes</a><br>
+<a href="spec_14.html#IX1311">receive_timeout</a><br>
+<a href="spec_14.html#IX1315">received_header_text</a><br>
+<a href="spec_14.html#IX1316">received_headers_max</a><br>
+<a href="spec_14.html#IX1320">recipient_unqualified_hosts</a><br>
+<a href="spec_14.html#IX1323">recipients_max</a><br>
+<a href="spec_14.html#IX1327">recipients_max_reject</a><br>
+<a href="spec_15.html#IX1601">redirect_router</a><br>
+<a href="spec_14.html#IX1328">remote_max_parallel</a><br>
+<a href="spec_14.html#IX1332">remote_sort_domains</a><br>
+<a href="spec_22.html#IX1816">repeat_use</a><br>
+<a href="spec_27.html#IX2052">reply_to</a><br>
+<a href="spec_22.html#IX1817">reply_transport</a><br>
+<a href="spec_15.html#IX1603">require_files</a><br>
+<a href="spec_19.html#IX1685">reroute</a><br>
+<a href="spec_19.html#IX1686">response_pattern</a><br>
+<a href="spec_29.html#IX2107">restrict_to_path</a><br>
+<a href="spec_14.html#IX1335">retry_data_expire</a><br>
+<a href="spec_30.html#IX2196">retry_include_ip_address</a><br>
+<a href="spec_14.html#IX1337">retry_interval_max</a><br>
+<a href="spec_15.html#IX1607">retry_use_local_part</a> &nbsp;<a href="spec_24.html#IX1889">[2]</a><br>
+<a href="spec_29.html#IX2108">return_fail_output</a><br>
+<a href="spec_27.html#IX2053">return_message</a><br>
+<a href="spec_29.html#IX2109">return_output</a><br>
+<a href="spec_24.html#IX1891">return_path</a><br>
+<a href="spec_24.html#IX1895">return_path_add</a><br>
+<a href="spec_14.html#IX1340">return_path_remove</a><br>
+<a href="spec_14.html#IX1342">return_size_limit</a><br>
+<a href="spec_22.html#IX1818">rewrite</a><br>
+<a href="spec_17.html#IX1663">rewrite_headers</a><br>
+<a href="spec_14.html#IX1343">rfc1413_hosts</a><br>
+<a href="spec_14.html#IX1346">rfc1413_query_timeout</a><br>
+<a href="spec_20.html#IX1697">route_data</a><br>
+<a href="spec_20.html#IX1698">route_list</a><br>
+<a href="spec_15.html#IX1610">router_home_directory</a><br>
+<br>
+<a name="S"></a>
+<font size="+1">S</font><br>
+<a href="spec_17.html#IX1666">same_domain_copy_routing</a> &nbsp;<a href="spec_20.html#IX1699">[2]</a><br>
+<a href="spec_17.html#IX1668">search_parents</a><br>
+<a href="spec_15.html#IX1613">self</a><br>
+<a href="spec_14.html#IX1349">sender_unqualified_hosts</a><br>
+<a href="spec_15.html#IX1618">senders</a><br>
+<a href="spec_30.html#IX2197">serialize_hosts</a><br>
+<a href="spec_33.html#IX2275">server_advertise_condition</a><br>
+<a href="spec_34.html#IX2292">server_condition</a><br>
+<a href="spec_33.html#IX2276">server_debug_print</a><br>
+<a href="spec_33.html#IX2278">server_mail_auth_condition</a><br>
+<a href="spec_36.html#IX2321">server_password</a><br>
+<a href="spec_34.html#IX2291">server_prompts</a><br>
+<a href="spec_35.html#IX2309">server_secret</a><br>
+<a href="spec_33.html#IX2277">server_set_id</a><br>
+<a href="spec_24.html#IX1897">shadow_condition</a><br>
+<a href="spec_24.html#IX1898">shadow_transport</a><br>
+<a href="spec_30.html#IX2201">size_addition</a><br>
+<a href="spec_22.html#IX1820">skip_syntax_errors</a><br>
+<a href="spec_14.html#IX1352">smtp_accept_keepalive</a><br>
+<a href="spec_14.html#IX1354">smtp_accept_max</a><br>
+<a href="spec_14.html#IX1358">smtp_accept_max_nonmail</a><br>
+<a href="spec_14.html#IX1361">smtp_accept_max_nonmail_hosts</a><br>
+<a href="spec_14.html#IX1362">smtp_accept_max_per_connection</a><br>
+<a href="spec_14.html#IX1365">smtp_accept_max_per_host</a><br>
+<a href="spec_14.html#IX1368">smtp_accept_queue</a><br>
+<a href="spec_14.html#IX1372">smtp_accept_queue_per_connection</a><br>
+<a href="spec_14.html#IX1375">smtp_accept_reserve</a><br>
+<a href="spec_14.html#IX1378">smtp_active_hostname</a><br>
+<a href="spec_14.html#IX1381">smtp_banner</a><br>
+<a href="spec_14.html#IX1386">smtp_check_spool_space</a><br>
+<a href="spec_14.html#IX1390">smtp_connect_backlog</a><br>
+<a href="spec_14.html#IX1394">smtp_enforce_sync</a><br>
+<a href="spec_14.html#IX1397">smtp_etrn_command</a><br>
+<a href="spec_14.html#IX1399">smtp_etrn_serialize</a><br>
+<a href="spec_14.html#IX1401">smtp_load_reserve</a><br>
+<a href="spec_14.html#IX1403">smtp_max_synprot_errors</a><br>
+<a href="spec_14.html#IX1407">smtp_max_unknown_commands</a><br>
+<a href="spec_14.html#IX1410">smtp_ratelimit_hosts</a><br>
+<a href="spec_14.html#IX1414">smtp_ratelimit_mail</a><br>
+<a href="spec_14.html#IX1415">smtp_ratelimit_rcpt</a><br>
+<a href="spec_14.html#IX1416">smtp_receive_timeout</a><br>
+<a href="spec_14.html#IX1420">smtp_reserve_hosts</a><br>
+<a href="spec_14.html#IX1421">smtp_return_error_details</a><br>
+<a href="spec_28.html#IX2065">socket</a><br>
+<a href="spec_14.html#IX1424">split_spool_directory</a><br>
+<a href="spec_14.html#IX1428">spool_directory</a><br>
+<a href="spec_14.html#IX1430">strip_excess_angle_brackets</a><br>
+<a href="spec_14.html#IX1432">strip_trailing_dot</a><br>
+<a href="spec_27.html#IX2054">subject</a><br>
+<a href="spec_22.html#IX1829">syntax_errors_text</a><br>
+<a href="spec_22.html#IX1830">syntax_errors_to</a><br>
+<a href="spec_14.html#IX1435">syslog_duplication</a><br>
+<a href="spec_14.html#IX1437">syslog_facility</a><br>
+<a href="spec_14.html#IX1439">syslog_processname</a><br>
+<a href="spec_14.html#IX1441">syslog_timestamp</a><br>
+<a href="spec_14.html#IX1443">system_filter</a><br>
+<a href="spec_14.html#IX1447">system_filter_directory_transport</a><br>
+<a href="spec_14.html#IX1448">system_filter_file_transport</a><br>
+<a href="spec_14.html#IX1451">system_filter_group</a><br>
+<a href="spec_14.html#IX1452">system_filter_pipe_transport</a><br>
+<a href="spec_14.html#IX1454">system_filter_reply_transport</a><br>
+<a href="spec_14.html#IX1457">system_filter_user</a><br>
+<br>
+<a name="T"></a>
+<font size="+1">T</font><br>
+<a href="spec_14.html#IX1458">tcp_nodelay</a><br>
+<a href="spec_29.html#IX2110">temp_errors</a><br>
+<a href="spec_27.html#IX2055">text</a><br>
+<a href="spec_19.html#IX1687">timeout</a> &nbsp;<a href="spec_21.html#IX1719">[2]</a> &nbsp;<a href="spec_28.html#IX2066">[3]</a> &nbsp;<a href="spec_29.html#IX2112">[4]</a><br>
+<a href="spec_14.html#IX1462">timeout_frozen_after</a><br>
+<a href="spec_14.html#IX1465">timezone</a><br>
+<a href="spec_14.html#IX1467">tls_advertise_hosts</a><br>
+<a href="spec_14.html#IX1471">tls_certificate</a> &nbsp;<a href="spec_30.html#IX2207">[2]</a><br>
+<a href="spec_14.html#IX1474">tls_crl</a> &nbsp;<a href="spec_30.html#IX2210">[2]</a><br>
+<a href="spec_14.html#IX1477">tls_dhparam</a><br>
+<a href="spec_14.html#IX1479">tls_privatekey</a> &nbsp;<a href="spec_30.html#IX2213">[2]</a><br>
+<a href="spec_14.html#IX1481">tls_remember_esmtp</a><br>
+<a href="spec_14.html#IX1484">tls_require_ciphers</a> &nbsp;<a href="spec_30.html#IX2215">[2]</a><br>
+<a href="spec_30.html#IX2218">tls_tempfail_tryclear</a><br>
+<a href="spec_14.html#IX1487">tls_try_verify_hosts</a><br>
+<a href="spec_14.html#IX1490">tls_verify_certificates</a> &nbsp;<a href="spec_30.html#IX2219">[2]</a><br>
+<a href="spec_14.html#IX1493">tls_verify_hosts</a><br>
+<a href="spec_27.html#IX2056">to</a><br>
+<a href="spec_15.html#IX1620">translate_ip_address</a><br>
+<a href="spec_15.html#IX1624">transport</a><br>
+<a href="spec_15.html#IX1625">transport_current_directory</a><br>
+<a href="spec_24.html#IX1901">transport_filter</a><br>
+<a href="spec_24.html#IX1907">transport_filter_timeout</a><br>
+<a href="spec_15.html#IX1627">transport_home_directory</a><br>
+<a href="spec_14.html#IX1496">trusted_groups</a><br>
+<a href="spec_14.html#IX1499">trusted_users</a><br>
+<br>
+<a name="U"></a>
+<font size="+1">U</font><br>
+<a href="spec_29.html#IX2113">umask</a><br>
+<a href="spec_14.html#IX1503">unknown_login</a><br>
+<a href="spec_14.html#IX1504">unknown_username</a><br>
+<a href="spec_15.html#IX1629">unseen</a><br>
+<a href="spec_14.html#IX1505">untrusted_set_sender</a><br>
+<a href="spec_26.html#IX2004">use_bsmtp</a> &nbsp;<a href="spec_29.html#IX2114">[2]</a><br>
+<a href="spec_26.html#IX2006">use_crlf</a> &nbsp;<a href="spec_29.html#IX2116">[2]</a><br>
+<a href="spec_26.html#IX2009">use_fcntl_lock</a><br>
+<a href="spec_26.html#IX2010">use_flock_lock</a><br>
+<a href="spec_26.html#IX2012">use_lockfile</a><br>
+<a href="spec_26.html#IX2014">use_mbx_lock</a><br>
+<a href="spec_29.html#IX2119">use_shell</a><br>
+<a href="spec_15.html#IX1632">user</a> &nbsp;<a href="spec_24.html#IX1909">[2]</a><br>
+<a href="spec_14.html#IX1511">uucp_from_pattern</a><br>
+<a href="spec_14.html#IX1514">uucp_from_sender</a><br>
+<br>
+<a name="V"></a>
+<font size="+1">V</font><br>
+<a href="spec_15.html#IX1638">verify</a><br>
+<a href="spec_15.html#IX1639">verify_only</a><br>
+<a href="spec_15.html#IX1643">verify_recipient</a><br>
+<a href="spec_15.html#IX1644">verify_sender</a><br>
+<br>
+<a name="W"></a>
+<font size="+1">W</font><br>
+<a href="spec_14.html#IX1515">warn_message_file</a><br>
+<a href="spec_17.html#IX1670">widen_domains</a><br>
+<a href="spec_14.html#IX1518">write_rejectlog</a><br>
+</p>
+</body>
+</html>

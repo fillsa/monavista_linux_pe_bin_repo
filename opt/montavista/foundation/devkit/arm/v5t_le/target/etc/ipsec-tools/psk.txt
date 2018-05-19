@@ -1,0 +1,19 @@
+# This is a sample pre_shared_key file.
+# Specified for IKE phase 1 authentication method "pre_shared_key".
+
+# An entry consists of a my_identifier pre_shared_key pair.
+
+
+# my_identifier is an address (IPv4/v6) 
+
+#192.168.2.1	pre_shared_key_1
+#2001:db8::1	pre_shared_key_2
+
+# my_identifier is an USER_FQDN (user fully-qualified domain name)
+
+#foo@bar.com	pre_shared_key_3
+
+# my_identifier is a FQDN (fully-qualified domain name) 
+
+#foo.bar.com	pre_shared_key_4
+

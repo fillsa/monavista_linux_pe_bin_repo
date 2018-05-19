@@ -1,0 +1,13 @@
+creating cache ./config.cache
+checking for gcc... arm_v5t_le-gcc 
+checking whether the C compiler (arm_v5t_le-gcc  -O2 ) works... yes
+checking whether the C compiler (arm_v5t_le-gcc  -O2 ) is a cross-compiler... yes
+checking whether we are using GNU C... yes
+checking whether arm_v5t_le-gcc  accepts -g... yes
+checking for a BSD compatible install... /usr/bin/install -c
+checking for rm... rm -f
+checking for putgrent... yes
+updating cache ./config.cache
+creating ./config.status
+creating Makefile
+creating config.h

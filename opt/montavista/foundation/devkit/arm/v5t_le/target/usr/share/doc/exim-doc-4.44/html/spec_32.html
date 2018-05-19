@@ -1,0 +1,507 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 32</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_31.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_33.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2244"></a>
+<a name="IX2245"></a>
+<h1>
+<a name="CHAP32" href="spec_toc.html#TOC233">
+32. Retry configuration
+</a></h1>
+<p>
+The &#147;retry&#148; section of the run time configuration file contains a list of retry
+rules which control how often Exim tries to deliver messages that cannot be
+delivered at the first attempt. If there are no retry rules, temporary errors
+are treated as permanent. The <i>-brt</i> command line option can be used to test
+which retry rule will be used for a given address or domain.
+</p>
+<p>
+<a name="IX2246"></a>
+The most common cause of retries is temporary failure to deliver to a remote
+host because the host is down, or inaccessible because of a network problem.
+Exim's retry processing in this case is applied on a per-host (strictly, per IP
+address) basis, not on a per-message basis. Thus, if one message has recently
+been delayed, delivery of a new message to the same host is not immediately
+tried, but waits for the host's retry time to arrive. If the <tt>retry&#095;defer</tt> log
+selector is set, the message
+&#147;retry time not reached&#148; is written to the main log whenever a delivery is
+skipped for this reason. Section <a href="spec_43.html#SECT43.2">43.2</a> contains more details of the
+handling of errors during remote deliveries.
+</p>
+<p>
+Retry processing applies to routing as well as to delivering, except as covered
+in the next paragraph. The retry rules do not distinguish between these
+actions. It is not possible, for example, to specify different behaviour for
+failures to route the domain <i>snark.fict.example</i> and failures to deliver to
+the host <i>snark.fict.example</i>. I didn't think anyone would ever need this
+added complication, so did not implement it. However, although they share the
+same retry rule, the actual retry times for routing and transporting a given
+domain are maintained independently.
+</p>
+<p>
+When a delivery is not part of a queue run (typically an immediate delivery on
+receipt of a message), the routers are always run, and local deliveries are
+always attempted, even if retry times are set for them. This makes for better
+behaviour if one particular message is causing problems (for example, causing
+quota overflow, or provoking an error in a filter file). If such a delivery
+suffers a temporary failure, the retry data is updated as normal, and
+subsequent delivery attempts from queue runs occur only when the retry time for
+the local address is reached.
+</p>
+<a name="IX2247"></a>
+<h2>
+<a name="SECT32.1" href="spec_toc.html#TOC234">
+32.1. Retry rules
+</a></h2>
+<p>
+Each retry rule occupies one line and consists of three parts, separated by
+white space: a pattern, an error name, and a list of retry parameters. The
+pattern must be enclosed in double quotes if it contains white space. The rules
+are searched in order until one is found whose pattern matches the failing host
+or address.
+</p>
+<p>
+The pattern is any single item that may appear in an address list (see section
+<a href="spec_10.html#SECT10.18">10.18</a>). It is in fact processed as a one-item address list, which
+means that it is expanded before being tested against the address that has
+been delayed. Address list processing treats a plain domain name as if it were
+preceded by &#147;*&#064;&#148;, which makes it possible for many retry rules to start with
+just a domain. For example,
+<pre>
+&nbsp;&nbsp;lookingglass.fict.example        *  F,24h,30m;
+</pre>
+</p>
+<p>
+provides a rule for any address in the <i>lookingglass.fict.example</i> domain,
+whereas
+<pre>
+&nbsp;&nbsp;alice@lookingglass.fict.example  *  F,24h,30m;
+</pre>
+</p>
+<p>
+applies only to temporary failures involving the local part <tt>alice</tt>.
+In practice, almost all rules start with a domain name pattern without a local 
+part.
+<a name="IX2248"></a>
+</p>
+<p>
+<b>Warning</b>: If you use a regular expression in a routing rule, it must match 
+a complete address, not just a domain, because that is how regular expressions 
+work in address lists. 
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>^&#092;Nxyz&#092;d+&#092;.abc&#092;.example&#036;&#092;N        *  G,1h,10m,2     <tt>Wrong</tt></tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>^&#092;N[^&#064;]+&#064;xyz&#092;d+&#092;.abc&#092;.example&#036;&#092;N  *  G,1h,10m,2     <tt>Right</tt></tt><br>
+</p>
+<h2>
+<a name="SECT32.2" href="spec_toc.html#TOC235">
+32.2. Choosing which retry rule to use
+</a></h2>
+<p>
+When Exim is looking for a retry rule after a routing attempt has failed (for
+example, after a DNS timeout), each line in the retry configuration is tested
+against the complete address only if <tt>retry_use&#095;local&#095;part</tt> is set for the
+router. Otherwise, only the domain is used, except when matching against a
+regular expression, when the local part of the address is replaced with &#147;*&#148;. A
+domain on its own can match a domain pattern, or a pattern that starts with
+&#147;*&#064;&#148;. By default, <tt>retry&#095;use&#095;local&#095;part</tt> is true for routers where
+<tt>check&#095;local&#095;user</tt> is true, and false for other routers.
+</p>
+<p>
+Similarly, when Exim is looking for a retry rule after a local delivery has
+failed (for example, after a mailbox full error), each line in the retry
+configuration is tested against the complete address only if
+<tt>retry&#095;use&#095;local&#095;part</tt> is set for the transport (it defaults true for all
+local transports).
+</p>
+<p>
+<font color=green>
+When Exim is looking for a retry rule after a remote delivery attempt has
+failed, what happens depends on the type of failure. After a 4<i>xx</i> SMTP
+response for a recipient address, the whole address is used when searching the
+retry rules. The rule that is found is used to create a retry time for the 
+failing address.
+</p>
+<p>
+For a temporary error that is not related to an individual address,
+</font>
+(for example, a connection timeout), each line in the retry configuration is
+checked twice. First, the name of the remote host is used as a domain name
+(preceded by &#147;*&#064;&#148; when matching a regular expression). If this does not match
+the line, the domain from the email address is tried in a similar fashion. For
+example, suppose the MX records for <i>a.b.c.example</i> are
+<pre>
+&nbsp;&nbsp;a.b.c.example  MX  5  x.y.z.example
+&nbsp;&nbsp;               MX  6  p.q.r.example
+&nbsp;&nbsp;               MX  7  m.n.o.example
+</pre>
+</p>
+<p>
+and the retry rules are
+<pre>
+&nbsp;&nbsp;p.q.r.example    *      F,24h,30m;
+&nbsp;&nbsp;a.b.c.example    *      F,4d,45m;
+</pre>
+</p>
+<p>
+and a delivery to the host <i>x.y.z.example</i> fails. The first rule matches
+neither the host nor the domain, so Exim looks at the second rule. This does
+not match the host, but it does match the domain, so it is used to calculate
+the retry time for the host <i>x.y.z.example</i>. Meanwhile, Exim tries to deliver
+to <i>p.q.r.example</i>. If this fails, the first retry rule is used, because it
+matches the host.
+</p>
+<p>
+In other words, failures to deliver to host <i>p.q.r.example</i> use the first
+rule to determine retry times, but for all the other hosts for the domain
+<i>a.b.c.example</i>, the second rule is used. The second rule is also used if
+routing to <i>a.b.c.example</i> suffers a temporary failure.
+</p>
+<a name="IX2249"></a>
+<h2>
+<a name="SECT32.3" href="spec_toc.html#TOC236">
+32.3. Retry rules for specific errors
+</a></h2>
+<p>
+The second field in a retry rule is the name of a particular error, or an
+asterisk, which matches any error. The errors that can be tested for are:
+</p>
+<ul>
+<li><p>
+<i>auth&#095;failed</i>: authentication failed when trying to send to a host in the
+<tt>hosts&#095;require&#095;auth</tt> list in an <b>smtp</b> transport
+</p>
+</li>
+<li><p>
+<i>refused&#095;MX</i>: connection refused from a host obtained from an MX record
+</p>
+</li>
+<li><p>
+<i>refused&#095;A</i>: connection refused from a host not obtained from an MX record
+</p>
+</li>
+<li><p>
+<i>refused</i>: any connection refusal
+</p>
+</li>
+<li><p>
+<i>timeout&#095;connect&#095;MX</i>: connection timeout from a host obtained from an MX
+record
+</p>
+</li>
+<li><p>
+<i>timeout&#095;connect&#095;A</i>: connection timeout from a host not obtained from an MX 
+record
+</p>
+</li>
+<li><p>
+<i>timeout&#095;connect</i>: any connection timeout
+</p>
+</li>
+<li><p>
+<i>timeout&#095;MX</i>: any timeout from a host obtained from an MX
+record
+</p>
+</li>
+<li><p>
+<i>timeout&#095;A</i>: any timeout from a host not obtained from an MX 
+record
+</p>
+</li>
+<li><p>
+<i>timeout</i>: any timeout
+</p>
+</li>
+<li><p>
+<i>quota</i>: quota exceeded in local delivery by <b>appendfile</b>
+</p>
+</li>
+<li><a name="IX2250"></a>
+<a name="IX2251"></a>
+<p>
+<i>quota&#095;</i>&#060;<em>time</em>&#062;: quota exceeded in local delivery, and the mailbox has not
+been read for &#060;<em>time</em>&#062;. For example, <i>quota&#095;4d</i> applies to a quota error
+when the mailbox has not been read for four days.
+<font color=green><a name="IX2252"></a>
+</p>
+<p>
+<b>Warning</b>: It is not always possible to determine a &#147;time of last read&#148; for
+a mailbox:
+</p>
+<ul>
+<li><p>
+If the mailbox is a single file, the time of last access is used.
+</p>
+</li>
+<li><a name="IX2253"></a>
+<p>
+For a maildir delivery, the time of last modification of the <i>new</i> 
+subdirectory is used. As the mailbox is over quota, no new files will be 
+created in the <i>new</i> subdirectory, so any change is assumed to be the result 
+of an MUA moving a new message to the <i>cur</i> directory when it is first read.
+</p>
+</li>
+<li><p>
+For other kinds of multi-file delivery, the time of last read cannot be
+obtained, and so a retry rule that uses this type of error field is never
+matched.
+</p>
+</li>
+</ul>
+</font></li>
+</ul>
+<p>
+The quota errors apply both to system-enforced quotas and to Exim's own quota
+mechanism in the <b>appendfile</b> transport. The <i>quota</i> error also applies
+when a local delivery is deferred because a partition is full (the <font size=-1>ENOSPC</font>
+error).
+</p>
+<a name="IX2254"></a>
+<h2>
+<a name="SECT32.4" href="spec_toc.html#TOC237">
+32.4. Retry rule parameters
+</a></h2>
+<p>
+The third field in a retry rule is a sequence of retry parameter sets,
+separated by semicolons. Each set consists of
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#060;<em>letter</em>&#062;,&#060;<em>cutoff time</em>&#062;,&#060;<em>arguments</em>&#062;</tt><br>
+</p>
+<p>
+<a name="IX2255"></a>
+The letter identifies the algorithm for computing a new retry time; the cutoff
+time is the time beyond which this algorithm no longer applies, and the
+arguments vary the algorithm's action. The cutoff time is measured from the
+time that the first failure for the domain (combined with the local part if
+relevant) was detected, not from the time the message was received.
+The available algorithms are:
+</p>
+<ul>
+<li><p>
+<i>F</i>: retry at fixed intervals. There is a single time parameter specifying the
+interval.
+</p>
+</li>
+<li><p>
+<i>G</i>: retry at geometrically increasing intervals. The first argument specifies
+a starting value for the interval, and the second a multiplier, which is used
+to increase the size of the interval at each retry.
+</p>
+</li>
+</ul>
+<p>
+<a name="IX2256"></a>
+<a name="IX2257"></a>
+<a name="IX2258"></a>
+When computing the next retry time, the algorithm definitions are scanned in
+order until one whose cutoff time has not yet passed is reached. This is then
+used to compute a new retry time that is later than the current time. In the
+case of fixed interval retries, this simply means adding the interval to the
+current time. For geometrically increasing intervals, retry intervals are
+computed from the rule's parameters until one that is greater than the previous
+interval is found. The main configuration variable
+<tt>retry&#095;interval&#095;max</tt> limits the maximum interval between retries.
+</p>
+<p>
+A single remote domain may have a number of hosts associated with it, and each
+host may have more than one IP address. Retry algorithms are selected on the
+basis of the domain name, but are applied to each IP address independently. If,
+for example, a host has two IP addresses and one is unusable, Exim will
+generate retry times for it and will not try to use it until its next retry
+time comes. Thus the good IP address is likely to be tried first most of the
+time.
+<a name="IX2259"></a>
+</p>
+<p>
+Retry times are hints rather than promises. Exim does not make any attempt to
+run deliveries exactly at the computed times. Instead, a queue runner process
+starts delivery processes for delayed messages periodically, and these attempt
+new deliveries only for those addresses that have passed their next retry time.
+If a new message arrives for a deferred address, an immediate delivery attempt
+occurs only if the address has passed its retry time. In the absence of new
+messages, the minimum time between retries is the interval between queue runner
+processes. There is not much point in setting retry times of five minutes if
+your queue runners happen only once an hour, unless there are a significant
+number of incoming messages (which might be the case on a system that is
+sending everything to a smart host, for example).
+</p>
+<p>
+The data in the retry hints database can be inspected by using the
+<i>exim&#095;dumpdb</i> or <i>exim&#095;fixdb</i> utility programs (see chapter <a href="spec_46.html">46</a>). The
+latter utility can also be used to change the data. The <i>exinext</i> utility
+script can be used to find out what the next retry times are for the hosts
+associated with a particular mail domain, and also for local deliveries that
+have been deferred.
+</p>
+<h2>
+<a name="SECT32.5" href="spec_toc.html#TOC238">
+32.5. Retry rule examples
+</a></h2>
+<p>
+Here are some example retry rules:
+<pre>
+&nbsp;&nbsp;alice@wonderland.fict.example quota_5d  F,7d,3h
+&nbsp;&nbsp;wonderland.fict.example       quota_5d
+&nbsp;&nbsp;wonderland.fict.example       *         F,1h,15m; G,2d,1h,2;
+&nbsp;&nbsp;lookingglass.fict.example     *         F,24h,30m;
+&nbsp;&nbsp;*                          refused_A F,2h,20m;
+&nbsp;&nbsp;*                          *         F,2h,15m; G,16h,1h,1.5; F,5d,8h
+</pre>
+</p>
+<p>
+The first rule sets up special handling for mail to
+<i>alice&#064;wonderland.fict.example</i> when there is an over-quota error and the
+mailbox has not been read for at least 5 days. Retries continue every three
+hours for 7 days. The second rule handles over-quota errors for all other local
+parts at <i>wonderland.fict.example</i>; the absence of a local part has the same
+effect as supplying &#147;*&#064;&#148;. As no retry algorithms are supplied, messages that
+fail are bounced immediately if the mailbox has not been read for at least 5
+days.
+</p>
+<p>
+The third rule handles all other errors at <i>wonderland.fict.example</i>; retries
+happen every 15 minutes for an hour, then with geometrically increasing
+intervals until two days have passed since a delivery first failed. After the
+first hour there is a delay of one hour, then two hours, then four hours, and
+so on (this is a rather extreme example).
+</p>
+<p>
+The fourth rule controls retries for the domain <i>lookingglass.fict.example</i>.
+They happen every 30 minutes for 24 hours only. The remaining two rules handle
+all other domains, with special action for connection refusal from hosts that
+were not obtained from an MX record.
+</p>
+<p>
+The final rule in a retry configuration should always have asterisks in the
+first two fields so as to provide a general catch-all for any addresses that do
+not have their own special handling. This example tries every 15 minutes for 2
+hours, then with intervals starting at one hour and increasing by a factor of
+1.5 up to 16 hours, then every 8 hours up to 5 days.
+</p>
+<a name="IX2260"></a>
+<a name="IX2261"></a>
+<a name="IX2262"></a>
+<a name="IX2263"></a>
+<h2>
+<a name="SECT32.6" href="spec_toc.html#TOC239">
+32.6. Timeout of retry data
+</a></h2>
+<p>
+Exim timestamps the data that it writes to its retry hints database. When it
+consults the data during a delivery it ignores any that is older than the value
+set in <tt>retry&#095;data&#095;expire</tt> (default 7 days). If, for example, a host hasn't
+been tried for 7 days, Exim will try to deliver to it immediately a message
+arrives, and if that fails, it will calculate a retry time as if it were
+failing for the first time.
+</p>
+<p>
+This improves the behaviour for messages routed to rarely-used hosts such as MX
+backups. If such a host was down at one time, and happens to be down again when
+Exim tries a month later, using the old retry data would imply that it had been
+down all the time, which is not a justified assumption.
+</p>
+<p>
+If a host really is permanently dead, this behaviour causes a burst of retries
+every now and again, but only if messages routed to it are rare. It there is a
+message at least once every 7 days the retry data never expires.
+</p>
+<a name="IX2264"></a>
+<a name="IX2265"></a>
+<h2>
+<a name="SECT32.7" href="spec_toc.html#TOC240">
+32.7. Long-term failures
+</a></h2>
+<p>
+Special processing happens when an email address has been failing for so long
+that the cutoff time for the last algorithm is reached. For example, using the
+default retry rule:
+<pre>
+&nbsp;&nbsp;* * F,2h,15m; G,16h,1h,1.5; F,4d,6h
+</pre>
+</p>
+<p>
+the cutoff time is four days. Reaching the retry cutoff is independent of how
+long any specific message has been failing; it is the length of continuous
+failure for the recipient address that counts. 
+</p>
+<p>
+When the cutoff time is reached for a local delivery, or for all the IP
+addresses associated with a remote delivery, a subsequent delivery failure
+causes Exim to give up on the address, and a bounce message is generated.
+In order to cater for new messages that use the failing address, a next retry
+time is still computed from the final algorithm, and is used as follows:
+</p>
+<p>
+For local deliveries, one delivery attempt is always made for any subsequent
+messages. If this delivery fails, the address fails immediately. The
+post-cutoff retry time is not used.
+</p>
+<p>
+<a name="IX2266"></a>
+If the delivery is remote, there are two possibilities, controlled by the
+<tt>delay&#095;after&#095;cutoff</tt> option of the <b>smtp</b> transport. The option is true by
+default and in that case:
+</p>
+<ul>
+<li><p>
+Until the post-cutoff retry time for one of the IP addresses is reached,
+the failing email address is bounced immediately, without a delivery attempt
+taking place. After that time, one new delivery attempt is made to those IP
+addresses that are past their retry times, and if that still fails, the address
+is bounced and new retry times are computed.
+</p>
+</li>
+</ul>
+<p>
+In other words, when all the hosts for a given email address have been failing
+for a long time, Exim bounces rather then defers until one of the hosts' retry
+times is reached. Then it tries once, and bounces if that attempt fails. This
+behaviour ensures that few resources are wasted in repeatedly trying to deliver
+to a broken destination, but if the host does recover, Exim will eventually
+notice.
+</p>
+<p>
+If <tt>delay&#095;after&#095;cutoff</tt> is set false, Exim behaves differently. If all IP
+addresses are past their final cutoff time, Exim tries to deliver to those IP
+addresses that have not been tried since the message arrived. If there are
+no suitable IP addresses, or if they all fail, the address is bounced. In other
+words, it does not delay when a new message arrives, but tries the expired
+addresses immediately, unless they have been tried since the message arrived.
+If there is a continuous stream of messages for the failing domains, setting
+<tt>delay&#095;after&#095;cutoff</tt> false means that there will be many more attempts to
+deliver to permanently failing IP addresses than when <tt>delay&#095;after&#095;cutoff</tt> is
+true.
+</p>
+<a name="IX2267"></a>
+<h2>
+<a name="SECT32.8" href="spec_toc.html#TOC241">
+32.8. Ultimate address timeout
+</a></h2>
+<p>
+An additional rule is needed to cope with cases where a host is intermittently
+available, or when a message has some attribute that prevents its delivery when
+others to the same address get through. In this situation, because some
+messages are successfully delivered, the &#147;retry clock&#148; for the address keeps
+getting restarted, and so a message could remain on the queue for ever. To
+prevent this, if a message has been on the queue for longer than the cutoff
+time of any applicable retry rule for a given address, a delivery is attempted
+for that address, even if it is not yet time, and if this delivery fails, the
+address is timed out. A new retry time is not computed in this case, so that
+other messages for the same address are considered immediately.
+<hr>
+</p>
+<font size=2>
+<a href="spec_31.html">Previous</a>&nbsp;&nbsp;<a href="spec_33.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

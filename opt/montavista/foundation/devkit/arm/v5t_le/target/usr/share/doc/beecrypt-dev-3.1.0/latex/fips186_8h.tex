@@ -1,0 +1,94 @@
+\hypertarget{fips186_8h}{
+\section{fips186.h File Reference}
+\label{fips186_8h}\index{fips186.h@{fips186.h}}
+}
+FIPS-186 pseudo-random number generator, headers. 
+
+{\tt \#include \char`\"{}beecrypt.h\char`\"{}}\par
+{\tt \#include \char`\"{}sha1.h\char`\"{}}\par
+\subsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \hyperlink{structfips186Param}{fips186Param}
+\end{CompactItemize}
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \hyperlink{fips186_8h_a0}{FIPS186\_\-STATE\_\-SIZE}\ 16
+\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{fips186_8h_a2}{fips186Setup} (\hyperlink{structfips186Param}{fips186Param} $\ast$)
+\item 
+int \hyperlink{fips186_8h_a3}{fips186Seed} (\hyperlink{structfips186Param}{fips186Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\item 
+int \hyperlink{fips186_8h_a4}{fips186Next} (\hyperlink{structfips186Param}{fips186Param} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\item 
+int \hyperlink{fips186_8h_a5}{fips186Cleanup} (\hyperlink{structfips186Param}{fips186Param} $\ast$)
+\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+const \hyperlink{structrandomGenerator}{random\-Generator} \hyperlink{fips186_8h_a1}{fips186prng}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+FIPS-186 pseudo-random number generator, headers. 
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{fips186_8h-source}{fips186.h}.
+
+\subsection{Define Documentation}
+\hypertarget{fips186_8h_a0}{
+\index{fips186.h@{fips186.h}!FIPS186_STATE_SIZE@{FIPS186\_\-STATE\_\-SIZE}}
+\index{FIPS186_STATE_SIZE@{FIPS186\_\-STATE\_\-SIZE}!fips186.h@{fips186.h}}
+\subsubsection[FIPS186\_\-STATE\_\-SIZE]{\setlength{\rightskip}{0pt plus 5cm}\#define FIPS186\_\-STATE\_\-SIZE\ 16}}
+\label{fips186_8h_a0}
+
+
+Definition at line 44 of file fips186.h.
+
+\subsection{Function Documentation}
+\hypertarget{fips186_8h_a5}{
+\index{fips186.h@{fips186.h}!fips186Cleanup@{fips186Cleanup}}
+\index{fips186Cleanup@{fips186Cleanup}!fips186.h@{fips186.h}}
+\subsubsection[fips186Cleanup]{\setlength{\rightskip}{0pt plus 5cm}int fips186Cleanup (\hyperlink{structfips186Param}{fips186Param} $\ast$)}}
+\label{fips186_8h_a5}
+
+
+\hypertarget{fips186_8h_a4}{
+\index{fips186.h@{fips186.h}!fips186Next@{fips186Next}}
+\index{fips186Next@{fips186Next}!fips186.h@{fips186.h}}
+\subsubsection[fips186Next]{\setlength{\rightskip}{0pt plus 5cm}int fips186Next (\hyperlink{structfips186Param}{fips186Param} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)}}
+\label{fips186_8h_a4}
+
+
+\hypertarget{fips186_8h_a3}{
+\index{fips186.h@{fips186.h}!fips186Seed@{fips186Seed}}
+\index{fips186Seed@{fips186Seed}!fips186.h@{fips186.h}}
+\subsubsection[fips186Seed]{\setlength{\rightskip}{0pt plus 5cm}int fips186Seed (\hyperlink{structfips186Param}{fips186Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)}}
+\label{fips186_8h_a3}
+
+
+\hypertarget{fips186_8h_a2}{
+\index{fips186.h@{fips186.h}!fips186Setup@{fips186Setup}}
+\index{fips186Setup@{fips186Setup}!fips186.h@{fips186.h}}
+\subsubsection[fips186Setup]{\setlength{\rightskip}{0pt plus 5cm}int fips186Setup (\hyperlink{structfips186Param}{fips186Param} $\ast$)}}
+\label{fips186_8h_a2}
+
+
+
+
+\subsection{Variable Documentation}
+\hypertarget{fips186_8h_a1}{
+\index{fips186.h@{fips186.h}!fips186prng@{fips186prng}}
+\index{fips186prng@{fips186prng}!fips186.h@{fips186.h}}
+\subsubsection[fips186prng]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structrandomGenerator}{random\-Generator} \hyperlink{fips186_8h_a1}{fips186prng}}}
+\label{fips186_8h_a1}
+
+

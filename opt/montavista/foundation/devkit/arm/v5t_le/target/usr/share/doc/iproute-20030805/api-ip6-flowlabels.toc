@@ -1,0 +1,21 @@
+\contentsline {section}{\numberline {1}Introduction.}{1}
+\contentsline {section}{\numberline {2}Sending/receiving flow information.}{2}
+\contentsline {subsection}{Discussion}{2}
+\contentsline {paragraph}{Discussion.}{2}
+\contentsline {subsection}{Implementation}{3}
+\contentsline {paragraph}{Implementation.}{3}
+\contentsline {subsection}{IPv6 options and destination address}{3}
+\contentsline {paragraph}{Note about IPv6 options and destination address.}{3}
+\contentsline {subsection}{Example}{3}
+\contentsline {paragraph}{Example.}{3}
+\contentsline {section}{\numberline {3}Flow label management.}{4}
+\contentsline {subsection}{Discussion}{4}
+\contentsline {paragraph}{Discussion.}{4}
+\contentsline {subsection}{Implementation}{5}
+\contentsline {paragraph}{Implementation.}{5}
+\contentsline {subsection}{Example}{6}
+\contentsline {paragraph}{Example.}{6}
+\contentsline {subsection}{Listing flow labels}{7}
+\contentsline {paragraph}{Listing flow labels.}{7}
+\contentsline {subsection}{Flow labels and RSVP}{8}
+\contentsline {paragraph}{Flow labels and RSVP.}{8}

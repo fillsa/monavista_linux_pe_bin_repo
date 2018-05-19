@@ -1,0 +1,17 @@
+This is Ben Greear's vlan patch for the linux kernel.
+It contains the NICE patches by Ard van Breemen.
+
+It is packaged by Ard van Breemen <ard@kwaak.net>.
+
+It can be found at:
+http://www.wanfear.com/~greear/vlan.html
+
+Copyright:
+The vlan patch is licensed under the GNU General Public License,
+version 2.
+The copyrightholder is Ben Greear.
+
+
+A copy of the GNU General Public License, version 2, can be found in
+/usr/share/common-licenses/GPL .
+

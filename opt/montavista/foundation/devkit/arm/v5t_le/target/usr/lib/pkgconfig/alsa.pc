@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=/usr
+libdir=/usr/lib
+includedir=/usr/include/alsa
+
+Name: alsa
+Description: Advanced Linux Sound Architecture (ALSA) - Library
+Version: 1.0.6
+Requires: 
+Libs: -L${libdir} -lasound -lm -ldl -lpthread
+Cflags: -I${includedir}

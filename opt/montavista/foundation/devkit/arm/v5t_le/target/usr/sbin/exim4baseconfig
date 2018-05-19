@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+. /usr/share/debconf/confmodule
+
+[ -n "$EX4DEBUG" ] && set -x
+
+if [ -d /var/spool/exim/input ] ; then
+	# With "head -n 1" this shouldn't be expensive.
+	oldmails=`find /var/spool/exim/input/ -type f -print | head -n 1`
+fi
+
+if [ "x${oldmails}" != "x" ] ; then
+	db_version 2.0
+	db_input medium exim4/move_exim3_spool || true
+	db_go || true
+fi

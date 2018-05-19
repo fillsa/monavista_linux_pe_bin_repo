@@ -1,0 +1,53 @@
+#!/bin/bash
+
+NC="/etc/ntp.conf"
+
+if [ -f $NC ]
+then
+	echo "An /etc/ntp.conf file already exists.  If you really want to"
+	echo "replace it, remove it and run this script again."
+	echo ""
+else
+	echo "Creating a simple /etc/ntp.conf..."
+
+	echo "# /etc/ntp.conf, configuration for xntpd" > $NC
+	echo "" >> $NC
+	echo "# ntpd will use syslog() if logfile is not defined" >> $NC
+	echo "#logfile /var/log/ntpd" >> $NC
+	echo "" >> $NC
+	echo "driftfile /var/lib/ntp/ntp.drift" >> $NC
+	echo "statsdir /var/log/ntpstats/" >> $NC
+	echo "" >> $NC
+	echo "statistics loopstats peerstats clockstats" >> $NC
+	echo "filegen loopstats file loopstats type day enable" >> $NC
+	echo "filegen peerstats file peerstats type day enable" >> $NC
+	echo "filegen clockstats file clockstats type day enable" >> $NC
+	echo "" >> $NC
+
+	echo
+	echo "Before ntpd can syncronize your computer's clock, we need the"
+	echo "address of at least one existing NTP server for the ntp.conf"
+	echo "file.  If you have a radio clock and/or want to establish peer"
+	echo "instead of server relationships in ntpd, you will need to edit"
+	echo "/etc/ntp.conf manually."
+	echo
+
+	echo "Please enter the address of an NTP server, or <enter> to end:"
+	echo -n "> "
+	read TMP
+	if [ -z $TMP ]
+	then	
+		echo "#server" >> $NC
+	else
+        	while [ ! -z $TMP ]
+		do
+			echo "server $TMP" >> $NC
+			echo "Another? (<enter> to end):"
+			echo -n "> "
+			read TMP
+		done
+	fi
+	echo
+fi
+
+echo "Congratulations, you now have an /etc/ntp.conf..."

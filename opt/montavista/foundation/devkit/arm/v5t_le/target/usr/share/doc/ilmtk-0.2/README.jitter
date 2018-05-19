@@ -1,0 +1,250 @@
+
+MontaVista's Performance Benchmark Cookbook:
+
+
+	Here are the list of steps to get and run MV's performance
+	benchmark suite.  We use open source benchmarks so our customers
+	(and competitors) can reproduce and trust our numbers easily.
+
+
+What benchmarks do we use?
+
+	The benchmarks we use are LMbench2 and netperf. We also use these 
+	tests as background loads for measuring interrupt and preemption 
+	latency curves.  A test called 'jitter' is used to measure preemption
+	latency under load.
+
+
+What do these benchmarks measure?
+
+	LMbench measures basic UNIX OS system calls.   It's most popular
+	for measuring context switch times.    
+	
+	Netperf measures udp, and tcp throughput and round trip performance.  
+	Netperf creates sockets between the client and server and blasts 
+	different kinds and sizes of packets back and forth.  Netperf is 
+	designed to pump packets as fast as the hardware will allow.
+
+	Jitter is used to measure kernel preemption latency and was developed
+	by MontaVista (George Anzinger).
+
+	Interrupt Latency is a kernel config option for HHL-2.0.1 that measures
+	the interrupt latency characteristic of the target.  It measures
+	interrupt overhead and interrupt off times to produce a 'curve' of
+	the interrupt latency finger print of the target. 
+
+	For HHL-2.0 Interrupt latency is a patch that can be applied to
+	our 2.0 source tree (kind of) and built to instrument the kernel.
+
+
+Where to get the benchmarks?
+
+	MV has unofficially packaged LMbench2, (we had to remove the dependency
+	on having bitkeeper installed so it breaks Larry's LICENSE2 agreement).
+	But it makes it easy for MV employees to get and use.  The RPMs
+	are on apocalypse.mvista.com:private/LMbench2.  Or the benchmark
+	can be gotten from www.bitmover.com.
+
+	Netperf was packaged for CDK1.2 and the RPMs are available on
+	apocalypse as well, apocalypse.mvista.com:/private/netperf, or
+	from www.netperf.org.
+
+	Jitter is also available on apocalypse.mvista.com:/private/jitter.
+
+
+What hardware is needed to run these benchmarks?
+
+	LMbench2 is a stand alone benchmark.  It just installs, compiles
+	and runs on a stand alone target.  LMbench can measure networking
+	performance, but to do so requires the host and target be identical
+	architectures and ideally identical systems.
+	
+	Netperf is a client server type of benchmark.  The server runs on the 
+	host and netperf runs on the target.  Netperf needs to be run on a 
+	quiet, private network.  The host has to be of equal or greater
+	horse power, both in terms of CPU and network connection.
+
+	Netperf is very sensitive to extraneous network traffic.  The ideal
+	setup is a target and host with just a network cable between them.
+	Netperf does not perform well if the traffic has to go through
+	a gateway.
+
+	Jitter requires a real time clock, /dev/rtc, that either runs at 2 KHz 
+	or can be programmed to run at 2KHz.  Some targets do not have an RTC 
+	and cannot use the jitter test.  Jun Sun has written a new test that
+	does not require /dev/rtc.
+
+	Interrupt Latency measurements require no special hardware.  When config'd
+	into the kernel the latencies are measured continuously from the time
+	the board is booted in /proc/imaxoff and /proc/ilatcurve.
+
+What software is needed to run the benchmarks?
+
+	Netperf requires a TCP/IP networked host and target that are capable
+	of supporting standard UNIX socket types.
+
+	LMbench2 requires additional packages on the target, like make, perl,
+	sed, groff, and gcc.
+
+	Jitter requires a preempt-able kernel (or not if you want to measure
+	how bad the stock Linux kernel is . . .)
+
+	Interrupt Latency needs LSP support.  The timer on the target must
+	be known to the kernel.  For HHL-2.0 we set 'ticks_per_usec' to
+	match the timer that the interrupt latency instrumentation uses.
+	If this variable is not set the kernel will panic.
+
+
+How do I run the benchmarks?
+
+	LMbench and netperf have instructions in the RPMs on how to run
+	the benchmarks.  LMbench2 requires some setup to run.  It asks several
+	questions the first time it runs.  Once the correct answers have been 
+	given the test can run repeatedly without operator assistance.
+
+	To run LMbench2 you type 'make rerun' in the /usr/src/LMbench2
+	directory.  The benchmark is then compiled for the target.
+
+	LMbench2 firsts ask how much memory is on your system.  LMbench2 needs
+	at least 16 Meg to run.  It has a 10 Meg file that it manipulates
+	in various ways in memory.
+
+	The second question is if you want to do a fastmem run. Answer no.
+
+	The third question is do you want to skip the file system tests.
+	Answer yes, unless you have a disk on your target and wish to
+	measure the file system on that disk.
+
+	The next question will be the type of disk for the file system
+	tests, hit the return key to get 'none'.
+
+	The benchmark will then try and calculate the speed of you CPU.
+	It will ask you if it's calculation is correct.  I have yet to
+	find a system where it calculated wrong, just hit return.
+
+	The next question is the FSDIR question, answer /tmp instead
+	of /usr/tmp.  Most embedded boards don't have /usr/tmp.
+
+	It will then ask you if you have a remote system to do networking
+	performance.  Hit the return key to get the default of none.
+
+	The next question will be which device to log the output, answer
+	/dev/ttyS0, if that is your console.
+
+	The last question is do you want to mail your results to bitmover.com.
+	Answer no.
+
+	When the test is finished cd to the 'results' directory and type
+	
+	'make > target-name.lmbench'
+
+	Finally, send me the results to put in our ever growing data base
+	of performance information.
+
+
+	Netperf:
+
+	You need to install two RPMs for netperf.  The first is the host RPM,
+	and we support, i386, Solaris and PPC hosts.  This RPM gets installed
+	in /opt/hardhat/host/bin.  The second is the target RPM which matches
+	the target architecture of your system.  It gets installed in
+	/opt/hardhat/devkit/(arch)/(sub-arch)/target/bin.
+
+	After you have installed the rpms copy the scripts from apocalypse
+	over the top of the netperf scripts in /bin.  The scripts in apocalypse
+	have been edited to run better in an embedded environment.
+
+	tcp_range_script, tcp_rr_script, tcp_stream_script, udp_stream_script.
+
+	Create a directory on the target called /usr/src/netperf.
+
+	Add the netperf line to /etc/services.
+	
+	netperf         12865/tcp 
+
+	Next start the netserver script on you host, 
+	
+		/opt/hardhat/host/bin/netserver.
+
+	Once the host has netserver running you type: 
+	
+		'runnetperf host-ip-address target-name' 
+	
+	on the target and netperf will produce it's output in 
+	
+	/usr/src/netperf/target-name.tcp_stream, etc..
+
+
+	Jitter:
+
+	To run the jitter test first you need a preempt-able kernel.  Next
+	you need a background load, like netperf or lmbench.  Run either
+	benchmark you have handy in an infinite loop.
+
+
+	while true
+	do
+		./runnetperf 10.0.0.85 xscale
+	done &
+
+	Then start the jitter test.
+
+	./jitter | tee xscale.jitter
+
+	The results will be in the file 'xscale.jitter'.  The longer the test
+	runs the more of a data sample you'll have and the more meaningful
+	the results.  I typically make sure that the data set is more than
+	a million.  I used 155 million for the following SH3 run.  You are
+	really only interested in the last three lines of the output file.
+
+	Here is a sample of the jitter test output.  It has three rows.  
+	The first row is microseconds.  The second row is the number of times 
+	the kernel preempted in less than the above microseconds.  The third
+	row is the percentage of times the kernel preempted in less than
+	the above microseconds.  The more samples you get the the higher
+	percentage you get in the 10 microsecond column.
+
+	   10    20    50   100   200   500  1000  2000  5000 10000  over   max
+	 155M 5426k 7608k 1282k  492k  374k  127k 26941  144k 11751   813 20321
+	91.0%  3.2%  4.4%  0.7%  0.3%  0.2%  0.1%  0.0%  0.1%  0.0%  0.0%   
+
+	Interrupt Latency.
+
+	Interrupt Latency numbers are similar to preemption numbers.  When
+	you run a heavy background load that generates lots of interrupts,
+	like netperf does, you take a look at /proc/ilatcurve after a long
+	enough time.  You'll see something like the following:
+
+#304952932 samples logged
+#timer measured 266 ticks per usec.
+#interrupt overhead 3 microseconds
+usec  samples
+ 2   304918008
+ 4      31054
+ 6       1330
+ 8        397
+10        936
+12        529
+14        130
+16         86
+18         54
+20         25
+22         97
+24        101
+26         41
+28          8
+30          4
+32          1
+34          5
+36          2            
+
+	The first line will tell you how many samples have been logged.
+	The next line is how fast the timer is running.  Please make sure
+	this number is correct or your data will be wrong.  The third
+	line is the interrupt overhead.  The remaining lines are contain
+	two numbers, the first is microseconds, the second is the number
+	of samples where interrupt were off below the stated microseconds.
+
+	Please feel free to ask questions or comment on our benchmarking
+	procedures. And definitely feel free to share your performance
+	data with all MV employees.  

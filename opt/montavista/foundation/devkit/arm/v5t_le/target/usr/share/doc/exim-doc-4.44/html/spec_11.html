@@ -1,0 +1,2873 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 11</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_10.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_12.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX797"></a>
+<h1>
+<a name="CHAP11" href="spec_toc.html#TOC123">
+11. String expansions
+</a></h1>
+<p>
+Many strings in Exim's run time configuration are expanded before use. Some of
+them are expanded every time they are used; others are expanded only once.
+</p>
+<p>
+When a string is being expanded it is copied verbatim from left to right except
+when a dollar or backslash character is encountered. A dollar specifies the
+start of a portion of the string which is interpreted and replaced as described
+below in section <a href="spec_11.html#SECT11.4">11.4</a> onwards. Backslash is used as an escape 
+character, as described in the following section.
+</p>
+<a name="IX798"></a>
+<h2>
+<a name="SECT11.1" href="spec_toc.html#TOC124">
+11.1. Literal text in expanded strings
+</a></h2>
+<p>
+An uninterpreted dollar can be included in an expanded string by putting a
+backslash in front of it. A backslash can be used to prevent any special
+character being treated specially in an expansion, including itself. If the
+string appears in quotes in the configuration file, two backslashes are
+required because the quotes themselves cause interpretation of backslashes when
+the string is read in (see section <a href="spec_6.html#SECT6.12">6.12</a>).
+<a name="IX799"></a>
+</p>
+<p>
+A portion of the string can specified as non-expandable by placing it between
+two occurrences of <tt>&#092;N</tt>. This is particularly useful for protecting regular
+expressions, which often contain backslashes and dollar signs. For example:
+<pre>
+&nbsp;&nbsp;deny senders = \N^\d{8}[a-z]@some\.site\.example$\N
+</pre>
+</p>
+<p>
+On encountering the first <tt>&#092;N</tt>, the expander copies subsequent characters
+without interpretation until it reaches the next <tt>&#092;N</tt> or the end of the
+string.
+</p>
+<a name="IX800"></a>
+<h2>
+<a name="SECT11.2" href="spec_toc.html#TOC125">
+11.2. Character escape sequences in expanded strings
+</a></h2>
+<p>
+A backslash followed by one of the letters &#147;n&#148;, &#147;r&#148;, or &#147;t&#148; in an expanded
+string is recognized as an escape sequence for the character newline, carriage
+return, or tab, respectively. A backslash followed by up to three octal digits
+is recognized as an octal encoding for a single character, and a backslash
+followed by &#147;x&#148; and up to two hexadecimal digits is a hexadecimal encoding.
+</p>
+<p>
+These escape sequences are also recognized in quoted strings when they are read
+in. Their interpretation in expansions as well is useful for unquoted strings,
+and for other cases such as looked-up strings that are then expanded.
+</p>
+<a name="IX801"></a>
+<a name="IX802"></a>
+<a name="IX803"></a>
+<h2>
+<a name="SECT11.3" href="spec_toc.html#TOC126">
+11.3. Testing string expansions
+</a></h2>
+<p>
+Many expansions can be tested by calling Exim with the <i>-be</i> option. This takes
+the command arguments, or lines from the standard input if there are no
+arguments, runs them through the string expansion code, and writes the results
+to the standard output. Variables based on configuration values are set up, but
+since no message is being processed, variables such as <tt>$local&#095;part</tt> have no
+value. Nevertheless the <i>-be</i> option can be useful for checking out file and
+database lookups, and the use of expansion operators such as <tt>sg</tt>, <tt>substr</tt> and
+<tt>nhash</tt>.
+</p>
+<p>
+Exim gives up its root privilege when it is called with the <i>-be</i> option, and
+instead runs under the uid and gid it was called with, to prevent users from
+using <i>-be</i> for reading files to which they do not have access.
+</p>
+<h2>
+<a name="SECT11.4" href="spec_toc.html#TOC127">
+11.4. Expansion items
+</a></h2>
+<p>
+The following items are recognized in expanded strings. White space may be used
+between sub-items that are keywords or substrings enclosed in braces inside an
+outer set of braces, to improve readability. <b>Warning</b>: Within braces,
+white space is significant.
+<hr></p>
+<p>
+<a name="IX804"></a>
+<b>&#036;&#060;<em>variable name</em>&#062;&nbsp;or&nbsp;&#036;&#123;&#060;<em>variable name</em>&#062;&#125;</b>
+</p>
+<p>
+Substitute the contents of the named variable, for example
+<pre>
+&nbsp;&nbsp;$local_part
+&nbsp;&nbsp;${domain}
+</pre>
+</p>
+<p>
+The second form can be used to separate the name from subsequent alphanumeric
+characters. This form (using curly brackets) is available only for variables;
+it does <em>not</em> apply to message headers. The names of the variables are given
+in section <a href="spec_11.html#SECT11.8">11.8</a> below. If the name of a non-existent variable is given,
+the expansion fails.
+<hr></p>
+<p>
+<a name="IX805"></a>
+<b>&#036;&#123;&#060;<em>op</em>&#062;:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The string is first itself expanded, and then the operation specified by &#060;<em>op</em>&#062;
+is applied to it. For example,
+<pre>
+&nbsp;&nbsp;${lc:$local_part}
+</pre>
+</p>
+<p>
+The string starts with the first character after the colon, which may be
+leading white space. A list of operators is given in section <a href="spec_11.html#SECT11.5">11.5</a> below.
+The operator notation is used for simple expansion items that have just one
+argument, because it reduces the number of braces and therefore makes the
+string easier to understand.
+<hr></p>
+<p>
+<a name="IX806"></a>
+<b>&#036;&#123;extract&#123;&#060;<em>key</em>&#062;&#125;&#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;&#123;&#060;<em>string3</em>&#062;&#125;&#125;</b>
+</p>
+<p>
+The key and &#060;<em>string1</em>&#062; are first expanded separately. 
+Leading and trailing whitespace is removed from the key (but not from any of 
+the strings).
+The key must not consist entirely of digits. The expanded &#060;<em>string1</em>&#062; must be
+of the form:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#060;<em>key1</em>&#062; = &#060;<em>value1</em>&#062;  &#060;<em>key2</em>&#062; = &#060;<em>value2</em>&#062; ...</tt><br>
+</p>
+<p>
+where the equals signs and spaces (but not both) are optional. If any of the
+values contain white space, they must be enclosed in double quotes, and any
+values that are enclosed in double quotes are subject to escape processing as
+described in section <a href="spec_6.html#SECT6.12">6.12</a>. The expanded &#060;<em>string1</em>&#062; is searched for
+the value that corresponds to the key. The search is case-insensitive. If the
+key is found, &#060;<em>string2</em>&#062; is expanded, and replaces the whole item; otherwise
+&#060;<em>string3</em>&#062; is used. During the expansion of &#060;<em>string2</em>&#062; the variable <tt>$value</tt>
+contains the value that has been extracted. Afterwards, it is restored to any
+previous value it might have had.
+</p>
+<p>
+If &#123;&#060;<em>string3</em>&#062;&#125; is omitted, the item is replaced by an empty string if the
+key is not found. If &#123;&#060;<em>string2</em>&#062;&#125; is also omitted, the value that was
+extracted is used. Thus, for example, these two expansions are identical, and
+yield &#147;2001&#148;:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#036;&#123;extract&#123;gid&#125;{uid=1984 gid=2001&#125;&#125;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>&#036;&#123;extract&#123;gid&#125;{uid=1984 gid=2001&#125;&#123;&#036;value&#125;&#125;</tt><br>
+</p>
+<p>
+Instead of &#123;&#060;<em>string3</em>&#062;&#125; the word &#147;fail&#148; (not in curly brackets) can appear,
+for example:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#036;&#123;extract&#123;Z&#125;&#123;A=... B=...&#125;&#123;&#036;value&#125; fail &#125;</tt><br>
+</p>
+<p>
+&#123;&#060;<em>string2</em>&#062;&#125; must be present for &#147;fail&#148; to be recognized. When this syntax
+is used, if the extraction fails, the entire string expansion fails in a way
+that can be detected by the code in Exim which requested the expansion. This is
+called &#147;forced expansion failure&#148;, and its consequences depend on the
+circumstances. In some cases it is no different from any other expansion
+failure, but in others a different action may be taken. Such variations are
+mentioned in the documentation of the option which is expanded.
+<hr></p>
+<p>
+<a name="IX807"></a>
+<b>&#036;&#123;extract&#123;&#060;<em>number</em>&#062;&#125;&#123;&#060;<em>separators</em>&#062;&#125;&#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;&#123;&#060;<em>string3</em>&#062;&#125;&#125;</b>
+</p>
+<p>
+The &#060;<em>number</em>&#062; argument must consist entirely of decimal digits,
+apart from leading and trailing whitespace, which is ignored. 
+This is what distinguishes this form of <tt>extract</tt> from the previous kind. It
+behaves in the same way, except that, instead of extracting a named field, it
+extracts from &#060;<em>string1</em>&#062; the field whose number is given as the first
+argument. You can use <tt>$value</tt> in &#060;<em>string2</em>&#062; or <tt>fail</tt> instead of
+&#060;<em>string3</em>&#062; as before.
+</p>
+<p>
+The fields in the string are separated by any one of the characters in the
+separator string. These may include space or tab characters.
+The first field is numbered one. If the number is negative, the fields are
+counted from the end of the string, with the rightmost one numbered -1. If the
+number given is zero, the entire string is returned. If the modulus of the
+number is greater than the number of fields in the string, the result is the
+expansion of &#060;<em>string3</em>&#062;, or the empty string if &#060;<em>string3</em>&#062; is not provided.
+For example:
+<pre>
+&nbsp;&nbsp;${extract{2}{:}{x:42:99:&#038; Mailer::/bin/bash}}
+</pre>
+</p>
+<p>
+yields &#147;42&#148;, and
+<pre>
+&nbsp;&nbsp;${extract{-4}{:}{x:42:99:&#038; Mailer::/bin/bash}}
+</pre>
+</p>
+<p>
+yields &#147;99&#148;. Two successive separators mean that the field between them is
+empty (for example, the fifth field above).
+<hr></p>
+<p>
+<a name="IX808"></a>
+<a name="IX809"></a>
+<b>&#036;&#123;hash&#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;&#123;&#060;<em>string3</em>&#062;&#125;&#125;</b>
+</p>
+<p>
+This is a textual hashing function, and was the first to be implemented in 
+early versions of Exim. In current releases, there are other hashing functions 
+(numeric, MD5, and SHA-1), which are described below.
+</p>
+<p>
+The first two strings, after expansion, must be numbers. Call them &#060;<em>m</em>&#062; and 
+&#060;<em>n</em>&#062;. If you are using fixed values for these numbers, that is, if &#060;<em>string1</em>&#062; 
+and &#060;<em>string2</em>&#062; do not change when they are expanded, you can use the
+simpler operator notation that avoids some of the braces:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#036;&#123;hash&#095;&#060;<em>n</em>&#062;&#095;&#060;<em>m</em>&#062;:&#060;<em>string</em>&#062;&#125;</tt><br>
+</p>
+<p>
+The second number is optional (in both notations).
+</p>
+<p>
+If &#060;<em>n</em>&#062; is greater than or equal to the length of the string, the expansion 
+item returns the string. Otherwise it computes a new string of length &#060;<em>n</em>&#062; by
+applying a hashing function to the string. The new string consists of
+characters taken from the first &#060;<em>m</em>&#062; characters of the string
+<pre>
+&nbsp;&nbsp;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQWRSTUVWXYZ0123456789
+</pre>
+</p>
+<p>
+If &#060;<em>m</em>&#062; is not present the value 26 is used, so that only lower case
+letters appear. For example:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#036;&#123;hash&#123;3&#125;&#123;monty&#125;&#125;              </tt>yields<tt>  <tt>jmg</tt>     </tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>&#036;&#123;hash&#123;5&#125;&#123;monty&#125;&#125;              </tt>yields<tt>  <tt>monty</tt>   </tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>&#036;&#123;hash&#123;4&#125;&#123;62&#125;&#123;monty python&#125;&#125;   </tt>yields<tt>  <tt>fbWx</tt>    </tt><br>
+<hr></p>
+<p>
+<b>&#036;header&#095;&#060;<em>header name</em>&#062;:&nbsp;or&nbsp;&#036;h&#095;&#060;<em>header name</em>&#062;:</b>
+<br><b>&#036;bheader&#095;&#060;<em>header name</em>&#062;:&nbsp;or&nbsp;&#036;bh&#095;&#060;<em>header name</em>&#062;:</b>
+<br><b>&#036;rheader&#095;&#060;<em>header name</em>&#062;:&nbsp;or&nbsp;&#036;rh&#095;&#060;<em>header name</em>&#062;:</b>
+<a name="IX810"></a>
+<a name="IX811"></a>
+<a name="IX812"></a>
+<a name="IX813"></a>
+<a name="IX814"></a>
+<a name="IX815"></a>
+<a name="IX816"></a>
+</p>
+<p>
+Substitute the contents of the named message header line, for example
+<pre>
+&nbsp;&nbsp;$header_reply-to:
+</pre>
+</p>
+<p>
+The newline that terminates a header line is not included in the expansion, but
+internal newlines (caused by splitting the header line over several physical
+lines) may be present. 
+</p>
+<p>
+The difference between <tt>rheader</tt>, <tt>bheader</tt>, and <tt>header</tt> is in the way the 
+data in the header line is interpreted. 
+</p>
+<ul>
+<li><p>
+<tt>rheader</tt> gives the original &#147;raw&#148; content of the header line, with no
+processing at all, and without the removal of leading and trailing whitespace.
+</p>
+</li>
+<li><a name="IX817"></a>
+<p>
+<a name="IX818"></a>
+<tt>bheader</tt> removes leading and trailing whitespace, and then decodes base64 or
+quoted-printable MIME &#147;words&#148; within the header text, but does no character
+set translation. If decoding of what looks superficially like a MIME &#147;word&#148;
+fails, the raw string is returned. 
+If decoding produces a binary zero character, it is replaced by a question mark
+&#150; this is what Exim does for binary zeros that are actually received in header
+lines.
+</p>
+</li>
+<li><p>
+<tt>header</tt> tries to translate the string as decoded by <tt>bheader</tt> to a standard
+character set. This is an attempt to produce the same string as would be
+displayed on a user's MUA. If translation fails, the <tt>bheader</tt> string is
+returned. Translation is attempted only on operating systems that support the
+<i>iconv()</i> function. This is indicated by the compile-time macro
+<font size=-1>HAVE&#095;ICONV</font> in a system Makefile or in <i>Local/Makefile</i>.
+</p>
+</li>
+</ul>
+<p>
+In a filter file, the target character set for <tt>header</tt> can be specified by a
+command of the following form:
+<pre>
+&nbsp;&nbsp;headers charset "UTF-8"
+</pre>
+</p>
+<p>
+This command affects all references to <tt>$h&#095;</tt> (or <tt>$header&#095;</tt>) expansions in
+subsequently obeyed filter commands. In the absence of this command, the target
+character set in a filter is taken from the setting of the <tt>headers&#095;charset</tt>
+option in the runtime configuration. The value of this option defaults to the
+value of <font size=-1>HEADERS&#095;CHARSET</font> in <i>Local/Makefile</i>. The ultimate default is
+ISO-8859-1.
+</p>
+<p>
+Header names follow the syntax of RFC 2822, which states that they may contain
+any printing characters except space and colon. Consequently, curly brackets
+<em>do not</em> terminate header names, and should not be used to enclose them as
+if they were variables. Attempting to do so causes a syntax error.
+</p>
+<p>
+Only header lines that are common to all copies of a message are visible to
+this mechanism. These are the original header lines that are received with the
+message, and any that are added by 
+an ACL <tt>warn</tt> statement or by
+a system filter. Header lines that are added to a particular copy of a message
+by a router or transport are not accessible.
+</p>
+<p>
+For incoming SMTP messages, no header lines are visible in ACLs that are obeyed
+before the <font size=-1>DATA</font> ACL, because the header structure is not set up until the
+message is received. Header lines that are added by <tt>warn</tt> statements in a
+<font size=-1>RCPT</font> ACL (for example) are saved until the message's incoming header lines
+are available, at which point they are added. When a <font size=-1>DATA</font> ACL is running,
+however, header lines added by earlier ACLs are visible.
+</p>
+<p>
+Upper case and lower case letters are synonymous in header names. If the
+following character is white space, the terminating colon may be omitted, but
+this is not recommended, because you may then forget it when it is needed. When
+white space terminates the header name, it is included in the expanded string.
+If the message does not contain the given header, the expansion item is
+replaced by an empty string. (See the <tt>def</tt> condition in section <a href="spec_11.html#SECT11.6">11.6</a>
+for a means of testing for the existence of a header.) 
+</p>
+<p>
+If there is more than one header with the same name, they are all concatenated
+to form the substitution string, up to a maximum length of 64K. A newline
+character is inserted between each line.
+For the <tt>header</tt> expansion, for those headers that contain lists of addresses,
+a comma is also inserted at the junctions between lines. This does not happen
+for the <tt>rheader</tt> expansion.
+<hr></p>
+<p>
+<a name="IX819"></a>
+<b>&#036;&#123;hmac&#123;&#060;<em>hashname</em>&#062;&#125;&#123;&#060;<em>secret</em>&#062;&#125;&#123;&#060;<em>string</em>&#062;&#125;&#125;</b>
+</p>
+<p>
+This function uses cryptographic hashing (either MD5 or SHA-1) to convert a
+shared secret and some text into a message authentication code, as specified in
+RFC 2104. 
+This differs from <tt>&#036;&#123;md5:secret&#095;text...&#125;</tt> or
+<tt>&#036;&#123;sha1:secret&#095;text...&#125;</tt> in that the hmac step adds a signature to the 
+cryptographic hash, allowing for authentication that is not possible with MD5 
+or SHA-1 alone.
+The hash name must expand to either <tt>md5</tt> or <tt>sha1</tt> at present. For
+example:
+<pre>
+&nbsp;&nbsp;${hmac{md5}{somesecret}{$primary_hostname $tod_log}}
+</pre>
+</p>
+<p>
+For the hostname <i>mail.example.com</i> and time 2002-10-17 11:30:59, this
+produces:
+<pre>
+&nbsp;&nbsp;dd97e3ba5d1a61b5006108f8c8252953
+</pre>
+</p>
+<p>
+As an example of how this might be used, you might put in the main part of
+an Exim configuration:
+<pre>
+&nbsp;&nbsp;SPAMSCAN_SECRET=cohgheeLei2thahw
+</pre>
+</p>
+<p>
+In a router or a transport you could then have:
+<pre>
+&nbsp;&nbsp;headers_add = \
+&nbsp;&nbsp;  X-Spam-Scanned: ${primary_hostname} ${message_id} \
+&nbsp;&nbsp;  ${hmac{md5}{SPAMSCAN_SECRET}\
+&nbsp;&nbsp;  {${primary_hostname},${message_id},$h_message-id:}}
+</pre>
+</p>
+<p>
+Then given a message, you can check where it was scanned by looking at the
+<i>X-Spam-Scanned:</i> header line. If you know the secret, you can check that this 
+header line is authentic by recomputing the authentication code from the host 
+name, message ID and the <i>Message-id:</i> header line. This can be done using
+Exim's <i>-be</i> option, or by other means, for example by using the
+<i>hmac&#095;md5&#095;hex()</i> function in Perl.
+<hr></p>
+<p>
+<a name="IX820"></a>
+<b>&#036;{if &#060;<em>condition</em>&#062; &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;&#125;</b>
+</p>
+<p>
+If &#060;<em>condition</em>&#062; is true, &#060;<em>string1</em>&#062; is expanded and replaces the whole item;
+otherwise &#060;<em>string2</em>&#062; is used. For example,
+<pre>
+&nbsp;&nbsp;${if eq {$local_part}{postmaster} {yes}{no} }
+</pre>
+</p>
+<p>
+The second string need not be present; if it is not and the condition is not
+true, the item is replaced with nothing. Alternatively, the word &#147;fail&#148; may be
+present instead of the second string (without any curly brackets). In this
+case, the expansion is forced to fail if the condition is not true. The
+available conditions are described in section <a href="spec_11.html#SECT11.6">11.6</a> below.
+<hr></p>
+<p>
+<a name="IX821"></a>
+<b>&#036;&#123;length&#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;&#125;</b>
+</p>
+<p>
+The <tt>length</tt> item is used to extract the initial portion of a string. Both 
+strings are expanded, and the first one must yield a number, &#060;<em>n</em>&#062;, say. If you
+are using a fixed value for the number, that is, if &#060;<em>string1</em>&#062; does not change
+when expanded, you can use the simpler operator notation that avoids some of
+the braces:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#036;&#123;length&#095;&#060;<em>n</em>&#062;:&#060;<em>string</em>&#062;&#125;</tt><br>
+</p>
+<p>
+The result of this item is either the first &#060;<em>n</em>&#062; characters or the whole
+of &#060;<em>string2</em>&#062;, whichever is the shorter. Do not confuse <tt>length</tt> with 
+<tt>strlen</tt>, which gives the length of a string.
+<hr></p>
+<p>
+<b>&#036;{lookup&#123;&#060;<em>key</em>&#062;&#125; &#060;<em>search type</em>&#062; &#123;&#060;<em>file</em>&#062;&#125; &#123;&#060;<em>string1</em>&#062;&#125; &#123;&#060;<em>string2</em>&#062;&#125;&#125;</b>
+<br><b>&#036;{lookup &#060;<em>search type</em>&#062; &#123;&#060;<em>query</em>&#062;&#125; &#123;&#060;<em>string1</em>&#062;&#125; &#123;&#060;<em>string2</em>&#062;&#125;&#125;</b>
+<a name="IX822"></a>
+<a name="IX823"></a>
+<a name="IX824"></a>
+</p>
+<p>
+These items specify data lookups in files and databases, as discussed in
+chapter <a href="spec_9.html">9</a>. The first form is used for single-key lookups, and the
+second is used for query-style lookups. The &#060;<em>key</em>&#062;, &#060;<em>file</em>&#062;, and &#060;<em>query</em>&#062;
+strings are expanded before use.
+</p>
+<p>
+If there is any white space in a lookup item which is part of a filter command,
+a retry or rewrite rule, a routing rule for the <b>manualroute</b> router, or any
+other place where white space is significant, the lookup item must be enclosed
+in double quotes. The use of data lookups in users' filter files may be locked
+out by the system administrator.
+<a name="IX825"></a>
+</p>
+<p>
+If the lookup succeeds, &#060;<em>string1</em>&#062; is expanded and replaces the entire item.
+During its expansion, the variable <tt>$value</tt> contains the data returned by the
+lookup. Afterwards it reverts to the value it had previously (at the outer
+level it is empty). If the lookup fails, &#060;<em>string2</em>&#062; is expanded and replaces
+the entire item. If &#123;&#060;<em>string2</em>&#062;&#125; is omitted, the replacement is null on
+failure. Alternatively, &#060;<em>string2</em>&#062; can itself be a nested lookup, thus
+providing a mechanism for looking up a default value when the original lookup
+fails.
+</p>
+<p>
+If a nested lookup is used as part of &#060;<em>string1</em>&#062;, <tt>$value</tt> contains the data
+for the outer lookup while the parameters of the second lookup are expanded,
+and also while &#060;<em>string2</em>&#062; of the second lookup is expanded, should the second
+lookup fail.
+</p>
+<p>
+Instead of &#123;&#060;<em>string2</em>&#062;&#125; the word &#147;fail&#148; can appear, and in this case, if the
+lookup fails, the entire expansion is forced to fail. If both &#123;&#060;<em>string1</em>&#062;&#125;
+and &#123;&#060;<em>string2</em>&#062;&#125; are omitted, the result is the looked up value in the case
+of a successful lookup, and nothing in the case of failure.
+</p>
+<p>
+For single-key lookups, the string &#147;partial&#148; is permitted to precede the
+search type in order to do partial matching, and * or *&#064; may follow a
+search type to request default lookups if the key does not match (see sections
+<a href="spec_9.html#SECT9.5">9.5</a> and <a href="spec_9.html#SECT9.6">9.6</a> for details).
+<a name="IX826"></a>
+</p>
+<p>
+If a partial search is used, the variables <tt>$1</tt> and <tt>$2</tt> contain the wild
+and non-wild parts of the key during the expansion of the replacement text.
+They return to their previous values at the end of the lookup item.
+</p>
+<p>
+This example looks up the postmaster alias in the conventional alias file:
+<pre>
+&nbsp;&nbsp;${lookup {postmaster} lsearch {/etc/aliases} {$value}}
+</pre>
+</p>
+<p>
+This example uses NIS+ to look up the full name of the user corresponding to
+the local part of an address, forcing the expansion to fail if it is not found:
+<pre>
+&nbsp;&nbsp;${lookup nisplus {[name=$local_part],passwd.org_dir:gcos} \
+&nbsp;&nbsp;  {$value}fail}
+</pre>
+<hr></p>
+<p>
+<a name="IX827"></a>
+<a name="IX828"></a>
+<b>&#036;&#123;nhash&#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;&#123;&#060;<em>string3</em>&#062;&#125;&#125;</b>
+</p>
+<p>
+The three strings are expanded; the first two must yield numbers. Call them
+&#060;<em>n</em>&#062; and &#060;<em>m</em>&#062;. If you are using fixed values for these numbers, that is, if
+&#060;<em>string1</em>&#062; and &#060;<em>string2</em>&#062; do not change when they are expanded, you can use
+the simpler operator notation that avoids some of the braces:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#036;&#123;nhash&#095;&#060;<em>n</em>&#062;&#095;&#060;<em>m</em>&#062;:&#060;<em>string</em>&#062;&#125;</tt><br>
+</p>
+<p>
+The second number is optional (in both notations). If there is only one number,
+the result is a number in the range 0--&#060;<em>n</em>&#062;-1. Otherwise, the string is
+processed by a div/mod hash function that returns two numbers, separated by a
+slash, in the ranges 0 to &#060;<em>n</em>&#062;-1 and 0 to &#060;<em>m</em>&#062;-1, respectively. For example,
+<pre>
+&nbsp;&nbsp;${nhash{8}{64}{supercalifragilisticexpialidocious}}
+</pre>
+</p>
+<p>
+returns the string &#147;6/33&#148;.
+<hr></p>
+<p>
+<a name="IX829"></a>
+<a name="IX830"></a>
+<b>&#036;&#123;perl&#123;&#060;<em>subroutine</em>&#062;&#125;&#123;&#060;<em>arg</em>&#062;&#125;&#123;&#060;<em>arg</em>&#062;&#125;...&#125;</b>
+</p>
+<p>
+This item is available only if Exim has been built to include an embedded Perl
+interpreter. The subroutine name and the arguments are first separately
+expanded, and then the Perl subroutine is called with those arguments. No
+additional arguments need be given; the maximum number permitted, including the 
+name of the subroutine, is nine.
+</p>
+<p>
+The return value of the subroutine is inserted into the expanded string, unless
+the return value is <tt>undef</tt>. In that case, the expansion fails in the same way
+as an explicit &#147;fail&#148; on a lookup item. 
+The return value is a scalar. Whatever you return is evaluated in a scalar 
+context. For example, if you return the name of a Perl vector, the
+return value is the size of the vector, not its contents.
+</p>
+<p>
+If the subroutine exits by calling Perl's <tt>die</tt> function, the expansion fails
+with the error message that was passed to <tt>die</tt>. More details of the embedded
+Perl facility are given in chapter <a href="spec_12.html">12</a>.
+</p>
+<p>
+The <b>redirect</b> router has an option called <tt>forbid&#095;filter&#095;perl</tt> which locks
+out the use of this expansion item in filter files.
+<hr></p>
+<p>
+<a name="IX831"></a>
+<a name="IX832"></a>
+<b>&#036;&#123;readfile&#123;&#060;<em>file name</em>&#062;&#125;&#123;&#060;<em>eol string</em>&#062;&#125;&#125;</b>
+</p>
+<p>
+The file name and end-of-line string are first expanded separately. The file is
+then read, and its contents replace the entire item. All newline characters in
+the file are replaced by the end-of-line string if it is present. Otherwise,
+newlines are left in the string.
+String expansion is not applied to the contents of the file. If you want this, 
+you must wrap the item in an <tt>expand</tt> operator. If the file cannot be read, the 
+string expansion fails.
+</p>
+<p>
+The <b>redirect</b> router has an option called <tt>forbid&#095;filter&#095;readfile</tt> which
+locks out the use of this expansion item in filter files.
+<hr></p>
+<p>
+<a name="IX833"></a>
+<a name="IX834"></a>
+<b>&#036;&#123;readsocket&#123;&#060;<em>name</em>&#062;&#125;&#123;&#060;<em>request</em>&#062;&#125;&#123;&#060;<em>timeout</em>&#062;&#125;&#123;&#060;<em>eol string</em>&#062;&#125;&#123;&#060;<em>fail string</em>&#062;&#125;&#125;</b>
+</p>
+<p>
+This item inserts data that is read from a Unix domain socket into the expanded
+string. The minimal way of using it uses just two arguments:
+<pre>
+&nbsp;&nbsp;${readsocket{/socket/name}{request string}}
+</pre>
+</p>
+<p>
+Exim connects to the socket, writes the request string (unless it is an
+empty string) and reads from the socket until an end-of-file is read. A timeout
+of 5 seconds is applied. Additional, optional arguments extend what can be
+done. Firstly, you can vary the timeout. For example:
+<pre>
+&nbsp;&nbsp;${readsocket{/socket/name}{request-string}{3s}}
+</pre>
+</p>
+<p>
+A fourth argument allows you to change any newlines that are in the data
+that is read, in the same way as for <tt>readfile</tt> (see above). This example turns
+them into spaces:
+<pre>
+&nbsp;&nbsp;${readsocket{/socket/name}{request-string}{3s}{ }}
+</pre>
+</p>
+<p>
+As with all expansions, the substrings are expanded before the processing
+happens. Errors in these sub-expansions cause the expansion to fail. In
+addition, the following errors can occur:
+</p>
+<ul>
+<li><p>
+Failure to create a socket file descriptor;
+</p>
+</li>
+<li><p>
+Failure to connect the socket;
+</p>
+</li>
+<li><p>
+Failure to write the request-string;
+</p>
+</li>
+<li><p>
+Timeout on reading from the socket.
+</p>
+</li>
+</ul>
+<p>
+By default, any of these errors causes the expansion to fail. However, if
+you supply a fifth substring, it is expanded and used when any of the above
+errors occurs. For example:
+<pre>
+&nbsp;&nbsp;${readsocket{/socket/name}{request-string}{3s}{\n}\
+&nbsp;&nbsp;  {socket failure}}
+</pre>
+</p>
+<p>
+You can test for the existence of the socket by wrapping this expansion in
+<tt>&#036;&#123;if exists</tt>, but there is a race condition between that test and the
+actual opening of the socket, so it is safer to use the fifth argument if you
+want to be absolutely sure of avoiding an expansion error for a non-existent
+socket.
+</p>
+<p>
+The <b>redirect</b> router has an option called <tt>forbid&#095;filter&#095;readsocket</tt> which
+locks out the use of this expansion item in filter files.
+<hr></p>
+<p>
+<b>&#036;rheader&#095;&#060;<em>header name</em>&#062;:&nbsp;or&nbsp;&#036;rh&#095;&#060;<em>header name</em>&#062;:</b>
+</p>
+<p>
+This item inserts &#147;raw&#148; header lines. It is described with the <tt>header</tt> 
+expansion item above.
+<hr></p>
+<p>
+<a name="IX835"></a>
+<b>&#036;&#123;run&#123;&#060;<em>command</em>&#062; &#060;<em>args</em>&#062;&#125;&#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;&#125;</b>
+</p>
+<p>
+<a name="IX836"></a>
+The command and its arguments are first expanded separately, and then the
+command is run in a separate process, but under the same uid and gid. As in
+other command executions from Exim, a shell is not used by default. If you want
+a shell, you must explicitly code it.
+If the command succeeds (gives a zero return code) &#060;<em>string1</em>&#062; is expanded and
+replaces the entire item; during this expansion, the standard output from the
+command is in the variable <tt>$value</tt>. If the command fails, &#060;<em>string2</em>&#062;, if
+present, is expanded. If it is absent, the result is empty. Alternatively,
+&#060;<em>string2</em>&#062; can be the word &#147;fail&#148; (not in braces) to force expansion failure
+if the command does not succeed. If both strings are omitted, the result is the
+standard output on success, and nothing on failure.
+</p>
+<p>
+The return code from the command is put in the variable <tt>$runrc</tt>, and this
+remains set afterwards, so in a filter file you can do things like this:
+<pre>
+&nbsp;&nbsp;if "${run{x y z}{}}$runrc" is 1 then ...
+&nbsp;&nbsp;  elif $runrc is 2 then ...
+&nbsp;&nbsp;  ...
+&nbsp;&nbsp;endif
+</pre>
+</p>
+<p>
+If execution of the command fails (for example, the command does not exist),
+the return code is 127 &#150; the same code that shells use for non-existent 
+commands.
+</p>
+<p>
+<b>Warning</b>: In a router or transport, you cannot assume the order in which 
+option values are expanded, except for those pre-conditions whose order of 
+testing is documented. Therefore, you cannot reliably expect to set <tt>$runrc</tt> 
+by the expansion of one option, and use it in another.
+</p>
+<p>
+The <b>redirect</b> router has an option called <tt>forbid&#095;filter&#095;run</tt> which locks
+out the use of this expansion item in filter files.
+<hr></p>
+<p>
+<a name="IX837"></a>
+<b>&#036;&#123;sg&#123;&#060;<em>subject</em>&#062;&#125;&#123;&#060;<em>regex</em>&#062;&#125;&#123;&#060;<em>replacement</em>&#062;&#125;&#125;</b>
+</p>
+<p>
+This item works like Perl's substitution operator (s) with the global (/g)
+option; hence its name. However, unlike the Perl equivalent, Exim does not
+modify the subject string; instead it returns the modified string for insertion
+into the overall expansion. The item takes three arguments: the subject string,
+a regular expression, and a substitution string. For example
+<pre>
+&nbsp;&nbsp;${sg{abcdefabcdef}{abc}{xyz}}
+</pre>
+</p>
+<p>
+yields &#147;xyzdefxyzdef&#148;. Because all three arguments are expanded before use, if
+any &#036; or &#092; characters are required in the regular expression or in the
+substitution string, they have to be escaped. For example
+<pre>
+&nbsp;&nbsp;${sg{abcdef}{^(...)(...)\$}{\$2\$1}}
+</pre>
+</p>
+<p>
+yields &#147;defabc&#148;, and
+<pre>
+&nbsp;&nbsp;${sg{1=A 4=D 3=C}{\N(\d+)=\N}{K\$1=}}
+</pre>
+</p>
+<p>
+yields &#147;K1=A K4=D K3=C&#148;.
+Note the use of <tt>&#092;N</tt> to protect the contents of the regular expression from 
+string expansion.
+<hr></p>
+<p>
+<a name="IX838"></a>
+<a name="IX839"></a>
+<a name="IX840"></a>
+<b>&#036;&#123;substr&#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;&#123;&#060;<em>string3</em>&#062;&#125;&#125;</b>
+</p>
+<p>
+The three strings are expanded; the first two must yield numbers. Call them
+&#060;<em>n</em>&#062; and &#060;<em>m</em>&#062;. If you are using fixed values for these numbers, that is, if
+&#060;<em>string1</em>&#062; and &#060;<em>string2</em>&#062; do not change when they are expanded, you can use
+the simpler operator notation that avoids some of the braces:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#036;&#123;substr&#095;&#060;<em>n</em>&#062;&#095;&#060;<em>m</em>&#062;:&#060;<em>string</em>&#062;&#125;</tt><br>
+</p>
+<p>
+The second number is optional (in both notations).
+</p>
+<p>
+The <tt>substr</tt> item can be used to extract more general substrings than <tt>length</tt>.
+The first number, &#060;<em>n</em>&#062;, is a starting offset, and &#060;<em>m</em>&#062; is the length
+required. For example
+<pre>
+&nbsp;&nbsp;${substr{3}{2}{$local_part}}
+</pre>
+</p>
+<p>
+If the starting offset is greater than the string length the result is the null
+string; if the length plus starting offset is greater than the string length,
+the result is the right-hand part of the string, starting from the given
+offset. The first character in the string has offset zero.
+</p>
+<p>
+The <tt>substr</tt> expansion item can take negative offset values to count
+from the right-hand end of its operand. The last character is offset -1, the
+second-last is offset -2, and so on. Thus, for example,
+<pre>
+&nbsp;&nbsp;${substr{-5}{2}{1234567}}
+</pre>
+</p>
+<p>
+yields &#147;34&#148;. If the absolute value of a negative offset is greater than the
+length of the string, the substring starts at the beginning of the string, and
+the length is reduced by the amount of overshoot. Thus, for example,
+<pre>
+&nbsp;&nbsp;${substr{-5}{2}{12}}
+</pre>
+</p>
+<p>
+yields an empty string, but
+<pre>
+&nbsp;&nbsp;${substr{-3}{2}{12}}
+</pre>
+</p>
+<p>
+yields &#147;1&#148;.
+</p>
+<p>
+If the second number is omitted from <tt>substr</tt>, the remainder of the string is
+taken if the offset was positive. If it was negative, all characters in the
+string preceding the offset point are taken. For example, an offset of -1 and
+no length yields all but the last character of the string.
+<hr></p>
+<p>
+<a name="IX841"></a>
+<b>&#036;&#123;tr&#123;&#060;<em>subject</em>&#062;&#125;&#123;&#060;<em>characters</em>&#062;&#125;&#123;&#060;<em>replacements</em>&#062;&#125;&#125;</b>
+</p>
+<p>
+This item does single-character translation on its subject string. The second
+argument is a list of characters to be translated in the subject string. Each
+matching character is replaced by the corresponding character from the
+replacement list. For example
+<pre>
+&nbsp;&nbsp;${tr{abcdea}{ac}{13}}
+</pre>
+</p>
+<p>
+yields &#147;1b3de1&#148;. If there are duplicates in the second character string, the
+last occurrence is used. If the third string is shorter than the second, its
+last character is replicated. However, if it is empty, no translation takes
+place.
+<hr><br>
+</p>
+<a name="IX842"></a>
+<h2>
+<a name="SECT11.5" href="spec_toc.html#TOC128">
+11.5. Expansion operators
+</a></h2>
+<p>
+For expansion items that perform transformations on a single argument string,
+the &#147;operator&#148; notation is used because it is simpler and uses fewer braces.
+The substring is first expanded before the operation is applied to it. The
+following operations can be performed:
+<hr></p>
+<p>
+<a name="IX843"></a>
+<b>&#036;&#123;address:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The string is interpreted as an RFC 2822 address, as it might appear in a
+header line, and the effective address is extracted from it. If the string does
+not parse successfully, the result is empty.
+<hr></p>
+<p>
+<a name="IX844"></a>
+<a name="IX845"></a>
+<b>&#036;&#123;base62:&#060;<em>digits</em>&#062;&#125;</b>
+</p>
+<p>
+The string must consist entirely of decimal digits. The number is converted to
+base 62 (sic) and output as a string of six characters, including leading
+zeros. <b>Note</b>: Just to be absolutely clear: this is <i>not</i> base64
+encoding.
+<font color=green><hr></p>
+<p>
+<a name="IX846"></a>
+<a name="IX847"></a>
+<b>&#036;&#123;base62d:&#060;<em>base-62 digits</em>&#062;&#125;</b>
+</p>
+<p>
+The string must consist entirely of base-62 digits. The number is converted to
+decimal and output as a string.
+</font>
+<hr></p>
+<p>
+<a name="IX848"></a>
+<a name="IX849"></a>
+<b>&#036;&#123;domain:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The string is interpreted as an RFC 2822 address and the domain is extracted
+from it. If the string does not parse successfully, the result is empty.
+<hr></p>
+<p>
+<a name="IX850"></a>
+<b>&#036;&#123;escape:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+If the string contains any non-printing characters, they are converted to
+escape sequences starting with a backslash. Whether characters with the most
+significant bit set (so-called &#147;8-bit characters&#148;) count as printing or not is
+controlled by the <tt>print&#095;topbitchars</tt> option.
+<font color=green><hr></p>
+<p>
+<b>&#036;&#123;eval:&#060;<em>string</em>&#062;&#125;</b>
+<br><b>&#036;&#123;eval10:&#060;<em>string</em>&#062;&#125;</b>
+<a name="IX851"></a>
+<a name="IX852"></a>
+</p>
+<p>
+These items supports simple arithmetic in expansion strings. The string (after
+expansion) must be a conventional arithmetic expression, but it is limited to
+the four basic operators (plus, minus, times, divide) and parentheses. All
+operations are carried out using integer arithmetic. Plus and minus have a
+lower priority than times and divide; operators with the same priority are
+evaluated from left to right. 
+</p>
+<p>
+For <tt>eval</tt>, numbers may be decimal, octal (starting with &#147;0&#148;) or hexadecimal
+(starting with &#147;0x&#148;). For <tt>eval10</tt>, all numbers are taken as decimal, even if
+they start with a leading zero. This can be useful when processing numbers
+extracted from dates or times, which often do have leading zeros.
+</font>
+</p>
+<p>
+A number may be followed by &#147;K&#148; or &#147;M&#148; to multiply it by 1024 or 1024*1024,
+respectively. Negative numbers are supported. The result of the computation is
+a decimal representation of the answer (without &#147;K&#148; or &#147;M&#148;). For example:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>  &#036;&#123;eval:1+1&#125;       </tt>yields<tt> 2</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>  &#036;&#123;eval:1+2*3&#125;     </tt>yields<tt> 7</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>  &#036;&#123;eval:(1+2)*3&#125;   </tt>yields<tt> 9</tt><br>
+</p>
+<p>
+As a more realistic example, in an ACL you might have
+<pre>
+&nbsp;&nbsp;deny   message = Too many bad recipients
+&nbsp;&nbsp;       condition =                    \
+&nbsp;&nbsp;         ${if and {                   \
+&nbsp;&nbsp;           {&#062;{$rcpt_count}{10}}       \
+&nbsp;&nbsp;           {                          \
+&nbsp;&nbsp;           &#060;                          \
+&nbsp;&nbsp;             {$recipients_count}      \
+&nbsp;&nbsp;             {${eval:$rcpt_count/2}}  \
+&nbsp;&nbsp;           }                          \
+&nbsp;&nbsp;         }{yes}{no}}
+</pre>
+</p>
+<p>
+The condition is true if there have been more than 10 <font size=-1>RCPT</font> commands and
+fewer than half of them have resulted in a valid recipient.
+<hr></p>
+<p>
+<a name="IX853"></a>
+<b>&#036;&#123;expand:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The <tt>expand</tt> operator causes a string to be expanded for a second time. For
+example,
+<pre>
+&nbsp;&nbsp;${expand:${lookup{$domain}dbm{/some/file}{$value}}}
+</pre>
+</p>
+<p>
+first looks up a string in a file while expanding the operand for <tt>expand</tt>, and
+then re-expands what it has found.
+<hr></p>
+<p>
+<a name="IX854"></a>
+<a name="IX855"></a>
+<a name="IX856"></a>
+<b>&#036;&#123;from&#095;utf8:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The world is slowly moving towards Unicode, although there are no standards for
+email yet. However, other applications (including some databases) are starting
+to store data in Unicode, using UTF-8 encoding. This operator converts from a
+UTF-8 string to an ISO-8859-1 string. UTF-8 code values greater than 255 are
+converted to underscores. The input must be a valid UTF-8 string. If it is not,
+the result is an undefined sequence of bytes.
+</p>
+<p>
+Unicode code points with values less than 256 are compatible with ASCII and
+ISO-8859-1 (also known as Latin-1).
+For example, character 169 is the copyright symbol in both cases, though the 
+way it is encoded is different. In UTF-8, more than one byte is needed for
+characters with code values greater than 127, whereas ISO-8859-1 is a
+single-byte encoding (but thereby limited to 256 characters). This makes 
+translation from UTF-8 to ISO-8859-1 straightforward.
+<hr></p>
+<p>
+<a name="IX857"></a>
+<a name="IX858"></a>
+<b>&#036;&#123;hash&#095;&#060;<em>n</em>&#062;&#095;&#060;<em>m</em>&#062;:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The <tt>hash</tt> operator is a simpler interface to the hashing function that can be 
+used when the two parameters are fixed numbers (as opposed to strings that 
+change when expanded). The effect is the same as
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#036;&#123;hash&#123;&#060;<em>n</em>&#062;&#125;&#123;&#060;<em>m</em>&#062;&#125;&#123;&#060;<em>string</em>&#062;&#125;&#125;</tt><br>
+</p>
+<p>
+See the description of the general <tt>hash</tt> item above for details. The
+abbreviation <tt>h</tt> can be used when <tt>hash</tt> is used as an operator.
+<hr></p>
+<p>
+<a name="IX859"></a>
+<a name="IX860"></a>
+<b>&#036;&#123;hex2b64:&#060;<em>hexstring</em>&#062;&#125;</b>
+</p>
+<p>
+This operator converts a hex string into one that is base64 encoded. This can 
+be useful for processing the output of the MD5 and SHA-1 hashing functions.
+<hr></p>
+<p>
+<a name="IX861"></a>
+<a name="IX862"></a>
+<a name="IX863"></a>
+<a name="IX864"></a>
+<b>&#036;&#123;lc:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+This forces the letters in the string into lower-case, for example:
+<pre>
+&nbsp;&nbsp;${lc:$local_part}
+</pre>
+<hr></p>
+<p>
+<a name="IX865"></a>
+<b>&#036;&#123;length&#095;&#060;<em>number</em>&#062;:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The <tt>length</tt> operator is a simpler interface to the <tt>length</tt> function that can
+be used when the parameter is a fixed number (as opposed to a string that
+changes when expanded). The effect is the same as
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#036;&#123;length&#123;&#060;<em>number</em>&#062;&#125;&#123;&#060;<em>string</em>&#062;&#125;&#125;</tt><br>
+</p>
+<p>
+See the description of the general <tt>length</tt> item above for details. Note that 
+<tt>length</tt> is not the same as <tt>strlen</tt>. The abbreviation <tt>l</tt> can be used when
+<tt>length</tt> is used as an operator.
+<hr></p>
+<p>
+<a name="IX866"></a>
+<b>&#036;&#123;local&#095;part:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The string is interpreted as an RFC 2822 address and the local part is
+extracted from it. If the string does not parse successfully, the result is
+empty.
+<hr></p>
+<p>
+<a name="IX867"></a>
+<a name="IX868"></a>
+<a name="IX869"></a>
+<a name="IX870"></a>
+<b>&#036;&#123;mask:&#060;<em>IP address</em>&#062;/&#060;<em>bit count</em>&#062;&#125;</b>
+</p>
+<p>
+If the form of the string to be operated on is not an IP address followed by a
+slash and an integer (that is, a network address in CIDR notation), the
+expansion fails. Otherwise, this operator converts the IP address to binary,
+masks off the least significant bits according to the bit count, and converts
+the result back to text, with mask appended. For example,
+<pre>
+&nbsp;&nbsp;${mask:10.111.131.206/28}
+</pre>
+</p>
+<p>
+returns the string &#147;10.111.131.192/28&#148;. Since this operation is expected to be
+mostly used for looking up masked addresses in files, the result for an IPv6
+address uses dots to separate components instead of colons, because colon
+terminates a key string in lsearch files. So, for example,
+<pre>
+&nbsp;&nbsp;${mask:3ffe:ffff:836f:0a00:000a:0800:200a:c031/99}
+</pre>
+</p>
+<p>
+returns the string
+<pre>
+&nbsp;&nbsp;3ffe.ffff.836f.0a00.000a.0800.2000.0000/99
+</pre>
+</p>
+<p>
+Letters in IPv6 addresses are always output in lower case.
+<hr></p>
+<p>
+<a name="IX871"></a>
+<a name="IX872"></a>
+<b>&#036;&#123;md5:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The <tt>md5</tt> operator computes the MD5 hash value of the string, and returns it as
+a 32-digit hexadecimal number,
+in which any letters are in lower case.
+<hr></p>
+<p>
+<a name="IX873"></a>
+<a name="IX874"></a>
+<b>&#036;&#123;nhash&#095;&#060;<em>n</em>&#062;&#095;&#060;<em>m</em>&#062;:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The <tt>nhash</tt> operator is a simpler interface to the numeric hashing function
+that can be used when the two parameters are fixed numbers (as opposed to
+strings that change when expanded). The effect is the same as
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#036;&#123;nhash&#123;&#060;<em>n</em>&#062;&#125;&#123;&#060;<em>m</em>&#062;&#125;&#123;&#060;<em>string</em>&#062;&#125;&#125;</tt><br>
+</p>
+<p>
+See the description of the general <tt>nhash</tt> item above for details.
+<hr></p>
+<p>
+<a name="IX875"></a>
+<a name="IX876"></a>
+<b>&#036;&#123;quote:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The <tt>quote</tt> operator puts its argument into double quotes if it 
+is an empty string or
+contains anything other than letters, digits, underscores, dots, and hyphens.
+Any occurrences of double quotes and backslashes are escaped with a backslash.
+Newlines and carriage returns are converted to <tt>&#092;n</tt> and <tt>&#092;r</tt>,
+respectively For example,
+<pre>
+&nbsp;&nbsp;${quote:ab"*"cd}
+</pre>
+</p>
+<p>
+becomes
+<pre>
+&nbsp;&nbsp;"ab\"*\"cd"
+</pre>
+</p>
+<p>
+The place where this is useful is when the argument is a substitution from a
+variable or a message header.
+<hr></p>
+<p>
+<b>&#036;&#123;quote&#095;local&#095;part:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+This operator is like <tt>quote</tt>, except that it quotes the string only if 
+required to do so by the rules of RFC 2822 for quoting local parts. For 
+example, a plus sign would not cause quoting (but it would for <tt>quote</tt>).
+If you are creating a new email address from the contents of <tt>$local&#095;part</tt>
+(or any other unknown data), you should always use this operator.
+<hr></p>
+<p>
+<a name="IX877"></a>
+<b>&#036;&#123;quote&#095;&#060;<em>lookup-type</em>&#062;:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+This operator applies lookup-specific quoting rules to the string. Each
+query-style lookup type has its own quoting rules which are described with
+the lookups in chapter <a href="spec_9.html">9</a>. For example,
+<pre>
+&nbsp;&nbsp;${quote_ldap:two * two}
+</pre>
+</p>
+<p>
+returns 
+<pre>
+&nbsp;&nbsp;two%20%5C2A%20two
+</pre>
+</p>
+<p>
+For single-key lookup types, no quoting is ever necessary and this operator
+yields an unchanged string.
+<hr></p>
+<p>
+<a name="IX878"></a>
+<a name="IX879"></a>
+<b>&#036;&#123;rxquote:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The <tt>rxquote</tt> operator inserts a backslash before any non-alphanumeric
+characters in its argument. This is useful when substituting the values of
+variables or headers inside regular expressions.
+<hr></p>
+<p>
+<a name="IX880"></a>
+<b>&#036;&#123;rfc2047:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+This operator encodes text according to the rules of RFC 2047. This is an
+encoding that is used in header lines to encode non-ASCII characters. It is
+assumed that the input string is in the encoding specified by the
+<tt>headers&#095;charset</tt> option, which defaults to ISO-8859-1.
+If the string contains only characters in the range 33&#150;126, and no instances
+of the characters
+<pre>
+&nbsp;&nbsp;? = ( ) &#060; &#062; @ , ; : \ " . [ ] _ 
+</pre>
+</p>
+<p>
+it is not modified. Otherwise, the result is the RFC 2047 encoding, as a single
+&#147;coded word&#148;.
+<hr></p>
+<p>
+<a name="IX881"></a>
+<a name="IX882"></a>
+<b>&#036;&#123;sha1:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The <tt>sha1</tt> operator computes the SHA-1 hash value of the string, and returns it
+as a 40-digit hexadecimal number, in which any letters are in upper case.
+<hr></p>
+<p>
+<a name="IX883"></a>
+<a name="IX884"></a>
+<b>&#036;&#123;stat:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The string, after expansion, must be a file path. A call to the <i>stat()</i>
+function is made for this path. If <i>stat()</i> fails, an error occurs and the
+expansion fails. If it succeeds, the data from the stat replaces the item, as a
+series of &#060;<em>name</em>&#062;=&#060;<em>value</em>&#062; pairs, where the values are all numerical, 
+except for the value of &#147;smode&#148;. The names are: &#147;mode&#148; (giving the mode as a
+4-digit octal number), &#147;smode&#148; (giving the mode in symbolic format as a
+10-character string, as for the <i>ls</i> command), &#147;inode&#148;, &#147;device&#148;, &#147;links&#148;,
+&#147;uid&#148;, &#147;gid&#148;, &#147;size&#148;, &#147;atime&#148;, &#147;mtime&#148;, and &#147;ctime&#148;. You can extract individual
+fields using the <tt>extract</tt> expansion item. <b>Warning</b>: The file size may be
+incorrect on 32-bit systems for files larger than 2GB.
+<hr></p>
+<p>
+<a name="IX885"></a>
+<a name="IX886"></a>
+<b>&#036;&#123;strlen:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The item is replace by the length of the expanded string, expressed as a 
+decimal number. <b>Note</b>: Do not confuse <tt>strlen</tt> with <tt>length</tt>.
+<hr></p>
+<p>
+<a name="IX887"></a>
+<a name="IX888"></a>
+<a name="IX889"></a>
+<b>&#036;&#123;substr&#095;&#060;<em>start</em>&#062;&#095;&#060;<em>length</em>&#062;:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The <tt>substr</tt> operator is a simpler interface to the <tt>substr</tt> function that can
+be used when the two parameters are fixed numbers (as opposed to strings that
+change when expanded). The effect is the same as
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#036;&#123;substr&#123;&#060;<em>start</em>&#062;&#125;&#123;&#060;<em>length</em>&#062;&#125;&#123;&#060;<em>string</em>&#062;&#125;&#125;</tt><br>
+</p>
+<p>
+See the description of the general <tt>substr</tt> item above for details. The
+abbreviation <tt>s</tt> can be used when <tt>substr</tt> is used as an operator.
+<font color=green><hr></p>
+<p>
+<a name="IX890"></a>
+<a name="IX891"></a>
+<b>&#036;&#123;time&#095;interval:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+The argument (after sub-expansion) must be a sequence of decimal digits that
+represents an interval of time as a number of seconds. It is converted into a
+number of larger units and output in Exim's normal time format, for example,
+<tt>1w3d4h2m6s</tt>.
+</font>
+<hr></p>
+<p>
+<a name="IX892"></a>
+<a name="IX893"></a>
+<a name="IX894"></a>
+<a name="IX895"></a>
+<b>&#036;&#123;uc:&#060;<em>string</em>&#062;&#125;</b>
+</p>
+<p>
+This forces the letters in the string into upper-case.
+<hr><br>
+</p>
+<a name="IX896"></a>
+<h2>
+<a name="SECT11.6" href="spec_toc.html#TOC129">
+11.6. Expansion conditions
+</a></h2>
+<p>
+The following conditions are available for testing by the <tt>&#036;&#123;if</tt> construct
+while expanding strings:
+<hr></p>
+<p>
+<a name="IX897"></a>
+<b>!&#060;<em>condition</em>&#062;</b>
+</p>
+<p>
+Preceding any condition with an exclamation mark negates the result of the
+condition.
+<hr></p>
+<p>
+<a name="IX898"></a>
+<a name="IX899"></a>
+<b>&#060;<em>symbolic operator</em>&#062; &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+</p>
+<p>
+There are a number of symbolic operators for doing numeric comparisons. They
+are:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>=&nbsp;&nbsp;</tt></td><td>equal</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>==&nbsp;&nbsp;</tt></td><td>equal</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&#062;&nbsp;&nbsp;</tt></td><td>greater</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&#062;=&nbsp;&nbsp;</tt></td><td>greater or equal</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&#060;&nbsp;&nbsp;</tt></td><td>less</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&#060;=&nbsp;&nbsp;</tt></td><td>less or equal</td></tr>
+</table>
+</p>
+<p>
+For example,
+<pre>
+&nbsp;&nbsp;${if &#062;{$message_size}{10M} ...
+</pre>
+</p>
+<p>
+Note that the general negation operator provides for inequality testing. The
+two strings must take the form of optionally signed decimal integers,
+optionally followed by one of the letters &#147;K&#148; or &#147;M&#148; (in either upper or lower
+case), signifying multiplication by 1024 or 1024*1024, respectively.
+<hr></p>
+<p>
+<a name="IX900"></a>
+<a name="IX901"></a>
+<b>crypteq &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+</p>
+<p>
+This condition is included in the Exim binary if it is built to support any
+authentication mechanisms (see chapter <a href="spec_33.html">33</a>). Otherwise, it is
+necessary to define <font size=-1>SUPPORT&#095;CRYPTEQ</font> in <i>Local/Makefile</i> to get <tt>crypteq</tt>
+included in the binary.
+</p>
+<p>
+The <tt>crypteq</tt> condition has two arguments. The first is encrypted and compared
+against the second, which is already encrypted. The second string may be in the
+LDAP form for storing encrypted strings, which starts with the encryption type
+in curly brackets, followed by the data. If the second string does not begin
+with &#147;{&#148; it is assumed to be encrypted with <i>crypt()</i>
+or <i>crypt16()</i> (see below),
+since such strings cannot begin with &#147;{&#148;. Typically this will be a field from a
+password file.
+</p>
+<p>
+An example of an encrypted string in LDAP form is:
+<pre>
+&nbsp;&nbsp;{md5}CY9rzUYh03PK3k6DJie09g==
+</pre>
+</p>
+<p>
+If such a string appears directly in an expansion, the curly brackets have to
+be quoted, because they are part of the expansion syntax. For example:
+<pre>
+&nbsp;&nbsp;${if crypteq {test}{\{md5\}CY9rzUYh03PK3k6DJie09g==}{yes}{no}}
+</pre>
+</p>
+<p>
+The following encryption types 
+(whose names are matched case-independently)
+are supported:
+</p>
+<ul>
+<li><a name="IX902"></a>
+<a name="IX903"></a>
+<p>
+<tt>&#123;md5&#125;</tt> computes the MD5 digest of the first string, and expresses this as
+printable characters to compare with the remainder of the second string. If the
+length of the comparison string is 24, Exim assumes that it is base64 encoded
+(as in the above example). If the length is 32, Exim assumes that it is a
+hexadecimal encoding of the MD5 digest. If the length not 24 or 32, the
+comparison fails.
+</p>
+</li>
+<li><a name="IX904"></a>
+<p>
+<tt>&#123;sha1&#125;</tt> computes the SHA-1 digest of the first string, and expresses this as 
+printable characters to compare with the remainder of the second string. If the 
+length of the comparison string is 28, Exim assumes that it is base64 encoded. 
+If the length is 40, Exim assumes that it is a hexadecimal encoding of the 
+SHA-1 digest. If the length is not 28 or 40, the comparison fails.
+</p>
+</li>
+<li><a name="IX905"></a>
+<p>
+<tt>&#123;crypt&#125;</tt> calls the <i>crypt()</i> function, which uses only the first eight 
+characters of the password.
+</p>
+</li>
+<li><a name="IX906"></a>
+<p>
+<tt>&#123;crypt16&#125;</tt> calls the <i>crypt16()</i> function (also known as <i>bigcrypt()</i>),
+which uses up to 16 characters of the password.
+</p>
+</li>
+</ul>
+<p>
+Exim has its own version of <i>crypt16()</i> (which is just a double call to
+<i>crypt()</i>). For operating systems that have their own version, setting
+<font size=-1>HAVE&#095;CRYPT16</font> in <i>Local/Makefile</i> when building Exim causes it to use the
+operating system version instead of its own. This option is set by default in 
+the OS-dependent <i>Makefile</i> for those operating systems that are known to 
+support <i>crypt16()</i>.
+</p>
+<p>
+If you do not put any curly bracket encryption type in a <tt>crypteq</tt> comparison,
+the default is either <tt>&#123;crypt&#125;</tt> or <tt>&#123;crypt16&#125;</tt>, as determined by the
+setting of <font size=-1>DEFAULT&#095;CRYPT</font> in <i>Local/Makefile</i>. The default default is
+<tt>&#123;crypt&#125;</tt>. Whatever the default, you can always use either function by
+specifying it explicitly in curly brackets.
+</p>
+<p>
+Note that if a password is no longer than 8 characters, the results of
+encrypting it with <i>crypt()</i> and <i>crypt16()</i> are identical. That means that
+<i>crypt16()</i> is backwards compatible, as long as nobody feeds it a password
+longer than 8 characters.
+<hr></p>
+<p>
+<a name="IX907"></a>
+<b>def:&#060;<em>variable name</em>&#062;</b>
+</p>
+<p>
+The <tt>def</tt> condition must be followed by the name of one of the expansion
+variables defined in section <a href="spec_11.html#SECT11.8">11.8</a>. The condition is true if the named
+expansion variable does not contain the empty string, for example
+<pre>
+&nbsp;&nbsp;${if def:sender_ident {from $sender_ident}}
+</pre>
+</p>
+<p>
+Note that the variable name is given without a leading <tt>&#036;</tt> character. If the
+variable does not exist, the expansion fails.
+<hr></p>
+<p>
+<a name="IX908"></a>
+<b>def:header&#095;&#060;<em>header name</em>&#062;:&nbsp;&nbsp;or&nbsp;&nbsp;def:h&#095;&#060;<em>header name</em>&#062;:</b>
+</p>
+<p>
+This condition is true if a message is being processed and the named header
+exists in the message. For example,
+<pre>
+&nbsp;&nbsp;${if def:header_reply-to:{$h_reply-to:}{$h_from:}}
+</pre>
+</p>
+<p>
+Note that no <tt>&#036;</tt> appears before <tt>header&#095;</tt> or <tt>h&#095;</tt> in the condition,
+and that header names must be terminated by colons if white space does not
+follow.
+<hr></p>
+<p>
+<b>eq &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+<br><b>eqi &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+<a name="IX909"></a>
+<a name="IX910"></a>
+</p>
+<p>
+The two substrings are first expanded. The condition is true if the two
+resulting strings are identical: for <tt>eq</tt> the comparison includes the case of 
+letters, whereas for <tt>eqi</tt> the comparison is case-independent.
+<hr></p>
+<p>
+<a name="IX911"></a>
+<a name="IX912"></a>
+<b>exists &#123;&#060;<em>file name</em>&#062;&#125;</b>
+</p>
+<p>
+The substring is first expanded and then interpreted as an absolute path. The
+condition is true if the named file (or directory) exists. The existence test
+is done by calling the <i>stat()</i> function. The use of the <tt>exists</tt> test in
+users' filter files may be locked out by the system administrator.
+<hr></p>
+<p>
+<a name="IX913"></a>
+<a name="IX914"></a>
+<a name="IX915"></a>
+<b>first&#095;delivery</b>
+</p>
+<p>
+This condition, which has no data, is true during a message's first delivery
+attempt. It is false during any subsequent delivery attempts.
+<font color=green><hr></p>
+<p>
+<b>ge &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+<br><b>gei &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+<a name="IX916"></a>
+<a name="IX917"></a>
+</p>
+<p>
+The two substrings are first expanded. The condition is true if the first
+string is lexically greater than or equal to the second string: for <tt>ge</tt> the
+comparison includes the case of letters, whereas for <tt>gei</tt> the comparison is
+case-independent.
+<hr></p>
+<p>
+<b>gt &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+<br><b>gti &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+<a name="IX918"></a>
+<a name="IX919"></a>
+</p>
+<p>
+The two substrings are first expanded. The condition is true if the first
+string is lexically greater than the second string: for <tt>gt</tt> the comparison
+includes the case of letters, whereas for <tt>gti</tt> the comparison is
+case-independent.
+</font>
+<hr></p>
+<p>
+<b>"isip &#123;&#060;<em>string</em>&#062;&#125;" 8</b>
+<br><b>isip4 &#123;&#060;<em>string</em>&#062;&#125;</b>
+<br><b>isip6 &#123;&#060;<em>string</em>&#062;&#125;</b>
+<a name="IX920"></a>
+<a name="IX921"></a>
+</p>
+<p>
+The substring is first expanded, and then tested to see if it has the form of 
+an IP address. Both IPv4 and IPv6 addresses are valid for <tt>isip</tt>, whereas 
+<tt>isip4</tt> and <tt>isip6</tt> test just for IPv4 or IPv6 addresses, respectively. For 
+example, you could use
+<pre>
+&nbsp;&nbsp;${if isip4{$sender_host_address}...
+</pre>
+</p>
+<p>
+to test which version of IP an incoming SMTP connection is using.
+<hr></p>
+<p>
+<a name="IX922"></a>
+<a name="IX923"></a>
+<b>ldapauth &#123;&#060;<em>ldap query</em>&#062;&#125;</b>
+</p>
+<p>
+This condition supports user authentication using LDAP. See section <a href="spec_9.html#SECT9.10">9.10</a>
+for details of how to use LDAP in lookups and the syntax of queries. For this
+use, the query must contain a user name and password. The query itself is not
+used, and can be empty. The condition is true if
+the password is not empty, and the user name and password are accepted by the
+LDAP server. An empty password is rejected without calling LDAP because LDAP 
+binds with an empty password are considered anonymous regardless of
+the username, and will succeed in most configurations.
+See chapter <a href="spec_33.html">33</a> for details of SMTP authentication, and chapter
+<a href="spec_34.html">34</a> for an example of how this can be used.
+<font color=green><hr></p>
+<p>
+<b>le &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+<br><b>lei &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+<a name="IX924"></a>
+<a name="IX925"></a>
+</p>
+<p>
+The two substrings are first expanded. The condition is true if the first
+string is lexically less than or equal to the second string: for <tt>le</tt> the
+comparison includes the case of letters, whereas for <tt>lei</tt> the comparison is
+case-independent.
+<hr></p>
+<p>
+<b>lt &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+<br><b>lti &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+<a name="IX926"></a>
+<a name="IX927"></a>
+</p>
+<p>
+The two substrings are first expanded. The condition is true if the first
+string is lexically less than the second string: for <tt>lt</tt> the comparison
+includes the case of letters, whereas for <tt>lti</tt> the comparison is
+case-independent.
+</font>
+<hr></p>
+<p>
+<a name="IX928"></a>
+<a name="IX929"></a>
+<b>match &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+</p>
+<p>
+The two substrings are first expanded. The second is then treated as a regular
+expression and applied to the first. Because of the pre-expansion, if the
+regular expression contains dollar, or backslash characters, they must be
+escaped. Care must also be taken if the regular expression contains braces
+(curly brackets). A closing brace must be escaped so that it is not taken as a
+premature termination of &#060;<em>string2</em>&#062;. The easiest approach is to use the
+<tt>&#092;N</tt> feature to disable expansion of the regular expression.
+For example,
+<pre>
+&nbsp;&nbsp;${if match {$local_part}{\N^\d{3}\N} ...
+</pre>
+</p>
+<p>
+If the whole expansion string is in double quotes, further escaping of
+backslashes is also required.
+</p>
+<p>
+The condition is true if the regular expression match succeeds. 
+<font color=green>
+The regular expression is not required to begin with a circumflex 
+metacharacter, but if there is no circumflex, the expression is not anchored,
+and it may match anywhere in the subject, not just at the start. If you want 
+the pattern to match at the end of the subject, you must include the <tt>&#036;</tt> 
+metacharacter at an appropriate point.
+</font>
+<a name="IX930"></a>
+</p>
+<p>
+At the start of an <tt>if</tt> expansion the values of the numeric variable
+substitutions <tt>$1</tt> etc. are remembered. Obeying a <tt>match</tt> condition that
+succeeds causes them to be reset to the substrings of that condition and they
+will have these values during the expansion of the success string. At the end
+of the <tt>if</tt> expansion, the previous values are restored. After testing a
+combination of conditions using <tt>or</tt>, the subsequent values of the numeric
+variables are those of the condition that succeeded.
+<font color=green><hr></p>
+<p>
+<b>match&#095;domain &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+<br><b>match&#095;address &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+<br><b>match&#095;local&#095;part &#123;&#060;<em>string1</em>&#062;&#125;&#123;&#060;<em>string2</em>&#062;&#125;</b>
+<a name="IX931"></a>
+<a name="IX932"></a>
+<a name="IX933"></a>
+</p>
+<p>
+These conditions make it possible to test domain, address, and local
+part lists within expansions. Each condition requires two arguments: an item
+and a list to match. A trivial example is:
+<pre>
+&nbsp;&nbsp;${if match_domain{a.b.c}{x.y.z:a.b.c:p.q.r}{yes}{no}}
+</pre>
+</p>
+<p>
+In each case, the second argument may contain any of the allowable items for a
+list of the appropriate type. Also, because the second argument (after
+expansion) is a standard form of list, it is possible to refer to a named list.
+Thus, you can use conditions like this:
+<pre>
+&nbsp;&nbsp;${if match_domain{$domain}{+local_domains}{...
+</pre>
+<a name="IX934"></a>
+</p>
+<p>
+For address lists, the matching starts off caselessly, but the <tt>+caseful</tt>
+item can be used, as in all address lists, to cause subsequent items to
+have their local parts matched casefully. Domains are always matched
+caselessly.
+</p>
+<p>
+<b>Note</b>: Host lists are <i>not</i> supported in this way. This is because
+hosts have two identities: a name and an IP address, and it is not clear
+how to specify cleanly how such a test would work. At least, I haven't come
+up with anything yet.
+</font>
+<hr></p>
+<p>
+<a name="IX935"></a>
+<a name="IX936"></a>
+<a name="IX937"></a>
+<a name="IX938"></a>
+<b>pam {&#060;<em>string1</em>&#062;:&#060;<em>string2</em>&#062;:...&#125;</b>
+</p>
+<p>
+<i>Pluggable Authentication Modules</i>
+(<a href="http://www.kernel.org/pub/linux/libs/pam/">http://www.kernel.org/pub/linux/libs/pam/</a>)
+are a facility which is available in the latest releases of Solaris and in some
+GNU/Linux distributions. The Exim support, which is intended for use in
+conjunction with the SMTP <font size=-1>AUTH</font> command, is available only if Exim is
+compiled with
+<pre>
+&nbsp;&nbsp;SUPPORT_PAM=yes
+</pre>
+</p>
+<p>
+in <i>Local/Makefile</i>. You probably need to add <i>-lpam</i> to <font size=-1>EXTRALIBS</font>, and
+in some releases of GNU/Linux <i>-ldl</i> is also needed.
+</p>
+<p>
+The argument string is first expanded, and the result must be a colon-separated
+list of strings. 
+Leading and trailing whitespace is ignored.
+The PAM module is initialized with the service name &#147;exim&#148; and the user name
+taken from the first item in the colon-separated data string (&#060;<em>string1</em>&#062;). The
+remaining items in the data string are passed over in response to requests from
+the authentication function. In the simple case there will only be one request,
+for a password, so the data consists of just two strings.
+</p>
+<p>
+There can be problems if any of the strings are permitted to contain colon
+characters. In the usual way, these have to be doubled to avoid being taken as
+separators. If the data is being inserted from a variable, the <tt>sg</tt> expansion
+item can be used to double any existing colons. For example, the configuration
+of a LOGIN authenticator might contain this setting:
+<pre>
+&nbsp;&nbsp;server_condition = ${if pam{$1:${sg{$2}{:}{::}}}{yes}{no}}
+</pre>
+</p>
+<p>
+For a PLAIN authenticator you could use:
+<pre>
+&nbsp;&nbsp;server_condition = ${if pam{$2:${sg{$3}{:}{::}}}{yes}{no}}
+</pre>
+</p>
+<p>
+In some operating systems, PAM authentication can be done only from a process
+running as root. Since Exim is running as the Exim user when receiving
+messages, this means that PAM cannot be used directly in those systems.
+A patched version of the <i>pam&#095;unix</i> module that comes with the
+Linux PAM package is available from <a href="http:&#047;&#047;www.e-admin.de/pam&#095;exim/">http:&#047;&#047;www.e-admin.de/pam&#095;exim/</a>.
+The patched module allows one special uid/gid combination, in addition to root,
+to authenticate. If you build the patched module to allow the Exim user and
+group, PAM can then be used from an Exim authenticator.
+<hr></p>
+<p>
+<a name="IX939"></a>
+<a name="IX940"></a>
+<a name="IX941"></a>
+<b>pwcheck {&#060;<em>string1</em>&#062;:&#060;<em>string2</em>&#062;&#125;</b>
+</p>
+<p>
+This condition supports user authentication using the Cyrus <i>pwcheck</i> daemon.
+This is one way of making it possible for passwords to be checked by a process
+that is not running as root.
+<b>Note:</b> The use of <i>pwcheck</i> is now deprecated. Its replacement is
+<i>saslauthd</i> (see below).
+</p>
+<p>
+The pwcheck support is not included in Exim by default. You need to specify
+the location of the pwcheck daemon's socket in <i>Local/Makefile</i> before
+building Exim. For example:
+<pre>
+&nbsp;&nbsp;CYRUS_PWCHECK_SOCKET=/var/pwcheck/pwcheck
+</pre>
+</p>
+<p>
+You do not need to install the full Cyrus software suite in order to use
+the pwcheck daemon. You can compile and install just the daemon alone
+from the Cyrus SASL library. Ensure that <i>exim</i> is the only user that has
+access to the <i>/var/pwcheck</i> directory.
+</p>
+<p>
+The <tt>pwcheck</tt> condition takes one argument, which must be the user name and
+password, separated by a colon. For example, in a LOGIN authenticator
+configuration, you might have this:
+<pre>
+&nbsp;&nbsp;server_condition = ${if pwcheck{$1:$2}{1}{0}}
+</pre>
+<hr></p>
+<p>
+<a name="IX942"></a>
+<a name="IX943"></a>
+<b>queue&#095;running</b>
+</p>
+<p>
+This condition, which has no data, is true during delivery attempts that are
+initiated by queue runner processes, and false otherwise.
+<hr></p>
+<p>
+<a name="IX944"></a>
+<a name="IX945"></a>
+<b>radius {&#060;<em>authentication string</em>&#062;&#125;</b>
+</p>
+<p>
+Radius authentication (RFC 2865) is supported in a similar way to PAM. You must
+set <font size=-1>RADIUS&#095;CONFIG&#095;FILE</font> in <i>Local/Makefile</i> to specify the location of
+the Radius client configuration file in order to build Exim with Radius
+support. 
+You may also have to supply a suitable setting in <font size=-1>EXTRALIBS</font> so that the
+Radius library can be found when Exim is linked.
+The string specified by <font size=-1>RADIUS&#095;CONFIG&#095;FILE</font> is expanded and passed to the
+Radius client library, which calls the Radius server. The condition is true if
+the authentication is successful. For example
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>server&#095;condition = &#036;&#123;if radius&#123;&#060;<em>arguments</em>&#062;&#125;&#123;yes&#125;&#123;no&#125;&#125;</tt><br>
+<hr></p>
+<p>
+<a name="IX946"></a>
+<a name="IX947"></a>
+<a name="IX948"></a>
+<b>saslauthd &#123;&#123;&#060;<em>user</em>&#062;&#125;&#123;&#060;<em>password</em>&#062;&#125;&#123;&#060;<em>service</em>&#062;&#125;&#123;&#060;<em>realm</em>&#062;&#125;&#125;</b>
+</p>
+<p>
+This condition supports user authentication using the Cyrus <i>saslauthd</i>
+daemon. This replaces the older <i>pwcheck</i> daemon, which is now deprecated.
+Using this daemon is one way of making it possible for passwords to be checked
+by a process that is not running as root.
+</p>
+<p>
+The saslauthd support is not included in Exim by default. You need to specify
+the location of the saslauthd daemon's socket in <i>Local/Makefile</i> before
+building Exim. For example:
+<pre>
+&nbsp;&nbsp;CYRUS_SASLAUTHD_SOCKET=/var/state/saslauthd/mux
+</pre>
+</p>
+<p>
+You do not need to install the full Cyrus software suite in order to use
+the saslauthd daemon. You can compile and install just the daemon alone
+from the Cyrus SASL library.
+</p>
+<p>
+Up to four arguments can be supplied to the <tt>saslauthd</tt> condition, but only two
+are mandatory. For example:
+<pre>
+&nbsp;&nbsp;server_condition = ${if saslauthd{{$1}{$2}}{1}{0}}
+</pre>
+</p>
+<p>
+The service and the realm are optional (which is why the arguments are enclosed
+in their own set of braces). For details of the meaning of the service and
+realm, and how to run the daemon, consult the Cyrus documentation.
+<hr><br>
+</p>
+<a name="IX949"></a>
+<h2>
+<a name="SECT11.7" href="spec_toc.html#TOC130">
+11.7. Combining expansion conditions
+</a></h2>
+<p>
+Several conditions can be tested at once by combining them using the <tt>and</tt> and
+<tt>or</tt> combination conditions. Note that <tt>and</tt> and <tt>or</tt> are complete conditions
+on their own, and precede their lists of sub-conditions. Each sub-condition
+must be enclosed in braces within the overall braces that contain the list. No
+repetition of <tt>if</tt> is used.
+<hr></p>
+<p>
+<a name="IX950"></a>
+<a name="IX951"></a>
+<b>or &#123;&#123;&#060;<em>cond1</em>&#062;&#125;&#123;&#060;<em>cond2</em>&#062;&#125;...&#125;</b>
+</p>
+<p>
+The sub-conditions are evaluated from left to right. The condition is true if
+any one of the sub-conditions is true.
+For example,
+<pre>
+&nbsp;&nbsp;${if or {{eq{$local_part}{spqr}}{eq{$domain}{testing.com}}}...
+</pre>
+</p>
+<p>
+When a true sub-condition is found, the following ones are parsed but not
+evaluated. If there are several &#147;match&#148; sub-conditions the values of the
+numeric variables afterwards are taken from the first one that succeeds.
+<hr></p>
+<p>
+<a name="IX952"></a>
+<a name="IX953"></a>
+<b>and &#123;&#123;&#060;<em>cond1</em>&#062;&#125;&#123;&#060;<em>cond2</em>&#062;&#125;...&#125;</b>
+</p>
+<p>
+The sub-conditions are evaluated from left to right. The condition is true if
+all of the sub-conditions are true. If there are several &#147;match&#148;
+sub-conditions, the values of the numeric variables afterwards are taken from
+the last one. When a false sub-condition is found, the following ones are
+parsed but not evaluated.
+<hr><br>
+</p>
+<a name="IX954"></a>
+<h2>
+<a name="SECT11.8" href="spec_toc.html#TOC131">
+11.8. Expansion variables
+</a></h2>
+<p>
+The variables that are available for use in expansion strings are:
+<a name="IX955"></a>
+</p>
+<p>
+<tt>$0</tt>, <tt>$1</tt>, etc: When a <tt>match</tt> expansion condition succeeds, these
+variables contain the captured substrings identified by the regular expression
+during subsequent processing of the success string of the containing <tt>if</tt>
+expansion item. They may also be set externally by some other matching process
+which precedes the expansion of the string. For example, the commands available
+in Exim filter files include an <tt>if</tt> command with its own regular expression
+matching condition.
+</p>
+<p>
+<tt>$acl&#095;c0</tt> &#150; <tt>$acl&#095;c9</tt>: Values can be placed in these variables by the 
+<tt>set</tt> modifier in an ACL. The values persist throughout the lifetime of an SMTP
+connection. They can be used to pass information between ACLs and different
+invocations of the same ACL. 
+When a message is received, the values of these variables are saved with the
+message, and can be accessed by filters, routers, and transports during 
+subsequent delivery.
+</p>
+<p>
+<tt>$acl&#095;m0</tt> &#150; <tt>$acl&#095;m9</tt>: Values can be placed in these variables by the
+<tt>set</tt> modifier in an ACL. They retain their values while a message is being
+received, but are reset afterwards. They are also reset by <font size=-1>MAIL</font>, <font size=-1>RSET</font>,
+<font size=-1>EHLO</font>, <font size=-1>HELO</font>, and after starting a TLS session.
+When a message is received, the values of these variables are saved with the
+message, and can be accessed by filters, routers, and transports during
+subsequent delivery.
+</p>
+<p>
+<tt>$acl&#095;verify&#095;message</tt>: During the expansion of the <tt>message</tt> and 
+<tt>log&#095;message</tt> modifiers in an ACL statement after an address verification has
+failed, this variable contains the original failure message that will be
+overridden by the expanded string.
+</p>
+<p>
+<tt>$address&#095;data</tt>: This variable is set by means of the <tt>address&#095;data</tt>
+option in routers. The value then remains with the address while it is
+processed by subsequent routers and eventually a transport. If the transport is
+handling multiple addresses, the value from the first address is used. See
+chapter <a href="spec_15.html">15</a> for more details. 
+<b>Note</b>: the contents of <tt>$address&#095;data</tt> are visible in user filter files.
+</p>
+<p>
+If <tt>$address&#095;data</tt> is set when the routers are called to verify an address
+from an ACL, the final value remains available in subsequent conditions in the
+ACL statement. If routing the address caused it to be redirected to a single 
+address, the child address is also routed as part of the verification, and in 
+this case the final value of <tt>$address&#095;data</tt> is from the child's routing.
+</p>
+<p>
+<tt>$address&#095;file</tt>: When, as a result of aliasing, forwarding, or filtering, a
+message is directed to a specific file, this variable holds the name of the
+file when the transport is running. At other times, the variable is empty. For
+example, using the default configuration, if user <tt>r2d2</tt> has a <i>.forward</i>
+file containing
+<pre>
+&nbsp;&nbsp;/home/r2d2/savemail
+</pre>
+</p>
+<p>
+<a name="IX956"></a>
+then when the <b>address&#095;file</b> transport is running, <tt>$address&#095;file</tt>
+contains &#147;/home/r2d2/savemail&#148;.
+For Sieve filters, the value may be &#147;inbox&#148; or a relative folder name. It is 
+then up to the transport configuration to generate an appropriate absolute path 
+to the relevant file.
+</p>
+<p>
+<tt>$address&#095;pipe</tt>: When, as a result of aliasing or forwarding, a message is
+directed to a pipe, this variable holds the pipe command when the transport is
+running.
+<a name="IX957"></a>
+</p>
+<p>
+<tt>$authenticated&#095;id</tt>: When a server successfully authenticates a client it may
+be configured to preserve some of the authentication information in the
+variable <tt>$authenticated&#095;id</tt> (see chapter <a href="spec_33.html">33</a>). For example, a
+user/password authenticator configuration might preserve the user name for use
+in the routers. When a message is submitted locally (that is, not over a TCP
+connection), the value of <tt>$authenticated&#095;id</tt> is the login name of the
+calling process.
+<a name="IX958"></a>
+<a name="IX959"></a>
+<a name="IX960"></a>
+</p>
+<p>
+<tt>$authenticated&#095;sender</tt>:
+<font color=green>
+When acting as a server, Exim takes note of the <font size=-1>AUTH=</font> parameter on an
+incoming SMTP <font size=-1>MAIL</font> command
+</font>
+if it believes the sender is sufficiently trusted, as described in section
+<a href="spec_33.html#SECT33.2">33.2</a>. Unless the data is the string &#147;&#060;&#062;&#148;, it is set as the
+authenticated sender of the message, and the value is available during delivery
+in the <tt>$authenticated&#095;sender</tt> variable. If the sender is not trusted, Exim
+accepts the syntax of <font size=-1>AUTH=</font>, but ignores the data.
+</p>
+<p>
+When a message is submitted locally (that is, not over a TCP connection), the
+value of <tt>$authenticated&#095;sender</tt> is an address constructed from the login
+name of the calling process and <tt>$qualify&#095;domain</tt>.
+<a name="IX961"></a>
+</p>
+<p>
+<tt>$authentication&#095;failed</tt>: 
+This variable is set to &#147;1&#148; in an Exim server if a client issues an <font size=-1>AUTH</font>
+command that does not succeed. Otherwise it is set to &#147;0&#148;. This makes it
+possible to distinguish between &#147;did not try to authenticate&#148;
+(<tt>$sender&#095;host&#095;authenticated</tt> is empty and <tt>$authentication_failed</tt> is set
+to &#147;0&#148;) and &#147;tried to authenticate but failed&#148; (<tt>$sender&#095;host&#095;authenticated</tt>
+is empty and <tt>$authentication&#095;failed</tt> is set to &#147;1&#148;). Failure includes any
+negative response to an <font size=-1>AUTH</font> command, including (for example) an attempt to
+use an undefined mechanism.
+<a name="IX962"></a>
+<a name="IX963"></a>
+</p>
+<p>
+<tt>$body&#095;linecount</tt>:
+When a message is being received or delivered, this variable contains the
+number of lines in the message's body.
+<a name="IX964"></a>
+<a name="IX965"></a>
+<a name="IX966"></a>
+</p>
+<p>
+<font color=green>
+<tt>$body&#095;zerocount</tt>:
+When a message is being received or delivered, this variable contains the
+number of binary zero bytes in the message's body.
+</font>
+</p>
+<p>
+<tt>$bounce&#095;recipient</tt>:
+This is set to the recipient address of a bounce message while Exim is creating
+it. It is useful if a customized bounce message text file is in use (see
+chapter <a href="spec_41.html">41</a>).
+</p>
+<p>
+<tt>$bounce&#095;return&#095;size&#095;limit</tt>: This contains the value set in the
+<tt>bounce&#095;return&#095;size&#095;limit</tt> option, rounded up to a multiple of 1000. It is
+useful when a customized error message text file is in use (see chapter
+<a href="spec_41.html">41</a>).
+<a name="IX967"></a>
+</p>
+<p>
+<tt>$caller&#095;gid</tt>: The 
+<font color=green>
+real 
+</font>
+group id under which the process that called Exim was
+running. This is not the same as the group id of the originator of a message
+(see <tt>$originator&#095;gid</tt>). If Exim re-execs itself, this variable in the new
+incarnation normally contains the Exim gid.
+<a name="IX968"></a>
+</p>
+<p>
+<tt>$caller&#095;uid</tt>: The 
+<font color=green>
+real
+</font>
+user id under which the process that called Exim was
+running. This is not the same as the user id of the originator of a message
+(see <tt>$originator&#095;uid</tt>). If Exim re-execs itself, this variable in the new
+incarnation normally contains the Exim uid.
+</p>
+<p>
+<tt>$compile&#095;date</tt>: The date on which the Exim binary was compiled.
+</p>
+<p>
+<tt>$compile&#095;number</tt>: The building process for Exim keeps a count of the number
+of times it has been compiled. This serves to distinguish different
+compilations of the same version of the program.
+<a name="IX969"></a>
+</p>
+<p>
+<tt>$dnslist&#095;domain</tt>: When a client host is found to be on a DNS (black) list,
+the list's domain name is put into this variable so that it can be included in
+the rejection message.
+</p>
+<p>
+<tt>$dnslist&#095;text</tt>: When a client host is found to be on a DNS (black) list, the
+contents of any associated TXT record are placed in this variable.
+</p>
+<p>
+<tt>$dnslist&#095;value</tt>: When a client host is found to be on a DNS (black) list,
+the IP address from the resource record is placed in this variable.
+If there are multiple records, all the addresses are included, comma-space 
+separated.
+</p>
+<p>
+<tt>$domain</tt>: When an address is being routed, or delivered on its own, this
+variable contains the domain. Global address rewriting happens when a message
+is received, so the value of <tt>$domain</tt> during routing and delivery is the
+value after rewriting. <tt>$domain</tt> is set during user filtering, but not during
+system filtering, because a message may have many recipients and the system
+filter is called just once.
+</p>
+<p>
+When more than one address is being delivered at once (for example, several
+<font size=-1>RCPT</font> commands in one SMTP delivery), <tt>$domain</tt> is set only if they all
+have the same domain. Transports can be restricted to handling only one domain
+at a time if the value of <tt>$domain</tt> is required at transport time &#150; this is
+the default for local transports. For further details of the environment in
+which local transports are run, see chapter <a href="spec_23.html">23</a>.
+<a name="IX970"></a>
+</p>
+<p>
+At the end of a delivery, if all deferred addresses have the same domain, it is
+set in <tt>$domain</tt> during the expansion of <tt>delay&#095;warning&#095;condition</tt>.
+</p>
+<p>
+The <tt>$domain</tt> variable is also used in some other circumstances:
+</p>
+<ul>
+<li><p>
+When an ACL is running for a <font size=-1>RCPT</font> command, <tt>$domain</tt> contains the domain
+of the recipient address.
+<b>Note:</b> the domain of the sender address is in <tt>$sender&#095;address&#095;domain</tt> 
+at <font size=-1>MAIL</font> time and at <font size=-1>RCPT</font> time. <tt>$domain</tt> is not set for the <font size=-1>MAIL</font> 
+ACL.
+</p>
+</li>
+<li><p>
+When a rewrite item is being processed (see chapter <a href="spec_31.html">31</a>), <tt>$domain</tt>
+contains the domain portion of the address that is being rewritten; it can be
+used in the expansion of the replacement address, for example, to rewrite
+domains by file lookup.
+</p>
+</li>
+<li><p>
+With one important exception, whenever a domain list is being scanned,
+<tt>$domain</tt> contains the subject domain. <b>Exception</b>: When a domain list in
+a <tt>sender&#095;domains</tt> condition in an ACL is being processed, the subject domain
+is in <tt>$sender&#095;address&#095;domain</tt> and not in <tt>$domain</tt>. It works this way so
+that, in a <font size=-1>RCPT</font> ACL, the sender domain list can be dependent on the
+recipient domain (which is what is in <tt>$domain</tt> at this time).
+</p>
+</li>
+<li><a name="IX971"></a>
+<a name="IX972"></a>
+<p>
+When the <tt>smtp&#095;etrn&#095;command</tt> option is being expanded, <tt>$domain</tt> contains
+the complete argument of the <font size=-1>ETRN</font> command (see section <a href="spec_43.html#SECT43.9">43.9</a>).
+</p>
+</li>
+</ul>
+<p>
+<tt>$domain&#095;data</tt>: When the <tt>domains</tt> option on a router matches a domain by
+means of a lookup, the data read by the lookup is available during the running
+of the router as <tt>$domain&#095;data</tt>. In addition, if the driver routes the
+address to a transport, the value is available in that transport. If the
+transport is handling multiple addresses, the value from the first address is
+used. 
+</p>
+<p>
+<tt>$domain&#095;data</tt> is also set when the <tt>domains</tt> condition in an ACL matches a 
+domain by means of a lookup. The data read by the lookup is available during 
+the rest of the ACL statement. In all other situations, this variable expands
+to nothing.
+<font color=green></p>
+<p>
+<tt>$exim&#095;gid</tt>: This variable contains the numerical value of the Exim group id.
+</p>
+<p>
+<tt>$exim&#095;path</tt>: This variable contains the path to the Exim binary.
+</p>
+<p>
+<tt>$exim&#095;uid</tt>: This variable contains the numerical value of the Exim user id.
+</font>
+</p>
+<p>
+<tt>$header&#095;&#060;<em>name</em>&#062;</tt>: This is not strictly an expansion variable. It is
+expansion syntax for inserting the message header line with the given name.
+Note that the name must be terminated by colon or white space, because it may
+contain a wide variety of characters.
+Note also that braces must <i>not</i> be used.
+</p>
+<p>
+<tt>$home</tt>:
+When the <tt>check&#095;local&#095;user</tt> option is set for a router, the user's home
+directory is placed in <tt>$home</tt> when the check succeeds. In particular, this
+means it is set during the running of users' filter files. A router may also
+explicitly set a home directory for use by a transport; this can be overridden
+by a setting on the transport itself.
+</p>
+<p>
+When running a filter test via the <i>-bf</i> option, <tt>$home</tt> is set to the value
+of the environment variable <font size=-1>HOME</font>.
+</p>
+<p>
+<a name="IX973"></a>
+<a name="IX974"></a>
+<tt>$host</tt>:
+When the <b>smtp</b> transport is expanding its options for encryption using TLS,
+<tt>$host</tt> contains the name of the host to which it is connected. Likewise, when
+used in the client part of an authenticator configuration (see chapter
+<a href="spec_33.html">33</a>), <tt>$host</tt> contains the name of the server to which the client
+is connected.
+When used in a transport filter (see chapter <a href="spec_24.html">24</a>) <tt>$host</tt>
+refers to the host involved in the current connection. When a local transport
+is run as a result of a router that sets up a host list, <tt>$host</tt> contains the
+name of the first host.
+</p>
+<p>
+<tt>$host&#095;address</tt>:
+This variable is set to the remote host's IP address whenever <tt>$host</tt> is set
+for a remote connection.
+</p>
+<p>
+<tt>$host&#095;data</tt>:
+If a <tt>hosts</tt> condition in an ACL is satisfied by means of a lookup, the result
+of the lookup is made available in the <tt>$host&#095;data</tt> variable. This
+allows you, for example, to do things like this:
+<pre>
+&nbsp;&nbsp;deny  hosts = net-lsearch;/some/file
+&nbsp;&nbsp;      message = $host_data
+</pre>
+<a name="IX975"></a>
+</p>
+<p>
+<tt>$host&#095;lookup&#095;failed</tt>:
+This variable contains &#147;1&#148; if the message came from a remote host and there was
+an attempt to look up the host's name from its IP address, but the attempt
+failed. Otherwise the value of the variable is &#147;0&#148;.
+<font color=green>
+Exim checks that a forward lookup of at least one of the names it receives from
+a reverse lookup yields the original IP address. If this is not the case, Exim 
+does not accept the looked up name(s), and <tt>$host&#095;lookup&#095;failed</tt> is set to 
+&#147;1&#148;. Thus, being able to find a name from an IP address (for example, the 
+existence of a PTR record in the DNS) is not sufficient on its own for the 
+success of a host name lookup.
+</font>
+</p>
+<p>
+<tt>$inode</tt>:
+The only time this variable is set is while expanding the <tt>directory&#095;file</tt>
+option in the <b>appendfile</b> transport. The variable contains the inode number
+of the temporary file which is about to be renamed. It can be used to construct
+a unique name for the file.
+</p>
+<p>
+<tt>$interface&#095;address</tt>:
+When a message is received over a TCP/IP connection, this variable contains the
+address of the local IP interface. See also the <i>-oMi</i> command line option.
+This variable can be used in ACLs and also, for example, to make the file name 
+for a TLS certificate depend on which interface is being used.
+</p>
+<p>
+<tt>$interface&#095;port</tt>:
+When a message is received over a TCP/IP connection, this variable contains the
+local port number. See also the <i>-oMi</i> command line option.
+This variable can be used in ACLs and also, for example, to make the file name 
+for a TLS certificate depend on which port is being used.
+</p>
+<p>
+<tt>$ldap&#095;dn</tt>:
+This variable, which is available only when Exim is compiled with LDAP support, 
+contains the DN from the last entry in the most recently successful LDAP 
+lookup.
+</p>
+<p>
+<tt>$load&#095;average</tt>:
+This variable contains the system load average, multiplied by 1000 to that it 
+is an integer. For example, if the load average is 0.21, the value of the 
+variable is 210. The value is recomputed every time the variable is referenced.
+</p>
+<p>
+<tt>$local&#095;part</tt>: When an address is being routed, or delivered on its own, this
+variable contains the local part. When a number of addresses are being
+delivered together (for example, multiple <font size=-1>RCPT</font> commands in an SMTP
+session), <tt>$local&#095;part</tt> is not set.
+</p>
+<p>
+Global address rewriting happens when a message is received, so the value of
+<tt>$local&#095;part</tt> during routing and delivery is the value after rewriting.
+<tt>$local&#095;part</tt> is set during user filtering, but not during system filtering,
+because a message may have many recipients and the system filter is called just
+once.
+</p>
+<p>
+If a local part prefix or suffix has been recognized, it is not included in the
+value of <tt>$local&#095;part</tt> during routing and subsequent delivery. The values of
+any prefix or suffix are in <tt>$local&#095;part&#095;prefix</tt> and
+<tt>$local&#095;part&#095;suffix</tt>, respectively.
+</p>
+<p>
+When a message is being delivered to a file, pipe, or autoreply transport as a
+result of aliasing or forwarding, <tt>$local&#095;part</tt> is set to the local part of
+the parent address, not to the file name or command (see <tt>$address&#095;file</tt> and
+<tt>$address&#095;pipe</tt>).
+</p>
+<p>
+When an ACL is running for a <font size=-1>RCPT</font> command, <tt>$local&#095;part</tt> contains the
+local part of the recipient address.
+</p>
+<p>
+When a rewrite item is being processed (see chapter <a href="spec_31.html">31</a>),
+<tt>$local&#095;part</tt> contains the local part of the address that is being rewritten;
+it can be used in the expansion of the replacement address, for example.
+</p>
+<p>
+In all cases, all quoting is removed from the local part. For example, for both
+the addresses
+<pre>
+&nbsp;&nbsp;"abc:xyz"@test.example
+&nbsp;&nbsp;abc\:xyz@test.example
+</pre>
+</p>
+<p>
+the value of <tt>$local&#095;part</tt> is
+<pre>
+&nbsp;&nbsp;abc:xyz
+</pre>
+</p>
+<p>
+If you use <tt>$local&#095;part</tt> to create another address, you should always wrap it
+inside a quoting operator. For example, in a <b>redirect</b> router you could have:
+<pre>
+&nbsp;&nbsp;data = ${quote_local_part:$local_part}@new.domain.example
+</pre>
+</p>
+<p>
+<font color=green>
+<b>Note</b>: The value of <tt>$local&#095;part</tt> is normally lower cased. If you want 
+to process local parts in a case-dependent manner in a router, you can set the 
+<tt>caseful&#095;local&#095;part</tt> option (see chapter <a href="spec_15.html">15</a>).
+</font>
+</p>
+<p>
+<tt>$local&#095;part&#095;data</tt>:
+When the <tt>local&#095;parts</tt> option on a router matches a local part by means of a
+lookup, the data read by the lookup is available during the running of the
+router as <tt>$local&#095;part&#095;data</tt>. In addition, if the driver routes the address
+to a transport, the value is available in that transport. If the transport is
+handling multiple addresses, the value from the first address is used.
+</p>
+<p>
+<tt>$local&#095;part&#095;data</tt> is also set when the <tt>local&#095;parts</tt> condition in an ACL
+matches a local part by means of a lookup. The data read by the lookup is
+available during the rest of the ACL statement. In all other situations, this
+variable expands to nothing.
+</p>
+<p>
+<tt>$local&#095;part&#095;prefix</tt>: When an address is being routed or delivered, and a
+specific prefix for the local part was recognized, it is available in this
+variable, having been removed from <tt>$local&#095;part</tt>.
+</p>
+<p>
+<tt>$local&#095;part&#095;suffix</tt>: When an address is being routed or delivered, and a
+specific suffix for the local part was recognized, it is available in this
+variable, having been removed from <tt>$local&#095;part</tt>.
+</p>
+<p>
+<tt>$local&#095;scan&#095;data</tt>: This variable contains the text returned by the
+<i>local&#095;scan()</i> function when a message is received. See chapter
+<a href="spec_39.html">39</a> for more details.
+</p>
+<p>
+<tt>$local&#095;user&#095;gid</tt>: See <tt>$local&#095;user&#095;uid</tt>.
+</p>
+<p>
+<tt>$local&#095;user&#095;uid</tt>: This variable and <tt>$local&#095;user&#095;gid</tt> are set to
+the uid and gid after the <tt>check_local_user</tt> router precondition succeeds.
+This means that their values are available for the remaining preconditions
+(<tt>senders</tt>, <tt>require&#095;files</tt>, and <tt>condition</tt>), for the <tt>address&#095;data</tt>
+expansion, and for any router-specific expansions. At all other times, the
+values in these variables are <tt>(uid&#095;t)(-1)</tt> and <tt>(gid&#095;t)(-1)</tt>,
+respectively.
+</p>
+<p>
+<tt>$localhost&#095;number</tt>: This contains the expanded value of the
+<tt>localhost&#095;number</tt> option. The expansion happens after the main options have
+been read.
+</p>
+<p>
+<tt>$mailstore&#095;basename</tt>: This variable is set only when doing deliveries in 
+&#147;mailstore&#148; format in the <b>appendfile</b> transport. During the expansion of the 
+<tt>mailstore&#095;prefix</tt>, <tt>mailstore&#095;suffix</tt>, <tt>message_prefix</tt>, and 
+<tt>message&#095;suffix</tt> options, it contains the basename of the files that are being
+written, that is, the name without the &#147;.tmp&#148;, &#147;.env&#148;, or &#147;.msg&#148; suffix. At all
+other times, this variable is empty.
+<a name="IX976"></a>
+</p>
+<p>
+<tt>$message&#095;age</tt>: This variable is set at the start of a delivery attempt to
+contain the number of seconds since the message was received. It does not
+change during a single delivery attempt.
+<a name="IX977"></a>
+<a name="IX978"></a>
+<a name="IX979"></a>
+</p>
+<p>
+<tt>$message&#095;body</tt>: This variable contains the initial portion of a message's
+body while it is being delivered, and is intended mainly for use in filter
+files. The maximum number of characters of the body that are put into the
+variable is set by the <tt>message&#095;body&#095;visible</tt> configuration option; the
+default is 500. Newlines are converted into spaces to make it easier to search
+for phrases that might be split over a line break.
+Binary zeros are also converted into spaces.
+<a name="IX980"></a>
+<a name="IX981"></a>
+</p>
+<p>
+<tt>$message&#095;body&#095;end</tt>: This variable contains the final portion of a message's
+body while it is being delivered. The format and maximum size are as for
+<tt>$message&#095;body</tt>.
+<a name="IX982"></a>
+<a name="IX983"></a>
+</p>
+<p>
+<tt>$message&#095;body&#095;size</tt>: When a message is being processed, this variable
+contains the size of the body in bytes. The count starts from the character
+after the blank line that separates the body from the header. Newlines are
+included in the count. See also <tt>$message&#095;size</tt> and <tt>$body&#095;linecount</tt>.
+</p>
+<p>
+<tt>$message&#095;headers</tt>:
+This variable contains a concatenation of all the header lines when a message
+is being processed, except for lines added by routers or transports. The header
+lines are separated by newline characters.
+</p>
+<p>
+<tt>$message&#095;id</tt>: 
+When a message is being received or delivered, this variable contains the
+unique message id that is used by Exim to identify the message.
+An id is not created for a message until after its header has been 
+successfully received.
+<font color=green>
+<b>Note</b>: This is <i>not</i> the contents of the <i>Message-ID:</i> header line; it 
+is the local id that Exim assigns to the message, for example: 
+<tt>1BXTIK-0001yO-VA</tt>.
+</font>
+<a name="IX984"></a>
+<a name="IX985"></a>
+</p>
+<p>
+<tt>$message&#095;size</tt>: 
+When a message is being processed, this variable contains its size in bytes. In
+most cases, the size includes those headers that were received with the
+message, but not those (such as <i>Envelope-to:</i>) that are added to individual
+deliveries as they are written. However, there is one special case: during the
+expansion of the <tt>maildir&#095;tag</tt> option in the <b>appendfile</b> transport while
+doing a delivery in maildir format, the value of <tt>$message&#095;size</tt> is the
+precise size of the file that has been written. See also
+<tt>$message&#095;body&#095;size</tt> and <tt>$body&#095;linecount</tt>.
+<a name="IX986"></a>
+</p>
+<p>
+While running an ACL at the time of an SMTP <font size=-1>RCPT</font> command, <tt>$message&#095;size</tt>
+contains the size supplied on the <font size=-1>MAIL</font> command, or 
+-1
+if no size was given. The value may not, of course, be truthful.
+</p>
+<p>
+<tt>$n0</tt> &#150; <tt>$n9</tt>: These variables are counters that can be incremented by means
+of the <tt>add</tt> command in filter files.
+</p>
+<p>
+<tt>$original&#095;domain</tt>: When a top-level address is being processed for delivery,
+this contains the same value as <tt>$domain</tt>. However, if a &#147;child&#148; address (for
+example, generated by an alias, forward, or filter file) is being processed,
+this variable contains the domain of the original address. This differs from
+<tt>$parent&#095;domain</tt> only when there is more than one level of aliasing or
+forwarding. When more than one address is being delivered in a single transport
+run, <tt>$original&#095;domain</tt> is not set.
+</p>
+<p>
+If new an address is created by means of a <tt>deliver</tt> command in a system
+filter, it is set up with an artificial &#147;parent&#148; address. This has the local
+part <i>system-filter</i> and the default qualify domain.
+</p>
+<p>
+<tt>$original&#095;local&#095;part</tt>: When a top-level address is being processed for
+delivery, this contains the same value as <tt>$local&#095;part</tt>, unless a prefix or
+suffix was removed from the local part, in which case <tt>$original&#095;local&#095;part</tt>
+contains the full local part. When a &#147;child&#148; address (for example, generated by
+an alias, forward, or filter file) is being processed, this variable contains
+the full local part of the original address. If the router that did the
+redirection processed the local part case-insensitively, the value in
+<tt>$original&#095;local&#095;part</tt> is in lower case. This variable differs from
+<tt>$parent&#095;local&#095;part</tt> only when there is more than one level of aliasing or
+forwarding. When more than one address is being delivered in a single transport
+run, <tt>$original&#095;local&#095;part</tt> is not set.
+</p>
+<p>
+If new an address is created by means of a <tt>deliver</tt> command in a system
+filter, it is set up with an artificial &#147;parent&#148; address. This has the local
+part <i>system-filter</i> and the default qualify domain.
+<a name="IX987"></a>
+<a name="IX988"></a>
+</p>
+<p>
+<tt>$originator&#095;gid</tt>: The value of <tt>$caller&#095;gid</tt> that was set when the message
+was received. For messages received via the command line, this is the gid of
+the sending user. For messages received by SMTP over TCP/IP, this is normally
+the gid of the Exim user.
+<a name="IX989"></a>
+<a name="IX990"></a>
+</p>
+<p>
+<tt>$originator&#095;uid</tt>: The value of <tt>$caller&#095;uid</tt> that was set when the message
+was received. For messages received via the command line, this is the uid of
+the sending user. For messages received by SMTP over TCP/IP, this is normally
+the uid of the Exim user.
+</p>
+<p>
+<tt>$parent&#095;domain</tt>: This variable is similar to <tt>$original&#095;domain</tt> (see
+above), except that it refers to the immediately preceding parent address.
+</p>
+<p>
+<tt>$parent&#095;local&#095;part</tt>: This variable is similar to <tt>$original&#095;local&#095;part</tt>
+(see above), except that it refers to the immediately preceding parent address.
+<a name="IX991"></a>
+</p>
+<p>
+<tt>$pid</tt>: This variable contains the current process id.
+<a name="IX992"></a>
+<a name="IX993"></a>
+</p>
+<p>
+<tt>$pipe&#095;addresses</tt>: This is not an expansion variable, but is mentioned here
+because the string &#147;&#036;pipe&#095;addresses&#148; is handled specially in the command
+specification for the <b>pipe</b> transport (chapter <a href="spec_29.html">29</a>) and in
+transport filters (described under <tt>transport&#095;filter</tt> in chapter
+<a href="spec_24.html">24</a>). It cannot be used in general expansion strings, and
+provokes an &#147;unknown variable&#148; error if encountered.
+</p>
+<p>
+<tt>$primary&#095;hostname</tt>: The value set in the configuration file, or read by the
+<i>uname()</i> function. If <i>uname()</i> returns a single-component name, Exim
+calls <i>gethostbyname()</i> (or <i>getipnodebyname()</i> where available) in an
+attempt to acquire a fully qualified host name.
+<font color=green>
+See also <tt>$smtp&#095;active&#095;hostname</tt>.
+</font>
+</p>
+<p>
+<tt>$qualify&#095;domain</tt>: The value set for this option in the configuration file.
+</p>
+<p>
+<tt>$qualify&#095;recipient</tt>: The value set for this option in the configuration file,
+or if not set, the value of <tt>$qualify&#095;domain</tt>.
+</p>
+<p>
+<tt>$rcpt&#095;count</tt>: When a message is being received by SMTP, this variable 
+contains the number of <font size=-1>RCPT</font> commands received for the current message. If
+this variable is used in a <font size=-1>RCPT</font> ACL, its value includes the current
+command.
+</p>
+<p>
+<tt>$rcpt&#095;defer&#095;count</tt>: When a message is being received by SMTP, this variable 
+contains the number of <font size=-1>RCPT</font> commands in the current message that have
+previously been rejected with a temporary (4<i>xx</i>) response.
+</p>
+<p>
+<tt>$rcpt&#095;fail&#095;count</tt>: When a message is being received by SMTP, this variable
+contains the number of <font size=-1>RCPT</font> commands in the current message that have
+previously been rejected with a permanent (5<i>xx</i>) response.
+</p>
+<p>
+<tt>$received&#095;count</tt>: This variable contains the number of <i>Received:</i> header
+lines in the message, including the one added by Exim (so its value is always
+greater than zero). It is available in the <font size=-1>DATA</font> ACL, the non-SMTP ACL, and
+while routing and delivering.
+</p>
+<p>
+<tt>$received&#095;for</tt>: If there is only a single recipient address in an incoming
+message, this variable contains that address when the <i>Received:</i> header line
+is being built.
+<font color=green>
+The value is copied after recipient rewriting has happened, but before the
+<i>local&#095;scan()</i> function is run.
+</font>
+</p>
+<p>
+<tt>$received&#095;protocol</tt>: When a message is being processed, this variable
+contains the name of the protocol by which it was received. See also the
+<i>-oMr</i> option.
+<font color=green></p>
+<p>
+<tt>$recipient&#095;data</tt>: This variable is set after an indexing lookup success in
+an ACL <tt>recipients</tt> condition. It contains the data from the lookup, and the
+value remains set until the next <tt>recipients</tt> test. Thus, you can do things
+like this:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>require recipients      = cdb*&#064;;/some/file</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>deny    <i>some further test involving</i> &#036;recipient&#095;data</tt><br>
+</p>
+<p>
+<b>Warning</b>: This variable is set only when a lookup is used as an indexing 
+method in the address list, using the semicolon syntax as in the example above.
+The variable is not set for a lookup that is used as part of the string
+expansion that all such lists undergo before being interpreted.
+</font>
+</p>
+<p>
+<tt>$recipients</tt>: This variable contains a list of envelope recipients for a
+message. A comma and a space separate the addresses in the replacement text.
+However, the variable is not generally available, to prevent exposure of Bcc
+recipients in unprivileged users' filter files. You can use <tt>$recipients</tt> only
+</p>
+<ol>
+<li TYPE="1"><p>
+In a system filter file.
+</p>
+</li>
+<li TYPE="1"><p>
+In the <font size=-1>DATA</font> or non-SMTP ACL, that is, in the final ACL for accepting a 
+message.
+</p>
+</li>
+</ol>
+<p>
+<tt>$recipients&#095;count</tt>: When a message is being processed, this variable
+contains the number of envelope recipients that came with the message.
+Duplicates are not excluded from the count. While a message is being received
+over SMTP, the number increases for each accepted recipient. It can be
+referenced in an ACL.
+</p>
+<p>
+<tt>$reply&#095;address</tt>: When a message is being processed, this variable contains
+the contents of the <i>Reply-To:</i> header line if one exists
+and it is not empty,
+or otherwise the contents of the <i>From:</i> header line.
+</p>
+<p>
+<tt>$return&#095;path</tt>: When a message is being delivered, this variable contains the
+return path &#150; the sender field that will be sent as part of the envelope. It
+is not enclosed in &#060;&#062; characters. 
+At the start of routing an address, 
+<tt>$return&#095;path</tt> has the same value as <tt>$sender&#095;address</tt>, but if, for
+example, an incoming message to a mailing list has been expanded by a router
+which specifies a different address for bounce messages, <tt>$return&#095;path</tt>
+subsequently contains the new bounce address, whereas <tt>$sender&#095;address</tt>
+always contains the original sender address that was received with the message.
+In other words, <tt>$sender&#095;address</tt> contains the incoming envelope sender, and 
+<tt>$return&#095;path</tt> contains the outgoing envelope sender.
+</p>
+<p>
+<tt>$return&#095;size&#095;limit</tt>: This is an obsolete name for
+<tt>$bounce&#095;return&#095;size&#095;limit</tt>.
+<a name="IX994"></a>
+</p>
+<p>
+<tt>$runrc</tt>: This variable contains the return code from a command that is run by
+the <tt>&#036;&#123;run...&#125;</tt> expansion item.
+<b>Warning</b>: In a router or transport, you cannot assume the order in which 
+option values are expanded, except for those pre-conditions whose order of 
+testing is documented. Therefore, you cannot reliably expect to set <tt>$runrc</tt> 
+by the expansion of one option, and use it in another.
+</p>
+<p>
+<a name="IX995"></a>
+<tt>$self&#095;hostname</tt>: When an address is routed to a supposedly remote host that
+turns out to be the local host, what happens is controlled by the 
+<tt>self</tt> generic router option. One of its values causes the address to be passed
+to another router. When this happens, <tt>$self&#095;hostname</tt> is set to the name of
+the local host that the original router encountered. In other circumstances its
+contents are null.
+</p>
+<p>
+<tt>$sender&#095;address</tt>: When a message is being processed, this variable contains
+the sender's address that was received in the message's envelope. For bounce
+messages, the value of this variable is the empty string.
+See also <tt>$return&#095;path</tt>.
+</p>
+<p>
+<tt>$sender&#095;address&#095;domain</tt>: The domain portion of <tt>$sender&#095;address</tt>.
+</p>
+<p>
+<tt>$sender&#095;address&#095;local&#095;part</tt>: The local part portion of <tt>$sender&#095;address</tt>.
+<font color=green></p>
+<p>
+<tt>$sender&#095;data</tt>: This variable is set after a lookup success in an ACL 
+<tt>senders</tt> condition or in a router <tt>senders</tt> option. It contains the data from
+the lookup, and the value remains set until the next <tt>senders</tt> test. Thus, you
+can do things like this:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>require senders      = cdb*&#064;;/some/file</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>deny    <i>some further test involving</i> &#036;sender&#095;data</tt><br>
+</p>
+<p>
+<b>Warning</b>: This variable is set only when a lookup is used as an indexing 
+method in the address list, using the semicolon syntax as in the example above.
+The variable is not set for a lookup that is used as part of the string
+expansion that all such lists undergo before being interpreted.
+</font>
+</p>
+<p>
+<tt>$sender&#095;fullhost</tt>: When a message is received from a remote host, this
+variable contains the host name and IP address in a single string. It ends
+with the IP address in square brackets, followed by a colon and a port number
+if the logging of ports is enabled. The format of the rest of the string
+depends on whether the host issued a <font size=-1>HELO</font> or <font size=-1>EHLO</font> SMTP command, and
+whether the host name was verified by looking up its IP address. (Looking up
+the IP address can be forced by the <tt>host&#095;lookup</tt> option, independent of
+verification.) A plain host name at the start of the string is a verified host
+name; if this is not present, verification either failed or was not requested.
+A host name in parentheses is the argument of a <font size=-1>HELO</font> or <font size=-1>EHLO</font> command.
+This is omitted if it is identical to the verified host name or to the host's
+IP address in square brackets.
+</p>
+<p>
+<tt>$sender&#095;helo&#095;name</tt>: When a message is received from a remote host that has
+issued a <font size=-1>HELO</font> or <font size=-1>EHLO</font> command, the argument of that command is placed
+in this variable. It is also set if <font size=-1>HELO</font> or <font size=-1>EHLO</font> is used when a message
+is received using SMTP locally via the <i>-bs</i> or <i>-bS</i> options.
+</p>
+<p>
+<tt>$sender&#095;host&#095;address</tt>: When a message is received from a remote host, this
+variable contains that host's IP address. For locally submitted messages, it is
+empty.
+</p>
+<p>
+<tt>$sender&#095;host&#095;authenticated</tt>: This variable contains the name (not the
+public name) of the authenticator driver which successfully authenticated the
+client from which the message was received. It is empty if there was no
+successful authentication.
+</p>
+<p>
+<tt>$sender&#095;host&#095;name</tt>: When a message is received from a remote host, this
+variable contains the host's name as obtained by looking up its IP address. 
+For messages received by other means, this variable is empty.
+</p>
+<p>
+If the host name has not previously been looked up, a reference to
+<tt>$sender&#095;host&#095;name</tt> triggers a lookup (for messages from remote hosts). 
+<font color=green>
+A looked up name is accepted only if it leads back to the original IP address
+via a forward lookup. If either the reverse or the forward lookup fails, or if
+the forward lookup does not yield the original IP address,
+<tt>$sender&#095;host&#095;name</tt> remains empty, and <tt>$host&#095;lookup&#095;failed</tt> is set to
+&#147;1&#148;.
+</font>
+</p>
+<p>
+Exim does not automatically look up every calling host's name. If you want
+maximum efficiency, you should arrange your configuration so that it avoids
+these lookups altogether. The lookup happens only if one or more of the
+following are true:
+</p>
+<ol>
+<li TYPE="1"><p>
+A string containing <tt>$sender&#095;host&#095;name</tt> is expanded.
+</p>
+</li>
+<li TYPE="1"><p>
+The calling host matches the list in <tt>host&#095;lookup</tt>. In the default 
+configuration, this option is set to *, so it must be changed if lookups are
+to be avoided. (In the code, the default for <tt>host&#095;lookup</tt> is unset.)
+</p>
+</li>
+<li TYPE="1"><p>
+Exim needs the host name in order to test an item in a host list. The items
+that require this are described in sections <a href="spec_10.html#SECT10.13">10.13</a> and
+<a href="spec_10.html#SECT10.15">10.15</a>.
+</p>
+</li>
+<li TYPE="1"><p>
+The calling host matches <tt>helo&#095;try&#095;verify&#095;hosts</tt> or <tt>helo&#095;verify&#095;hosts</tt>. 
+In this case, the host name is required to compare with the name quoted in any 
+<font size=-1>EHLO</font> or <font size=-1>HELO</font> commands that the client issues.
+</p>
+</li>
+<li TYPE="1"><p>
+The remote host issues a <font size=-1>EHLO</font> or <font size=-1>HELO</font> command that quotes one of the 
+domains in <tt>helo&#095;lookup&#095;domains</tt>. The default value of this option is 
+<pre>
+&nbsp;&nbsp;helo_lookup_domains = @ : @[]
+</pre>
+</p>
+<p>
+which causes a lookup if a remote host (incorrectly) gives the server's name or 
+IP address in an <font size=-1>EHLO</font> or <font size=-1>HELO</font> command.
+</p>
+</li>
+</ol>
+<p>
+<tt>$sender&#095;host&#095;port</tt>: When a message is received from a remote host, this
+variable contains the port number that was used on the remote host.
+</p>
+<p>
+<tt>$sender&#095;ident</tt>: When a message is received from a remote host, this variable
+contains the identification received in response to an RFC 1413 request. When a
+message has been received locally, this variable contains the login name of the
+user that called Exim.
+</p>
+<p>
+<a name="IX996"></a>
+<a name="IX997"></a>
+<tt>$sender&#095;rcvhost</tt>: This is provided specifically for use in <i>Received:</i>
+headers. It starts with either the verified host name (as obtained from a
+reverse DNS lookup) or, if there is no verified host name, the IP address in
+square brackets. After that there may be text in parentheses. When the first
+item is a verified host name, the first thing in the parentheses is the IP
+address in square brackets, followed by a colon and a port number if port
+logging is enabled. When the first item is an IP address, the port is recorded
+as &#147;port=<em>xxxx</em>&#148; inside the parentheses.
+</p>
+<p>
+There may also be items of the form &#147;helo=<em>xxxx</em>&#148; if <font size=-1>HELO</font> or <font size=-1>EHLO</font>
+was used and its argument was not identical to the real host name or IP
+address, and &#147;ident=<em>xxxx</em>&#148; if an RFC 1413 ident string is available. If all
+three items are present in the parentheses, a newline and tab are inserted into
+the string, to improve the formatting of the <i>Received:</i> header.
+<a name="IX998"></a>
+<a name="IX999"></a>
+<a name="IX1000"></a>
+<a name="IX1001"></a>
+</p>
+<p>
+<tt>$smtp&#095;command&#095;argument</tt>: While an ACL is running to check an <font size=-1>AUTH</font>,
+<font size=-1>EHLO</font>, <font size=-1>EXPN</font>, <font size=-1>ETRN</font>, <font size=-1>HELO</font>, or <font size=-1>VRFY</font> command, this variable
+contains the argument for the SMTP command.
+</p>
+<p>
+<tt>$sn0</tt> &#150; <tt>$sn9</tt>: These variables are copies of the values of the <tt>$n0</tt>
+&#150; <tt>$n9</tt> accumulators that were current at the end of the system filter file.
+This allows a system filter file to set values that can be tested in users'
+filter files. For example, a system filter could set a value indicating how
+likely it is that a message is junk mail.
+</p>
+<p>
+<tt>$spool&#095;directory</tt>: The name of Exim's spool directory.
+</p>
+<p>
+<tt>$thisaddress</tt>: This variable is set only during the processing of the
+<tt>foranyaddress</tt> command in a filter file. Its use is explained in the
+description of that command.
+</p>
+<p>
+<tt>$tls&#095;certificate&#095;verified</tt>:
+This variable is set to &#147;1&#148; if a TLS certificate was verified when the message
+was received, and &#147;0&#148; otherwise.
+</p>
+<p>
+<tt>$tls&#095;cipher</tt>: When a message is received from a remote host over an
+encrypted SMTP connection, this variable is set to the cipher suite that was
+negotiated, for example DES-CBC3-SHA. 
+In other circumstances, in particular, for message received over unencrypted 
+connections, the variable is empty.
+See chapter <a href="spec_37.html">37</a> for details of TLS support.
+</p>
+<p>
+<tt>$tls&#095;peerdn</tt>:  When a message is received from a remote host over an
+encrypted SMTP connection, 
+and Exim is configured to request a certificate from the client,
+the value of the Distinguished Name of the certificate is made available in the
+<tt>$tls&#095;peerdn</tt> during subsequent processing.
+</p>
+<p>
+<tt>$tod&#095;bsdinbox</tt>: The time of day and date, in the format required for
+BSD-style mailbox files, for example: Thu Oct 17 17:14:09 1995.
+</p>
+<p>
+<tt>$tod&#095;epoch</tt>: The time and date as a number of seconds since the start of the
+Unix epoch.
+</p>
+<p>
+<tt>$tod&#095;full</tt>: A full version of the time and date, for example: Wed, 16 Oct
+1995 09:51:40 +0100. The timezone is always given as a numerical offset from
+UTC, with positive values used for timezones that are ahead (east) of UTC, and 
+negative values for those that are behind (west).
+</p>
+<p>
+<tt>$tod&#095;log</tt>: The time and date in the format used for writing Exim's log
+files, for example: 1995-10-12 15:32:29,
+but without a timezone.
+</p>
+<p>
+<tt>$tod&#095;logfile</tt>:
+This variable contains the date in the format yyyymmdd. This is the format that
+is used for datestamping log files when <tt>log&#095;file&#095;path</tt> contains the <tt>%D</tt>
+flag.
+</p>
+<p>
+<tt>$tod&#095;zone</tt>: This variable contains the numerical value of the local
+timezone, for example: -0500.
+</p>
+<p>
+<tt>$tod&#095;zulu</tt>:
+This variable contains the UTC date and time in &#147;Zulu&#148; format, as specified by
+ISO 8601, for example: 20030221154023Z.
+<a name="IX1002"></a>
+</p>
+<p>
+<tt>$value</tt>: This variable contains the result of an expansion lookup, extraction
+operation, or external command, as described above.
+</p>
+<p>
+<tt>$version&#095;number</tt>: The version number of Exim.
+</p>
+<p>
+<tt>$warn&#095;message&#095;delay</tt>: This variable is set only during the creation of a
+message warning about a delivery delay. Details of its use are explained in
+section <a href="spec_41.html#SECT41.2">41.2</a>.
+</p>
+<p>
+<tt>$warn&#095;message&#095;recipients</tt>: This variable is set only during the creation of
+a message warning about a delivery delay. Details of its use are explained in
+section <a href="spec_41.html#SECT41.2">41.2</a>.
+<hr>
+</p>
+<font size=2>
+<a href="spec_10.html">Previous</a>&nbsp;&nbsp;<a href="spec_12.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

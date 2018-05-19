@@ -1,0 +1,43 @@
+make -C mkdosfs all
+make[1]: Entering directory `/var/tmp/BUILD/dosfstools-2.11/mkdosfs'
+arm_v5t_le-gcc -O2 -Wall -g -c mkdosfs.c -o mkdosfs.o
+arm_v5t_le-gcc  mkdosfs.o -o mkdosfs
+make[1]: Leaving directory `/var/tmp/BUILD/dosfstools-2.11/mkdosfs'
+make -C dosfsck all
+make[1]: Entering directory `/var/tmp/BUILD/dosfstools-2.11/dosfsck'
+arm_v5t_le-gcc -c -O2 -Wall -g boot.c
+arm_v5t_le-gcc -c -O2 -Wall -g check.c
+arm_v5t_le-gcc -c -O2 -Wall -g common.c
+arm_v5t_le-gcc -c -O2 -Wall -g dosfsck.c
+arm_v5t_le-gcc -c -O2 -Wall -g fat.c
+arm_v5t_le-gcc -c -O2 -Wall -g file.c
+arm_v5t_le-gcc -c -O2 -Wall -g io.c
+arm_v5t_le-gcc -c -O2 -Wall -g lfn.c
+arm_v5t_le-gcc -o dosfsck  boot.o check.o common.o dosfsck.o fat.o file.o io.o lfn.o
+make[1]: Leaving directory `/var/tmp/BUILD/dosfstools-2.11/dosfsck'
+make -C mkdosfs install
+make[1]: Entering directory `/var/tmp/BUILD/dosfstools-2.11/mkdosfs'
+mkdir -p /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/sbin /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man8
+install -m 755 mkdosfs /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/sbin
+install -m 644 mkdosfs.8 /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man8
+rm -f /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/sbin/mkfs.msdos
+rm -f /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/sbin/mkfs.vfat
+ln -s mkdosfs /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/sbin/mkfs.msdos
+ln -s mkdosfs /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/sbin/mkfs.vfat
+rm -f /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man8/mkfs.msdos.8
+ln -s mkdosfs.8 /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man8/mkfs.msdos.8
+ln -s mkdosfs.8 /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man8/mkfs.vfat.8
+make[1]: Leaving directory `/var/tmp/BUILD/dosfstools-2.11/mkdosfs'
+make -C dosfsck install
+make[1]: Entering directory `/var/tmp/BUILD/dosfstools-2.11/dosfsck'
+mkdir -p /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/sbin /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man8
+install -m 755 dosfsck /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/sbin
+install -m 644 dosfsck.8 /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man8
+rm -f /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/sbin/fsck.msdos
+rm -f /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/sbin/fsck.vfat
+ln -s dosfsck /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/sbin/fsck.msdos
+ln -s dosfsck /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/sbin/fsck.vfat
+rm -f /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man8/fsck.msdos.8
+ln -s dosfsck.8 /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man8/fsck.msdos.8
+ln -s dosfsck.8 /var/tmp/dosfstools-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man8/fsck.vfat.8
+make[1]: Leaving directory `/var/tmp/BUILD/dosfstools-2.11/dosfsck'

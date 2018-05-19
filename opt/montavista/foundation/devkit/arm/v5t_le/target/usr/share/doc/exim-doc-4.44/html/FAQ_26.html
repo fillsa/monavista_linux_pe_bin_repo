@@ -1,0 +1,138 @@
+<html>
+<head>
+<title>The Exim FAQ Section 26</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_25.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_27.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC387">97. SUN SYSTEMS</a></h2>
+<p>
+<a name="TOC388" href="FAQ.html#TOC388">Q9701:</a>&nbsp;&nbsp;Exim builds fine with <i>gcc</i> on SunOS 4 but crashes inside <i>sscanf()</i>.
+</p>
+<p>
+<font color="#00BB00">A9701:</font>&nbsp;&nbsp;Make sure you are liking with the GNU <i>ld</i> linker and not the system
+version of <i>ld</i>.
+</p>
+<p>
+<a name="TOC389" href="FAQ.html#TOC389">Q9702:</a>&nbsp;&nbsp;How can I get rid of spurious <tt>^M</tt> characters in messages sent from
+CDE <i>dtmail</i>?
+</p>
+<p>
+<font color="#00BB00">A9702:</font>&nbsp;&nbsp;CDE <i>dtmail</i> passes messages to Exim via the command line interface with
+lines terminated by CRLF, instead of the Unix convention of just LF. As
+Exim is an 8-bit clean program it treats the CR as just another data
+character. Exim has a command line option called <b>-dropcr</b> which causes
+it to ignore all CR characters in an incoming non-SMTP message. You
+should configure <i>dtmail</i> to add this option to the command it uses to
+call Exim (using the path <i>/usr/lib/sendmail</i>). However, it has been
+reported that it isn't possible to change this call from <i>dtmail</i> by any
+official means. An alternative approach is to replace <i>/usr/lib/sendmail</i>
+by a filtering script which removes the spurious CRs from the input
+before passing it to Exim.
+</p>
+<p>
+<a name="TOC390" href="FAQ.html#TOC390">Q9703:</a>&nbsp;&nbsp;On SunOS 4 Exim crashes when looking up domains in the DNS that have
+more than 10 A records.
+</p>
+<p>
+<font color="#00BB00">A9703:</font>&nbsp;&nbsp;There are Sun library patches to fix this. It is not Exim's problem.
+For 4.13_U1 the patch is 101558-xx; for 4.1.3 the patch is 100891-xx.
+From the README: <i>1054748 ftp, ping dump core when connecting to a host
+with multiple DNS A records.</i> An alternative is to build another
+resolver library - such as the ones that are part of the <i>bind</i>
+distribution - and explicitly link against those.
+</p>
+<p>
+<a name="TOC391" href="FAQ.html#TOC391">Q9704:</a>&nbsp;&nbsp;I am experiencing mailbox locking problems with Sun's <i>mailtool</i> used
+over a network.
+</p>
+<p>
+<font color="#00BB00">A9704:</font>&nbsp;&nbsp;Under the <tt>Expert</tt> settings of <i>mailtool</i> is a option to turn on <i>Use
+network aware mail file locking</i>. By default <i>dtmail</i> has this set, but
+<i>mailtool</i> doesn't. You should set it. The help info on <i>dtmail</i> has this
+to say about it:
+</p>
+<p>
+<i>Mailer tries to prevent two different instances of itself from opening
+the same mail file at the same time through a technique that detects
+this access when both instances of Mailer and the file are all on the
+same machine. A network-aware mail file locking protocol is available
+that uses ToolTalk to coordinate instances of Mailer running from more
+than one machine, or mail files accessed over the network. Mailer can
+only change this option when first opening a mail file.</i>
+</p>
+<p>
+If you are using the SunOS4 version of <i>mailtool</i>, this apparently
+doesn't work. The only thing which does seem to work it getting the user
+to hit the <tt>done</tt> button to make it release the lock.
+</p>
+<p>
+<a name="TOC392" href="FAQ.html#TOC392">Q9705:</a>&nbsp;&nbsp;Exim has been crashing on my Solaris x86 system, apparently while
+running DBM functions.
+</p>
+<p>
+<font color="#00BB00">A9705:</font>&nbsp;&nbsp;The use of <i>ndbm</i> with <i>gcc</i> has caused problems on x86 Solaris systems.
+Try changing one or the other; using either DB with gcc, or Sun's
+WS compiler with <i>ndbm</i>, has fixed this in the past.
+</p>
+<p>
+<a name="TOC393" href="FAQ.html#TOC393">Q9706:</a>&nbsp;&nbsp;The <i>exiwhat</i> utility isn't working for me on a Solaris 2 system.
+</p>
+<p>
+<font color="#00BB00">A9706:</font>&nbsp;&nbsp;Have you got <i>/usr/ucb</i> on your path? If so, it is probably picking up the
+wrong version of the <i>ps</i> command. The <i>exiwhat</i> script is built on
+Solaris to expect the normal Solaris version of <i>ps</i>.
+</p>
+<p>
+<a name="TOC394" href="FAQ.html#TOC394">Q9707:</a>&nbsp;&nbsp;How do I stop Sun's <i>dtcm</i> from hanging?
+</p>
+<p>
+<font color="#00BB00">A9707:</font>&nbsp;&nbsp;From qmail's FAQ: <i>There is a novice programming error in dtcm, known as
+&#147;failure to close the output side of the pipe in the child.&#148; Sun has,
+at the time of this writing, not yet provided a patch.</i>
+</p>
+<p>
+<a name="TOC395" href="FAQ.html#TOC395">Q9708:</a>&nbsp;&nbsp;I want Exim to use only the resolver (i.e. ignore <i>/etc/hosts</i>), but don't
+want to alter the <i>nsswitch.conf</i> file in Solaris 2.
+</p>
+<p>
+<font color="#00BB00">A9708:</font>&nbsp;&nbsp;You need to rebuild Exim after fiddling with <i>OS/os.h-SunOS5</i>:
+</p>
+<pre>
+   #define gethostbyaddr res_gethostbyaddr
+   #define gethostbyname res_gethostbyname
+   #define endhostent res_endhostent
+   #define endnetent res_endnetent
+   #define gethostent res_gethostent
+   #define getnetbyaddr res_getnetbyaddr
+   #define getnetbyname res_getnetbyname
+   #define getnetent res_getnetent
+   #define sethostent res_sethostent
+   #define setnetent res_setnetent</pre>
+<p>
+Note that <b>-lnsl</b> is still needed in the Makefile as it
+contains code used by the NIS lookup and also the <i>inet_addr()</i> function
+that Exim uses.
+</p>
+<p>
+<a name="TOC396" href="FAQ.html#TOC396">Q9709:</a>&nbsp;&nbsp;When I try to compile Exim 4.x on Solaris 2.5.1 I get an error along the
+lines of <i>no such field in struct as 'value.ui32'</i>.
+</p>
+<p>
+<font color="#00BB00">A9709:</font>&nbsp;&nbsp;Look in the Exim file <i>OS/os.h-SunOS5.h</i> for the line
+</p>
+<pre>
+   #define LOAD_AVG_FIELD          value.ui32</pre>
+<p>
+and change <tt>ui32</tt> to <tt>ul</tt> (that's u followed by the letter ell, not
+the digit one). Solaris 2.5.1 is getting <i>very</i> old now...
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_25.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_27.html">Next</a>
+</body>
+</html>

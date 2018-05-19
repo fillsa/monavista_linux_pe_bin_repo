@@ -1,0 +1,1113 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 45</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_44.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_46.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2603"></a>
+<a name="IX2604"></a>
+<h1>
+<a name="CHAP45" href="spec_toc.html#TOC366">
+45. Log files
+</a></h1>
+<p>
+Exim writes three different logs, referred to as the main log, the reject log,
+and the panic log:
+</p>
+<ul>
+<li><a name="IX2605"></a>
+<p>
+The main log records the arrival of each message and each delivery in a single
+line in each case. The format is as compact as possible, in an attempt to keep
+down the size of log files. Two-character flag sequences make it easy to pick
+out these lines. A number of other events are recorded in the main log. Some of
+them are optional, in which case the <tt>log&#095;selector</tt> option controls whether
+they are included or not. A Perl script called <i>eximstats</i>, which does simple
+analysis of main log files, is provided in the Exim distribution (see section
+<a href="spec_46.html#SECT46.7">46.7</a>).
+</p>
+</li>
+<li><a name="IX2606"></a>
+<p>
+The reject log records information from messages that are rejected as a result
+of a configuration option (that is, for policy reasons). 
+<font color=green>
+The first line of each rejection is a copy of the line that is also written to
+the main log. Then, if the message's header has been read at the time the log
+is written, its contents are written to this log. Only the original header
+lines are available; header lines added by ACLs are not logged. You can use the
+reject log to check that your policy controls are working correctly; on a busy
+host this may be easier than scanning the main log for rejection messages. You
+can suppress the writing of the reject log by setting <tt>write&#095;rejectlog</tt> false.
+</font>
+</p>
+</li>
+<li><a name="IX2607"></a>
+<a name="IX2608"></a>
+<p>
+When certain serious errors occur, Exim writes entries to its panic log. If the
+error is sufficiently disastrous, Exim bombs out afterwards. Panic log entries
+are usually written to the main log as well, but can get lost amid the mass of
+other entries. The panic log should be empty under normal circumstances. It is
+therefore a good idea to check it (or to have a <i>cron</i> script check it)
+regularly, in order to become aware of any problems. When Exim cannot open its
+panic log, it tries as a last resort to write to the system log (syslog). This
+is opened with LOG&#095;PID+LOG&#095;CONS and the facility code of LOG&#095;MAIL. The
+message itself is written at priority LOG&#095;CRIT.
+</p>
+</li>
+</ul>
+<p>
+Every log line starts with a timestamp, in the format shown in this example:
+<pre>
+&nbsp;&nbsp;2001-09-16 16:09:47 SMTP connection from [127.0.0.1] closed by QUIT
+</pre>
+</p>
+<p>
+By default, the timestamps are in the local timezone. There are two 
+ways of changing this:
+</p>
+<ul>
+<li><p>
+You can set the <tt>timezone</tt> option to a different time zone; in particular, if
+you set
+<pre>
+&nbsp;&nbsp;timezone = UTC
+</pre>
+</p>
+<p>
+the timestamps will be in UTC (aka GMT).
+</p>
+</li>
+<li><p>
+If you set <tt>log&#095;timezone</tt> true, the time zone is added to the timestamp, for 
+example:
+<pre>
+&nbsp;&nbsp;2003-04-25 11:17:07 +0100 Start queue run: pid=12762
+</pre>
+</p>
+</li>
+</ul>
+<a name="IX2609"></a>
+<a name="IX2610"></a>
+<a name="IX2611"></a>
+<a name="IX2612"></a>
+<h2>
+<a name="SECT45.1" href="spec_toc.html#TOC367">
+45.1. Where the logs are written
+</a></h2>
+<p>
+The logs may be written to local files, or to syslog, or both. However, it
+should be noted that many syslog implementations use UDP as a transport, and
+are therefore unreliable in the sense that messages are not guaranteed to
+arrive at the loghost, nor is the ordering of messages necessarily maintained.
+It has also been reported that on large log files (tens of megabytes) you may
+need to tweak syslog to prevent it syncing the file with each write &#150; on Linux
+this has been seen to make syslog take 90% plus of CPU time.
+</p>
+<p>
+The destination for Exim's logs is configured by setting <font size=-1>LOG&#095;FILE&#095;PATH</font> in
+<i>Local/Makefile</i> or by setting <tt>log&#095;file&#095;path</tt> in the run time
+configuration. This latter string is expanded, so it can contain, for example,
+references to the host name:
+<pre>
+&nbsp;&nbsp;log_file_path = /var/log/$primary_hostname/exim_%slog
+</pre>
+</p>
+<p>
+It is generally advisable, however, to set the string in <i>Local/Makefile</i>
+rather than at run time, because then the setting is available right from the
+start of Exim's execution. Otherwise, if there's something it wants to log
+before it has read the configuration file (for example, an error in the
+configuration file) it will not use the path you want, and may not be able to
+log at all.
+</p>
+<p>
+The value of <font size=-1>LOG&#095;FILE&#095;PATH</font> or <tt>log&#095;file&#095;path</tt> is a colon-separated
+list, currently limited to at most two items. This is one option where the
+facility for changing a list separator may not be used. The list must always be
+colon-separated. If an item in the list is &#147;syslog&#148; then syslog is used;
+otherwise the item must either be an absolute path, containing <tt>%s</tt> at the
+point where &#147;main&#148;, &#147;reject&#148;, or &#147;panic&#148; is to be inserted, or be empty,
+implying the use of a default path.
+</p>
+<p>
+When Exim encounters an empty item in the list, it searches the list defined by
+<font size=-1>LOG&#095;FILE&#095;PATH</font>, and uses the first item it finds that is neither empty nor
+&#147;syslog&#148;. This means that an empty item in <tt>log&#095;file&#095;path</tt> can be used to
+mean &#147;use the path specified at build time&#148;. It no such item exists, log files
+are written in the <i>log</i> subdirectory of the spool directory. This is
+equivalent to the setting:
+<pre>
+&nbsp;&nbsp;log_file_path = $spool_directory/log/%slog
+</pre>
+</p>
+<p>
+If you do not specify anything at build time or run time, that is where the 
+logs are written.
+</p>
+<p>
+A log file path may also contain <tt>%D</tt> if datestamped log file names are in
+use &#150; see section <a href="spec_45.html#SECT45.3">45.3</a> below.
+</p>
+<p>
+Here are some examples of possible settings:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>LOG&#095;FILE&#095;PATH=syslog&nbsp;&nbsp;</tt></td><td>syslog only</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>LOG&#095;FILE&#095;PATH=:syslog&nbsp;&nbsp;</tt></td><td>syslog and default path</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>LOG&#095;FILE&#095;PATH=syslog : /usr/log/exim&#095;%s&nbsp;&nbsp;</tt></td><td>syslog and specified path</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>LOG&#095;FILE&#095;PATH=/usr/log/exim&#095;%s&nbsp;&nbsp;</tt></td><td>specified path only</td></tr>
+</table>
+</p>
+<p>
+If there are more than two paths in the list, the first is used and a panic
+error is logged.
+</p>
+<a name="IX2613"></a>
+<a name="IX2614"></a>
+<a name="IX2615"></a>
+<a name="IX2616"></a>
+<h2>
+<a name="SECT45.2" href="spec_toc.html#TOC368">
+45.2. Logging to local files that are periodically &#147;cycled&#148;
+</a></h2>
+<p>
+Some operating systems provide centralized and standardised methods for cycling
+log files. For those that do not, a utility script called <i>exicyclog</i> is
+provided (see section <a href="spec_46.html#SECT46.6">46.6</a>). This renames and compresses the main
+and reject logs each time it is called. The maximum number of old logs to keep
+can be set. It is suggested this script is run as a daily <i>cron</i> job.
+</p>
+<p>
+An Exim delivery process opens the main log when it first needs to write to it,
+and it keeps the file open in case subsequent entries are required &#150; for
+example, if a number of different deliveries are being done for the same
+message. However, remote SMTP deliveries can take a long time, and this means
+that the file may be kept open long after it is renamed if <i>exicyclog</i> or
+something similar is being used to rename log files on a regular basis. To
+ensure that a switch of log files is noticed as soon as possible, Exim calls
+<i>stat()</i> on the main log's name before reusing an open file, and if the file
+does not exist, or its inode has changed, the old file is closed and Exim
+tries to open the main log from scratch. Thus, an old log file may remain open
+for quite some time, but no Exim processes should write to it once it has been
+renamed.
+</p>
+<a name="IX2617"></a>
+<h2>
+<a name="SECT45.3" href="spec_toc.html#TOC369">
+45.3. Datestamped log files
+</a></h2>
+<p>
+Instead of cycling the main and reject log files by renaming them
+periodically, some sites like to use files whose names contain a datestamp,
+for example, <i>mainlog-20031225</i>. The datestamp is in the form <i>yyyymmdd</i>.
+Exim has support for this way of working. It is enabled by setting the
+<tt>log&#095;file&#095;path</tt> option to a path that includes <tt>%D</tt> at the point where the
+datestamp is required. For example:
+<pre>
+&nbsp;&nbsp;log_file_path = /var/spool/exim/log/%slog-%D
+&nbsp;&nbsp;log_file_path = /var/log/exim-%s-%D.log
+&nbsp;&nbsp;log_file_path = /var/spool/exim/log/%D-%slog
+</pre>
+</p>
+<p>
+As before, <tt>%s</tt> is replaced by &#147;main&#148; or &#147;reject&#148;; the following are examples
+of names generated by the above examples:
+<pre>
+&nbsp;&nbsp;/var/spool/exim/log/mainlog-20021225
+&nbsp;&nbsp;/var/log/exim-reject-20021225.log
+&nbsp;&nbsp;/var/spool/exim/log/20021225-mainlog
+</pre>
+</p>
+<p>
+When this form of log file is specified, Exim automatically switches to new
+files at midnight. It does not make any attempt to compress old logs; you
+will need to write your own script if you require this. You should not
+run <i>exicyclog</i> with this form of logging.
+</p>
+<p>
+The location of the panic log is also determined by <tt>log&#095;file&#095;path</tt>, but it
+is not datestamped, because rotation of the panic log does not make sense.
+When generating the name of the panic log, <tt>%D</tt> is removed from the string.
+In addition, if it immediately follows a slash, a following non-alphanumeric
+character is removed; otherwise a preceding non-alphanumeric character is
+removed. Thus, the three examples above would give these panic log names:
+<pre>
+&nbsp;&nbsp;/var/spool/exim/log/paniclog
+&nbsp;&nbsp;/var/log/exim-panic.log
+&nbsp;&nbsp;/var/spool/exim/log/paniclog
+</pre>
+</p>
+<a name="IX2618"></a>
+<h2>
+<a name="SECT45.4" href="spec_toc.html#TOC370">
+45.4. Logging to syslog
+</a></h2>
+<p>
+The use of syslog does not change what Exim logs or the format of its messages,
+except in one respect. If <tt>syslog&#095;timestamp</tt> is set false, the timestamps on
+Exim's log lines are omitted when these lines are sent to syslog. Apart from
+that, the same strings are written to syslog as to log files. The syslog
+&#147;facility&#148; is set to <font size=-1>LOG&#095;MAIL</font>, and the program name to &#147;exim&#148;
+by default, but you can change these by setting the <tt>syslog&#095;facility</tt> and
+<tt>syslog&#095;processname</tt> options, respectively. If Exim was compiled with
+<font size=-1>SYSLOG&#095;LOG&#095;PID</font> set in <i>Local/Makefile</i> (this is the default in 
+<i>src/EDITME</i>), then, on systems that permit it (all except ULTRIX), the
+<font size=-1>LOG&#095;PID</font> flag is set so that the <i>syslog()</i> call adds the pid as well as
+the time and host name to each line.
+The three log streams are mapped onto syslog priorities as follows:
+</p>
+<ul>
+<li><p>
+<i>mainlog</i> is mapped to <font size=-1>LOG&#095;INFO</font>
+</p>
+</li>
+<li><p>
+<i>rejectlog</i> is mapped to <font size=-1>LOG&#095;NOTICE</font>
+</p>
+</li>
+<li><p>
+<i>paniclog</i> is mapped to <font size=-1>LOG&#095;ALERT</font>
+</p>
+</li>
+</ul>
+<p>
+Many log lines are written to both <i>mainlog</i> and <i>rejectlog</i>, and some are 
+written to both <i>mainlog</i> and <i>paniclog</i>, so there will be duplicates if
+these are routed by syslog to the same place. You can suppress this duplication 
+by setting <tt>syslog&#095;duplication</tt> false.
+</p>
+<p>
+Exim's log lines can sometimes be very long, and some of its <i>rejectlog</i>
+entries contain multiple lines when headers are included. To cope with both
+these cases, entries written to syslog are split into separate <i>syslog()</i>
+calls at each internal newline, and also after a maximum of 
+870 data characters. (This allows for a total syslog line length of 1024, when
+additions such as timestamps are added.) If you are running a syslog
+replacement that can handle lines longer than the 1024 characters allowed by
+RFC 3164, you should set
+<pre>
+&nbsp;&nbsp;SYSLOG_LONG_LINES=yes
+</pre>
+</p>
+<p>
+in <i>Local/Makefile</i> before building Exim. That stops Exim from splitting long 
+lines, but it still splits at internal newlines in <i>reject</i> log entries.
+</p>
+<p>
+To make it easy to re-assemble split lines later, each component of a split
+entry starts with a string of the form &#147;[&#060;<em>n</em>&#062;/&#060;<em>m</em>&#062;]&#148; or &#147;[&#060;<em>n</em>&#062;&#092;&#060;<em>m</em>&#062;]&#148;
+where &#060;<em>n</em>&#062; is the component number and &#060;<em>m</em>&#062; is the total number of components
+in the entry. The / delimiter is used when the line was split because it was
+too long; if it was split because of an internal newline, the &#092; delimiter is
+used. For example, supposing the length limit to be 70 instead of 1000, the
+following would be the result of a typical rejection message to <i>mainlog</i>
+(LOG&#095;INFO), each line in addition being preceded by the time, host name, and
+pid as added by syslog:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>[1/3] 2002-09-16 16:09:43 16RdAL-0006pc-00 rejected from [127.0.0.1] (ph10):</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>[2/3]  syntax error in 'From' header when scanning for sender: missing or ma</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>[3/3] lformed local part in "&#060;&#062;" (envelope sender is &#060;ph10&#064;cam.example&#062;)</tt><br>
+</p>
+<p>
+The same error might cause the following lines to be written to &#147;rejectlog&#148;
+(LOG&#095;NOTICE):
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>[1/14] 2002-09-16 16:09:43 16RdAL-0006pc-00 rejected from [127.0.0.1] (ph10):</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>[2/14]  syntax error in 'From' header when scanning for sender: missing or ma</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>[3&#092;14] lformed local part in "&#060;&#062;" (envelope sender is &#060;ph10&#064;cam.example&#062;)</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>[4&#092;14] Recipients: ph10&#064;some.domain.cam.example</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>[5&#092;14] P Received: from [127.0.0.1] (ident=ph10)</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>[6&#092;14]        by xxxxx.cam.example with smtp (Exim 4.00)</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>[7&#092;14]        id 16RdAL-0006pc-00</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>[8&#092;14]        for ph10&#064;cam.example; Mon, 16 Sep 2002 16:09:43 +0100</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>[9&#092;14] F From: &#060;&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>[10&#092;14]   Subject: this is a test header</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>[11&#092;14]   X-something: this is another header</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>[12&#092;14] I Message-Id: &#060;E16RdAL-0006pc-00&#064;xxxxx.cam.example&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>[13&#092;14] B Bcc:</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>[14/14]   Date: Mon, 16 Sep 2002 16:09:43 +0100</tt><br>
+</p>
+<p>
+Log lines that are neither too long nor contain newlines are written to syslog
+without modification.
+</p>
+<p>
+If only syslog is being used, the Exim monitor is unable to provide a log tail
+display, unless syslog is routing <i>mainlog</i> to a file on the local host and
+the environment variable <font size=-1>EXIMON&#095;LOG&#095;FILE&#095;PATH</font> is set to tell the monitor
+where it is.
+</p>
+<h2>
+<a name="SECT45.5" href="spec_toc.html#TOC371">
+45.5. Log line flags
+</a></h2>
+<p>
+One line is written to the main log for each message received, and for each
+successful, unsuccessful, and delayed delivery. These lines can readily be
+picked out by the distinctive two-character flags that immediately follow the
+timestamp. The flags are:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>&#060;=&nbsp;&nbsp;</tt></td><td>message arrival</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>=&#062;&nbsp;&nbsp;</tt></td><td>normal message delivery</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>-&#062;&nbsp;&nbsp;</tt></td><td>additional address in same delivery</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>*&#062;&nbsp;&nbsp;</tt></td><td>delivery suppressed by <i>-N</i></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>**&nbsp;&nbsp;</tt></td><td>delivery failed; address bounced</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>==&nbsp;&nbsp;</tt></td><td>delivery deferred; temporary problem</td></tr>
+</table>
+</p>
+<a name="IX2619"></a>
+<h2>
+<a name="SECT45.6" href="spec_toc.html#TOC372">
+45.6. Logging message reception
+</a></h2>
+<p>
+The format of the single-line entry in the main log that is written for every
+message received is shown in the basic example below, which is split over
+several lines in order to fit it on the page:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>2002-10-31 08:57:53 16ZCW1-0005MB-00 &#060;= kryten&#064;dwarf.fict.example</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>  H=mailer.fict.example [192.168.123.123] U=exim</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>  P=smtp S=5678 id=&#060;<em>incoming message id</em>&#062;</tt><br>
+</p>
+<p>
+The address immediately following &#147;&#060;=&#148; is the envelope sender address. A bounce
+message is shown with the sender address &#147;&#060;&#062;&#148;, and if it is locally generated,
+this is followed by an item of the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>R=&#060;<em>message id</em>&#062;</tt><br>
+</p>
+<p>
+which is a reference to the message that caused the bounce to be sent.
+<a name="IX2620"></a>
+<a name="IX2621"></a>
+</p>
+<p>
+For messages from other hosts, the H and U fields identify the remote host and
+record the RFC 1413 identity of the user that sent the message, if one was
+received. The number given in square brackets is the IP address of the sending
+host. If there is a single, unparenthesized  host name in the H field, as
+above, it has been verified to correspond to the IP address (see the
+<tt>host&#095;lookup</tt> option). If the name is in parentheses, it was the name quoted
+by the remote host in the SMTP <font size=-1>HELO</font> or <font size=-1>EHLO</font> command, and has not been
+verified. If verification yields a different name to that given for <font size=-1>HELO</font> or
+<font size=-1>EHLO</font>, the verified name appears first, followed by the <font size=-1>HELO</font> or <font size=-1>EHLO</font>
+name in parentheses.
+</p>
+<p>
+Misconfigured hosts (and mail forgers) sometimes put an IP address, with or
+without brackets, in the <font size=-1>HELO</font> or <font size=-1>EHLO</font> command, leading to entries in
+the log containing text like these examples:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>H=(10.21.32.43) [192.168.8.34]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>H=([10.21.32.43]) [192.168.8.34]</tt><br>
+</p>
+<p>
+This can be confusing. Only the final address in square brackets can be relied
+on.
+</p>
+<p>
+For locally generated messages (that is, messages not received over TCP/IP),
+the H field is omitted, and the U field contains the login name of the caller
+of Exim.
+<a name="IX2622"></a>
+<a name="IX2623"></a>
+</p>
+<p>
+For all messages, the P field specifies the protocol used to receive the
+message. This is set to &#147;asmtp&#148; for messages received from hosts which have
+authenticated themselves using the SMTP <font size=-1>AUTH</font> command. In this case there is
+an additional item A= followed by the name of the authenticator that was used.
+If an authenticated identification was set up by the authenticator's
+<tt>server&#095;set&#095;id</tt> option, this is logged too, separated by a colon from the
+authenticator name.
+</p>
+<p>
+<a name="IX2624"></a>
+The id field records the existing message id, if present.
+The size of the received message is given by the S field. When the message is
+delivered, headers may get removed or added, so that the size of delivered
+copies of the message may not correspond with this value (and indeed may be
+different to each other).
+</p>
+<p>
+The <tt>log&#095;selector</tt> option can be used to request the logging of additional
+data when a message is received. See section <a href="spec_45.html#SECT45.15">45.15</a> below.
+</p>
+<a name="IX2625"></a>
+<h2>
+<a name="SECT45.7" href="spec_toc.html#TOC373">
+45.7. Logging deliveries
+</a></h2>
+<p>
+The format of the single-line entry in the main log that is written for every
+delivery is shown in one of the examples below, for local and remote deliveries,
+respectively. Each example has been split into two lines in order to fit
+it on the page:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>2002-10-31 08:59:13 16ZCW1-0005MB-00 =&#062; marv &#060;marv&#064;hitch.fict.example&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>  R=localuser T=local&#095;delivery</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>2002-10-31 09:00:10 16ZCW1-0005MB-00 =&#062; monk&#064;holistic.fict.example</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>  R=dnslookup T=remote&#095;smtp H=holistic.fict.example [192.168.234.234]</tt><br>
+</p>
+<p>
+For ordinary local deliveries, the original address is given in angle brackets
+after the final delivery address, which might be a pipe or a file. If
+intermediate address(es) exist between the original and the final address, the
+last of these is given in parentheses after the final address. The R and T
+fields record the router and transport that were used to process the address.
+</p>
+<p>
+If a shadow transport was run after a successful local delivery, the log line
+for the successful delivery has an item added on the end, of the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>ST=&#060;<em>shadow transport name</em>&#062;</tt><br>
+</p>
+<p>
+If the shadow transport did not succeed, the error message is put in
+parentheses afterwards.
+</p>
+<p>
+When more than one address is included in a single delivery (for example, two
+SMTP <font size=-1>RCPT</font> commands in one transaction) the second and subsequent
+addresses are flagged with &#147;<tt>&#045;&#062;</tt>&#148; instead of &#147;<tt>&#061;&#062;</tt>&#148;. When two or more
+messages are delivered down a single SMTP connection, an asterisk follows the
+IP address in the log lines for the second and subsequent messages.
+</p>
+<p>
+The generation of a reply message by a filter file gets logged as a &#147;delivery&#148;
+to the addressee, preceded by &#147;&#062;&#148;.
+</p>
+<p>
+The <tt>log&#095;selector</tt> option can be used to request the logging of additional
+data when a message is delivered. See section <a href="spec_45.html#SECT45.15">45.15</a> below.
+</p>
+<a name="IX2626"></a>
+<a name="IX2627"></a>
+<a name="IX2628"></a>
+<h2>
+<a name="SECT45.8" href="spec_toc.html#TOC374">
+45.8. Discarded deliveries
+</a></h2>
+<p>
+When a message is discarded as a result of the command &#147;seen finish&#148; being
+obeyed in a filter file which generates no deliveries, a log entry of the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>2002-12-10 00:50:49 16auJc-0001UB-00 =&#062; discarded</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>  &#060;low.club&#064;bridge.example&#062; R=userforward</tt><br>
+</p>
+<p>
+is written, to record why no deliveries are logged. When a message is discarded
+because it is aliased to &#147;:blackhole:&#148; the log line is like this:
+<pre>
+&nbsp;&nbsp;1999-03-02 09:44:33 10HmaX-0005vi-00 =&#062; :blackhole:
+&nbsp;&nbsp;  &#060;hole@nowhere.example&#062; R=blackhole_router
+</pre>
+</p>
+<h2>
+<a name="SECT45.9" href="spec_toc.html#TOC375">
+45.9. Deferred deliveries
+</a></h2>
+<p>
+When a delivery is deferred, a line of the following form is logged:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>2002-12-19 16:20:23 16aiQz-0002Q5-00 == marvin&#064;endrest.example</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>  R=dnslookup T=smtp defer (146): Connection refused</tt><br>
+</p>
+<p>
+In the case of remote deliveries, the error is the one that was given for the
+last IP address that was tried. Details of individual SMTP failures are also
+written to the log, so the above line would be preceded by something like
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>2002-12-19 16:20:23 16aiQz-0002Q5-00 Failed to connect to</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>  mail1.endrest.example [192.168.239.239]: Connection refused</tt><br>
+</p>
+<p>
+When a deferred address is skipped because its retry time has not been reached,
+a message is written to the log, but this can be suppressed by setting an
+appropriate value in <tt>log&#095;selector</tt>.
+</p>
+<a name="IX2629"></a>
+<h2>
+<a name="SECT45.10" href="spec_toc.html#TOC376">
+45.10. Delivery failures
+</a></h2>
+<p>
+If a delivery fails because an address cannot be routed, a line of the
+following form is logged:
+<pre>
+&nbsp;&nbsp;1995-12-19 16:20:23 0tRiQz-0002Q5-00 ** jim@trek99.example
+&nbsp;&nbsp;  &#060;jim@trek99.example&#062;: unknown mail domain
+</pre>
+</p>
+<p>
+If a delivery fails at transport time, the router and transport are shown, and 
+the response from the remote host is included, as in this example:
+<pre>
+&nbsp;&nbsp;2002-07-11 07:14:17 17SXDU-000189-00 ** ace400@pb.example R=dnslookup
+<font color=green>&nbsp;&nbsp;  T=remote_smtp: SMTP error from remote mailer after pipelined
+</font>&nbsp;&nbsp;  RCPT TO:&#060;ace400@pb.example&#062;: host pbmail3.py.example 
+&nbsp;&nbsp;  [192.168.63.111]: 553 5.3.0 &#060;ace400@pb.example&#062;... 
+&nbsp;&nbsp;  Addressee unknown
+</pre>
+</p>
+<p>
+<font color=green>
+The word &#147;pipelined&#148; indicates that the SMTP <font size=-1>PIPELINING</font> extension was being 
+used. See <tt>hosts&#095;avoid&#095;esmtp</tt> in the <b>smtp</b> transport for a way of 
+disabling <font size=-1>PIPELINING</font>.
+</font>
+</p>
+<p>
+The log lines for all forms of delivery failure are flagged with <tt>**</tt>.
+</p>
+<a name="IX2630"></a>
+<h2>
+<a name="SECT45.11" href="spec_toc.html#TOC377">
+45.11. Fake deliveries
+</a></h2>
+<p>
+If a delivery does not actually take place because the <i>-N</i> option has been
+used to suppress it, a normal delivery line is written to the log, except that
+&#147;=&#062;&#148; is replaced by &#147;*&#062;&#148;.
+</p>
+<h2>
+<a name="SECT45.12" href="spec_toc.html#TOC378">
+45.12. Completion
+</a></h2>
+<p>
+A line of the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>2002-10-31 09:00:11 16ZCW1-0005MB-00 Completed</tt><br>
+</p>
+<p>
+is written to the main log when a message is about to be removed from the spool
+at the end of its processing.
+</p>
+<a name="IX2631"></a>
+<h2>
+<a name="SECT45.13" href="spec_toc.html#TOC379">
+45.13. Summary of Fields in Log Lines
+</a></h2>
+<p>
+A summary of the field identifiers that are used in log lines is shown in
+the following table:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>A&nbsp;&nbsp;</tt></td><td>authenticator name (and optional id)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>C&nbsp;&nbsp;</tt></td><td>SMTP confirmation on delivery</td></tr>
+<font color=green><tr><td>&nbsp;&nbsp;<tt>CV&nbsp;&nbsp;</tt></td><td>certificate verification status</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>DN&nbsp;&nbsp;</tt></td><td>distinguished name from peer certificate</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>DT&nbsp;&nbsp;</tt></td><td>time taken for a delivery</td></tr>
+</font><tr><td>&nbsp;&nbsp;<tt>F&nbsp;&nbsp;</tt></td><td>sender address (on delivery lines)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>H&nbsp;&nbsp;</tt></td><td>host name and IP address</td></tr>
+<font color=green><tr><td>&nbsp;&nbsp;<tt>I&nbsp;&nbsp;</tt></td><td>local interface used</td></tr>
+</font><tr><td>&nbsp;&nbsp;<tt>id&nbsp;&nbsp;</tt></td><td>message id for incoming message</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>P&nbsp;&nbsp;</tt></td><td>on <tt>&#060;=</tt> lines: protocol used</td></tr>
+<font color=green><tr><td>&nbsp;&nbsp;<tt>&nbsp;&nbsp;</tt></td><td>on <tt>=&#062;</tt> lines: return path</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>QT&nbsp;&nbsp;</tt></td><td>time spent on queue<tt>            </tt></td></tr>
+</font><tr><td>&nbsp;&nbsp;<tt>R&nbsp;&nbsp;</tt></td><td>on <tt>&#060;=</tt> lines: reference for local bounce</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&nbsp;&nbsp;</tt></td><td>on <tt>=&#062;</tt> lines: router name</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>S&nbsp;&nbsp;</tt></td><td>size of message</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>ST&nbsp;&nbsp;</tt></td><td>shadow transport name</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>T&nbsp;&nbsp;</tt></td><td>on <tt>&#060;=</tt> lines: message subject (topic)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&nbsp;&nbsp;</tt></td><td>on <tt>=&#062;</tt> lines: transport name</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>U&nbsp;&nbsp;</tt></td><td>local user or RFC 1413 identity</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>X&nbsp;&nbsp;</tt></td><td>TLS cipher suite</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT45.14" href="spec_toc.html#TOC380">
+45.14. Other log entries
+</a></h2>
+<p>
+Various other types of log entry are written from time to time. Most should be
+self-explanatory. Among the more common are:
+</p>
+<ul>
+<li><a name="IX2632"></a>
+<p>
+<i>retry time not reached</i>&nbsp;&nbsp;An address previously suffered a temporary error
+during routing or local delivery, and the time to retry has not yet arrived.
+This message is not written to an individual message log file unless it happens
+during the first delivery attempt.
+</p>
+</li>
+<li><p>
+<i>retry time not reached for any host</i>&nbsp;&nbsp;An address previously suffered
+temporary errors during remote delivery, and the retry time has not yet arrived
+for any of the hosts to which it is routed.
+</p>
+</li>
+<li><a name="IX2633"></a>
+<p>
+<i>spool file locked</i>&nbsp;&nbsp;An attempt to deliver a message cannot proceed because
+some other Exim process is already working on the message. This can be quite
+common if queue running processes are started at frequent intervals. The
+<i>exiwhat</i> utility script can be used to find out what Exim processes are
+doing.
+</p>
+</li>
+<li><font color=green><a name="IX2634"></a>
+<p>
+<i>error ignored</i>&nbsp;&nbsp;There are several circumstances that give rise to this 
+message:
+</p>
+<ul>
+<li><p>
+Exim failed to deliver a bounce message whose age was greater than 
+<tt>ignore_bounce_errors_after</tt>. The bounce was discarded.
+</p>
+</li>
+<li><p>
+A filter file set up a delivery using the &#147;noerror&#148; option, and the delivery 
+failed. The delivery was discarded.
+</p>
+</li>
+<li><p>
+A delivery set up by a router configured with 
+<pre>
+&nbsp;&nbsp;errors_to = &#060;&#062;
+</pre>
+</p>
+<p>
+failed. The delivery was discarded.
+</p>
+</li>
+</ul>
+</font></li>
+</ul>
+<a name="IX2635"></a>
+<h2>
+<a name="SECT45.15" href="spec_toc.html#TOC381">
+45.15. Reducing or increasing what is logged
+</a></h2>
+<p>
+By setting the <tt>log&#095;selector</tt> global option, you can disable some of Exim's
+default logging, or you can request additional logging. The value of
+<tt>log&#095;selector</tt> is made up of names preceded by plus or minus characters. For
+example:
+<pre>
+&nbsp;&nbsp;log_selector = +arguments -retry_defer
+</pre>
+</p>
+<p>
+The list of optional log items is in the following table, with the default
+selection marked by asterisks:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt> address&#095;rewrite&nbsp;&nbsp;</tt></td><td>address rewriting</td></tr>
+<tr><td>&nbsp;&nbsp;<tt> all&#095;parents&nbsp;&nbsp;</tt></td><td>all parents in =&#062; lines</td></tr>
+<tr><td>&nbsp;&nbsp;<tt> arguments&nbsp;&nbsp;</tt></td><td>command line arguments</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>*connection&#095;reject&nbsp;&nbsp;</tt></td><td>connection rejections</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>*delay&#095;delivery&nbsp;&nbsp;</tt></td><td>immediate delivery delayed (message queued)</td></tr>
+<font color=green><tr><td>&nbsp;&nbsp;<tt> deliver&#095;time&nbsp;&nbsp;</tt></td><td>time taken to perform delivery</td></tr>
+</font><tr><td>&nbsp;&nbsp;<tt> delivery&#095;size&nbsp;&nbsp;</tt></td><td>add S=nnn to =&#062; lines</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>*dnslist&#095;defer&nbsp;&nbsp;</tt></td><td>defers of DNS list (aka RBL) lookups</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>*etrn&nbsp;&nbsp;</tt></td><td>ETRN commands</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>*host&#095;lookup&#095;failed&nbsp;&nbsp;</tt></td><td>as it says</td></tr>
+<font color=green><tr><td>&nbsp;&nbsp;<tt> ident&#095;timeout&nbsp;&nbsp;</tt></td><td>timeout for ident connection</td></tr>
+</font><tr><td>&nbsp;&nbsp;<tt> incoming&#095;interface&nbsp;&nbsp;</tt></td><td>incoming interface on &#060;= lines</td></tr>
+<tr><td>&nbsp;&nbsp;<tt> incoming&#095;port&nbsp;&nbsp;</tt></td><td>incoming port on &#060;= lines</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>*lost&#095;incoming&#095;connection&nbsp;&nbsp;</tt></td><td>as it says (includes timeouts)</td></tr>
+<font color=green><tr><td>&nbsp;&nbsp;<tt> outgoing&#095;port&nbsp;&nbsp;</tt></td><td>add remote port to =&#062; lines</td></tr>
+</font><tr><td>&nbsp;&nbsp;<tt>*queue&#095;run&nbsp;&nbsp;</tt></td><td>start and end queue runs</td></tr>
+<font color=green><tr><td>&nbsp;&nbsp;<tt> queue&#095;time&nbsp;&nbsp;</tt></td><td>time on queue</td></tr>
+</font><tr><td>&nbsp;&nbsp;<tt> received&#095;recipients&nbsp;&nbsp;</tt></td><td>recipients on &#060;= lines</td></tr>
+<tr><td>&nbsp;&nbsp;<tt> received&#095;sender&nbsp;&nbsp;</tt></td><td>sender on &#060;= lines</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>*rejected&#095;header&nbsp;&nbsp;</tt></td><td>header contents on reject log</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>*retry&#095;defer&nbsp;&nbsp;</tt></td><td>&#147;retry time not reached&#148;</td></tr>
+<font color=green><tr><td>&nbsp;&nbsp;<tt> return&#095;path&#095;on&#095;delivery&nbsp;&nbsp;</tt></td><td>put return path on =&#062; and ** lines</td></tr>
+</font><tr><td>&nbsp;&nbsp;<tt> sender&#095;on&#095;delivery&nbsp;&nbsp;</tt></td><td>add sender to =&#062; lines</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>*size&#095;reject&nbsp;&nbsp;</tt></td><td>rejection because too big</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>*skip&#095;delivery&nbsp;&nbsp;</tt></td><td>&#147;message is frozen&#148;, &#147;spool file is locked&#148;</td></tr>
+<font color=green><tr><td>&nbsp;&nbsp;<tt> smtp&#095;confirmation&nbsp;&nbsp;</tt></td><td>SMTP confirmation on =&#062; lines</td></tr>
+</font><tr><td>&nbsp;&nbsp;<tt> smtp&#095;connection&nbsp;&nbsp;</tt></td><td>SMTP connections</td></tr>
+<tr><td>&nbsp;&nbsp;<tt> smtp&#095;incomplete&#095;transaction&nbsp;&nbsp;</tt></td><td>incomplete SMTP transactions</td></tr>
+<tr><td>&nbsp;&nbsp;<tt> smtp&#095;protocol&#095;error&nbsp;&nbsp;</tt></td><td>SMTP protocol errors</td></tr>
+<tr><td>&nbsp;&nbsp;<tt> smtp&#095;syntax&#095;error&nbsp;&nbsp;</tt></td><td>SMTP syntax errors</td></tr>
+<tr><td>&nbsp;&nbsp;<tt> subject&nbsp;&nbsp;</tt></td><td>contents of <i>Subject:</i> on &#060;= lines</td></tr>
+<font color=green><tr><td>&nbsp;&nbsp;<tt> tls&#095;certificate&#095;verified&nbsp;&nbsp;</tt></td><td>certificate verification status</td></tr>
+</font><tr><td>&nbsp;&nbsp;<tt>*tls&#095;cipher&nbsp;&nbsp;</tt></td><td>TLS cipher suite on &#060;= and =&#062; lines</td></tr>
+<tr><td>&nbsp;&nbsp;<tt> tls&#095;peerdn&nbsp;&nbsp;</tt></td><td>TLS peer DN on &#060;= and =&#062; lines</td></tr>
+<tr><td>&nbsp;&nbsp;</td></tr>
+<tr><td>&nbsp;&nbsp;<tt> all&nbsp;&nbsp;</tt></td><td>all of the above</td></tr>
+</table>
+</p>
+<p>
+More details on each of these items follows:
+</p>
+<ul>
+<li><a name="IX2636"></a>
+<a name="IX2637"></a>
+<p>
+<tt>address&#095;rewrite</tt>: This applies both to global rewrites and per-transport
+rewrites,
+<font color=green>
+but not to rewrites in filters run as an unprivileged user (because such users 
+cannot access the log).
+</font>
+</p>
+</li>
+<li><a name="IX2638"></a>
+<p>
+<tt>all&#095;parents</tt>: Normally only the original and final addresses are logged on
+delivery lines; with this selector, intermediate parents are given in
+parentheses between them.
+</p>
+</li>
+<li><a name="IX2639"></a>
+<a name="IX2640"></a>
+<p>
+<tt>arguments</tt>: This causes Exim to write the arguments with which it was called
+to the main log,
+preceded by the current working directory.
+This is a debugging feature, added to make it easier to find out how certain
+MUAs call <i>/usr/sbin/sendmail</i>. The logging does not happen if Exim has given
+up root privilege because it was called with the <i>-C</i> or <i>-D</i> options. 
+Arguments that are empty or that contain whitespace are quoted. Non-printing 
+characters are shown as escape sequences.
+This facility cannot log unrecognized arguments, because the arguments are
+checked before the configuration file is read. The only way to log such cases
+is to interpose a script such as <i>util/logargs.sh</i> between the caller and
+Exim.
+</p>
+</li>
+<li><a name="IX2641"></a>
+<p>
+<tt>connection&#095;reject</tt>: A log entry is written whenever an incoming SMTP
+connection is rejected, for whatever reason.
+</p>
+</li>
+<li><a name="IX2642"></a>
+<a name="IX2643"></a>
+<p>
+<tt>delay&#095;delivery</tt>: A log entry is written whenever a delivery process is not
+started for an incoming message because the load is too high or too many
+messages were received on one connection. Logging does not occur if no delivery
+process is started because <tt>queue&#095;only</tt> is set or <i>-odq</i> was used.
+</p>
+</li>
+<li><font color=green><a name="IX2644"></a>
+<p>
+<tt>deliver&#095;time</tt>: For each delivery, the amount of real time it has taken to
+perform the actual delivery is logged as DT=&#060;<em>time</em>&#062;, for example, <tt>DT=1s</tt>.
+</font>
+</p>
+</li>
+<li><a name="IX2645"></a>
+<a name="IX2646"></a>
+<p>
+<tt>delivery&#095;size</tt>: For each delivery, the size of message delivered is added to
+the &#147;=&#062;&#148; line, tagged with S=.
+</p>
+</li>
+<li><a name="IX2647"></a>
+<a name="IX2648"></a>
+<a name="IX2649"></a>
+<p>
+<tt>dnslist&#095;defer</tt>: A log entry is written if an attempt to look up a host in a
+DNS black list suffers a temporary error.
+</p>
+</li>
+<li><a name="IX2650"></a>
+<a name="IX2651"></a>
+<p>
+<tt>etrn</tt>: Every legal ETRN command that is received is logged, before the ACL is
+run to determine whether or not it is actually accepted. An invalid ETRN
+command, or one received within a message transaction is not logged by this
+selector (see <tt>smtp&#095;syntax&#095;error</tt> and <tt>smtp&#095;protocol&#095;error</tt>).
+</p>
+</li>
+<li><a name="IX2652"></a>
+<p>
+<tt>host&#095;lookup&#095;failed</tt>: When a lookup of a host's IP addresses fails to find
+any addresses, or when a lookup of an IP address fails to find a host name, a
+log line is written. This logging does not apply to direct DNS lookups when
+routing email addresses, but it does apply to &#147;byname&#148; lookups.
+</p>
+</li>
+<li><font color=green><a name="IX2653"></a>
+<a name="IX2654"></a>
+<p>
+<tt>ident&#095;timeout</tt>: A log line is written whenever an attempt to connect to a
+client's ident port times out.
+</font>
+</p>
+</li>
+<li><a name="IX2655"></a>
+<a name="IX2656"></a>
+<p>
+<tt>incoming&#095;interface</tt>: The interface on which a message was received is added
+to the &#147;&#060;=&#148; line as an IP address in square brackets, tagged by I= and followed
+by a colon and the port number.
+<font color=green>
+The local interface and port are also added to other SMTP log
+lines, for example &#147;SMTP connection from&#148;, and to rejection lines.
+</font>
+</p>
+</li>
+<li><a name="IX2657"></a>
+<a name="IX2658"></a>
+<a name="IX2659"></a>
+<p>
+<tt>incoming&#095;port</tt>: The remote port number from which a message was received is
+added to log entries and <i>Received:</i> header lines, following the IP address in
+square brackets, and separated from it by a colon. This is implemented by
+changing the value that is put in the <tt>$sender&#095;fullhost</tt> and
+<tt>$sender&#095;rcvhost</tt> variables. Recording the remote port number has become more
+important with the widening use of NAT (see RFC 2505).
+</p>
+</li>
+<li><a name="IX2660"></a>
+<p>
+<tt>lost&#095;incoming&#095;connection</tt>: A log line is written when an incoming SMTP
+connection is unexpectedly dropped.
+</p>
+</li>
+<li><font color=green><a name="IX2661"></a>
+<a name="IX2662"></a>
+<a name="IX2663"></a>
+<p>
+<tt>outgoing&#095;port</tt>: The remote port number is added to delivery log lines (those
+containing =&#062; tags) following the IP address. This option is not included in
+the default setting, because for most ordinary configurations, the remote port
+number is always 25 (the SMTP port).
+</font>
+</p>
+</li>
+<li><a name="IX2664"></a>
+<a name="IX2665"></a>
+<p>
+<tt>queue&#095;run</tt>: The start and end of every queue run are logged.
+</p>
+</li>
+<li><font color=green><a name="IX2666"></a>
+<p>
+<tt>queue&#095;time</tt>: The amount of time the message has been in the queue on the
+local host is logged as QT=&#060;<em>time</em>&#062;, for example, <tt>QT=3m45s</tt>. The clock
+starts when Exim starts to receive the message, so it includes reception time
+as well as the delivery time of the current address.
+</font>
+</p>
+</li>
+<li><a name="IX2667"></a>
+<p>
+<tt>received&#095;recipients</tt>: The recipients of a message are listed in the main log
+as soon as the message is received. The list appears at the end of the log line
+that is written when a message is received, preceded by the word &#147;for&#148;. The
+addresses are listed after they have been qualified, but before any rewriting
+has taken place.
+Recipients that were discarded by an ACL for <font size=-1>MAIL</font> or <font size=-1>RCPT</font> do not appear
+in the list.
+</p>
+</li>
+<li><a name="IX2668"></a>
+<p>
+<tt>received&#095;sender</tt>: The unrewritten original sender of a message is added to
+the end of the log line that records the message's arrival, after the word
+&#147;from&#148; (before the recipients if <tt>received&#095;recipients</tt> is also set).
+</p>
+</li>
+<li><a name="IX2669"></a>
+<p>
+<tt>rejected&#095;header</tt>: If a message's header has been received at the time a
+rejection is written to the reject log, the complete header is added to the
+log. Header logging can be turned off individually for messages that are
+rejected by the <i>local&#095;scan()</i> function (see section <a href="spec_39.html#SECT39.2">39.2</a>).
+</p>
+</li>
+<li><a name="IX2670"></a>
+<p>
+<tt>retry&#095;defer</tt>: A log line is written if a delivery is deferred because a retry
+time has not yet been reached. However, this &#147;retry time not reached&#148; message
+is always omitted from individual message logs after the first delivery
+attempt.
+</p>
+</li>
+<li><a name="IX2671"></a>
+<p>
+<font color=green>
+<tt>return&#095;path&#095;on&#095;delivery</tt>: The return path that is being transmitted with 
+the message is included in delivery and bounce lines, using the tag P=.
+</font>
+</p>
+</li>
+<li><a name="IX2672"></a>
+<p>
+<tt>sender&#095;on&#095;delivery</tt>: The message's sender address is added to every delivery
+and bounce line, tagged by F= (for &#147;from&#148;).
+<font color=green>
+This is the original sender that was received with the message; it is not 
+necessarily the same as the outgoing return path.
+</font>
+</p>
+</li>
+<li><a name="IX2673"></a>
+<p>
+<tt>size&#095;reject</tt>: A log line is written whenever a message is rejected because it
+is too big.
+</p>
+</li>
+<li><a name="IX2674"></a>
+<a name="IX2675"></a>
+<p>
+<tt>skip&#095;delivery</tt>: A log line is written whenever a message is skipped during a
+queue run because it is frozen or because another process is already delivering
+it.
+</p>
+</li>
+<li><a name="IX2676"></a>
+<a name="IX2677"></a>
+<p>
+<tt>smtp&#095;confirmation</tt>: The response to the final &#147;.&#148; in the SMTP dialogue for
+outgoing messages is added to delivery log lines in the form &#147;C="&#060;<em>text</em>&#062;"&#148;. A
+number of MTAs (including Exim) return an identifying string in this response.
+</p>
+</li>
+<li><a name="IX2678"></a>
+<a name="IX2679"></a>
+<p>
+<tt>smtp&#095;connection</tt>: A log line is written whenever an SMTP connection is
+established or closed. (By contrast, <tt>lost&#095;incoming&#095;connection</tt> applies only
+when the closure is unexpected.) This applies to connections from local
+processes that use <i>-bs</i> as well as to TCP/IP connections. If a connection is
+dropped in the middle of a message, a log line is always written, whether this
+selector is set or not, but otherwise nothing is written at the start and end
+of connections unless this selector is enabled. 
+</p>
+<p>
+For TCP/IP connections to an Exim daemon, the current number of connections is
+included in the log message for each new connection, but note that the count is
+reset if the daemon is restarted.
+Also, because connections are closed (and the closure is logged) in 
+subprocesses, the count may not include connections that have been closed but 
+whose termination the daemon has not yet noticed. Thus, while it is possible to 
+match up the opening and closing of connections in the log, the value of the 
+logged counts may not be entirely accurate.
+</p>
+</li>
+<li><a name="IX2680"></a>
+<a name="IX2681"></a>
+<p>
+<tt>smtp&#095;incomplete&#095;transaction</tt>: When a mail transaction is aborted by
+<font size=-1>RSET</font>, <font size=-1>QUIT</font>, loss of connection, or otherwise, the incident is logged,
+and the message sender plus any accepted recipients are included in the log
+line. This can provide evidence of dictionary attacks.
+</p>
+</li>
+<li><a name="IX2682"></a>
+<a name="IX2683"></a>
+<p>
+<tt>smtp&#095;protocol&#095;error</tt>: A log line is written for every SMTP protocol error
+encountered.
+<font color=green>
+Exim does not have perfect detection of all protocol errors because of 
+transmission delays and the use of pipelining. If <font size=-1>PIPELINING</font> has been 
+advertised to a client, an Exim server assumes that the client will use it, and 
+therefore it does not count &#147;expected&#148; errors (for example, <font size=-1>RCPT</font> received
+after rejecting <font size=-1>MAIL</font>) as protocol errors.
+</font>
+</p>
+</li>
+<li><a name="IX2684"></a>
+<a name="IX2685"></a>
+<a name="IX2686"></a>
+<a name="IX2687"></a>
+<a name="IX2688"></a>
+<p>
+<tt>smtp&#095;syntax&#095;error</tt>: A log line is written for every SMTP syntax error
+encountered. An unrecognized command is treated as a syntax error. For an
+external connection, the host identity is given; for an internal connection
+using <i>-bs</i> the sender identification (normally the calling user) is given.
+</p>
+</li>
+<li><a name="IX2689"></a>
+<a name="IX2690"></a>
+<p>
+<tt>subject</tt>: The subject of the message is added to the arrival log line,
+preceded by &#147;T=&#148; (T for &#147;topic&#148;, since S is already used for &#147;size&#148;).
+Any MIME &#147;words&#148; in the subject are decoded. The <tt>print&#095;topbitchars</tt> option 
+specifies whether characters with values greater than 127 should be logged 
+unchanged, or whether they should be rendered as escape sequences.
+</p>
+</li>
+<li><a name="IX2691"></a>
+<p>
+<font color=green>
+<tt>tls&#095;certificate&#095;verified</tt>: An extra item is added to &#060;= and =&#062; log lines
+when TLS is in use. The item is <tt>CV=yes</tt> if the peer's certificate was
+verified, and <tt>CV=no</tt> if not.
+</font>
+</p>
+</li>
+<li><a name="IX2692"></a>
+<a name="IX2693"></a>
+<p>
+<tt>tls&#095;cipher</tt>: When a message is sent or received over an encrypted connection,
+the cipher suite used is added to the log line, preceded by X=.
+</p>
+</li>
+<li><a name="IX2694"></a>
+<a name="IX2695"></a>
+<p>
+<tt>tls&#095;peerdn</tt>: When a message is sent or received over an encrypted connection,
+and a certificate is supplied by the remote host, the peer DN is added to the
+log line, preceded by DN=.
+</p>
+</li>
+</ul>
+<a name="IX2696"></a>
+<a name="IX2697"></a>
+<h2>
+<a name="SECT45.16" href="spec_toc.html#TOC382">
+45.16. Message log
+</a></h2>
+<p>
+<a name="IX2698"></a>
+<a name="IX2699"></a>
+In addition to the general log files, Exim writes a log file for each message
+that it handles. The names of these per-message logs are the message ids, and
+they are kept in the <i>msglog</i> sub-directory of the spool directory. Each
+message log contains copies of the log lines that apply to the message. This
+makes it easier to inspect the status of an individual message without having
+to search the main log. A message log is deleted when processing of the message
+is complete,
+unless <tt>preserve_message_logs</tt> is set, but this should be used only with
+great care because they can fill up your disk very quickly.
+</p>
+<p>
+On a heavily loaded system, it may be desirable to disable the use of 
+per-message logs, in order to reduce disk I/O. This can be done by setting the 
+<tt>message&#095;logs</tt> option false.
+<hr>
+</p>
+<font size=2>
+<a href="spec_44.html">Previous</a>&nbsp;&nbsp;<a href="spec_46.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

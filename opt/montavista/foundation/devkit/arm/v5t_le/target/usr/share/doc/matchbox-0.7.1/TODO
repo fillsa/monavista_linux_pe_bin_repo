@@ -1,0 +1,71 @@
+Majors:
+
+ - dialog background shading improvement XXX - testing
+   + Only with modal hint? 
+   + Try and figure out workaround for shaded window resizes. *NA*
+   + dialog borders = _rewrite of dialog code / theme code._
+ - panel positioning X
+   + auto from windows initial geom position X
+   - orientaion switch to mbdock
+ - Test program 
+   + Fill window backgrounds with something X
+   + implement window options X
+     + mwm hint / fullscreen X
+   + document. X
+ - panel code cleanup
+    + Add win prop list of docked apps.
+    + Figure out panel app alpha blending with pixmap'd panel. X
+    + Improve panel app positioning / internal data struct X
+ - '?' window button hint - theme image & testing. X
+    + write patch for freedesktop.org spec
+ - documentation updates. 
+ - Rounded / Masked dialogs
+ 
+Minors:
+
+ - blocking event loop for dock
+ - -geometry switch for minitime so it can be docked right.
+ - 'gravity' on dock apps that are past the midpoint on rotation
+ - Transparency option mbmenu to be transparent for just the root window
+   rather than _everything_ behind it - like CE.  
+   
+
+ - window icons for remove X
+ - miniwave to clean/improve X leaving as is
+ - xomonbut to import. X fixed, though not improted, needs new icon
+ - miniapm slider
+ - pngs for panel menu buttons. X
+ - mbmenu broke on rotation ( size wize )
+ - mbmenu keyboard control X
+ - UTF8 xft handling in mbmenu / mbdesktop X
+ - vfolder / .directory handling ( * started * )
+ - libmdock renaming / versioning / header installing X
+ - .desktop option for monolaunch X
+ - USE_KBD defines X
+ - Add keyboard shortcuts for activating X / navigating window task menu 
+ - figure out desktop and main_client / activate issues 
+ - standalone build edits - only build wm binary 
+ - configure summary X
+
+General pending pain:
+
+ - fix builds with no png / xft etc ( xft done - pngs started, see miniapm ) 
+ - X11 Errors
+ - General cruft removal, readability etc. 
+ - change sprintf( tmp[xx] ) to snprintf's ?
+ - test, Test, TEST !
+
+Possibles / future :
+
+ - Multiple mbdocks, run with env var specifying dock number.
+   - switch for dock to specify number / do automatically
+   - multiple config files ?
+   - how to handle ordering ?
+ - clock in mbdesktop --xid flag for all dockapps ?
+ - patch gpe apps to use png window icon 
+ - gtk matchbox management front end. 
+ - xsettings improvements
+ - plugin architecture for mbdesktop
+ - expose / configure compression
+ - 'remote' changing of desktop background ( mbcontrol ? )
+ - task list dock app

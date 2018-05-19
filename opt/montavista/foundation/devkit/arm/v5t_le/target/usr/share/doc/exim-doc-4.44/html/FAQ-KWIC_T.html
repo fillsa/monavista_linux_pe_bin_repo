@@ -1,0 +1,444 @@
+<html>
+<head>
+<title>Exim FAQ: KWIC index section T</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#0066FF" alink="#0066FF" vlink="#000099">
+<h1>Exim FAQ: Keyword-in-context index</h1>
+<p>
+&nbsp;&nbsp;<a href="FAQ-KWIC_A.html">&nbsp;&nbsp;A</a><a href="FAQ-KWIC_B.html">&nbsp;&nbsp;B</a><a href="FAQ-KWIC_C.html">&nbsp;&nbsp;C</a><a href="FAQ-KWIC_D.html">&nbsp;&nbsp;D</a><a href="FAQ-KWIC_E.html">&nbsp;&nbsp;E</a><a href="FAQ-KWIC_F.html">&nbsp;&nbsp;F</a><a href="FAQ-KWIC_G.html">&nbsp;&nbsp;G</a><a href="FAQ-KWIC_H.html">&nbsp;&nbsp;H</a><a href="FAQ-KWIC_I.html">&nbsp;&nbsp;I</a><a href="FAQ-KWIC_K.html">&nbsp;&nbsp;K</a><a href="FAQ-KWIC_L.html">&nbsp;&nbsp;L</a><a href="FAQ-KWIC_M.html">&nbsp;&nbsp;M</a><a href="FAQ-KWIC_N.html">&nbsp;&nbsp;N</a><a href="FAQ-KWIC_O.html">&nbsp;&nbsp;O</a><a href="FAQ-KWIC_P.html">&nbsp;&nbsp;P</a><a href="FAQ-KWIC_Q.html">&nbsp;&nbsp;Q</a><a href="FAQ-KWIC_R.html">&nbsp;&nbsp;R</a><a href="FAQ-KWIC_S.html">&nbsp;&nbsp;S</a>&nbsp;&nbsp;&nbsp;<font size=7 color="#FF0A0A"><b>T</b></font>&nbsp;<a href="FAQ-KWIC_U.html">&nbsp;&nbsp;U</a><a href="FAQ-KWIC_V.html">&nbsp;&nbsp;V</a><a href="FAQ-KWIC_W.html">&nbsp;&nbsp;W</a><a href="FAQ-KWIC_X.html">&nbsp;&nbsp;X</a><a href="FAQ-KWIC_Y.html">&nbsp;&nbsp;Y</a><a href="FAQ-KWIC_Z.html">&nbsp;&nbsp;Z</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="FAQ.html#TOC">FAQ Contents</a>
+</p>
+<table border>
+<tr>
+<td align="right"><a name="TOC337" href="FAQ_19.html#TOC337">Q5007</a>:&nbsp;&nbsp;When I send a message using the </td>
+<td align="left"><b><font color="#FF0A0A">-t</font></b> command line option, Exim sends only to the addresses within the message,...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC358" href="FAQ_19.html#TOC358">Q5028</a>:&nbsp;&nbsp;When I HUP the Exim daemon, the name shown in the process </td>
+<td align="left"><font color="#FF0A0A">table</font> changes from <i>/usr/lib/sendmail</i> (which is a symlink) to the real binary...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC332" href="FAQ_19.html#TOC332">Q5002</a>:&nbsp;&nbsp;...  a number of other logs I also want to &#147;tail&#148;, and the number of </td>
+<td align="left"><font color="#FF0A0A">tailing</font> windows is getting to be a nuisance. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC235" href="FAQ_7.html#TOC235">Q0705</a>:&nbsp;&nbsp;How can I use </td>
+<td align="left"><font color="#FF0A0A">tcpwrappers</font> in conjunction with Exim? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC141" href="FAQ_3.html#TOC141">Q0321</a>:&nbsp;&nbsp;How can I </td>
+<td align="left"><font color="#FF0A0A">tell</font> an Exim router to use only IPv4 or only IPv6 addresses when it finds both...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC263" href="FAQ_7.html#TOC263">Q0733</a>:&nbsp;&nbsp;Is there any way to </td>
+<td align="left"><font color="#FF0A0A">tell</font> Exim not to lookup the IP address against any DNS black list if the connection...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC266" href="FAQ_7.html#TOC266">Q0736</a>:&nbsp;&nbsp;Is it possible to </td>
+<td align="left"><font color="#FF0A0A">tell</font> exim to drop the connection after a server attempts to send a message...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC267" href="FAQ_7.html#TOC267">Q0737</a>:&nbsp;&nbsp;Is there some way to </td>
+<td align="left"><font color="#FF0A0A">tell</font> Exim not to consider 127.0.0.1 as a valid MX? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC401" href="FAQ_27.html#TOC401">Q9804</a>:&nbsp;&nbsp;We want to be able to </td>
+<td align="left"><font color="#FF0A0A">temporarily</font> lock out a user by disabling the password and moving the home directory...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC242" href="FAQ_7.html#TOC242">Q0712</a>:&nbsp;&nbsp;...  check if a user has exceeded their email quota. If they have I issue a </td>
+<td align="left"><font color="#FF0A0A">temporary</font> failure and a message - can I do this with Exim? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC305" href="FAQ_14.html#TOC305">Q1403</a>:&nbsp;&nbsp;How should Exim be configured when it is acting as a </td>
+<td align="left"><font color="#FF0A0A">temporary</font> storage system for a domain on a dial-up host? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC380" href="FAQ_25.html#TOC380">Q9603</a>:&nbsp;&nbsp;...  seeing the message <i>inetd[334]: imap/tcp server failing (looping), service </i></td>
+<td align="left"><i><font color="#FF0A0A">terminated</font></i> on a RedHat 5.2 system, causing <i>imap</i> connections to be refused. The <i>imapd</i>...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC200" href="FAQ_6.html#TOC200">Q0606</a>:&nbsp;&nbsp;...  turned on the <tt>use_crlf</tt> option on the <b>pipe</b> transport (tmail prefers <tt>\r\n</tt> </td>
+<td align="left"><font color="#FF0A0A">terminations</font>) message bodies started to vanish. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC51" href="FAQ_0.html#TOC51">Q0051</a>:&nbsp;&nbsp;When I try <tt>exim -bf</tt> to </td>
+<td align="left"><font color="#FF0A0A">test</font> a system filter, I received the following error message: <i>Filter error: unavailable...</i></td>
+</tr>
+<tr>
+<td align="right"><a name="TOC156" href="FAQ_4.html#TOC156">Q0413</a>:&nbsp;&nbsp;...  delivery of all messages to that user, which sometimes include the user's own </td>
+<td align="left"><font color="#FF0A0A">test</font> messages. Can it be told to ignore the <i>.forward</i> file and/or inform the...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC180" href="FAQ_5.html#TOC180">Q0501</a>:&nbsp;&nbsp;My filter isn't working. How can I </td>
+<td align="left"><font color="#FF0A0A">test</font> it? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC233" href="FAQ_7.html#TOC233">Q0703</a>:&nbsp;&nbsp;How can I </td>
+<td align="left"><font color="#FF0A0A">test</font> that my spam blocks are working? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC234" href="FAQ_7.html#TOC234">Q0704</a>:&nbsp;&nbsp;How can I </td>
+<td align="left"><font color="#FF0A0A">test</font> that Exim is correctly configured to use the Realtime Blackhole List (RBL)?...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC255" href="FAQ_7.html#TOC255">Q0725</a>:&nbsp;&nbsp;...  up some specific rejection messages for certain recipients, but when I </td>
+<td align="left"><font color="#FF0A0A">test</font> them, the SMTP message is always <i>550 5.1.1 &#60;user@mydomain.com&#62;... User...</i></td>
+</tr>
+<tr>
+<td align="right"><a name="TOC382" href="FAQ_25.html#TOC382">Q9605</a>:&nbsp;&nbsp;...  installed debian 2.2 linux on a small 325mb 486 laptop. When I try to </td>
+<td align="left"><font color="#FF0A0A">test</font> the Mail program, I get the following error: <i>Failed to open configuration...</i></td>
+</tr>
+<tr>
+<td align="right"><a name="TOC84" href="FAQ_0.html#TOC84">Q0084</a>:&nbsp;&nbsp;...  and then pipes the result to <i>mailx</i> to resubmit the message, but when I use my </td>
+<td align="left"><font color="#FF0A0A">tested</font> command in an alias file, I get an error from <i>gpg</i>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC408" href="FAQ_27.html#TOC408">Q9811</a>:&nbsp;&nbsp;...  off&#148; a proportion of real mail traffic from my live mail server to use in </td>
+<td align="left"><font color="#FF0A0A">tests</font> of a new server. I want to preserve the envelope contents, but to suppress...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC283" href="FAQ_9.html#TOC283">Q0905</a>:&nbsp;&nbsp;...  system filter to replace certain headers in messages, but how can I add </td>
+<td align="left"><font color="#FF0A0A">text</font> to existing headers? I want to add [SPAM] to the subject line of messages...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC241" href="FAQ_7.html#TOC241">Q0711</a>:&nbsp;&nbsp;...  email - e.g. ignore large MIME attachments for example and only process </td>
+<td align="left"><font color="#FF0A0A">text/plain</font>? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC222" href="FAQ_6.html#TOC222">Q0628</a>:&nbsp;&nbsp;I have the default retry rule, which I </td>
+<td align="left"><font color="#FF0A0A">thought</font> meant that Exim should keep trying for four days, but it seems to be bouncing...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC405" href="FAQ_27.html#TOC405">Q9808</a>:&nbsp;&nbsp;I have a mailing list exploder on one host, and </td>
+<td align="left"><font color="#FF0A0A">three</font> other hosts where I want to do the actual deliveries from. How can I get...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC208" href="FAQ_6.html#TOC208">Q0614</a>:&nbsp;&nbsp;...  always hundreds of e-mails waiting for me. These are forced down Exim's </td>
+<td align="left"><font color="#FF0A0A">throat</font> in one go. Exim spawns a lot of kids, but is there some limit to the number...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC155" href="FAQ_4.html#TOC155">Q0412</a>:&nbsp;&nbsp;...  seeing the error <i>bad mode (100664) for /home/test/.forward</i>? I've looked </td>
+<td align="left"><font color="#FF0A0A">through</font> the documentation but can't see anything to suggest that Exim has to do anything...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC197" href="FAQ_6.html#TOC197">Q0603</a>:&nbsp;&nbsp;How can mails that are being routed </td>
+<td align="left"><font color="#FF0A0A">through</font> routers that do not set <tt>check_local_user</tt> be delivered under the uid of...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC243" href="FAQ_7.html#TOC243">Q0713</a>:&nbsp;&nbsp;I'd like to pass all messages </td>
+<td align="left"><font color="#FF0A0A">through</font> a virus-scanning system before delivery. Can Exim do this? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC261" href="FAQ_7.html#TOC261">Q0731</a>:&nbsp;&nbsp;Is there any defence I can use against spam sent </td>
+<td align="left"><font color="#FF0A0A">through</font> an open proxy? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC310" href="FAQ_14.html#TOC310">Q1408</a>:&nbsp;&nbsp;...  email has been deferred to a member on a local mailing list (implemented </td>
+<td align="left"><font color="#FF0A0A">through</font> forward files), and one of our ETRN clients is on this mailing list, the <b>-R</b>...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC5" href="FAQ_0.html#TOC5">Q0005</a>:&nbsp;&nbsp;...  not rejecting incoming messages addressed to non-existent users at SMTP </td>
+<td align="left"><font color="#FF0A0A">time</font>? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC20" href="FAQ_0.html#TOC20">Q0020</a>:&nbsp;&nbsp;Why do connections to my machine's SMTP port take a long </td>
+<td align="left"><font color="#FF0A0A">time</font> to respond with the banner, when connections to other ports respond instantly?...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC46" href="FAQ_0.html#TOC46">Q0046</a>:&nbsp;&nbsp;A short </td>
+<td align="left"><font color="#FF0A0A">time</font> after I start Exim I see a defunct zombie process. What is causing this?...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC82" href="FAQ_0.html#TOC82">Q0082</a>:&nbsp;&nbsp;...  __libc_res_nquery, version GLIBC_PRIVATE not defined in file libresolv.so.2 with link </td>
+<td align="left"><font color="#FF0A0A">time</font> reference</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC139" href="FAQ_3.html#TOC139">Q0319</a>:&nbsp;&nbsp;...  some mails on my queues that are sticking around longer than the retry </td>
+<td align="left"><font color="#FF0A0A">time</font> indicates they should. They are all getting frozen because some remote...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC202" href="FAQ_6.html#TOC202">Q0608</a>:&nbsp;&nbsp;What does the message <i>retry </i></td>
+<td align="left"><i><font color="#FF0A0A">time</font> not reached [for any host]</i> on the log mean? Why won't Exim try to deliver...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC204" href="FAQ_6.html#TOC204">Q0610</a>:&nbsp;&nbsp;How can I force the next retry </td>
+<td align="left"><font color="#FF0A0A">time</font> for a host to be now? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC207" href="FAQ_6.html#TOC207">Q0613</a>:&nbsp;&nbsp;...  my <b>smtp</b> transport, but after the error <i>sem@chat.ru cannot be resolved at this </i></td>
+<td align="left"><i><font color="#FF0A0A">time</font></i> Exim isn't using them. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC209" href="FAQ_6.html#TOC209">Q0615</a>:&nbsp;&nbsp;...  behaviour? I only want to remove messages that have exceeded the maximum retry </td>
+<td align="left"><font color="#FF0A0A">time</font>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC211" href="FAQ_6.html#TOC211">Q0617</a>:&nbsp;&nbsp;...  specify longer times after a while, because it is writing a log entry every </td>
+<td align="left"><font color="#FF0A0A">time</font>, like this: </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC214" href="FAQ_6.html#TOC214">Q0620</a>:&nbsp;&nbsp;...  bounce messages without even attempting delivery, giving the error <i>retry </i></td>
+<td align="left"><i><font color="#FF0A0A">time</font> not reached for any host after a long failure period</i>? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC219" href="FAQ_6.html#TOC219">Q0625</a>:&nbsp;&nbsp;I wish to have large emails go out one at a </td>
+<td align="left"><font color="#FF0A0A">time</font>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC242" href="FAQ_7.html#TOC242">Q0712</a>:&nbsp;&nbsp;I've hacked sendmail to make an ioctl call at the </td>
+<td align="left"><font color="#FF0A0A">time</font> of the SMTP RCPT command, to check if a user has exceeded their email...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC303" href="FAQ_14.html#TOC303">Q1401</a>:&nbsp;&nbsp;...  to other hosts on my local network to be delivered, while at the same </td>
+<td align="left"><font color="#FF0A0A">time</font> mail to Internet hosts is queued without any delivery attempts? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC304" href="FAQ_14.html#TOC304">Q1402</a>:&nbsp;&nbsp;...  with an address <i>anything@aol.com</i> is returned within about 15 minutes saying <i>retry </i></td>
+<td align="left"><i><font color="#FF0A0A">time</font> exceeded</i>, and all addresses are affected. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC348" href="FAQ_19.html#TOC348">Q5018</a>:&nbsp;&nbsp;...  reads, can I rebuild them on the fly, or do I need to restart Exim every </td>
+<td align="left"><font color="#FF0A0A">time</font> I make a change? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC355" href="FAQ_19.html#TOC355">Q5025</a>:&nbsp;&nbsp;What precautions should I take when editing Exim's run </td>
+<td align="left"><font color="#FF0A0A">time</font> configuration file? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC381" href="FAQ_25.html#TOC381">Q9604</a>:&nbsp;&nbsp;<i>...  files</i> error especially when a lot of messages land for Majordomo at the same </td>
+<td align="left"><font color="#FF0A0A">time</font>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC400" href="FAQ_27.html#TOC400">Q9803</a>:&nbsp;&nbsp;A site for which I provide secondary MX is down for some </td>
+<td align="left"><font color="#FF0A0A">time</font>. Is there a way to run the queue for that destination separately from...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC17" href="FAQ_0.html#TOC17">Q0017</a>:&nbsp;&nbsp;...  the error <i>Remote end closed connection after data</i> or <i>Broken pipe</i> or a </td>
+<td align="left"><font color="#FF0A0A">timeout</font>. What's going on? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC69" href="FAQ_0.html#TOC69">Q0069</a>:&nbsp;&nbsp;What does the error <i>SMTP data </i></td>
+<td align="left"><i><font color="#FF0A0A">timeout</font> (message abandoned) on connection from...</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC70" href="FAQ_0.html#TOC70">Q0070</a>:&nbsp;&nbsp;What does the error <i>SMTP command </i></td>
+<td align="left"><i><font color="#FF0A0A">timeout</font> on connection from...</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC209" href="FAQ_6.html#TOC209">Q0615</a>:&nbsp;&nbsp;When a message in the queue got to 12h old, Exim wrote <i>retry </i></td>
+<td align="left"><i><font color="#FF0A0A">timeout</font> exceeded</i> and removed all messages in the queue to this host - even recent...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC68" href="FAQ_0.html#TOC68">Q0068</a>:&nbsp;&nbsp;Exim </td>
+<td align="left"><font color="#FF0A0A">times</font> out when trying to connect to some hosts, though those hosts are known...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC88" href="FAQ_0.html#TOC88">Q0088</a>:&nbsp;&nbsp;...  sometimes hangs while trying to send a message to Exim 4, and eventually </td>
+<td align="left"><font color="#FF0A0A">times</font> out. It worked flawlessly with Exim 3. What has changed? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC134" href="FAQ_3.html#TOC134">Q0314</a>:&nbsp;&nbsp;...  sites are rejected with <i>unknown mail domain</i>. This only happens a few </td>
+<td align="left"><font color="#FF0A0A">times</font> a day and there is no particular pattern to the sites it rejects. If I...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC135" href="FAQ_3.html#TOC135">Q0315</a>:&nbsp;&nbsp;...  route all mail with addresses that can't be resolved (the DNS lookup </td>
+<td align="left"><font color="#FF0A0A">times</font> out) to a relay machine. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC211" href="FAQ_6.html#TOC211">Q0617</a>:&nbsp;&nbsp;...  deliver a message every 10 minutes, though the retry rules specify longer </td>
+<td align="left"><font color="#FF0A0A">times</font> after a while, because it is writing a log entry every time, like this:...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC14" href="FAQ_0.html#TOC14">Q0014</a>:&nbsp;&nbsp;Exim is </td>
+<td align="left"><font color="#FF0A0A">timing</font> out after receiving and responding to the DATA command from one particular...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC59" href="FAQ_0.html#TOC59">Q0059</a>:&nbsp;&nbsp;... When my Outlook Express 6.0 client sends a STARTTLS command to begin a </td>
+<td align="left"><font color="#FF0A0A">TLS</font> session, Exim doesn't seem to receive it. The Outlook log shows this:...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC320" href="FAQ_17.html#TOC320">Q1701</a>:&nbsp;&nbsp;...  server that uses a self-signed certificate to enable my clients to use </td>
+<td align="left"><font color="#FF0A0A">TLS</font>. However, clients other than Exim refuse to accept this certificate. What's...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC322" href="FAQ_17.html#TOC322">Q1703</a>:&nbsp;&nbsp;...  legacy clients that don't use STARTTLS, but which expect to negotiate a </td>
+<td align="left"><font color="#FF0A0A">TLS</font> session automatically on connection to the ssmtp port (465). Can Exim...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC323" href="FAQ_17.html#TOC323">Q1704</a>:&nbsp;&nbsp;... When my Outlook Express 6.0 client sends a STARTTLS command to begin a </td>
+<td align="left"><font color="#FF0A0A">TLS</font> session, Exim doesn't seem to receive it. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC326" href="FAQ_17.html#TOC326">Q1707</a>:&nbsp;&nbsp;I am trying to use </td>
+<td align="left"><font color="#FF0A0A">TLS</font> with Evolution as a client, and keep seeing this error: <i>SMTP protocol violation:...</i></td>
+</tr>
+<tr>
+<td align="right"><a name="TOC327" href="FAQ_17.html#TOC327">Q1708</a>:&nbsp;&nbsp;I trying to use </td>
+<td align="left"><font color="#FF0A0A">TLS</font> with Outlook as a client on a box that is running Norton Antivirus, but all my...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC324" href="FAQ_17.html#TOC324">Q1705</a>:&nbsp;&nbsp;I have listed some hosts in </td>
+<td align="left"><tt><font color="#FF0A0A">tls_try_verify_hosts</font></tt>, but when they connect, no data appears in <i>$tls_peerdn</i>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC325" href="FAQ_17.html#TOC325">Q1706</a>:&nbsp;&nbsp;I have listed some hosts in </td>
+<td align="left"><tt><font color="#FF0A0A">tls_verify_hosts</font></tt> and provided them with certificates, but their connections are always...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC200" href="FAQ_6.html#TOC200">Q0606</a>:&nbsp;&nbsp;I'm using </td>
+<td align="left"><font color="#FF0A0A">tmail</font> to do local deliveries, but when I turned on the <tt>use_crlf</tt> option on the <b>pipe</b> transport...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC349" href="FAQ_19.html#TOC349">Q5019</a>:&nbsp;&nbsp;...  opposite of <b>-bpa</b>, that is, a listing of those addresses generated from a </td>
+<td align="left"><font color="#FF0A0A">top-level</font> address that have not yet been delivered. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC398" href="FAQ_27.html#TOC398">Q9801</a>:&nbsp;&nbsp;How do I configure Exim as part of </td>
+<td align="left"><font color="#FF0A0A">TPC</font> (<a href="http://www.tpc.int">http://www.tpc.int</a>)? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC42" href="FAQ_0.html#TOC42">Q0042</a>:&nbsp;&nbsp;...  bounce messages from Exim, complaining that they have no sender. The SMTP </td>
+<td align="left"><font color="#FF0A0A">trace</font> does indeed show that the sender address is <tt>&#60;&#62;</tt>. Why is the Sender...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC408" href="FAQ_27.html#TOC408">Q9811</a>:&nbsp;&nbsp;I would like to &#147;tap off&#148; a proportion of real mail </td>
+<td align="left"><font color="#FF0A0A">traffic</font> from my live mail server to use in tests of a new server. I want to preserve...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC3" href="FAQ_0.html#TOC3">Q0003</a>:&nbsp;&nbsp;What does the error <i>Child process of address_pipe </i></td>
+<td align="left"><i><font color="#FF0A0A">transport</font> returned 69 from command xxx</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC13" href="FAQ_0.html#TOC13">Q0013</a>:&nbsp;&nbsp;What does the error message </td>
+<td align="left"><i><font color="#FF0A0A">transport</font> system_aliases: cannot find transport driver "redirect" in line 92</i> mean?...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC22" href="FAQ_0.html#TOC22">Q0022</a>:&nbsp;&nbsp;What does <i>No </i></td>
+<td align="left"><i><font color="#FF0A0A">transport</font> set by system filter</i> in a log line mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC65" href="FAQ_0.html#TOC65">Q0065</a>:&nbsp;&nbsp;...  error about being unable to create a spool file when trying to run an <b>autoreply</b> </td>
+<td align="left"><font color="#FF0A0A">transport</font>. Why is this? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC91" href="FAQ_0.html#TOC91">Q0091</a>:&nbsp;&nbsp;... Why is Exim giving the error <i>Failed to send message from address_reply </i></td>
+<td align="left"><i><font color="#FF0A0A">transport</font></i> when I run it using -C to specify an alternate configuration? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC190" href="FAQ_5.html#TOC190">Q0511</a>:&nbsp;&nbsp;...  <tt>mail</tt> command to send a message, I get the error <i>User 0 set for address_reply </i></td>
+<td align="left"><i><font color="#FF0A0A">transport</font> is on the never_users list</i>. What does this mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC195" href="FAQ_6.html#TOC195">Q0601</a>:&nbsp;&nbsp;What does the error <i>Neither the xxx router nor the yyy </i></td>
+<td align="left"><i><font color="#FF0A0A">transport</font> set a uid for local delivery of...</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC200" href="FAQ_6.html#TOC200">Q0606</a>:&nbsp;&nbsp;...  local deliveries, but when I turned on the <tt>use_crlf</tt> option on the <b>pipe</b> </td>
+<td align="left"><font color="#FF0A0A">transport</font> (tmail prefers <tt>\r\n</tt> terminations) message bodies started to vanish. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC206" href="FAQ_6.html#TOC206">Q0612</a>:&nbsp;&nbsp;Why does the <b>pipe</b> </td>
+<td align="left"><font color="#FF0A0A">transport</font> add a line starting with <tt>&#62;From</tt> to messages? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC207" href="FAQ_6.html#TOC207">Q0613</a>:&nbsp;&nbsp;I have set <tt>fallback_hosts</tt> on my <b>smtp</b> </td>
+<td align="left"><font color="#FF0A0A">transport</font>, but after the error <i>sem@chat.ru cannot be resolved at this time</i> Exim...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC216" href="FAQ_6.html#TOC216">Q0622</a>:&nbsp;&nbsp;Can I write an ordinary file when I run a perl script as a </td>
+<td align="left"><font color="#FF0A0A">transport</font> filter for the <b>remote_smtp</b> and <b>address_pipe</b> transports? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC226" href="FAQ_6.html#TOC226">Q0632</a>:&nbsp;&nbsp;What does the error <i>User 1 set for local_mbx_delivery </i></td>
+<td align="left"><i><font color="#FF0A0A">transport</font> is on the never_users list</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC227" href="FAQ_6.html#TOC227">Q0633</a>:&nbsp;&nbsp;Why is <i>$domain</i> not set in the <b>smtp</b> </td>
+<td align="left"><font color="#FF0A0A">transport</font>? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC228" href="FAQ_6.html#TOC228">Q0634</a>:&nbsp;&nbsp;How can I stop a local </td>
+<td align="left"><font color="#FF0A0A">transport</font> from trying to access the user's home directory, even when the delivery...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC257" href="FAQ_7.html#TOC257">Q0727</a>:&nbsp;&nbsp;...  SpamAssassin from being called for each of them? I'm running it from a pipe </td>
+<td align="left"><font color="#FF0A0A">transport</font>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC41" href="FAQ_0.html#TOC41">Q0041</a>:&nbsp;&nbsp;...  message <i>unable to set gid=ddd or uid=ddd (euid=ddd): local delivery to ... </i></td>
+<td align="left"><i><font color="#FF0A0A">transport=ttt</font></i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC216" href="FAQ_6.html#TOC216">Q0622</a>:&nbsp;&nbsp;...  perl script as a transport filter for the <b>remote_smtp</b> and <b>address_pipe</b> </td>
+<td align="left"><font color="#FF0A0A">transports</font>? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC128" href="FAQ_3.html#TOC128">Q0308</a>:&nbsp;&nbsp;...  some local parts must be delivered locally, but the remainder are to be </td>
+<td align="left"><font color="#FF0A0A">treated</font> like any other remote addresses. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC223" href="FAQ_6.html#TOC223">Q0629</a>:&nbsp;&nbsp;I'm having </td>
+<td align="left"><font color="#FF0A0A">trouble</font> with quotas and Courier, because Exim is not handling maildirsize files....</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC383" href="FAQ_25.html#TOC383">Q9606</a>:&nbsp;&nbsp;I'm having </td>
+<td align="left"><font color="#FF0A0A">trouble</font> configuring Exim 4 on a Debian system. How does <i>/etc/exim4/conf.d</i> work?...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC200" href="FAQ_6.html#TOC200">Q0606</a>:&nbsp;&nbsp;I'm using tmail to do local deliveries, but when I </td>
+<td align="left"><font color="#FF0A0A">turned</font> on the <tt>use_crlf</tt> option on the <b>pipe</b> transport (tmail prefers <tt>\r\n</tt> terminations)...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC203" href="FAQ_6.html#TOC203">Q0609</a>:&nbsp;&nbsp;Exim seems to be sending the same message </td>
+<td align="left"><font color="#FF0A0A">twice</font>, according to the log, although there is a difference in capitalization...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC45" href="FAQ_0.html#TOC45">Q0045</a>:&nbsp;&nbsp;I see entries in the log that mention </td>
+<td align="left"><font color="#FF0A0A">two</font> different IP addresses for the same connection. Why is this? For example:...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC76" href="FAQ_0.html#TOC76">Q0076</a>:&nbsp;&nbsp;...  but whenever a message is rejected, I get one message on the reject log and </td>
+<td align="left"><font color="#FF0A0A">two</font> messages on the main log. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC167" href="FAQ_4.html#TOC167">Q0424</a>:&nbsp;&nbsp;How can I disable Exim's de-duplication features? I want it to do </td>
+<td align="left"><font color="#FF0A0A">two</font> deliveries if two different aliases expand to the same address. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC170" href="FAQ_4.html#TOC170">Q0427</a>:&nbsp;&nbsp;How can I have an address looked up in </td>
+<td align="left"><font color="#FF0A0A">two</font> different alias files, and delivered to all the addresses that are found?...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC193" href="FAQ_5.html#TOC193">Q0514</a>:&nbsp;&nbsp;When I try to send to </td>
+<td align="left"><font color="#FF0A0A">two</font> addresses I get an error in the filter file <i>malformed address: , e@fgh.com...</i></td>
+</tr>
+<tr>
+<td align="right"><a name="TOC217" href="FAQ_6.html#TOC217">Q0623</a>:&nbsp;&nbsp;...  <i>/var/spool/mail</i> has grown drastically. Is there any possibility of using </td>
+<td align="left"><font color="#FF0A0A">two</font> directories? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC237" href="FAQ_7.html#TOC237">Q0707</a>:&nbsp;&nbsp;I have one or </td>
+<td align="left"><font color="#FF0A0A">two</font> cases where my host correctly rejects messages, but the remote host is...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC360" href="FAQ_19.html#TOC360">Q5030</a>:&nbsp;&nbsp;I am using exim in a </td>
+<td align="left"><font color="#FF0A0A">two</font> queues scenario, with two different configuration files. How can I run a second...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC406" href="FAQ_27.html#TOC406">Q9809</a>:&nbsp;&nbsp;...  that my gateway host sends a copy of each incoming message to each of </td>
+<td align="left"><font color="#FF0A0A">two</font> internal hosts? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC98" href="FAQ_1.html#TOC98">Q0106</a>:&nbsp;&nbsp;Exim doesn't seem to be recognizing my operating system </td>
+<td align="left"><font color="#FF0A0A">type</font> correctly, and so is failing to build. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC141" href="FAQ_3.html#TOC141">Q0321</a>:&nbsp;&nbsp;...  Exim router to use only IPv4 or only IPv6 addresses when it finds both </td>
+<td align="left"><font color="#FF0A0A">types</font> in the DNS? </td>
+</tr>
+</table>
+<p>
+&nbsp;&nbsp;<a href="FAQ-KWIC_A.html">&nbsp;&nbsp;A</a><a href="FAQ-KWIC_B.html">&nbsp;&nbsp;B</a><a href="FAQ-KWIC_C.html">&nbsp;&nbsp;C</a><a href="FAQ-KWIC_D.html">&nbsp;&nbsp;D</a><a href="FAQ-KWIC_E.html">&nbsp;&nbsp;E</a><a href="FAQ-KWIC_F.html">&nbsp;&nbsp;F</a><a href="FAQ-KWIC_G.html">&nbsp;&nbsp;G</a><a href="FAQ-KWIC_H.html">&nbsp;&nbsp;H</a><a href="FAQ-KWIC_I.html">&nbsp;&nbsp;I</a><a href="FAQ-KWIC_K.html">&nbsp;&nbsp;K</a><a href="FAQ-KWIC_L.html">&nbsp;&nbsp;L</a><a href="FAQ-KWIC_M.html">&nbsp;&nbsp;M</a><a href="FAQ-KWIC_N.html">&nbsp;&nbsp;N</a><a href="FAQ-KWIC_O.html">&nbsp;&nbsp;O</a><a href="FAQ-KWIC_P.html">&nbsp;&nbsp;P</a><a href="FAQ-KWIC_Q.html">&nbsp;&nbsp;Q</a><a href="FAQ-KWIC_R.html">&nbsp;&nbsp;R</a><a href="FAQ-KWIC_S.html">&nbsp;&nbsp;S</a>&nbsp;&nbsp;&nbsp;<font size=7 color="#FF0A0A"><b>T</b></font>&nbsp;<a href="FAQ-KWIC_U.html">&nbsp;&nbsp;U</a><a href="FAQ-KWIC_V.html">&nbsp;&nbsp;V</a><a href="FAQ-KWIC_W.html">&nbsp;&nbsp;W</a><a href="FAQ-KWIC_X.html">&nbsp;&nbsp;X</a><a href="FAQ-KWIC_Y.html">&nbsp;&nbsp;Y</a><a href="FAQ-KWIC_Z.html">&nbsp;&nbsp;Z</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="FAQ.html#TOC">FAQ Contents</a>
+</p>
+</body>
+</html>

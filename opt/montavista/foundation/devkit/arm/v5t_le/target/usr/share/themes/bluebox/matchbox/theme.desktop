@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=MBTheme
+Name=Bluebox
+Preview=XXX
+Comment=Bluebox theme 
+ThemePath=@prefix@/themes/bluebox
+DockBgColor=#6c8db1
+MenuBgColor=#6c8db1
+MenuFgColor=white
+MenuBdColor=white
+MenuTransparency=220
+MenuHlColor=black
+PanelFgColor=white
+DesktopBgSpec=col-solid:#d7d7d7
+

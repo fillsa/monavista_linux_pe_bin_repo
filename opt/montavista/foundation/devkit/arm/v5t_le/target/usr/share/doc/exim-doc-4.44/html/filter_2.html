@@ -1,0 +1,256 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim Filter Specification chapter 2</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="filter_1.html">Previous</a>&nbsp;&nbsp;
+<a href="filter_3.html">Next</a>&nbsp;&nbsp;
+<a href="filter_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim Filter Specification)
+</font><hr>
+<h1>
+<a name="CHAP2" href="filter_toc.html#TOC8">
+2. Sieve filter files
+</a></h1>
+<p>
+The code for Sieve filtering in Exim was contributed by Michael Haardt, and
+most of the content of this chapter is taken from the notes he provided. Since
+Sieve is a extensible language, it is important to understand &#147;Sieve&#148; in this
+context as &#147;the specific implementation of Sieve for Exim&#148;. 
+</p>
+<p>
+This chapter does not contain a description of Sieve, since that can be found
+in RFC 3028, which should be read in conjunction with these notes.
+</p>
+<p>
+The Exim Sieve implementation offers the core as defined by RFC 3028, the
+<b>envelope</b> and the <b>fileinto</b> extensions, but not the <b>reject</b> extension.
+Exim does not support message delivery notifications (MDNs), so adding it just
+to the Sieve filter (as required for <b>reject</b>) makes little sense.
+</p>
+<p>
+In order for Sieve to work properly in Exim, the system administrator needs to 
+make some adjustments to the Exim configuration. These are described in the 
+chapter on the <b>redirect</b> router in the full Exim specification.
+</p>
+<h2>
+<a name="SECT2.1" href="filter_toc.html#TOC9">
+2.1. Recognition of Sieve filters
+</a></h2>
+<p>
+A filter file is interpreted as a Sieve filter if its first line is
+<pre>
+&nbsp;&nbsp;# Sieve filter
+</pre>
+</p>
+<p>
+This is what distinguishes it from a conventional <i>.forward</i> file or an Exim 
+filter file.
+</p>
+<h2>
+<a name="SECT2.2" href="filter_toc.html#TOC10">
+2.2. Saving to specified folders
+</a></h2>
+<p>
+If the system administrator has set things up as suggested in the Exim
+specification, and you use <b>keep</b> or <b>fileinto</b> to save a mail into a
+folder, absolute files are stored where specified, relative files are stored
+relative to <tt>$home</tt>, and <b>inbox</b> goes to the standard mailbox location.
+</p>
+<h2>
+<a name="SECT2.3" href="filter_toc.html#TOC11">
+2.3. Strings containing header names
+</a></h2>
+<p>
+RFC 3028 does not specify what happens if a string denoting a header field does
+not contain a valid header name, for example, it contains a colon. This
+implementation generates an error instead of ignoring the header field in order
+to ease script debugging, which fits in the common picture of Sieve.
+</p>
+<h2>
+<a name="SECT2.4" href="filter_toc.html#TOC12">
+2.4. Exists test with empty list of headers
+</a></h2>
+<p>
+The <b>exists</b> test succeeds only if all specified headers exist. RFC 3028
+does not explicitly specify what happens on an empty list of headers. This
+implementation evaluates that condition as true, interpreting the RFC in a
+strict sense.
+</p>
+<h2>
+<a name="SECT2.5" href="filter_toc.html#TOC13">
+2.5. Header test with invalid MIME encoding in header
+</a></h2>
+<p>
+Some MUAs process invalid base64 encoded data, generating junk.
+Others ignore junk after seeing an equal sign in base64 encoded data.
+RFC 2047 does not specify how to react in this case, other than stating
+that a client must not forbid to process a message for that reason.
+RFC 2045 specifies that invalid data should be ignored (apparently
+looking at end of line characters). It also specifies that invalid data
+may lead to rejecting messages containing them (and there it appears to
+talk about true encoding violations), which is a clear contradiction to
+ignoring them.
+</p>
+<p>
+RFC 3028 does not specify how to process incorrect MIME words.
+This implementation treats them literally, as it does if the word is
+correct but its character set cannot be converted to UTF-8.
+</p>
+<h2>
+<a name="SECT2.6" href="filter_toc.html#TOC14">
+2.6. Address test for multiple addresses per header
+</a></h2>
+<p>
+A header may contain multiple addresses. RFC 3028 does not explicitly
+specify how to deal with them, but since the address test checks if
+anything matches anything else, matching one address suffices to
+satisfy the condition. That makes it impossible to test if a header
+contains a certain set of addresses and no more, but it is more logical
+than letting the test fail if the header contains an additional address
+besides the one the test checks for.
+</p>
+<h2>
+<a name="SECT2.7" href="filter_toc.html#TOC15">
+2.7. Semantics of keep
+</a></h2>
+<p>
+The <b>keep</b> command is equivalent to 
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>fileinto "inbox";</tt><br>
+</p>
+<p>
+It saves the message and resets the implicit keep flag. It does not set the
+implicit keep flag; there is no command to set it once it has been reset.
+</p>
+<h2>
+<a name="SECT2.8" href="filter_toc.html#TOC16">
+2.8. Semantics of fileinto
+</a></h2>
+<p>
+RFC 3028 does not specify whether <tt>fileinto</tt> should try to create a mail folder
+if it does not exist. This implementation allows the sysadmin to configure that
+aspect using the <b>appendfile</b> transport options <tt>create&#095;directory</tt>,
+<tt>create&#095;file</tt>, and <tt>file&#095;must&#095;exist</tt>. See the <b>appendfile</b> transport in
+the Exim specification for details.
+</p>
+<h2>
+<a name="SECT2.9" href="filter_toc.html#TOC17">
+2.9. Semantics of redirect
+</a></h2>
+<p>
+Sieve scripts are supposed to be interoperable between servers, so this
+implementation does not allow mail to be redirected to unqualified addresses,
+because the domain would depend on the system being used. On systems with
+virtual mail domains, the default domain is probably not what the user expects
+it to be.
+</p>
+<h2>
+<a name="SECT2.10" href="filter_toc.html#TOC18">
+2.10. String arguments
+</a></h2>
+<p>
+There has been confusion if the string arguments to <b>require</b> are to be
+matched case-sensitively or not. This implementation matches them with
+the match type <tt>:is</tt> (default, see section 2.7.1) and the comparator
+<tt>i;ascii-casemap</tt> (default, see section 2.7.3). The RFC defines the
+command defaults clearly, so any different implementations violate RFC
+3028. The same is valid for comparator names, also specified as strings.
+</p>
+<h2>
+<a name="SECT2.11" href="filter_toc.html#TOC19">
+2.11. Number units
+</a></h2>
+<p>
+There is a mistake in RFC 3028: the suffix G denotes gibi-, not tebibyte.
+The mistake is obvious, because RFC 3028 specifies G to denote 2&#094;30
+(which is gibi, not tebi), and that is what this implementation uses as
+scaling factor for the suffix G.
+</p>
+<h2>
+<a name="SECT2.12" href="filter_toc.html#TOC20">
+2.12. RFC compliance
+</a></h2>
+<p>
+Exim requires the first line of a Sieve filter to be 
+<pre>
+&nbsp;&nbsp;# Sieve filter
+</pre>
+</p>
+<p>
+Of course the RFC does not specify that line. Do not expect examples to work
+without adding it, though.
+</p>
+<p>
+RFC 3028 requires the use of CRLF to terminate a line.
+The rationale was that CRLF is universally used in network protocols
+to mark the end of the line. This implementation does not embed Sieve
+in a network protocol, but uses Sieve scripts as part of the Exim MTA.
+Since all parts of Exim use LF as newline character, this implementation
+does, too, by default, though the system administrator may choose (at Exim 
+compile time) to use CRLF instead.
+</p>
+<p>
+Exim violates RFC 2822, section 3.6.8, by accepting 8-bit header names, so
+this implementation repeats this violation to stay consistent with Exim.
+This is in preparation to UTF-8 data.
+</p>
+<p>
+Sieve scripts cannot contain NUL characters in strings, but mail
+headers could contain MIME encoded NUL characters, which could never
+be matched by Sieve scripts using exact comparisons.  For that reason,
+this implementation extends the Sieve quoted string syntax with &#092;0
+to describe a NUL character, violating &#092;0 being the same as 0 in
+RFC 3028.  Even without using &#092;0, the following tests are all true in
+this implementation. Implementations that use C-style strings will only
+evaluate the first test as true.
+<pre>
+&nbsp;&nbsp;Subject: =?iso-8859-1?q?abc=00def
+&nbsp;&nbsp;
+&nbsp;&nbsp;header :contains "Subject" ["abc"]
+&nbsp;&nbsp;header :contains "Subject" ["def"]
+&nbsp;&nbsp;header :matches "Subject" ["abc?def"]
+</pre>
+</p>
+<p>
+Note that by considering Sieve to be a MUA, RFC 2047 can be interpreted
+in a way that NUL characters truncating strings is allowed for Sieve
+implementations, although not recommended. It is further allowed to use
+encoded NUL characters in headers, but that's not recommended either.
+The above example shows why.
+</p>
+<p>
+RFC 3028 states that if an implementation fails to convert a character
+set to UTF-8, two strings cannot be equal if one contains octets greater
+than 127. Assuming that all unknown character sets are one-byte character
+sets with the lower 128 octets being US-ASCII is not sound, so this
+implementation violates RFC 3028 and treats such MIME words literally.
+That way at least something could be matched.
+</p>
+<p>
+The folder specified by <b>fileinto</b> must not contain the character
+sequence <tt>..</tt> to avoid security problems. RFC 3028 does not specify the
+syntax of folders apart from <b>keep</b> being equivalent to 
+<pre>
+&nbsp;&nbsp;fileinto "INBOX";
+</pre>
+</p>
+<p>
+This implementation uses <tt>inbox</tt> instead.
+</p>
+<p>
+Sieve script errors currently cause messages to be silently filed into
+<tt>inbox</tt>.  RFC 3028 requires that the user is notified of that condition.
+This may be implemented in future by adding a header line to mails that
+are filed into <tt>inbox</tt> due to an error in the filter.
+<hr>
+</p>
+<font size=2>
+<a href="filter_1.html">Previous</a>&nbsp;&nbsp;<a href="filter_3.html">Next</a>&nbsp;&nbsp;<a href="filter_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim Filter Specification)
+</font>
+</body>
+</html>

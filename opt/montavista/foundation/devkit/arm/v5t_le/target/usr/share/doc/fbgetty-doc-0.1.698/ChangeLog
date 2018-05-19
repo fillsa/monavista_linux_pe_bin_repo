@@ -1,0 +1,1331 @@
+2001-12-29  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	Release 0.1.698
+	
+	* configure.ac: bump version to 0.1.698
+	undefine FBGETTY_UNSTABLE
+
+	* NEWS: updated
+	
+	* src/issue.c:
+	(output_exec): handle job control
+	save terminal settings
+	ignore job control signals
+	handle foreground/background switch, in both child and father
+	check first if a change is needed before doing it
+	[HAVE_WAITPID]: use waitpid()
+	[DEBUG_JOB_CONTROL]: be more verbose in case of error
+
+	* configure.ac: added check for ctermid(), wait() and waitpid()
+	
+	* src/init.c:
+	(open_ctty): ioctl(TIOCSCTTY)
+	(check_ctty): close the openned tty
+	(close_ctty): new function
+	(detach_ctty): new function
+	(save_ctty): new function
+	(init): use all new functions
+	cleanned
+	(ctty)[!HAVE_CTERMID]: new constant
+	(get_ctty)[!HAVE_CTERMID]: new macro, return ctty.
+	(get_ctty)[HAVE_CTERMID]: new macro, call ctermid().
+	(check_ctty): use get_ctty()
+	(detach_ctty): use get_ctty()
+
+2001-12-28  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* NEWS: updated
+
+	* README: updated
+
+	* src/issue.c: include <termios.h>
+	(longtags): added speed and baud tags (alias for 'b')
+	(SPEED): new macro
+	(bauds): new array
+	(print_baud): new function
+	(print_special): added tag 'b', call print_baud
+
+	* src/vt.c:
+	(vt_handler_install): use STDIN_FILENO instead of fgoptions->tty_fd
+	(vt_handler_init): likewise...
+	(vt_handler): ...
+	(vt_handler_restore): likewise
+	failed ioctl()'s are no more fatal.
+
+	* src/errors.c:
+	(fgcleanup): set fgoptions->tty_fd to -1 if closed.
+
+	* src/init.c:
+	(check_ctty): new function
+	(open_ctty)[TIOCNOTTY]: use it.
+
+2001-12-27  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	Second Test release: 0.1.698test2
+	
+	* configure.ac: bump version to 0.1.698test2
+	
+	* src/prompt.c:
+	(get_login_name): remove leading space and minus from login name
+	remove ending space too
+	handle line editing control char: CKILL CWERASE CREPRINT CTRL('l')
+
+	* configure.ac: more checks on secure exec related flags
+	more complete configuration summary
+	`id` calls are now reported like autoconf check and report error if failed
+	BUILD_USER and BUILD_HOSTNAME are now computed outside their AC_DEFINE_UNQUOTED
+	BUILD_USER and BUILD_HOSTNAME are defined if no error.
+	
+	* contrib/convertissue.sh: smarter error reporting
+	
+	* configure.default: added --sysconfdir=/etc --localstatedir=/var
+	as default configuration for fbgetty
+	added --config-cache to make configure using cache by default
+
+	* contrib/README:
+	(patch-fbv): Updated
+
+2001-12-25  Maciej Korzeñ  <eaquer@atj.pl>
+
+	* contrib/patch-fbv: Updated for fbv-0.95
+	
+2001-12-23  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	Fixed a memory leak
+
+	* src/prompt.c:
+	(refresh_screen): fb_var and fb_fix are no more malloc()'ed
+
+	* src/prompt.c:
+	(refresh_screen): more refresh_screen_yield()
+	check framebuffer != NULL before munmap()
+
+	* src/main.c:
+	(main): support for mtrace()
+
+2001-12-23  Yann Droneaud  <ydroneaud@meuh.eu.org>
+	
+	Test Release 0.1.698test
+
+	* NEWS: updated
+	* configure.ac: version 0.1.698test
+	
+	* include/fbgetty/generated/Makefile.am: added some dependancies to options.h
+	* configure.ac: added check for setgroups() and initgroups()
+	revert to version 2.52e
+	* src/issue.c:
+	(output_exec): set the supplementary groups if username but no groupname specified
+	* contrib/rawtoissue.sh: copyrighted
+	* contrib/convertissue.sh: new file, can help people to translate issue for fbgetty
+	* contrib/README: updated 
+	* ChangeLog.1: new file, contains entries up to late 2000
+	* ChangeLog: moved entries before 2001 to ChangeLog.1
+	
+2001-12-22  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* configure.ac: make some "if test" constructs more portable
+
+	* contrib/rawtoissue.sh:
+	"if test $# == 0" corrected to "if test $# = 0"
+	Reported by Christian Kurz
+	
+	* configure.ac: added check for syslog() and vsyslog()
+
+	* src/linux_logo.c:
+	(display_logo)[!LOGO_ENABLE]: defined a foo function, to make gcc -ansi happy
+
+2001-12-17  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* src/main.c:
+	(main): simpler EMPTY_LOGIN_REFRESH_SCREEN behavior
+
+	* include/fbgetty/global.h:
+	(TRUE): defined as not FALSE
+
+	* src/prompt.c: cosmetics changes
+	(get_login_name): moved the login_allocated incrementation 
+	after the successfull realloc()
+	some comments added
+	(refresh_screen_check): check pollfd.revents instead of pollfd.events
+	in_refresh is now a 'real' boolean
+	(refresh_screen_state): new function
+	(refresh_screen_acquire): new function
+	(refresh_screen): use new functions
+	(do_prompt): check refresh_screen_check() before printf() and fflush(stdout)
+	(do_prompt): add a check for fgoptions->login_prompt[0] != '\0'
+
+2001-12-15  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* include/fbgetty/options.h: some cosmetics changes
+	[FBGETTY_UNSTABLE]: add the PACKAGE_VERSION to the default prompt.
+
+	* include/fbgetty/global.h: some cosmetics changes
+	TRUE: defined as (1 == 1)
+	FALSE: defined as (1 != 1)
+
+2001-12-04  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* src/prompt.c:
+	(get_login_name)[FB_GETTY_DEBUG]: use a for() loop instead a while
+
+	* src/main.c:
+	(main): call utmp_update() and refresh_screen()
+	[EMPTY_LOGIN_REFRESH_SCREEN]: refresh screen if the login_name is empty
+	[EMPTY_LOGIN_REFRESH_SCREEN]: loop until login_name is not empty
+
+	* src/init.c:
+	(init): removed utmp_update(), refresh_screen() code to main.c
+
+2001-11-19  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* src/prompt.c:
+	(get_login_name): removed ioctl(STDIN_FILENO, TCFLSH, 0)
+	allocate login_name by 32 bytes chunks
+	
+	* src/init.c:
+	(init): ioctl(STDIN_FILENO, TCFLSH, 0)
+
+	* src/prompt.c: 
+	(get_login_name)[NORMAL_PARANOIA]: disable echo after reading login name
+
+	* src/init.c:
+	(init): use TCSANOW instead of TCSAFLUSH in tcsetattr()
+	(open_ctty): unified dup2(), dup() and open() code 
+	for duplicating standard fd
+
+	* src/issue.c:
+	(output_exec): setting up handler for SIGCHLD did not depend on USE_SECURE_MODE
+
+	* src/errors.c:
+	(fgcleanup): splitted free()'ing memory and closing files check
+
+	* src/init.c:
+	(init): moved opening controlling tty to open_ctty() function
+	call open_ctty(), then call do_vhangup() and reopen tty with open_ctty()
+	(init): in fork() code call _exit() instead of fgexit()
+	(open_ctty): new function, close current controlling tty and open the new one.
+	try to open "/dev/tty", if this succeed, 
+	try to detach from the controlling tty with ioctl(TIOCNOTTY)
+	(open_ctty)[!HAVE_DUP2]: no need to close(i)
+	do more call ioctl(TIOCSCTTY), could be reenable if needed
+
+	* src/issue.c:
+	(output_exec): use _exit() instead of fgexit()
+
+	* configure.ac: added check for vhangup()
+	removed sys/wait.h from AC_CHECK_HEADERS() list
+	commented out check for login_tty() and libutil, will be wiped out in future release
+
+2001-11-11  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* src/options.c:
+	(compile): print a more complete report.
+
+	* src/init.c:
+	(init): in case of FBIOPUT_CON2FBMAP failed, do not exit, just disable framebuffer use
+	(init): support frambuffer device old and new minor scheme, in any linux version 
+
+2001-10-28  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* configure.ac: added check for functions dup() dup2() fcntl()
+
+	* src/issue.c: added issue_include_verbatim()
+	(longtags): added "cat", "dump", "include_verbatim" alias for issue_include_verbatim()
+	(issue_include_verbatim): new function
+	(issue_ftime): updated for sysinfos changes
+	(print_special): likewise
+
+	* src/prompt.c:
+	(refresh_screen): updated for get_sysinfos() changes
+
+	* include/fbgetty/sysinfos.h: 
+	* src/sysinfos.c: 
+	sysinfos is now the structure itself, no more a pointer to an allocated block
+	new prototype get_sysinfos()
+	(get_sysinfos): updated
+
+2001-10-21  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* src/utmp.c:
+	(setutxent): try to open the utmp file readonly
+	(utmpx_entry): staticly allocated
+	(getutxent): adapted for the change of utmpx_entry
+	(endutxent): likewise
+	(updwtmpx): changed a label unlock_return to updwtmpx_unlock_return
+
+	* src/init.c:
+	(init): init the terminal mode (termios)
+
+	* TODO: removed an entry (verbatim_include) 
+
+	* README: version updated,
+	tags updated
+	Language and issue file clarification
+
+	* configure.ac: version 0.1.698
+
+	* NEWS: updated
+
+2001-09-15  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* src/issue.c:
+	(output_exec): restoring SIGCHLD handler is not depending of USE_SECURE_MODE
+
+	* src/init.c:
+	(init): new variable pgrp
+	rewrote a bit the tcgetpgrp()/tcsetpgrp() code, use pgid instead of pid
+	(init): in case of pgid != pid, utpdate pgid after setpgid() call
+
+	* src/issue.c:
+	(output_exec): no need to exit if username or groupname are invalid,
+	just leave the function.
+	(output_exec): change the tty_device mode before leaving root privilege
+	(output_exec): set handler for SIGCHLD before fork'ing
+
+2001-09-07  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* src/init.c:
+	(setup_devices): own devices before changing permissions on it
+	(init): likewise...
+
+	* src/errors.c:
+	(fgcleanup): close devices only if they are not std fd (> 2)
+	moved call to free(fgoptions_free(fgoptions)), only free the structure when leaving
+	(fgexit): call free(fgoptions_free(fgoptions))
+
+2001-09-07  Yann Droneaud  <ydroneaud@meuh.eu.org>
+	
+	fbgetty-0.1.69 released
+	The secure exec feature is more powerful (request from Debian maintainer)
+
+	* README: updated
+	* NEWS: updated
+	
+	* configure.ac: upgraded for autoconf-2.52e
+	added options for the new secure exec configuration
+	more detailled configuration summary
+	ia64 is now recognized
+	id is used to compute uid and gid for --with-exec-user
+	hostname is used with flag -f to get the fqdn
+	version updated to 0.1.69
+	add check for pwd.h grp.h getpwnam() getgrnam()
+
+	* include/fbgetty/global.h:
+	(PACKAGE_NICKNAME): new codename
+	
+	* src/issue.c:
+	include <pwd.h> and <grp.h>
+	(output_exec):
+	new variable exec_uid and exec_gid
+	call setgid() before setuid(), for the setgid() to work
+	[SECURE_USER & SECURE_GROUP]: set exec_uid and exec_gid to the defined values
+	[SECURE_USERNAME]: 
+	struct passwd *pw
+	use getpwnam() to determine exec_uid and exec_gid
+	[SECURE_GROUPNAME]:
+	struct group *gr
+	use getgrnam() to determine exec_gid
+
+2001-09-06  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	fbgetty-0.1.6 released
+	
+	* NEWS: updated
+
+	* Makefile.am:
+	(EXTRA_DIST): removed README-test
+	
+	* README-test: removed
+	
+	* docs/Makefile.am:
+	(EXTRA_DIST): added fbgetty-and-color.txt
+	* docs/fbgetty-and-color.txt: new file
+
+	* configure.ac:
+	added check for alloca()
+	added check for netdb.h
+	added check for gethostbyname()
+
+	* include/fbgetty/options.h: update default prompt for release
+	
+	* include/fbgetty/Makefile.am:
+	(EXTRA_DIST): added alloca.h
+	
+	* src/getopt.c: updated from glibc-2.2.4
+	* src/getopt1.c: ...
+	* src/alloca.c: new file, extracted from bison-1.28a (CVS snapshot)
+	* include/fbgetty/getopt.h: updated from glibc-2.2.4
+	* include/fbgetty/alloca.h: new file, extracted from gettext-0.10.37/lib/system.h
+
+	* examples/test/issue: updated for new features
+	
+	* src/issue.c:
+	(issue_verbatim): new function, print the argument of @verbatim=
+
+	* src/options.c:
+	(merge_options): handle changes in merge_option_list[], only
+	use char * and int
+	while() -> for()
+	(merge_option_list): pointer and integer are now separated
+	(merge_option_ptr): renamed to ... 
+	(merge_option_str): this one, handle only string (char *)
+	while() converted to for()
+	(merge_option_int):
+	while() converted to for()
+	(parse_binary): if argument is NULL, assume it's true
+	--clear-screen is equivalent to --clear-screen=yes
+
+	* src/issue.c:
+	(read_var_name): support variable/argument delimited:
+	$TERM $"TERM" ${TERM}
+	(print_special): print fqdn
+	
+	* src/options.c:
+	(parse_options): handle full language specification eg: fr_FR
+	for issue file, 
+	first try "issue.fr_FR"
+	second, "issue.fr"
+	last "issue"
+	
+	* src/issue.c:
+	(print_special): updated to the new sysinfos_t structure
+
+	* include/fbgetty/sysinfos.h:
+	(sysinfos): stored the data inside the structure, element are no more malloc()'ed
+	added fqdn, broken_time
+	removed date, time
+
+	* src/sysinfos.c:
+	(printf_time): new function
+	(get_sysinfos): adapted to the new sysinfos_t structure
+	get fqdn with gethostbyname()
+	(free_sysinfos): adapted to the new sysinfos_t structure: only need to free()
+	the structure, not the element in it
+
+	* src/issue.c:
+	(print_escape): moved escape to char conversion to
+	(convert_escape): this new function
+	(output_long): rewrote while() loop in for()
+	use i instead of index since index() is a function (this make gdb happy)
+	(read_var_name): support string var_name: "var name with \"space\" inside"
+
+	* README: sync with manpage
+
+2001-08-29  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* BUGS: Updated for the Bug Tracking System
+	* THANKS: thanks tuxfamily
+
+2001-08-26  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* configure.ac: added some check for size type
+	and system capabilities
+
+	* src/utmp.c:
+	(utmp_update): utx is no more malloc()'ed
+
+	* src/vt.c: removed many global variable, them became local to functions
+
+	* src/options.c:
+	(parse_options): st is no more malloc()'ed
+
+	* src/init.c:
+	include stdarg.h
+	(setup_devices): new function, use to own device with devfs pathname or old ...
+	(init): st is allocated locally in the function
+	[__linux__]: own vcs devices
+
+2001-07-29  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* src/options.c:
+	(merge_an_option): duplicated in merge_option_int() and merge_option_ptr()
+	(merge_option_int): specialized for integer (int)
+	(merge_option_ptr): specialized for pointer (void *)
+	(merge_options): rewrote to manipulate pointer more correctly 
+	I hope, this will fix ia64 alignment problems.
+	call merge_option_int() and merge_option_ptr() instead of merge_an_option()
+	(parse_environment): rewrote to reduce number of cast, removed ptr variable.
+
+2001-07-27  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* src/prompt.c
+	(get_login_name): initialize 'c'
+
+2001-07-26  Yann Droneaud  <ydroneaud@reseau>
+
+	* src/prompt.c:
+	(get_login_name): rewrote, this function was completely broken
+	'eof' was not tested again the good value
+
+2001-07-21  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	fbgetty release 0.1.6test
+	
+	* Makefile.am:
+	(EXTRA_DIST): added README-test
+	* README-test: new file, only for test release
+
+2001-07-21  Yann Droneaud  <ydroneaud@meuh.eu.org>
+	
+	* src/options.c:
+	(version): use PACKAGE_AUTHOR for displaying author name and email
+
+2001-07-21  Yann Droneaud  <ydroneaud@meuh.eu.org>
+	
+	* docs/fbgetty.texi: updated with mailing lists
+
+2001-07-21  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* NEWS: Updated
+
+2001-07-20  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* README: added new section: Tips
+	some tips about display ascii arts files.
+	* contrib/Makefile.am: added rawtoissue.sh 
+	* contrib/README: added rawtoissue.sh description
+	* contrib/rawtoissue.sh: new file
+
+2001-07-20  Yann Droneaud  <ydroneaud@meuh.eu.org>
+	
+	* docs/fbgetty.8: corrected %u and %U description 
+
+2001-07-20  Yann Droneaud  <ydroneaud@meuh.eu.org>
+	
+	Corrected problems with signedness and endianess on other architecture than x86
+
+	* src/options.c
+	(parse_environment): cast ptr to (unsigned int *) in options_leds() call
+	* src/issue.c:
+	(parse_issue):
+	changed 'c' from 'char' to 'int'. (The same bug again and again, see 1999-03-17 entry)
+	* src/prompt.c:
+	(get_login_name): 
+	changed 'c' form 'int' to 'char' (this was the only place i cannot use a int because of endianess problems)
+	new eof variable, used to indiquate End Of File condition
+
+2001-07-14  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	* configure.in: updated for autoconf 2.50c (CVS snapshot)
+	moved to ...
+	* configure.ac: to this
+
+2001-07-14  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	Rewrote VT code, to mask/unmask signal, restore vt handler correctly
+	Corrected bug that disable vt_handler when a program failed in issue
+	(fgexit() was calling restore_default_vt_handling())
+
+	* src/prompt.c
+	(refresh_screen_check): call vt_isactive() instead of is_vt_active()
+	
+	* src/options.c:
+	(fgoptions_init): added FGINIT_INT(master)
+
+	* src/main.c:
+	(main): set fgoptions->master to FALSE
+	call vt_handler_restore() instead of restore_default_vt_handling()
+	put a return 0, at the end of fonction (for warning removing)
+
+	* src/init.c:
+	(init): set fgoptions->master to TRUE after 
+	creating session/processs group and openning tty
+	call vt_handler_init() instead of install_vt_handler()
+
+	* include/fbgetty/generated/fgoptions.h: 
+	added variable 'master', use to handle fbgetty subprocessing
+	in fbgetty main process, it's set to TRUE,
+	in fork'ed process, it's set to FALSE, then in fgcleanup()
+	do not reset vt switch, only release memory
+	* src/errors.c:
+	(fgcleanup): only call vt_handler_restore() if fgoptions->master == TRUE
+	call vt_handler_restore() instead of restore_default_vt_handling()
+
+	* src/vt.c:
+	(is_vt_active): renamed to
+	(vt_isactive): this
+	(install_vt_handler): removed, splitted in vt_handler_init() and vt_handler_install()
+	(vt_handler_init): new function, replace install_vt_handler()
+	(vt_handler_install): new function
+	(vt_handler): unblock SIGUSR1 only during screen_refresh()
+	call vt_handler_install() after screen_refresh() to be sure vt switching is ok
+	if state in unknown, call vt_handler_init() (this case should never occured)
+	(restore_default_vt_handling): renamed to
+	(vt_handler_restore): this
+
+	* include/fbgetty/vt.h: removed install_vt_handler()
+	renamed is_vt_active() to vt_isactive()
+	renamed restore_default_vt_handling() to vt_handler_restore()
+	add new prototype vt_handler_init() 
+
+	* src/vt.c:
+	(install_vt_handler): block SIGUSR1 during vt switch setup
+	use fgoptions->tty_fd instead of STDOUT_FILENO
+	
+2001-07-14  Yann Droneaud  <ydroneaud@meuh.eu.org>
+	
+	* src/init.c:
+	(init): corrected session and process group support to work in any case
+	(especially when running traced by strace)
+
+2001-07-11  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	Found a new trick: offsetof(), it's used to simplify
+	the options.h generation.
+	fbgetty could be cross compiled again.
+	It's also faster: no need to compile, run, compile, run.
+
+	* include/fbgetty/generated/Makefile.am: updated
+	preprocess fgoptions.h then call awk to generate options.h
+	* include/fbgetty/generated/fgoptions.h: updated
+	include fbgetty/global.h
+	This file is now preprocessed before parsed by fgoptions.awk
+	* include/fbgetty/generated/fgoptions.awk: new file
+	generate options.h from fgoptions.h
+	* include/fbgetty/generated/fgoptions.c: deleted, supersed by fboptions.awk
+	* configure.in: check for CPP
+
+2001-07-11  Yann Droneaud  <ydroneaud@meuh.eu.org>
+
+	updated version to 0.1.6test (missed update for automake)
+
+2001-07-07  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+	
+	Changed emails and fbgetty homepage
+	Changed author email
+	Updated version to 0.1.6test
+
+2001-07-07  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* examples/test/issue.taglist: corrected
+	\@users -> \@user
+	\@Users -> \@users 
+
+2001-07-07  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	Now screen refresh does not block vt switching.
+
+	* src/vt.c:
+	(install_vt_handler): use local variable allocated in stack instead of malloc'ed them
+	(vt_handler): call install_vt_handler() after refresh_screen() to prevent changes
+	* src/init.c:
+	(init): removed vt get state code (duplicated in src/vt.c)
+	* src/prompt.c:
+	(get_login_name): check for errno = EINTR when read() is interrupted by a signal
+	* src/vt.c:
+	(install_vt_handler): sa_new.sa_flags = SA_RESTART.
+	* include/fbgetty/prompt.h:
+	(refresh_screen_check): added prototype
+	(refresh_screen_check): likewise.
+	* src/prompt.c:
+	(refresh_screen_yield): new function, release screen
+	(refresh_screen_check): new function, check if we could write
+	(refresh_screen): handle concurrency, use screen_yield(), screen_check()
+	(in_refresh): new variable, if set, a refresh is in processing 
+	(do_prompt): use refresh_screen_check()
+	* src/issue.c:
+	(parse_issue): while scanning issue, check if we can output: call refresh_screen_check()
+	* src/vt.c:
+	(vt_handler): 
+	set vt_active before calling any other function.
+	(is_vt_active): new function
+	(install_vt_handler): use sigaction instead of signal
+	(restore_default_vt_handling): likewise
+	(install_vt_handler): use strerror(errno) instead of %m
+	(restore_default_vt_handling): likewise
+	(vt_handler): unblock SIGUSR1
+
+2001-07-07  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* src/init.c: 
+	(init): use POSIX S_ISCHR instead of BSD bitmask test
+
+2001-07-07  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* src/options.c: removed some unuseful ##
+	(parse_options): moved show_error checking before all other option check.
+	(option_string): free *ptr if not NULL (fix a memory leak)
+	(parse_cmdline): rewrote getopt loop to do{}while
+	in switch(option){} use continue instead of break to skip end of loop check.
+	in case of error, return directly
+	(help): change print(...) to fprint(stdout, ...), fix problem with glibc-2 and gcc-3.0
+	(version): likewise
+
+2001-06-25  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* examples/test/Makefile.am:
+	(noinst_DATA): added issue.taglist
+
+	* src/kbd.c:
+	(leds_parse): changed a while loop to a for() one
+	moved set definition in function toplevel
+	(init_kbd): only do setup if masks are not 0
+
+	* src/init.c:
+	(init): free fgoptions->fb_device before setting it to NULL.
+	(init): switched some printf from %m to %s, strerror(errno)
+
+2001-06-23  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* configure.in: 
+	(AM_INIT_AUTOMAKE): updated version to 0.1.6pre
+
+	* src/options.c:
+	(option_leds): use new leds_parse() prototype
+	ptr in now unsigned.
+	(parse_environment): remove duplicated error code
+	(parse_cmdline): likewise.
+
+	* include/fbgetty/generated/fgoptions.h:
+	(VARIABLE leds): now unsigned 
+	* include/fbgetty/kbd.h:
+	(kbd_opt): mask is now unsigned
+	(leds_parse): added mask argument
+	* src/kbd.c:
+	(leds_opts): changed opt.value to unsigned char
+	(kbd_opt): mask is now unsigned
+	(leds_parse): 
+	added an argument, return the mask in this. return 0 or -1.
+
+	* include/fbgetty/kbd.h: (FBGETTY_KBD_LEDS_SET): moved ...
+	* src/kbd.c: (FBGETTY_KBD_LEDS_SET): ... here
+	* include/fbgetty/kbd.h: (FBGETTY_KBD_LEDS_UNSET): moved ...
+	* src/kbd.c: (FBGETTY_KBD_LEDS_UNSET): ... here
+	* include/fbgetty/kbd.h: (FBGETTY_KBD_LEDS): moved ...
+	* src/kbd.c: (FBGETTY_KBD_LEDS): ... here
+	* include/fbgetty/kbd.h: (FBGETTY_KBD_LEDS_MASK): moved ...
+	* src/kbd.c: (FBGETTY_KBD_LEDS_UNSET_MASK): ... here
+	* include/fbgetty/kbd.h: (FBGETTY_KBD_LEDS_UNSET_SHIFT): moved ...
+	* src/kbd.c: (FBGETTY_KBD_LEDS_UNSET_SHIFT): ... here
+	
+2001-06-23  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	Changed version to 0.1.6pre
+	gettext support dropped for 0.1.6 version, scheduled for 0.2
+	
+	* configure.in: Removed gettext support
+	(AC_ARG_WITH(translations...): removed
+	(ALL_LINGUAS): likewise
+	(AM_GNU_GETTEXT): ...
+	(AC_CONFIG_LINK): ...
+	(AC_CONFIG_FILES): removed po/Makefile.in and int/Makefile
+	* Makefile.am:
+	(SUBDIRS): removed intl and @POSUB@
+	* NEWS: updated
+
+2001-06-10  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* include/fbgetty/global.h: updated fbgetty URL
+	* README: idem
+	* AUTHORS: ...
+	* packages/fbgetty.lsm.in: ... 
+
+2001-06-03  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* src/options.c:
+	(dump_config): use fgexit() instead of cleanup() and exit()
+	(help): likewise
+	(usage): ...
+	(version): ...
+	(compile): ...
+	* src/init.c:
+	(init): ...
+	* src/main.c:
+	(main): 
+	* src/signal.c:
+	(leave): 
+	* src/issue.c:
+	(output_exec): 
+	
+	* src/prompt.c:
+	(do_prompt): use print_special() and print_escape() 
+	instead of output_special() and output_escape().
+
+	* include/fbgetty/issue.h:
+	(print_escape): added prototype
+	(print_special): likewise
+
+2001-06-02  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* src/issue.c:
+	(longtags): changed the "version" entry to 'v' instead of 'r'
+	close bug reported by Benoit Plessis <benoit.plessis@wanadoo.fr>
+
+	* src/init.c:
+	(init): call utmp_update() instead of update_utmp(). 
+
+	* include/fbgetty/utmp.h:
+	changed prototype for update_utmp() to utmp_update(). 
+
+	* include/fbgetty/issue.h: 
+	removed prototypes of output_*() functions
+	(EXEC_DELIMITER): moved to src/issue.c
+
+	* src/issue.c:
+	(output_special): rewritted, now take a FILE * instead of int
+	moved code to print_special()
+	(print_special): new function, code taken from output_special
+	(output_escape):  rewritted, now take a FILE * instead of int
+	moved code to print_escape()
+	Now handle octal and hexadecimal
+	(print_escape):  new function, code taken from output_escape
+	(convert_hex_char): new function used in output_escape
+	convert a hex [0-9a-f] char to number 
+	(convert_oct_char): new function used in output_escape
+	convert a oct [0-7] char to number
+	(isodigit): new function, do the same job as isxdigit()
+	use by convert_oct_char()
+	(parse_issue): use the new functions prototypes
+	(isodigit): added a missing semicolon
+	(output_escape): added missing parameter to convert_*_char() function call
+	(EXEC_DELIMITER): moved from include/fbgetty/issue.h
+	
+	* src/options.c:
+	(help): added keyboard option description
+
+	* src/issue.c:
+	(ISSUE_INCLUDE): removed
+	(ISSUE_COLOR): removed
+	(longtags): changed tag "users" to "user" and tag "Users" to "users"
+	* README:
+	updated to reflect above changed
+	
+2001-05-25  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	Added preliminary support for gettext in the package
+	
+	* configure.in: 
+	added gettext support
+	link config.h in topbuilddir from include/config.h (for gettext)
+	added copyright notice
+	* Makefile.am:
+	(SUBDIRS): added po/ intl/	
+	* include/fbgetty/generated/Makefile.am: 
+	updated rules to be more portable
+
+2001-05-05  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* src/options.c:
+	(parse_options): use _PATH_DEV instead of hardcoded "/dev"
+
+2001-04-16  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* src/utmp.c:
+	(utmpxname): new function
+	(setutxent): new function
+	(getutxent): new function
+	(endutxent): ...
+	(utmpx_file_lock): new function
+	(utmp_file_unlock): ...
+	(updwtmpx): removed lock code moved to above function
+
+2001-04-15  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* configure.in: 
+	added check for utmpx header and function
+
+	* src/utmp.c:
+	(update_utmp):
+	moved updwtmp() emulation code to updwtmpx() function
+	renamed to utmp_update
+	(utmp_update): new (from utmp_update)
+	updated to use XPG User Accounting Database Functions (UTMPX/WTMPX)
+	(updwtmpx): new function, defined only if the host don't have the function
+	updated, integrate much of GLIBC updwtmp_file() function 
+
+2001-04-07  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* include/fbgetty/options.h:
+	(LOGIN_PROMPT): added a space between PACKAGE and VERSION
+	* src/issue.c:
+	(LONGTAG_ARG_MAX): corrected (remember 2^8 is not equal to 256)
+
+2001-04-05  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	Started development of 0.1.6 branch
+	
+	* NEWS: updated version to 0.1.6dev
+	* configure.in: updated version to 0.1.6dev
+	* include/fbgetty/options.h:
+	(LOGIN_PROMPT): use PACKAGE and VERSION instead of hardcoded version
+	
+2001-04-05  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	fbgetty-0.1.5 released
+	
+	* Makefile.am: 
+	(EXTRA_DIST): removed README-test
+	* README-test: deleted
+	* include/fbgetty/global.h: 
+	(PACKAGE_NICKNAME): changed
+	* include/fbgetty/Makefile.am: 
+	(EXTRA_DIST): removed fb.h
+	* README: updated version
+	* configure.in: updated version to 0.1.5
+	removed AC_CONFIG_COMMANDS
+	corrected sparc check
+	added some message at end of configuration
+	* include/fbgetty/options.h:
+	(LOGIN_PROMPT): updated for release
+
+2001-04-03  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* src/options.c:
+	(env_options): use now OFFSET_<name>
+	(merge_list): likewise ...
+	(ENV_LEDS): new type of environment variable
+	(option_leds): new function
+	(env_string): renamed to ...
+	(option_string): here
+	(env_integer): renamed to ...
+	(option_integer): here
+	(env_binary): renamed to ...
+	(option_binary): here
+	(parse_cmdline): use option_... functions
+	(parse_environment): likewise
+	(merge_int): replaced
+	(merge_str): replaced
+	(merge_an_option): new function, replace above.
+	(fgoptions_options): replaced
+	(fgoptions_arguments): replaced
+	(fgoptions_environment): replaced
+	(fgoptions_parsed[]): new array, replace above variables
+	(FGOPTIONS_OPTIONS): new, index in the array
+	(FGOPTIONS_ARGUMENTS): likewise
+	(FGOPTIONS_ENVIRONMENT): ...
+	(fgoptions_options): new, compatibility define
+	(fgoptions_arguments): likewise
+	(fgoptions_environment): ...
+
+2001-04-02  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* include/fbgetty/generated/fgoptions.c:
+	use macro with variable numbers of argument (the file must be compiled with GCC)
+	(OUTPUT): .
+	(LINE): ...
+	(PRINT_STRING): new macro
+	(PRINT_ARG): new macro
+	(NEWLINE): new macro
+
+2001-03-31  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* src/options.c: 
+	updated for unsetleds/setleds to leds change:
+	(merge_list): removed old entries added the one for leds
+	(parse_cmdline): save the return of leds_parse in fgoptions_options->leds according to the new scheme
+	(dump_config): print leds
+	(fgoptions_init): init just leds field
+
+	* include/fbgetty/kbd.h:
+	Updated prototypes
+	new macros:
+	FBGETTY_KBD_LEDS
+	FBGETTY_KBD_LEDS_SET
+	FBGETTY_KBD_LEDS_UNSET
+
+	* src/kbd.c (leds_parse): 
+	rewritted to use only one config variable 
+	(unsetleds and setleds merged in leds)
+
+	* include/fbgetty/generated/Makefile.am: new file
+
+	* include/fbgetty/options.h: removed the definition of fbgetty_options_t
+	include generated/options.h instead.
+
+	* include/fbgetty/generated/fgoptions.h: new file, used by include/fbgetty/generated/fgoptions.c
+
+	* include/fbgetty/generated/fgoptions.c: new file
+
+	* config/Makefile.am:
+	(AUTOMAKE_OPTIONS): added
+
+2001-03-13  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* src/kbd.c:
+	(leds_parse): set setleds and unsetleds to 0
+
+	* src/options.c:
+	(merge_options): new function, use a list of option to merge, replace all merge_str(), merge_int() 
+	(merge_list): new array of option to merge
+	(merge_fgoptions_str): removed macro
+	(merge_fgoptions_int): removed macro
+	(merge_str): changed to use the offset in structure instead of the 3 pointers to the same field
+	(merge_int): likewise
+
+	* src/main.c:
+	(main): use parse_options()
+
+	* include/fbgetty/options.h: added prototypes for fgoptions_create() and foptions_init()
+	renamed parse_command_line() to parse_options()
+
+	* src/options.c: 
+	(parse_command_line): splitted in parse_cmdline() and parse_options()
+	(parse_cmdline): new function
+	(parse_options): likewise
+	moved show_* variable to toplevel. Declared them as static.
+
+	* src/main.c:
+	(main): call fgoptions_create() 
+
+2001-03-12  Yann Droneaud  <lch@Corwin.Ambre>
+
+	* src/options.c:
+	(fgoptions_create): new function: allocate fgoption structures
+	(fgoptions_init): init/reset a fgoption structure
+	(parse_command_line): use fgoptions_create()
+	(parse_command_line): rewritted parsing of non option argument (variable definition and argument)
+
+	* include/fbgetty/options.h:
+	(ISSUE_REFRESH): default to TRUE
+
+	* src/vt.c:
+	(restore_default_vt_handling): check if tty_fd is != -1
+
+	* include/fbgetty/global.h:
+	(FALSE): define it as 0
+	(TRUE): define it as 1
+
+	* src/options.c:
+	(env_binary): use parse_binary()
+	(parse_binary): new function
+	(parse_command_line): rewritted --clear-screen option code
+	removed --no-clear-screen
+
+	* README:
+	Corrected option descriptions
+	Added short description about --clear-screen 
+
+2001-02-26  Yann Droneaud  <lch@Corwin.Ambre>
+
+	Environment options are now parsed ala getopt_long
+	
+	* src/options.c:
+	(parse_command_line): moved all getopt_long data to toplevel
+	moved all fgoption_* ptr to toplevel, declared them as static
+	(env_options): new data, contain environment name, type and ptr
+	(env_string): new function
+	(env_integer): new function
+	(env_binary): ...
+	(parse_environment): new function, walk trough env_options[], call env_{strings|integer|binary}
+	(parse_command_line): call parse environment instead of using many if (getenv(...) != NULL)
+	
+2001-02-25  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* configure.in:
+	(AC_CONFIG_FILES): added packages/fbgetty.lsm 
+
+	* packages/fbgetty.lsm.in: updated
+
+	* src/init.c:
+	(init): check the return of tcgetpgrp() before calling tcsetpgrp()
+
+	* configure.in: 
+	(AC_CONFIG_FILES): added contrib
+	* contrib/: new directory
+	* contrib/Makefile.am: new file
+	* contrib/README: likewise
+	* contrib/patch-fbv: likewise, provided by Joel Friedman <joelf@max.unsi.com>
+
+	* src/issue.c:
+	(isissuetoken): new function
+	(isarg): new function
+	(isexecarg): new function
+	(output_long): use isarg instead of isname
+	(output_exec): use isexecarg instead of isname
+
+	* src/init.c: 
+	call do_vhangup()
+
+	* src/signal.c:
+	(do_vhangup): new function
+
+	* src/init.c:
+	(init): added some code to handle correctly session/process group
+	
+	* src/issue.c:
+	(isname): use ispunct() to handle more punctiation characters
+	(output_exec): wait one 1s instead of 10s
+
+	* examples/Makefile.am:
+	Added issue.fbv 
+
+	* examples/README: updated
+
+	* examples/issue.linux_logo: updated to new syntax
+	* examples/issue.fortune: likewise
+	
+	* examples/issue.fbv: new file, submitted by Joel Friedman <joelf@max.unsi.com>
+
+	* examples/test: new subdir
+	* examples/Makefile.am:
+	(SUBDIRS): added subdir
+	* examples/test/Makefile.am: new
+	* examples/test/test.sh: new
+	* examples/test/issue.3: new
+	* examples/test/issue.2: new
+	* examples/test/issue.1: new
+	* examples/test/issue: new
+
+2001-02-24  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* configure.in: added check for strtok()
+	use of AC_LIBOBJ() instead of setting directly LIBOBJS 
+	changed name of options : 
+	  exec_group -> exec_gid
+	  exec_user -> exec_uid
+	Moved check for valid uid/gid option at the start of the script
+	
+	* TODO: updated
+
+	* NEWS: updated
+
+	* src/options.c:
+	(parse_command_line): added fgoptions_options as argument to leds_parse()
+
+	* src/kbd.c:
+	(leds_parse): added an fbgetty_options_t arguments to the function
+	* include/fbgetty/kbd.h: likewise
+	
+	* src/init.c:
+	(init): use init_kbd() instead of setkbd()/unsetkbd()
+
+	* src/kbd.c:
+	(init_kbd): new function
+
+	* src/options.c:
+	(parse_command_line): removed --set-kbd= and --unset-kbd=
+	replaced by --keyboard= (and --kbd=) according to new syntax
+	use led_parse() according to new scheme
+
+	* src/kbd.c:
+	(kbd_opt): new function, replace setkbd() and unsetkbd()
+	(leds_parse): new behavior set directly masks in fgoptions according to the new syntax (-num,+caps)
+
+	* include/fbgetty/kbd.h:
+	(FBGETTY_LEDS_CAP): renamed as FBGETTY_LEDS_CAPS
+
+2001-02-23  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* src/options.c:
+	(usage): corrected spelling SECONDES -> SECONDS
+
+	* src/init.c:
+	(init): call setkbd,unsetkbd
+
+	* include/fbgetty/options.h:
+	(fbgetty_options_t): added setleds and unsetleds member
+
+	* src/options.c:
+	(parse_command_line): added support for --set-kbd= and --unset-kbd=
+	merge option setleds, unsetleds
+	
+	* src/Makefile.am:
+	(fbgetty_SOURCES): added kbd.c
+
+	* src/kbd.c: new file
+	(leds_parse): new function 
+	(setkbd): new function
+	(unsetkbd): new function
+	
+	* include/fbgetty/kbd.h: new file 
+
+	* include/fbgetty/Makefile.am:
+	(EXTRA_DIST): added kbd.h
+
+	* src/options.c:
+	(OPTION_LONG): new macro, used to define long option value in the struct option
+	(OPTION_CLEAR): use OPTION_LONG()
+	(OPTION_VERSION): likewise
+	(OPTION_COMPILE): ...
+	(OPTION_HELP): ...
+	(OPTION_DUMP): ...
+	(OPTION_SETKBD): new option
+	(OPTION_UNSETKBD): likewise
+
+	* README: added description for (set|unset)-kbd options
+	
+	* configure.in: 
+	added test for canonicalize_file_name
+
+	* src/options.c: 
+	(parse_command_line): added call to canonicalize_filename()
+
+	* src/Makefile.am: 
+	(fbgetty_SOURCES): added canonicalize.c
+
+2001-02-21  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* configure.in:
+	(AC_CONFIG_FILES): removed scripts/*
+	Corrected architecture determination code
+	Disable warning messages
+	Removed debug code (set > log)
+	(AC_INIT): Added package name,version,author according to autoconf 2.49 new syntax
+	Added AC_PREREQ(2.49)
+
+	* docs/Makefile.am:
+	(man_MANS): removed MAKEDEV.fb.8
+
+	* docs/MAKEDEV.fb.8: removed
+
+	* Makefile.am:
+	(SUBDIRS): removed scripts
+
+	* scripts/: removed
+	* scripts/MAKEDEV.fb.in: removed
+	* scripts/issueconv.in: removed
+
+	* docs/fbgetty.8: updated a little
+	* docs/fbgetty.texi: updated a little
+	* README: Updated
+	* include/fbgetty/Makefile.am:
+	(EXTRA_DIST): added forgotted headers
+	* NEWS: updated
+	* src/issue.c:
+	(output_long): read the full tag (name + arguments) before looking up the long tag table
+	increment tag_argc if strlen(argument) != 0
+	(open_issue): new function
+	(print_issue): use open_issue()
+	(issue_include): new function
+	(islongarg): replaced by  ...
+	(isenvironment): replaced by ...
+	(isname): this new function
+	
+2001-02-18  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* src/options.c:
+	(merge_fgoptions_str): strdup()'d the  returned string only if it's not NULL
+
+2001-02-17  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* configure.in: added macros description
+	* acconfig.h: removed
+	* src/options.c:
+	(merge_fgoptions_str): strdup()'d the returned string 
+	* src/Makefile.am:
+	(fbgetty_SOURCES): added all new files
+	(AUTOMAKE_OPTIONS): new variable, set it to "gnu nostdinc" 
+	* include/fbgetty/options.h:
+	(fbgetty_options_t): changed issue_file to issue_filename
+	* configure.in: updated version to 0.1.5test
+	added AC_CONFIG_DIR
+	changed test for libutil, login_tty() since this is not GLIBC specific
+	added --disable-vt-refresh option
+	added --disable-exec-support option
+	added --with-exec-user=
+	added --with-exec-group=
+	* Makefile.am:
+	(SUBDIRS): added config directory
+
+2001-02-15  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* src/issue.c:
+	(output_special): rewritted to use the new sysinfos_t structure.
+
+	* src/sysinfos.c: new file
+	(get_sysinfos): new function,
+	import code from issue.c
+	added some others information
+	(free_sysinfos): new function
+
+	* src/prompt.c:
+	(isenvironment): moved to issue.c
+	(isarg): likewise
+	(read_var_name): ...
+	(output_long): ...
+	(output_environment): ...
+	(output_exec): ...
+	(parse_issue): ...
+	(print_issue): ...
+	(output_special): ...
+	(output_escape): ...
+
+	* src/issue.c: new file
+
+2001-02-14  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* src/signal.c:
+	(leave): call to cleanup() before exiting
+	(install_signal): use sigaction instead of signal (this change was pending since the big bang)
+
+	* src/errors.c:
+	(cleanup): added call to restore_default_vt_handling()
+	close framebuffer before tty.
+	
+	* src/prompt.c:
+	(print_issue): remove parsing code, call parse_issue() instead.
+	(parse_issue): import code from print_issue().
+	added support for long tags, call output_long()
+	moved code to display environment variable, call output_environment()
+	moved code to execute programm, call output_exec()
+	(output_exec): new function (support for program arguments)
+	use read_var_name() to read a name from the issue
+	(output_environment): new function
+	use read_var_name() to read a name from the issue
+	(read_var_name): new function
+	(isarg): new function, use with read_var_name()
+	(isenvironment): likewise ...
+	(output_long): new function
+
+2001-02-13  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	Merge some changes made in cvs after 0.1.3 release but not integrated into 0.1.4
+
+	* src/vt.c: added support for macro USE_...
+	added a pseudo support for FreeBSD (Yes, you can laugh).
+	* src/prompt.c: added support for macro USE_...
+	(output_special): change the output ouf user number (no more "0 users" or "-1 users")
+	* src/main.c:
+	(main): added support for USE_VT_SWITCHING macro
+	when leaving close correctly the framebuffer (set it to NULL).
+	* src/options.c:  added option --dump-config
+	(dump_config): new function
+	(parse_command_line): import code from init.c
+	* src/init.c:
+	(init): moved filename completion (tty3 -> /dev/tty3) to options.c
+	added support for USE_VT_SWITCHING macro
+	the usual memory leaks corrections.
+	* src/utmp.c (update_utmp): added some CPP conditionnal for __linux__
+	
+2001-02-12  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* src/prompt.c:
+	(refresh_screen): free(fgoptions->fb_device) if mmap failed
+	(refresh_screen): munmap framebuffer only if framebuffer is used (fix a debian reported bug xxxxxx)
+	(output_escape): added support for splitted line in issue like this \
+	one.
+
+	* include/fbgetty/errors.h: added prototypes:
+	message()
+	debug()
+	added macro determining function name (__PRETTY_FUNCTION__/__func__/<<unknown>>)
+
+	* src/errors.c: 
+	(cleanup): new function.
+	(fatal_error): rewritted to use my_vsyslog()
+	(error): idem...
+	(message): new function
+
+	* src/my_syslog.c: new file (copied from libmy)
+	(my_vsyslog): new function
+
+	* src/init.c:
+	(init): moved signal handling code to signal.c
+	* src/signal.c: new file
+	(install_signal): new function code copied from init.c
+
+	* include/fbgetty/options.h: added prototypes:
+	fgoptions_free()
+
+	* src/options.c:
+	(fgoptions_free): new function (used to free a fgoptions structure)
+	(parse_command_line): use fgoptions_free().
+
+2001-01-02  Yann Droneaud  <yann.droneaud@iupmime.univ-lemans.fr>
+
+	* src/prompt.c:
+	(get_login_name): don't delete more characters the login name contains
+	set c to EOF if read failed
+
+
+See ChangeLog.1 for earlier changes.

@@ -1,0 +1,76 @@
+<html>
+<head>
+<title>The Exim FAQ Section 9</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_8.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_10.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC278">9. HEADERS</a></h2>
+<p>
+<a name="TOC279" href="FAQ.html#TOC279">Q0901:</a>&nbsp;&nbsp;I would like add some custom headers to selected outgoing mail based on
+a specific domain and the subject line.
+</p>
+<p>
+<font color="#00BB00">A0901:</font>&nbsp;&nbsp;To the remote_smtp transport, add something like
+</p>
+<pre>
+   headers_add = ${if and{\
+                 {eq{$domain}{spec.dom}}\
+                 {matches{$h_subject:}{whatever}}}\
+                 {Content-Type: text/html; charset="us-ascii"} fail }</pre>
+<p>
+This example shows a <i>Content-Type:</i> header, but you can have anything you
+like, and multiple headers can be inserted by using <tt>\n</tt> to separate them.
+</p>
+<p>
+<a name="TOC280" href="FAQ.html#TOC280">Q0902:</a>&nbsp;&nbsp;Is it possible to have Exim add a header to only certain local parts of
+outgoing mail?
+</p>
+<p>
+<font color="#00BB00">A0902:</font>&nbsp;&nbsp;Only if you arrange for each such local part to receive its own private
+copy of the mail. See <tt>max_rcpt</tt> in the SMTP transport. If you set this
+to 1, you could use conditions in an expansion string to add or not add
+a header.
+</p>
+<p>
+<a name="TOC281" href="FAQ.html#TOC281">Q0903:</a>&nbsp;&nbsp;How can I remove some part of the <i>Received:</i> header?
+</p>
+<p>
+<font color="#00BB00">A0903:</font>&nbsp;&nbsp;Set <tt>received_header_text</tt>.
+</p>
+<p>
+<a name="TOC282" href="FAQ.html#TOC282">Q0904:</a>&nbsp;&nbsp;How I can insert the PGP header line using Exim filters?
+</p>
+<p>
+<font color="#00BB00">A0904:</font>&nbsp;&nbsp;You can't insert headers in a user filter. A system filter can do so,
+but the inserted lines then are included for all recipients.
+</p>
+<p>
+<a name="TOC283" href="FAQ.html#TOC283">Q0905:</a>&nbsp;&nbsp;I know I can use a system filter to replace certain headers in messages,
+but how can I add text to existing headers? I want to add [SPAM] to
+the subject line of messages that appear to be spam.
+</p>
+<p>
+<font color="#00BB00">A0905:</font>&nbsp;&nbsp;You can only do this in a round about way, using filter commands like
+this:
+</p>
+<pre>
+   headers add "New-Subject: SPAM: $h_subject:"
+   headers remove subject
+   neaders add "Subject: $h_new-subject:"
+   headers remove new-subject</pre>
+<p>
+This trick works only in system filters, where the commands are obeyed
+in order, and affect the master list of headers that apply to the whole
+message. You cannot do this with the <tt>headers_add</tt> and <tt>headers_remove</tt>
+options on drivers.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_8.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_10.html">Next</a>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<html>
+<head>
+<title>The Exim FAQ Section 28</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_27.html">Previous</a>&nbsp;&nbsp;
+<hr><br>
+<h2><a href="FAQ.html#TOC410">99. LIST OF SAMPLE CONFIGURATIONS</a></h2>
+<p>
+As well as being hyperlinked from the HTML version of this document, each
+sample configuration is also available as a file in the <i>config.samples</i>
+directory, which can be independently downloaded.
+</p>
+<p>
+Samples whose names are of the form Cnnn are Exim configurations; those with
+names of the form Fnnn are filter file fragments; those with names of the form
+Lnnn are sample <i>local_scan()</i> functions, and those with names of thf form
+Snnn are scripts of various kinds. There are other examples of
+<i>local_scan()</i> functions at a number of web sites (for example,
+<a href="http://marc.merlins.org/linux/exim/sa.html">http://marc.merlins.org/linux/exim/sa.html</a>).
+</p>
+<p>
+There are gaps in the C and F numbers because I have omitted the Exim 3 samples
+that have not been converted for Exim 4.
+</p>
+<p>
+<a href="C002.txt">C002</a>:&nbsp;&nbsp; ``Although exim not intended for use in UUCP environment (it doesn't
+know anything about bang!path addresses), I'm successfully using it for
+delivering mail to UUCP clients.''
+</p>
+<p>
+<a href="C006.txt">C006</a>:&nbsp;&nbsp; ``This is how I have configured a PP-inspired vacationnote, there is
+(was?) such a feature in PP. The user makes a file <i>tripnote</i> in his/her
+home directory, the message is passed to the sender once with a short
+leading text.''
+</p>
+<p>
+<a href="C022.txt">C022</a>:&nbsp;&nbsp; ``This is the Exim configuration file of a machine which delivers mail to
+several local domains where the mail is delivered locally, several hairy
+domains, handled as described below, and a half-virtual domain, which is
+first processed by its special alias file, then processed as other local
+domains (including the processing by the global alias file).''
+</p>
+<p>
+<a href="C037.txt">C037</a>:&nbsp;&nbsp; An elegant way of using ETRN, which does immediate delivery if the host
+is online, but saves mail in a BSMTP file after some time on the queue.
+ETRN then re-injects the mail.
+</p>
+<p>
+<a href="C042.txt">C042</a>:&nbsp;&nbsp; ``Since the Exim 4 configuration needed to get Mailman to work differs a
+little bit from Exim 3 and since I still haven't seen a recipe for
+Mailman with Exim 4, I'm providing my configuration (based heavily on
+<a href="http://www.exim.org/howto/mailman.html">http://www.exim.org/howto/mailman.html</a>).''
+</p>
+<p>
+<a href="C043.txt">C043</a>:&nbsp;&nbsp; ``Attached is an Exim 4 config file which is designed for an Exim server
+that is put in front of an Exchange 5.5 system but which verifies the
+valid addresses that are stored in Exchange via LDAP lookups against the
+Exchange server.''
+</p>
+<p>
+<a href="C044.txt">C044</a>:&nbsp;&nbsp; ``I thought I'd submit this as an example of an authenticated mail hub
+configuration. Several people have asked for it so I thought it
+might be of interest.''
+</p>
+<p>
+<a href="C045.txt">C045</a>:&nbsp;&nbsp; ``Here it is, for Exim 4.10 and Cyrus IMAPD 2.1.5 using db3/db4-format
+mailbox database. This configuration delivers the messages to Cyrus
+IMAPD using LMTP over a TCP/IP socket.''
+</p>
+<p>
+<a href="C046.txt">C046</a>:&nbsp;&nbsp; ``Deliver a duplicate of some proportion of all messages to a special
+machine specified in the file <i>/MAIL_TAP_HOST</i>, if it exists.''
+</p>
+<p>
+<a href="C047.txt">C047</a>:&nbsp;&nbsp; A sample configuration for calling Spamassassin directly from Exim.
+</p>
+<p>
+<a href="C049.txt">C049</a>:&nbsp;&nbsp; ``I've been seeing a whole bunch of IPs that send me spam or virus mail
+and HELOing as one of my own IPs, or as HELO one.of.my.own.domains (or
+maybe HELO <tt>primary_hostname</tt>).''
+</p>
+<p>
+<a href="C050.txt">C050</a>:&nbsp;&nbsp; A configuration that uses the DNS to implement virtual domains.
+</p>
+<p>
+<a href="F001.txt">F001</a>:&nbsp;&nbsp; ``I thought that the rest of the list may be interested in reviewing our
+filter as a starting point for their own system message filter.''
+</p>
+<p>
+<a href="F002.txt">F002</a>:&nbsp;&nbsp; ``... program which refused mail from unknown addresses until they mailed
+me promising not to spam me ... since I'd already thought through how
+to do it in Exim, and knew it'd be slightly easier than falling out of
+bed, I went ahead and did it.''
+</p>
+<p>
+<a href="F003.txt">F003</a>:&nbsp;&nbsp; ``Here's four checks installed in our system wide filter that knock out
+a lot of otherwise hard to detect rubbish.''
+</p>
+<p>
+<a href="F004.txt">F004</a>:&nbsp;&nbsp; ``This is an Exim filter snippet to change locally-generated <i>Message-Id:</i>
+and <i>Resent-Message-Id:</i> headers to world-unique values.''
+</p>
+<p>
+<a href="L001.txt">L001</a>:&nbsp;&nbsp; A <i>local_scan()</i> function for Exim that calls <i>uvscan</i>.
+</p>
+<p>
+<a href="S001.txt">S001</a>:&nbsp;&nbsp; A Perl script for patching the name of the configuration file in an
+Exim binary.
+</p>
+<p>
+<a href="S002.txt">S002</a>:&nbsp;&nbsp; ``When I moved from smail to exim I built a program that took individual
+config pieces, stripped all the comments, and built a config file.''
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_27.html">Previous</a>
+</body>
+</html>

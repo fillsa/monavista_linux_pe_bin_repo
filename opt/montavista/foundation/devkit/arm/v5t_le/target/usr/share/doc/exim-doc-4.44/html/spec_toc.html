@@ -1,0 +1,511 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification Contents</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>Exim 4.40 Specification</h1><hr>
+<ul>
+<li><a name="TOC1" href="spec_1.html#CHAP1">1. Introduction</a></li>
+<ul>
+<li><a name="TOC2" href="spec_1.html#SECT1.1">1.1. Exim documentation</a></li>
+<li><a name="TOC3" href="spec_1.html#SECT1.2">1.2. FTP and web sites, and mailing list</a></li>
+<li><a name="TOC4" href="spec_1.html#SECT1.3">1.3. Exim training</a></li>
+<li><a name="TOC5" href="spec_1.html#SECT1.4">1.4. Bug reports</a></li>
+<li><a name="TOC6" href="spec_1.html#SECT1.5">1.5. Where to find the Exim distribution</a></li>
+<li><a name="TOC7" href="spec_1.html#SECT1.6">1.6. Wish list</a></li>
+<li><a name="TOC8" href="spec_1.html#SECT1.7">1.7. Contributed material</a></li>
+<li><a name="TOC9" href="spec_1.html#SECT1.8">1.8. Limitations</a></li>
+<li><a name="TOC10" href="spec_1.html#SECT1.9">1.9. Run time configuration</a></li>
+<li><a name="TOC11" href="spec_1.html#SECT1.10">1.10. Calling interface</a></li>
+<li><a name="TOC12" href="spec_1.html#SECT1.11">1.11. Terminology</a></li>
+</ul>
+<li><a name="TOC13" href="spec_2.html#CHAP2">2. Incorporated code</a></li>
+<li><a name="TOC14" href="spec_3.html#CHAP3">3. How Exim receives and delivers mail</a></li>
+<ul>
+<li><a name="TOC15" href="spec_3.html#SECT3.1">3.1. Overall philosophy</a></li>
+<li><a name="TOC16" href="spec_3.html#SECT3.2">3.2. Policy control</a></li>
+<li><a name="TOC17" href="spec_3.html#SECT3.3">3.3. User filters</a></li>
+<li><a name="TOC18" href="spec_3.html#SECT3.4">3.4. Message identification</a></li>
+<li><a name="TOC19" href="spec_3.html#SECT3.5">3.5. Receiving mail</a></li>
+<li><a name="TOC20" href="spec_3.html#SECT3.6">3.6. Handling an incoming message</a></li>
+<li><a name="TOC21" href="spec_3.html#SECT3.7">3.7. Life of a message</a></li>
+<li><a name="TOC22" href="spec_3.html#SECT3.8">3.8. Processing an address for delivery</a></li>
+<li><a name="TOC23" href="spec_3.html#SECT3.9">3.9. Processing an address for verification</a></li>
+<li><a name="TOC24" href="spec_3.html#SECT3.10">3.10. Running an individual router</a></li>
+<li><a name="TOC25" href="spec_3.html#SECT3.11">3.11. Router preconditions</a></li>
+<li><a name="TOC26" href="spec_3.html#SECT3.12">3.12. Delivery in detail</a></li>
+<li><a name="TOC27" href="spec_3.html#SECT3.13">3.13. Retry mechanism</a></li>
+<li><a name="TOC28" href="spec_3.html#SECT3.14">3.14. Temporary delivery failure</a></li>
+<li><a name="TOC29" href="spec_3.html#SECT3.15">3.15. Permanent delivery failure</a></li>
+<li><a name="TOC30" href="spec_3.html#SECT3.16">3.16. Failures to deliver bounce messages</a></li>
+</ul>
+<li><a name="TOC31" href="spec_4.html#CHAP4">4. Building and installing Exim</a></li>
+<ul>
+<li><a name="TOC32" href="spec_4.html#SECT4.1">4.1. Unpacking</a></li>
+<li><a name="TOC33" href="spec_4.html#SECT4.2">4.2. Multiple machine architectures and operating systems</a></li>
+<li><a name="TOC34" href="spec_4.html#SECT4.3">4.3. DBM libraries</a></li>
+<li><a name="TOC35" href="spec_4.html#SECT4.4">4.4. Pre-building configuration</a></li>
+<li><a name="TOC36" href="spec_4.html#SECT4.5">4.5. Support for iconv()</a></li>
+<li><a name="TOC37" href="spec_4.html#SECT4.6">4.6. Including TLS/SSL encryption support</a></li>
+<li><a name="TOC38" href="spec_4.html#SECT4.7">4.7. Use of tcpwrappers</a></li>
+<li><a name="TOC39" href="spec_4.html#SECT4.8">4.8. Including support for IPv6</a></li>
+<li><a name="TOC40" href="spec_4.html#SECT4.9">4.9. The building process</a></li>
+<li><a name="TOC41" href="spec_4.html#SECT4.10">4.10. Overriding build-time options for Exim</a></li>
+<li><a name="TOC42" href="spec_4.html#SECT4.11">4.11. OS-specific header files</a></li>
+<li><a name="TOC43" href="spec_4.html#SECT4.12">4.12. Overriding build-time options for the monitor</a></li>
+<li><a name="TOC44" href="spec_4.html#SECT4.13">4.13. Installing Exim binaries and scripts</a></li>
+<li><a name="TOC45" href="spec_4.html#SECT4.14">4.14. Installing info documentation</a></li>
+<li><a name="TOC46" href="spec_4.html#SECT4.15">4.15. Setting up the spool directory</a></li>
+<li><a name="TOC47" href="spec_4.html#SECT4.16">4.16. Testing</a></li>
+<li><a name="TOC48" href="spec_4.html#SECT4.17">4.17. Replacing another MTA with Exim</a></li>
+<li><a name="TOC49" href="spec_4.html#SECT4.18">4.18. Upgrading Exim</a></li>
+<li><a name="TOC50" href="spec_4.html#SECT4.19">4.19. Stopping the Exim daemon on Solaris</a></li>
+</ul>
+<li><a name="TOC51" href="spec_5.html#CHAP5">5. The Exim command line</a></li>
+<ul>
+<li><a name="TOC52" href="spec_5.html#SECT5.1">5.1. Setting options by program name</a></li>
+<li><a name="TOC53" href="spec_5.html#SECT5.2">5.2. Trusted and admin users</a></li>
+<li><a name="TOC54" href="spec_5.html#SECT5.3">5.3. Command line options</a></li>
+</ul>
+<li><a name="TOC55" href="spec_6.html#CHAP6">6. The Exim run time configuration file</a></li>
+<ul>
+<li><a name="TOC56" href="spec_6.html#SECT6.1">6.1. Using a different configuration file</a></li>
+<li><a name="TOC57" href="spec_6.html#SECT6.2">6.2. Configuration file format</a></li>
+<li><a name="TOC58" href="spec_6.html#SECT6.3">6.3. File inclusions in the configuration file</a></li>
+<li><a name="TOC59" href="spec_6.html#SECT6.4">6.4. Macros in the configuration file</a></li>
+<li><a name="TOC60" href="spec_6.html#SECT6.5">6.5. Conditional skips in the configuration file</a></li>
+<li><a name="TOC61" href="spec_6.html#SECT6.6">6.6. Common option syntax</a></li>
+<li><a name="TOC62" href="spec_6.html#SECT6.7">6.7. Boolean options</a></li>
+<li><a name="TOC63" href="spec_6.html#SECT6.8">6.8. Integer values</a></li>
+<li><a name="TOC64" href="spec_6.html#SECT6.9">6.9. Octal integer values</a></li>
+<li><a name="TOC65" href="spec_6.html#SECT6.10">6.10. Fixed point number values</a></li>
+<li><a name="TOC66" href="spec_6.html#SECT6.11">6.11. Time interval values</a></li>
+<li><a name="TOC67" href="spec_6.html#SECT6.12">6.12. String values</a></li>
+<li><a name="TOC68" href="spec_6.html#SECT6.13">6.13. Expanded strings</a></li>
+<li><a name="TOC69" href="spec_6.html#SECT6.14">6.14. User and group names</a></li>
+<li><a name="TOC70" href="spec_6.html#SECT6.15">6.15. List construction</a></li>
+<li><a name="TOC71" href="spec_6.html#SECT6.16">6.16. Format of driver configurations</a></li>
+</ul>
+<li><a name="TOC72" href="spec_7.html#CHAP7">7. The default configuration file</a></li>
+<ul>
+<li><a name="TOC73" href="spec_7.html#SECT7.1">7.1. Main configuration settings</a></li>
+<li><a name="TOC74" href="spec_7.html#SECT7.2">7.2. ACL configuration</a></li>
+<li><a name="TOC75" href="spec_7.html#SECT7.3">7.3. Router configuration</a></li>
+<li><a name="TOC76" href="spec_7.html#SECT7.4">7.4. Transport configuration</a></li>
+<li><a name="TOC77" href="spec_7.html#SECT7.5">7.5. Default retry rule</a></li>
+<li><a name="TOC78" href="spec_7.html#SECT7.6">7.6. Rewriting configuration</a></li>
+<li><a name="TOC79" href="spec_7.html#SECT7.7">7.7. Authenticators configuration</a></li>
+</ul>
+<li><a name="TOC80" href="spec_8.html#CHAP8">8. Regular expressions</a></li>
+<ul>
+<li><a name="TOC81" href="spec_8.html#SECT8.1">8.1. Testing regular expressions</a></li>
+</ul>
+<li><a name="TOC82" href="spec_9.html#CHAP9">9. File and database lookups</a></li>
+<ul>
+<li><a name="TOC83" href="spec_9.html#SECT9.1">9.1. Lookup types</a></li>
+<li><a name="TOC84" href="spec_9.html#SECT9.2">9.2. Single-key lookup types</a></li>
+<li><a name="TOC85" href="spec_9.html#SECT9.3">9.3. Query-style lookup types</a></li>
+<li><a name="TOC86" href="spec_9.html#SECT9.4">9.4. Temporary errors in lookups</a></li>
+<li><a name="TOC87" href="spec_9.html#SECT9.5">9.5. Default values in single-key lookups</a></li>
+<li><a name="TOC88" href="spec_9.html#SECT9.6">9.6. Partial matching in single-key lookups</a></li>
+<li><a name="TOC89" href="spec_9.html#SECT9.7">9.7. Lookup caching</a></li>
+<li><a name="TOC90" href="spec_9.html#SECT9.8">9.8. Quoting lookup data</a></li>
+<li><a name="TOC91" href="spec_9.html#SECT9.9">9.9. More about dnsdb</a></li>
+<li><a name="TOC92" href="spec_9.html#SECT9.10">9.10. More about LDAP</a></li>
+<li><a name="TOC93" href="spec_9.html#SECT9.11">9.11. Format of LDAP queries</a></li>
+<li><a name="TOC94" href="spec_9.html#SECT9.12">9.12. LDAP quoting</a></li>
+<li><a name="TOC95" href="spec_9.html#SECT9.13">9.13. LDAP connections</a></li>
+<li><a name="TOC96" href="spec_9.html#SECT9.14">9.14. LDAP authentication and control information</a></li>
+<li><a name="TOC97" href="spec_9.html#SECT9.15">9.15. Format of data returned by LDAP</a></li>
+<li><a name="TOC98" href="spec_9.html#SECT9.16">9.16. More about NIS+</a></li>
+<li><a name="TOC99" href="spec_9.html#SECT9.17">9.17. More about MySQL, PostgreSQL, Oracle, and Interbase</a></li>
+<li><a name="TOC100" href="spec_9.html#SECT9.18">9.18. Special MySQL features</a></li>
+<li><a name="TOC101" href="spec_9.html#SECT9.19">9.19. Special PostgreSQL features</a></li>
+</ul>
+<li><a name="TOC102" href="spec_10.html#CHAP10">10. Domain, host, address, and local part lists</a></li>
+<ul>
+<li><a name="TOC103" href="spec_10.html#SECT10.1">10.1. Expansion of lists</a></li>
+<li><a name="TOC104" href="spec_10.html#SECT10.2">10.2. Negated items in lists</a></li>
+<li><a name="TOC105" href="spec_10.html#SECT10.3">10.3. File names in lists</a></li>
+<li><a name="TOC106" href="spec_10.html#SECT10.4">10.4. An lsearch file is not an out-of-line list</a></li>
+<li><a name="TOC107" href="spec_10.html#SECT10.5">10.5. Named lists</a></li>
+<li><a name="TOC108" href="spec_10.html#SECT10.6">10.6. Named lists compared with macros</a></li>
+<li><a name="TOC109" href="spec_10.html#SECT10.7">10.7. Named list caching</a></li>
+<li><a name="TOC110" href="spec_10.html#SECT10.8">10.8. Domain lists</a></li>
+<li><a name="TOC111" href="spec_10.html#SECT10.9">10.9. Host lists</a></li>
+<li><a name="TOC112" href="spec_10.html#SECT10.10">10.10. Special host list patterns</a></li>
+<li><a name="TOC113" href="spec_10.html#SECT10.11">10.11. Host list patterns that match by IP address</a></li>
+<li><a name="TOC114" href="spec_10.html#SECT10.12">10.12. Host list patterns for single-key lookups by host address</a></li>
+<li><a name="TOC115" href="spec_10.html#SECT10.13">10.13. Host list patterns that match by host name</a></li>
+<li><a name="TOC116" href="spec_10.html#SECT10.14">10.14. Behaviour when an IP address or name cannot be found</a></li>
+<li><a name="TOC117" href="spec_10.html#SECT10.15">10.15. Host list patterns for single-key lookups by host name</a></li>
+<li><a name="TOC118" href="spec_10.html#SECT10.16">10.16. Host list patterns for query-style lookups</a></li>
+<li><a name="TOC119" href="spec_10.html#SECT10.17">10.17. Mixing wildcarded host names and addresses in host lists</a></li>
+<li><a name="TOC120" href="spec_10.html#SECT10.18">10.18. Address lists</a></li>
+<li><a name="TOC121" href="spec_10.html#SECT10.19">10.19. Case of letters in address lists</a></li>
+<li><a name="TOC122" href="spec_10.html#SECT10.20">10.20. Local part lists</a></li>
+</ul>
+<li><a name="TOC123" href="spec_11.html#CHAP11">11. String expansions</a></li>
+<ul>
+<li><a name="TOC124" href="spec_11.html#SECT11.1">11.1. Literal text in expanded strings</a></li>
+<li><a name="TOC125" href="spec_11.html#SECT11.2">11.2. Character escape sequences in expanded strings</a></li>
+<li><a name="TOC126" href="spec_11.html#SECT11.3">11.3. Testing string expansions</a></li>
+<li><a name="TOC127" href="spec_11.html#SECT11.4">11.4. Expansion items</a></li>
+<li><a name="TOC128" href="spec_11.html#SECT11.5">11.5. Expansion operators</a></li>
+<li><a name="TOC129" href="spec_11.html#SECT11.6">11.6. Expansion conditions</a></li>
+<li><a name="TOC130" href="spec_11.html#SECT11.7">11.7. Combining expansion conditions</a></li>
+<li><a name="TOC131" href="spec_11.html#SECT11.8">11.8. Expansion variables</a></li>
+</ul>
+<li><a name="TOC132" href="spec_12.html#CHAP12">12. Embedded Perl</a></li>
+<li><a name="TOC133" href="spec_13.html#CHAP13">13. Starting the daemon and the use of network interfaces</a></li>
+<ul>
+<li><a name="TOC134" href="spec_13.html#SECT13.1">13.1. Starting a listening daemon</a></li>
+<li><a name="TOC135" href="spec_13.html#SECT13.2">13.2. Special IP listening addresses </a></li>
+<li><a name="TOC136" href="spec_13.html#SECT13.3">13.3. Overriding local&#095;interfaces and daemon&#095;smtp&#095;ports</a></li>
+<li><a name="TOC137" href="spec_13.html#SECT13.4">13.4. IPv6 address scopes</a></li>
+<li><a name="TOC138" href="spec_13.html#SECT13.5">13.5. Examples of starting a listening daemon</a></li>
+<li><a name="TOC139" href="spec_13.html#SECT13.6">13.6. Recognising the local host</a></li>
+<li><a name="TOC140" href="spec_13.html#SECT13.7">13.7. Delivering to a remote host</a></li>
+</ul>
+<li><a name="TOC141" href="spec_14.html#CHAP14">14. Main configuration</a></li>
+<ul>
+<li><a name="TOC142" href="spec_14.html#SECT14.1">14.1. Miscellaneous</a></li>
+<li><a name="TOC143" href="spec_14.html#SECT14.2">14.2. Exim parameters</a></li>
+<li><a name="TOC144" href="spec_14.html#SECT14.3">14.3. Privilege controls</a></li>
+<li><a name="TOC145" href="spec_14.html#SECT14.4">14.4. Logging</a></li>
+<li><a name="TOC146" href="spec_14.html#SECT14.5">14.5. Frozen messages</a></li>
+<li><a name="TOC147" href="spec_14.html#SECT14.6">14.6. Data lookups</a></li>
+<li><a name="TOC148" href="spec_14.html#SECT14.7">14.7. Message ids</a></li>
+<li><a name="TOC149" href="spec_14.html#SECT14.8">14.8. Embedded Perl Startup</a></li>
+<li><a name="TOC150" href="spec_14.html#SECT14.9">14.9. Daemon</a></li>
+<li><a name="TOC151" href="spec_14.html#SECT14.10">14.10. Resource control</a></li>
+<li><a name="TOC152" href="spec_14.html#SECT14.11">14.11. Policy controls</a></li>
+<li><a name="TOC153" href="spec_14.html#SECT14.12">14.12. Callout cache</a></li>
+<li><a name="TOC154" href="spec_14.html#SECT14.13">14.13. TLS</a></li>
+<li><a name="TOC155" href="spec_14.html#SECT14.14">14.14. Local user handling </a></li>
+<li><a name="TOC156" href="spec_14.html#SECT14.15">14.15. All incoming messages (SMTP and non-SMTP)</a></li>
+<li><a name="TOC157" href="spec_14.html#SECT14.16">14.16. Non-SMTP incoming messages</a></li>
+<li><a name="TOC158" href="spec_14.html#SECT14.17">14.17. Incoming SMTP messages</a></li>
+<li><a name="TOC159" href="spec_14.html#SECT14.18">14.18. SMTP extensions</a></li>
+<li><a name="TOC160" href="spec_14.html#SECT14.19">14.19. Processing messages</a></li>
+<li><a name="TOC161" href="spec_14.html#SECT14.20">14.20. System filter</a></li>
+<li><a name="TOC162" href="spec_14.html#SECT14.21">14.21. Routing and delivery</a></li>
+<li><a name="TOC163" href="spec_14.html#SECT14.22">14.22. Bounce and warning messages</a></li>
+<li><a name="TOC164" href="spec_14.html#SECT14.23">14.23. Alphabetical list of main options</a></li>
+</ul>
+<li><a name="TOC165" href="spec_15.html#CHAP15">15. Generic options for routers</a></li>
+<li><a name="TOC166" href="spec_16.html#CHAP16">16. The accept router</a></li>
+<li><a name="TOC167" href="spec_17.html#CHAP17">17. The dnslookup router</a></li>
+<ul>
+<li><a name="TOC168" href="spec_17.html#SECT17.1">17.1. Effect of qualify&#095;single and search&#095;parents</a></li>
+</ul>
+<li><a name="TOC169" href="spec_18.html#CHAP18">18. The ipliteral router</a></li>
+<li><a name="TOC170" href="spec_19.html#CHAP19">19. The iplookup router</a></li>
+<li><a name="TOC171" href="spec_20.html#CHAP20">20. The manualroute router</a></li>
+<ul>
+<li><a name="TOC172" href="spec_20.html#SECT20.1">20.1. Private options for manualroute</a></li>
+<li><a name="TOC173" href="spec_20.html#SECT20.2">20.2. Routing rules in route&#095;list</a></li>
+<li><a name="TOC174" href="spec_20.html#SECT20.3">20.3. Routing rules in route&#095;data</a></li>
+<li><a name="TOC175" href="spec_20.html#SECT20.4">20.4. Format of the list of hosts</a></li>
+<li><a name="TOC176" href="spec_20.html#SECT20.5">20.5. How the list of hosts is used</a></li>
+<li><a name="TOC177" href="spec_20.html#SECT20.6">20.6. How the options are used</a></li>
+<li><a name="TOC178" href="spec_20.html#SECT20.7">20.7. Manualroute examples</a></li>
+</ul>
+<li><a name="TOC179" href="spec_21.html#CHAP21">21. The queryprogram router</a></li>
+<li><a name="TOC180" href="spec_22.html#CHAP22">22. The redirect router</a></li>
+<ul>
+<li><a name="TOC181" href="spec_22.html#SECT22.1">22.1. Redirection data</a></li>
+<li><a name="TOC182" href="spec_22.html#SECT22.2">22.2. Forward files and address verification</a></li>
+<li><a name="TOC183" href="spec_22.html#SECT22.3">22.3. Interpreting redirection data</a></li>
+<li><a name="TOC184" href="spec_22.html#SECT22.4">22.4. Items in a non-filter redirection list</a></li>
+<li><a name="TOC185" href="spec_22.html#SECT22.5">22.5. Redirecting to a local mailbox</a></li>
+<li><a name="TOC186" href="spec_22.html#SECT22.6">22.6. Special items in redirection lists</a></li>
+<li><a name="TOC187" href="spec_22.html#SECT22.7">22.7. Duplicate addresses</a></li>
+<li><a name="TOC188" href="spec_22.html#SECT22.8">22.8. Repeated redirection expansion</a></li>
+<li><a name="TOC189" href="spec_22.html#SECT22.9">22.9. Errors in redirection lists</a></li>
+<li><a name="TOC190" href="spec_22.html#SECT22.10">22.10. Private options for the redirect router</a></li>
+</ul>
+<li><a name="TOC191" href="spec_23.html#CHAP23">23. Environment for running local transports</a></li>
+<ul>
+<li><a name="TOC192" href="spec_23.html#SECT23.1">23.1. Uids and gids</a></li>
+<li><a name="TOC193" href="spec_23.html#SECT23.2">23.2. Current and home directories</a></li>
+<li><a name="TOC194" href="spec_23.html#SECT23.3">23.3. Expansion variables derived from the address</a></li>
+</ul>
+<li><a name="TOC195" href="spec_24.html#CHAP24">24. Generic options for transports</a></li>
+<li><a name="TOC196" href="spec_25.html#CHAP25">25. Address batching in local transports</a></li>
+<li><a name="TOC197" href="spec_26.html#CHAP26">26. The appendfile transport</a></li>
+<ul>
+<li><a name="TOC198" href="spec_26.html#SECT26.1">26.1. The file and directory options</a></li>
+<li><a name="TOC199" href="spec_26.html#SECT26.2">26.2. Private options for appendfile</a></li>
+<li><a name="TOC200" href="spec_26.html#SECT26.3">26.3. Operational details for appending</a></li>
+<li><a name="TOC201" href="spec_26.html#SECT26.4">26.4. Operational details for delivery to a new file</a></li>
+<li><a name="TOC202" href="spec_26.html#SECT26.5">26.5. Maildir delivery</a></li>
+<li><a name="TOC203" href="spec_26.html#SECT26.6">26.6. Using tags to record message sizes</a></li>
+<li><a name="TOC204" href="spec_26.html#SECT26.7">26.7. Using a maildirsize file</a></li>
+<li><a name="TOC205" href="spec_26.html#SECT26.8">26.8. Mailstore delivery</a></li>
+<li><a name="TOC206" href="spec_26.html#SECT26.9">26.9. Non-special new file delivery</a></li>
+</ul>
+<li><a name="TOC207" href="spec_27.html#CHAP27">27. The autoreply transport</a></li>
+<ul>
+<li><a name="TOC208" href="spec_27.html#SECT27.1">27.1. Private options for autoreply</a></li>
+</ul>
+<li><a name="TOC209" href="spec_28.html#CHAP28">28. The lmtp transport</a></li>
+<li><a name="TOC210" href="spec_29.html#CHAP29">29. The pipe transport</a></li>
+<ul>
+<li><a name="TOC211" href="spec_29.html#SECT29.1">29.1. Returned status and data</a></li>
+<li><a name="TOC212" href="spec_29.html#SECT29.2">29.2. How the command is run</a></li>
+<li><a name="TOC213" href="spec_29.html#SECT29.3">29.3. Environment variables</a></li>
+<li><a name="TOC214" href="spec_29.html#SECT29.4">29.4. Private options for pipe</a></li>
+<li><a name="TOC215" href="spec_29.html#SECT29.5">29.5. Using an external local delivery agent</a></li>
+</ul>
+<li><a name="TOC216" href="spec_30.html#CHAP30">30. The smtp transport</a></li>
+<ul>
+<li><a name="TOC217" href="spec_30.html#SECT30.1">30.1. Multiple messages on a single connection</a></li>
+<li><a name="TOC218" href="spec_30.html#SECT30.2">30.2. Use of the &#036;host variable</a></li>
+<li><a name="TOC219" href="spec_30.html#SECT30.3">30.3. Private options for smtp</a></li>
+<li><a name="TOC220" href="spec_30.html#SECT30.4">30.4. How the value of hosts&#095;max&#095;try is used</a></li>
+</ul>
+<li><a name="TOC221" href="spec_31.html#CHAP31">31. Address rewriting</a></li>
+<ul>
+<li><a name="TOC222" href="spec_31.html#SECT31.1">31.1. Explicitly configured address rewriting</a></li>
+<li><a name="TOC223" href="spec_31.html#SECT31.2">31.2. When does rewriting happen?</a></li>
+<li><a name="TOC224" href="spec_31.html#SECT31.3">31.3. Testing the rewriting rules that apply on input</a></li>
+<li><a name="TOC225" href="spec_31.html#SECT31.4">31.4. Rewriting rules</a></li>
+<li><a name="TOC226" href="spec_31.html#SECT31.5">31.5. Rewriting patterns</a></li>
+<li><a name="TOC227" href="spec_31.html#SECT31.6">31.6. Rewriting replacements</a></li>
+<li><a name="TOC228" href="spec_31.html#SECT31.7">31.7. Rewriting flags</a></li>
+<li><a name="TOC229" href="spec_31.html#SECT31.8">31.8. Flags specifying which headers and envelope addresses to rewrite</a></li>
+<li><a name="TOC230" href="spec_31.html#SECT31.9">31.9. The SMTP-time rewriting flag</a></li>
+<li><a name="TOC231" href="spec_31.html#SECT31.10">31.10. Flags controlling the rewriting process</a></li>
+<li><a name="TOC232" href="spec_31.html#SECT31.11">31.11. Rewriting examples</a></li>
+</ul>
+<li><a name="TOC233" href="spec_32.html#CHAP32">32. Retry configuration</a></li>
+<ul>
+<li><a name="TOC234" href="spec_32.html#SECT32.1">32.1. Retry rules</a></li>
+<li><a name="TOC235" href="spec_32.html#SECT32.2">32.2. Choosing which retry rule to use</a></li>
+<li><a name="TOC236" href="spec_32.html#SECT32.3">32.3. Retry rules for specific errors</a></li>
+<li><a name="TOC237" href="spec_32.html#SECT32.4">32.4. Retry rule parameters</a></li>
+<li><a name="TOC238" href="spec_32.html#SECT32.5">32.5. Retry rule examples</a></li>
+<li><a name="TOC239" href="spec_32.html#SECT32.6">32.6. Timeout of retry data</a></li>
+<li><a name="TOC240" href="spec_32.html#SECT32.7">32.7. Long-term failures</a></li>
+<li><a name="TOC241" href="spec_32.html#SECT32.8">32.8. Ultimate address timeout</a></li>
+</ul>
+<li><a name="TOC242" href="spec_33.html#CHAP33">33. SMTP authentication</a></li>
+<ul>
+<li><a name="TOC243" href="spec_33.html#SECT33.1">33.1. Generic options for authenticators</a></li>
+<li><a name="TOC244" href="spec_33.html#SECT33.2">33.2. The AUTH parameter on MAIL commands</a></li>
+<li><a name="TOC245" href="spec_33.html#SECT33.3">33.3. Authentication on an Exim server</a></li>
+<li><a name="TOC246" href="spec_33.html#SECT33.4">33.4. Testing server authentication</a></li>
+<li><a name="TOC247" href="spec_33.html#SECT33.5">33.5. Authentication by an Exim client</a></li>
+</ul>
+<li><a name="TOC248" href="spec_34.html#CHAP34">34. The plaintext authenticator</a></li>
+<ul>
+<li><a name="TOC249" href="spec_34.html#SECT34.1">34.1. Using plaintext in a server</a></li>
+<li><a name="TOC250" href="spec_34.html#SECT34.2">34.2. The PLAIN authentication mechanism</a></li>
+<li><a name="TOC251" href="spec_34.html#SECT34.3">34.3. The LOGIN authentication mechanism</a></li>
+<li><a name="TOC252" href="spec_34.html#SECT34.4">34.4. Support for different kinds of authentication </a></li>
+<li><a name="TOC253" href="spec_34.html#SECT34.5">34.5. Using plaintext in a client</a></li>
+</ul>
+<li><a name="TOC254" href="spec_35.html#CHAP35">35. The cram&#095;md5 authenticator</a></li>
+<ul>
+<li><a name="TOC255" href="spec_35.html#SECT35.1">35.1. Using cram&#095;md5 as a server</a></li>
+<li><a name="TOC256" href="spec_35.html#SECT35.2">35.2. Using cram&#095;md5 as a client</a></li>
+</ul>
+<li><a name="TOC257" href="spec_36.html#CHAP36">36. The spa authenticator</a></li>
+<ul>
+<li><a name="TOC258" href="spec_36.html#SECT36.1">36.1. Using spa as a server</a></li>
+<li><a name="TOC259" href="spec_36.html#SECT36.2">36.2. Using spa as a client</a></li>
+</ul>
+<li><a name="TOC260" href="spec_37.html#CHAP37">37. Encrypted SMTP connections using TLS/SSL</a></li>
+<ul>
+<li><a name="TOC261" href="spec_37.html#SECT37.1">37.1. OpenSSL vs GnuTLS</a></li>
+<li><a name="TOC262" href="spec_37.html#SECT37.2">37.2. Requiring specific ciphers in OpenSSL and GnuTLS</a></li>
+<li><a name="TOC263" href="spec_37.html#SECT37.3">37.3. Configuring an Exim server to use TLS</a></li>
+<li><a name="TOC264" href="spec_37.html#SECT37.4">37.4. Requesting and verifying client certificates</a></li>
+<li><a name="TOC265" href="spec_37.html#SECT37.5">37.5. Revoked certificates</a></li>
+<li><a name="TOC266" href="spec_37.html#SECT37.6">37.6. Configuring an Exim client to use TLS</a></li>
+<li><a name="TOC267" href="spec_37.html#SECT37.7">37.7. Multiple messages on the same encrypted TCP/IP connection</a></li>
+<li><a name="TOC268" href="spec_37.html#SECT37.8">37.8. Certificates and all that</a></li>
+<li><a name="TOC269" href="spec_37.html#SECT37.9">37.9. Certificate chains</a></li>
+<li><a name="TOC270" href="spec_37.html#SECT37.10">37.10. Self-signed certificates</a></li>
+</ul>
+<li><a name="TOC271" href="spec_38.html#CHAP38">38. Access control lists</a></li>
+<ul>
+<li><a name="TOC272" href="spec_38.html#SECT38.1">38.1. Testing ACLs</a></li>
+<li><a name="TOC273" href="spec_38.html#SECT38.2">38.2. Specifying when ACLs are used</a></li>
+<li><a name="TOC274" href="spec_38.html#SECT38.3">38.3. ACL return codes</a></li>
+<li><a name="TOC275" href="spec_38.html#SECT38.4">38.4. Unset ACL options</a></li>
+<li><a name="TOC276" href="spec_38.html#SECT38.5">38.5. Data for message ACLs</a></li>
+<li><a name="TOC277" href="spec_38.html#SECT38.6">38.6. Data for non-message ACLs</a></li>
+<li><a name="TOC278" href="spec_38.html#SECT38.7">38.7. Use of the ACL selection options</a></li>
+<li><a name="TOC279" href="spec_38.html#SECT38.8">38.8. Format of an ACL</a></li>
+<li><a name="TOC280" href="spec_38.html#SECT38.9">38.9. ACL variables</a></li>
+<li><a name="TOC281" href="spec_38.html#SECT38.10">38.10. Condition and modifier processing</a></li>
+<li><a name="TOC282" href="spec_38.html#SECT38.11">38.11. ACL modifiers</a></li>
+<li><a name="TOC283" href="spec_38.html#SECT38.12">38.12. ACL conditions</a></li>
+<li><a name="TOC284" href="spec_38.html#SECT38.13">38.13. Using DNS lists</a></li>
+<li><a name="TOC285" href="spec_38.html#SECT38.14">38.14. DNS lists keyed on domain names</a></li>
+<li><a name="TOC286" href="spec_38.html#SECT38.15">38.15. Data returned by DNS lists</a></li>
+<li><a name="TOC287" href="spec_38.html#SECT38.16">38.16. Variables set from DNS lists</a></li>
+<li><a name="TOC288" href="spec_38.html#SECT38.17">38.17. Additional matching conditions for DNS lists</a></li>
+<li><a name="TOC289" href="spec_38.html#SECT38.18">38.18. Negated DNS matching conditions</a></li>
+<li><a name="TOC290" href="spec_38.html#SECT38.19">38.19. DNS lists and IPv6</a></li>
+<li><a name="TOC291" href="spec_38.html#SECT38.20">38.20. Address verification</a></li>
+<li><a name="TOC292" href="spec_38.html#SECT38.21">38.21. Callout verification</a></li>
+<li><a name="TOC293" href="spec_38.html#SECT38.22">38.22. Additional parameters for callouts</a></li>
+<li><a name="TOC294" href="spec_38.html#SECT38.23">38.23. Callout caching</a></li>
+<li><a name="TOC295" href="spec_38.html#SECT38.24">38.24. Sender address verification reporting</a></li>
+<li><a name="TOC296" href="spec_38.html#SECT38.25">38.25. Redirection while verifying</a></li>
+<li><a name="TOC297" href="spec_38.html#SECT38.26">38.26. Using an ACL to control relaying</a></li>
+<li><a name="TOC298" href="spec_38.html#SECT38.27">38.27. Checking a relay configuration</a></li>
+</ul>
+<li><a name="TOC299" href="spec_39.html#CHAP39">39. Adding a local scan function to Exim</a></li>
+<ul>
+<li><a name="TOC300" href="spec_39.html#SECT39.1">39.1. Building Exim to use a local scan function</a></li>
+<li><a name="TOC301" href="spec_39.html#SECT39.2">39.2. API for local&#095;scan()</a></li>
+<li><a name="TOC302" href="spec_39.html#SECT39.3">39.3. Configuration options for local&#095;scan()</a></li>
+<li><a name="TOC303" href="spec_39.html#SECT39.4">39.4. Available Exim variables</a></li>
+<li><a name="TOC304" href="spec_39.html#SECT39.5">39.5. Structure of header lines</a></li>
+<li><a name="TOC305" href="spec_39.html#SECT39.6">39.6. Structure of recipient items</a></li>
+<li><a name="TOC306" href="spec_39.html#SECT39.7">39.7. Available Exim functions</a></li>
+<li><a name="TOC307" href="spec_39.html#SECT39.8">39.8. More about Exim's memory handling</a></li>
+</ul>
+<li><a name="TOC308" href="spec_40.html#CHAP40">40. System-wide message filtering</a></li>
+<ul>
+<li><a name="TOC309" href="spec_40.html#SECT40.1">40.1. Specifying a system filter</a></li>
+<li><a name="TOC310" href="spec_40.html#SECT40.2">40.2. Testing a system filter</a></li>
+<li><a name="TOC311" href="spec_40.html#SECT40.3">40.3. Contents of a system filter</a></li>
+<li><a name="TOC312" href="spec_40.html#SECT40.4">40.4. Additional variable for system filters</a></li>
+<li><a name="TOC313" href="spec_40.html#SECT40.5">40.5. Defer, freeze, and fail commands for system filters</a></li>
+<li><a name="TOC314" href="spec_40.html#SECT40.6">40.6. Adding and removing headers in a system filter</a></li>
+<li><a name="TOC315" href="spec_40.html#SECT40.7">40.7. Setting an errors address in a system filter</a></li>
+<li><a name="TOC316" href="spec_40.html#SECT40.8">40.8. Per-address filtering</a></li>
+</ul>
+<li><a name="TOC317" href="spec_41.html#CHAP41">41. Customizing bounce and warning messages</a></li>
+<ul>
+<li><a name="TOC318" href="spec_41.html#SECT41.1">41.1. Customizing bounce messages</a></li>
+<li><a name="TOC319" href="spec_41.html#SECT41.2">41.2. Customizing warning messages</a></li>
+</ul>
+<li><a name="TOC320" href="spec_42.html#CHAP42">42. Some common configuration requirements</a></li>
+<ul>
+<li><a name="TOC321" href="spec_42.html#SECT42.1">42.1. Sending mail to a smart host</a></li>
+<li><a name="TOC322" href="spec_42.html#SECT42.2">42.2. Using Exim to handle mailing lists</a></li>
+<li><a name="TOC323" href="spec_42.html#SECT42.3">42.3. Syntax errors in mailing lists</a></li>
+<li><a name="TOC324" href="spec_42.html#SECT42.4">42.4. Re-expansion of mailing lists</a></li>
+<li><a name="TOC325" href="spec_42.html#SECT42.5">42.5. Closed mailing lists</a></li>
+<li><a name="TOC326" href="spec_42.html#SECT42.6">42.6. Virtual domains</a></li>
+<li><a name="TOC327" href="spec_42.html#SECT42.7">42.7. Multiple user mailboxes</a></li>
+<li><a name="TOC328" href="spec_42.html#SECT42.8">42.8. Simplified vacation processing</a></li>
+<li><a name="TOC329" href="spec_42.html#SECT42.9">42.9. Taking copies of mail</a></li>
+<li><a name="TOC330" href="spec_42.html#SECT42.10">42.10. Intermittently connected hosts</a></li>
+<li><a name="TOC331" href="spec_42.html#SECT42.11">42.11. Exim on the upstream server host</a></li>
+<li><a name="TOC332" href="spec_42.html#SECT42.12">42.12. Exim on the intermittently connected client host</a></li>
+</ul>
+<li><a name="TOC333" href="spec_43.html#CHAP43">43. SMTP processing</a></li>
+<ul>
+<li><a name="TOC334" href="spec_43.html#SECT43.1">43.1. Outgoing SMTP and LMTP over TCP/IP</a></li>
+<li><a name="TOC335" href="spec_43.html#SECT43.2">43.2. Errors in outgoing SMTP</a></li>
+<li><a name="TOC336" href="spec_43.html#SECT43.3">43.3. Variable Envelope Return Paths (VERP)</a></li>
+<li><a name="TOC337" href="spec_43.html#SECT43.4">43.4. Incoming SMTP messages over TCP/IP</a></li>
+<li><a name="TOC338" href="spec_43.html#SECT43.5">43.5. Unrecognized SMTP commands</a></li>
+<li><a name="TOC339" href="spec_43.html#SECT43.6">43.6. Syntax and protocol errors in SMTP commands</a></li>
+<li><a name="TOC340" href="spec_43.html#SECT43.7">43.7. Use of non-mail SMTP commands</a></li>
+<li><a name="TOC341" href="spec_43.html#SECT43.8">43.8. The <font size=-1>VRFY</font> and <font size=-1>EXPN</font> commands</a></li>
+<li><a name="TOC342" href="spec_43.html#SECT43.9">43.9. The <font size=-1>ETRN</font> command</a></li>
+<li><a name="TOC343" href="spec_43.html#SECT43.10">43.10. Incoming local SMTP</a></li>
+<li><a name="TOC344" href="spec_43.html#SECT43.11">43.11. Outgoing batched SMTP</a></li>
+<li><a name="TOC345" href="spec_43.html#SECT43.12">43.12. Incoming batched SMTP</a></li>
+</ul>
+<li><a name="TOC346" href="spec_44.html#CHAP44">44. Message processing</a></li>
+<ul>
+<li><a name="TOC347" href="spec_44.html#SECT44.1">44.1. Line endings</a></li>
+<li><a name="TOC348" href="spec_44.html#SECT44.2">44.2. Unqualified addresses</a></li>
+<li><a name="TOC349" href="spec_44.html#SECT44.3">44.3. The UUCP From line</a></li>
+<li><a name="TOC350" href="spec_44.html#SECT44.4">44.4. Resent- header lines</a></li>
+<li><a name="TOC351" href="spec_44.html#SECT44.5">44.5. The Auto-Submitted: header line</a></li>
+<li><a name="TOC352" href="spec_44.html#SECT44.6">44.6. The Bcc: header line</a></li>
+<li><a name="TOC353" href="spec_44.html#SECT44.7">44.7. The Date: header line</a></li>
+<li><a name="TOC354" href="spec_44.html#SECT44.8">44.8. The Delivery-date: header line</a></li>
+<li><a name="TOC355" href="spec_44.html#SECT44.9">44.9. The Envelope-to: header line</a></li>
+<li><a name="TOC356" href="spec_44.html#SECT44.10">44.10. The From: header line</a></li>
+<li><a name="TOC357" href="spec_44.html#SECT44.11">44.11. The Message-ID: header line</a></li>
+<li><a name="TOC358" href="spec_44.html#SECT44.12">44.12. The Received: header line</a></li>
+<li><a name="TOC359" href="spec_44.html#SECT44.13">44.13. The Return-path: header line</a></li>
+<li><a name="TOC360" href="spec_44.html#SECT44.14">44.14. The Sender: header line</a></li>
+<li><a name="TOC361" href="spec_44.html#SECT44.15">44.15. Adding and removing header lines</a></li>
+<li><a name="TOC362" href="spec_44.html#SECT44.16">44.16. Constructed addresses</a></li>
+<li><a name="TOC363" href="spec_44.html#SECT44.17">44.17. Case of local parts</a></li>
+<li><a name="TOC364" href="spec_44.html#SECT44.18">44.18. Dots in local parts</a></li>
+<li><a name="TOC365" href="spec_44.html#SECT44.19">44.19. Rewriting addresses</a></li>
+</ul>
+<li><a name="TOC366" href="spec_45.html#CHAP45">45. Log files</a></li>
+<ul>
+<li><a name="TOC367" href="spec_45.html#SECT45.1">45.1. Where the logs are written</a></li>
+<li><a name="TOC368" href="spec_45.html#SECT45.2">45.2. Logging to local files that are periodically &#147;cycled&#148;</a></li>
+<li><a name="TOC369" href="spec_45.html#SECT45.3">45.3. Datestamped log files</a></li>
+<li><a name="TOC370" href="spec_45.html#SECT45.4">45.4. Logging to syslog</a></li>
+<li><a name="TOC371" href="spec_45.html#SECT45.5">45.5. Log line flags</a></li>
+<li><a name="TOC372" href="spec_45.html#SECT45.6">45.6. Logging message reception</a></li>
+<li><a name="TOC373" href="spec_45.html#SECT45.7">45.7. Logging deliveries</a></li>
+<li><a name="TOC374" href="spec_45.html#SECT45.8">45.8. Discarded deliveries</a></li>
+<li><a name="TOC375" href="spec_45.html#SECT45.9">45.9. Deferred deliveries</a></li>
+<li><a name="TOC376" href="spec_45.html#SECT45.10">45.10. Delivery failures</a></li>
+<li><a name="TOC377" href="spec_45.html#SECT45.11">45.11. Fake deliveries</a></li>
+<li><a name="TOC378" href="spec_45.html#SECT45.12">45.12. Completion</a></li>
+<li><a name="TOC379" href="spec_45.html#SECT45.13">45.13. Summary of Fields in Log Lines</a></li>
+<li><a name="TOC380" href="spec_45.html#SECT45.14">45.14. Other log entries</a></li>
+<li><a name="TOC381" href="spec_45.html#SECT45.15">45.15. Reducing or increasing what is logged</a></li>
+<li><a name="TOC382" href="spec_45.html#SECT45.16">45.16. Message log</a></li>
+</ul>
+<li><a name="TOC383" href="spec_46.html#CHAP46">46. Exim utilities</a></li>
+<ul>
+<li><a name="TOC384" href="spec_46.html#SECT46.1">46.1. Finding out what Exim processes are doing (exiwhat)</a></li>
+<li><a name="TOC385" href="spec_46.html#SECT46.2">46.2. Selective queue listing (exiqgrep)</a></li>
+<li><a name="TOC386" href="spec_46.html#SECT46.3">46.3. Summarising the queue (exiqsumm)</a></li>
+<li><a name="TOC387" href="spec_46.html#SECT46.4">46.4. Extracting specific information from the log (exigrep)</a></li>
+<li><a name="TOC388" href="spec_46.html#SECT46.5">46.5. Selecting messages by various criteria (exipick)</a></li>
+<li><a name="TOC389" href="spec_46.html#SECT46.6">46.6. Cycling log files (exicyclog)</a></li>
+<li><a name="TOC390" href="spec_46.html#SECT46.7">46.7. Mail statistics (eximstats)</a></li>
+<li><a name="TOC391" href="spec_46.html#SECT46.8">46.8. Checking access policy (exim&#095;checkaccess)</a></li>
+<li><a name="TOC392" href="spec_46.html#SECT46.9">46.9. Making DBM files (exim&#095;dbmbuild)</a></li>
+<li><a name="TOC393" href="spec_46.html#SECT46.10">46.10. Finding individual retry times (exinext)</a></li>
+<li><a name="TOC394" href="spec_46.html#SECT46.11">46.11. Hints database maintenance (exim&#095;dumpdb, exim&#095;fixdb, exim&#095;tidydb)</a></li>
+<li><a name="TOC395" href="spec_46.html#SECT46.12">46.12. Mailbox maintenance (exim&#095;lock)</a></li>
+</ul>
+<li><a name="TOC396" href="spec_47.html#CHAP47">47. The Exim monitor</a></li>
+<ul>
+<li><a name="TOC397" href="spec_47.html#SECT47.1">47.1. Running the monitor</a></li>
+<li><a name="TOC398" href="spec_47.html#SECT47.2">47.2. The stripcharts</a></li>
+<li><a name="TOC399" href="spec_47.html#SECT47.3">47.3. Main action buttons</a></li>
+<li><a name="TOC400" href="spec_47.html#SECT47.4">47.4. The log display</a></li>
+<li><a name="TOC401" href="spec_47.html#SECT47.5">47.5. The queue display</a></li>
+<li><a name="TOC402" href="spec_47.html#SECT47.6">47.6. The queue menu</a></li>
+</ul>
+<li><a name="TOC403" href="spec_48.html#CHAP48">48. Security considerations</a></li>
+<ul>
+<li><a name="TOC404" href="spec_48.html#SECT48.1">48.1. Building a more &#147;hardened&#148; Exim</a></li>
+<li><a name="TOC405" href="spec_48.html#SECT48.2">48.2. Root privilege</a></li>
+<li><a name="TOC406" href="spec_48.html#SECT48.3">48.3. Running Exim without privilege</a></li>
+<li><a name="TOC407" href="spec_48.html#SECT48.4">48.4. Delivering to local files</a></li>
+<li><a name="TOC408" href="spec_48.html#SECT48.5">48.5. IPv4 source routing</a></li>
+<li><a name="TOC409" href="spec_48.html#SECT48.6">48.6. The VRFY, EXPN, and ETRN commands in SMTP</a></li>
+<li><a name="TOC410" href="spec_48.html#SECT48.7">48.7. Privileged users</a></li>
+<li><a name="TOC411" href="spec_48.html#SECT48.8">48.8. Spool files</a></li>
+<li><a name="TOC412" href="spec_48.html#SECT48.9">48.9. Use of argv[0]</a></li>
+<li><a name="TOC413" href="spec_48.html#SECT48.10">48.10. Use of %f formatting</a></li>
+<li><a name="TOC414" href="spec_48.html#SECT48.11">48.11. Embedded Exim path</a></li>
+<li><a name="TOC415" href="spec_48.html#SECT48.12">48.12. Use of sprintf()</a></li>
+<li><a name="TOC416" href="spec_48.html#SECT48.13">48.13. Use of debug&#095;printf() and log&#095;write()</a></li>
+<li><a name="TOC417" href="spec_48.html#SECT48.14">48.14. Use of strcat() and strcpy()</a></li>
+</ul>
+<li><a name="TOC418" href="spec_49.html#CHAP49">49. Format of spool files</a></li>
+<ul>
+<li><a name="TOC419" href="spec_49.html#SECT49.1">49.1. Format of the -H file</a></li>
+</ul>
+<li><a name="TOC420" href="spec_50.html#CHAP50">50. Adding new drivers or lookup types</a></li>
+<li><a name="TOC421" href="spec_cindex.html">Concept Index</a></li>
+<li><a name="TOC422" href="spec_oindex.html">Option Index</a></li>
+</ul>
+</body>
+</html>

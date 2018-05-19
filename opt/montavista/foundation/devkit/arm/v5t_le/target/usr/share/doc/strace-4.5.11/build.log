@@ -1,0 +1,44 @@
+make  all-am
+make[1]: Entering directory `/var/tmp/BUILD/strace-4.5.11/objdir'
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT strace.o -MD -MP -MF ".deps/strace.Tpo" -c -o strace.o ../strace.c; \
+then mv -f ".deps/strace.Tpo" ".deps/strace.Po"; else rm -f ".deps/strace.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT syscall.o -MD -MP -MF ".deps/syscall.Tpo" -c -o syscall.o ../syscall.c; \
+then mv -f ".deps/syscall.Tpo" ".deps/syscall.Po"; else rm -f ".deps/syscall.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT util.o -MD -MP -MF ".deps/util.Tpo" -c -o util.o ../util.c; \
+then mv -f ".deps/util.Tpo" ".deps/util.Po"; else rm -f ".deps/util.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT desc.o -MD -MP -MF ".deps/desc.Tpo" -c -o desc.o ../desc.c; \
+then mv -f ".deps/desc.Tpo" ".deps/desc.Po"; else rm -f ".deps/desc.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT file.o -MD -MP -MF ".deps/file.Tpo" -c -o file.o ../file.c; \
+then mv -f ".deps/file.Tpo" ".deps/file.Po"; else rm -f ".deps/file.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT ipc.o -MD -MP -MF ".deps/ipc.Tpo" -c -o ipc.o ../ipc.c; \
+then mv -f ".deps/ipc.Tpo" ".deps/ipc.Po"; else rm -f ".deps/ipc.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT io.o -MD -MP -MF ".deps/io.Tpo" -c -o io.o ../io.c; \
+then mv -f ".deps/io.Tpo" ".deps/io.Po"; else rm -f ".deps/io.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT ioctl.o -MD -MP -MF ".deps/ioctl.Tpo" -c -o ioctl.o ../ioctl.c; \
+then mv -f ".deps/ioctl.Tpo" ".deps/ioctl.Po"; else rm -f ".deps/ioctl.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT mem.o -MD -MP -MF ".deps/mem.Tpo" -c -o mem.o ../mem.c; \
+then mv -f ".deps/mem.Tpo" ".deps/mem.Po"; else rm -f ".deps/mem.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT net.o -MD -MP -MF ".deps/net.Tpo" -c -o net.o ../net.c; \
+then mv -f ".deps/net.Tpo" ".deps/net.Po"; else rm -f ".deps/net.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT process.o -MD -MP -MF ".deps/process.Tpo" -c -o process.o ../process.c; \
+then mv -f ".deps/process.Tpo" ".deps/process.Po"; else rm -f ".deps/process.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT bjm.o -MD -MP -MF ".deps/bjm.Tpo" -c -o bjm.o ../bjm.c; \
+then mv -f ".deps/bjm.Tpo" ".deps/bjm.Po"; else rm -f ".deps/bjm.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT resource.o -MD -MP -MF ".deps/resource.Tpo" -c -o resource.o ../resource.c; \
+then mv -f ".deps/resource.Tpo" ".deps/resource.Po"; else rm -f ".deps/resource.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT signal.o -MD -MP -MF ".deps/signal.Tpo" -c -o signal.o ../signal.c; \
+then mv -f ".deps/signal.Tpo" ".deps/signal.Po"; else rm -f ".deps/signal.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT sock.o -MD -MP -MF ".deps/sock.Tpo" -c -o sock.o ../sock.c; \
+then mv -f ".deps/sock.Tpo" ".deps/sock.Po"; else rm -f ".deps/sock.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT system.o -MD -MP -MF ".deps/system.Tpo" -c -o system.o ../system.c; \
+then mv -f ".deps/system.Tpo" ".deps/system.Po"; else rm -f ".deps/system.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT term.o -MD -MP -MF ".deps/term.Tpo" -c -o term.o ../term.c; \
+then mv -f ".deps/term.Tpo" ".deps/term.Po"; else rm -f ".deps/term.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT time.o -MD -MP -MF ".deps/time.Tpo" -c -o time.o ../time.c; \
+then mv -f ".deps/time.Tpo" ".deps/time.Po"; else rm -f ".deps/time.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT proc.o -MD -MP -MF ".deps/proc.Tpo" -c -o proc.o ../proc.c; \
+then mv -f ".deps/proc.Tpo" ".deps/proc.Po"; else rm -f ".deps/proc.Tpo"; exit 1; fi
+if arm_v5t_le-gcc  -DHAVE_CONFIG_H -I. -I.. -I. -Ilinux/arm -I../linux/arm -Ilinux -I../linux   -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock -MT stream.o -MD -MP -MF ".deps/stream.Tpo" -c -o stream.o ../stream.c; \
+then mv -f ".deps/stream.Tpo" ".deps/stream.Po"; else rm -f ".deps/stream.Tpo"; exit 1; fi
+arm_v5t_le-gcc  -Wall -D_GNU_SOURCE -O2 -Datomic_dec_and_lock   -o strace  strace.o syscall.o util.o desc.o file.o ipc.o io.o ioctl.o mem.o net.o process.o bjm.o resource.o signal.o sock.o system.o term.o time.o proc.o stream.o  
+make[1]: Leaving directory `/var/tmp/BUILD/strace-4.5.11/objdir'

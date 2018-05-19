@@ -1,0 +1,735 @@
+\hypertarget{beecrypt_8h}{
+\section{beecrypt.h File Reference}
+\label{beecrypt_8h}\index{beecrypt.h@{beecrypt.h}}
+}
+Bee\-Crypt API, headers. 
+
+{\tt \#include \char`\"{}beecrypt.api.h\char`\"{}}\par
+{\tt \#include \char`\"{}memchunk.h\char`\"{}}\par
+{\tt \#include \char`\"{}mpnumber.h\char`\"{}}\par
+\subsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \hyperlink{structentropySource}{entropy\-Source}
+\begin{CompactList}\small\item\em This struct holds information and pointers to code specific to each source of entropy. \item\end{CompactList}\item 
+struct \hyperlink{structrandomGenerator}{random\-Generator}
+\begin{CompactList}\small\item\em This struct holds information and pointers to code specific to each pseudo-random number generator. \item\end{CompactList}\item 
+struct \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context}
+\item 
+struct \hyperlink{structhashFunction}{hash\-Function}
+\item 
+struct \hyperlink{structhashFunctionContext}{hash\-Function\-Context}
+\item 
+struct \hyperlink{structkeyedHashFunction}{keyed\-Hash\-Function}
+\item 
+struct \hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context}
+\item 
+struct \hyperlink{structblockCipherRaw}{block\-Cipher\-Raw}
+\item 
+struct \hyperlink{structblockCipherMode}{block\-Cipher\-Mode}
+\item 
+struct \hyperlink{structblockCipher}{block\-Cipher}
+\begin{CompactList}\small\item\em Holds information and pointers to code specific to each cipher. \item\end{CompactList}\item 
+struct \hyperlink{structblockCipherContext}{block\-Cipher\-Context}
+\begin{CompactList}\small\item\em Holds a pointer to a blockcipher as well as its parameters. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Typedefs}
+\begin{CompactItemize}
+\item 
+typedef int($\ast$ \hyperlink{group__ES__m_ga0}{entropy\-Next} )(\hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\begin{CompactList}\small\item\em Prototype definition for an entropy-generating function. \item\end{CompactList}\item 
+typedef void \hyperlink{beecrypt_8h_a1}{random\-Generator\-Param}
+\item 
+typedef int($\ast$ \hyperlink{beecrypt_8h_a2}{random\-Generator\-Setup} )(\hyperlink{beecrypt_8h_a1}{random\-Generator\-Param} $\ast$)
+\item 
+typedef int($\ast$ \hyperlink{beecrypt_8h_a3}{random\-Generator\-Seed} )(\hyperlink{beecrypt_8h_a1}{random\-Generator\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\item 
+typedef int($\ast$ \hyperlink{beecrypt_8h_a4}{random\-Generator\-Next} )(\hyperlink{beecrypt_8h_a1}{random\-Generator\-Param} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\item 
+typedef int($\ast$ \hyperlink{beecrypt_8h_a5}{random\-Generator\-Cleanup} )(\hyperlink{beecrypt_8h_a1}{random\-Generator\-Param} $\ast$)
+\item 
+typedef void \hyperlink{group__HASH__m_ga0}{hash\-Function\-Param}
+\item 
+typedef int($\ast$ \hyperlink{beecrypt_8h_a7}{hash\-Function\-Reset} )(\hyperlink{group__HASH__m_ga0}{hash\-Function\-Param} $\ast$)
+\item 
+typedef int($\ast$ \hyperlink{beecrypt_8h_a8}{hash\-Function\-Update} )(\hyperlink{group__HASH__m_ga0}{hash\-Function\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\item 
+typedef int($\ast$ \hyperlink{beecrypt_8h_a9}{hash\-Function\-Digest} )(\hyperlink{group__HASH__m_ga0}{hash\-Function\-Param} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)
+\item 
+typedef void \hyperlink{group__HMAC__m_ga1}{keyed\-Hash\-Function\-Param}
+\item 
+typedef int($\ast$ \hyperlink{beecrypt_8h_a11}{keyed\-Hash\-Function\-Setup} )(\hyperlink{group__HMAC__m_ga1}{keyed\-Hash\-Function\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\item 
+typedef int($\ast$ \hyperlink{beecrypt_8h_a12}{keyed\-Hash\-Function\-Reset} )(\hyperlink{group__HMAC__m_ga1}{keyed\-Hash\-Function\-Param} $\ast$)
+\item 
+typedef int($\ast$ \hyperlink{beecrypt_8h_a13}{keyed\-Hash\-Function\-Update} )(\hyperlink{group__HMAC__m_ga1}{keyed\-Hash\-Function\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\item 
+typedef int($\ast$ \hyperlink{beecrypt_8h_a14}{keyed\-Hash\-Function\-Digest} )(\hyperlink{group__HMAC__m_ga1}{keyed\-Hash\-Function\-Param} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)
+\item 
+typedef void \hyperlink{group__BC__m_ga1}{block\-Cipher\-Param}
+\begin{CompactList}\small\item\em Placeholder type definition for blockcipher parameters. \item\end{CompactList}\item 
+typedef int($\ast$ \hyperlink{group__BC__m_ga0}{block\-Cipher\-Setup} )(\hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t, \hyperlink{beecrypt_8h_a73}{cipher\-Operation})
+\begin{CompactList}\small\item\em Prototype definition for a setup function. \item\end{CompactList}\item 
+typedef int($\ast$ \hyperlink{group__BC__m_ga2}{block\-Cipher\-Set\-IV} )(\hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)
+\begin{CompactList}\small\item\em Prototype definition for an initialization vector setup function. \item\end{CompactList}\item 
+typedef int($\ast$ \hyperlink{group__BC__m_ga3}{block\-Cipher\-Rawcrypt} )(\hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$, uint32\_\-t $\ast$, const uint32\_\-t $\ast$)
+\begin{CompactList}\small\item\em Prototype for a {\em raw\/} encryption or decryption function. \item\end{CompactList}\item 
+typedef int($\ast$ \hyperlink{group__BC__m_ga4}{block\-Cipher\-Modcrypt} )(\hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$, uint32\_\-t $\ast$, const uint32\_\-t $\ast$, unsigned int)
+\begin{CompactList}\small\item\em Prototype for a {\em encryption\/} or decryption function which operates on multiple blocks in a certain mode. \item\end{CompactList}\item 
+typedef uint32\_\-t $\ast$($\ast$ \hyperlink{beecrypt_8h_a20}{block\-Cipher\-Feedback} )(\hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$)
+\end{CompactItemize}
+\subsection*{Enumerations}
+\begin{CompactItemize}
+\item 
+enum \hyperlink{beecrypt_8h_a73}{cipher\-Operation} \{ \hyperlink{beecrypt_8h_a73a21}{NOCRYPT}, 
+\hyperlink{beecrypt_8h_a73a22}{ENCRYPT}, 
+\hyperlink{beecrypt_8h_a73a23}{DECRYPT}
+ \}
+\begin{CompactList}\small\item\em Specifies whether to perform encryption or decryption. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{beecrypt_8h_a24}{entropy\-Source\-Count} (void)
+\begin{CompactList}\small\item\em This function returns the number of entropy sources implemented by the library. \item\end{CompactList}\item 
+const \hyperlink{structentropySource}{entropy\-Source} $\ast$ \hyperlink{beecrypt_8h_a25}{entropy\-Source\-Get} (int n)
+\begin{CompactList}\small\item\em This function returns the {\em n\/} -th entropy source implemented by the library. \item\end{CompactList}\item 
+const \hyperlink{structentropySource}{entropy\-Source} $\ast$ \hyperlink{beecrypt_8h_a26}{entropy\-Source\-Find} (const char $\ast$name)
+\begin{CompactList}\small\item\em This function returns the entropy source specified by the given name. \item\end{CompactList}\item 
+const \hyperlink{structentropySource}{entropy\-Source} $\ast$ \hyperlink{beecrypt_8h_a27}{entropy\-Source\-Default} (void)
+\begin{CompactList}\small\item\em This functions returns the default entropy source; the default value can be specified by setting environment variable BEECRYPT\_\-ENTROPY. \item\end{CompactList}\item 
+int \hyperlink{beecrypt_8h_a28}{entropy\-Gather\-Next} (\hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\begin{CompactList}\small\item\em This function gathers {\em size\/} bytes of entropy into {\em data\/}. \item\end{CompactList}\item 
+int \hyperlink{beecrypt_8h_a29}{random\-Generator\-Count} (void)
+\item 
+const \hyperlink{structrandomGenerator}{random\-Generator} $\ast$ \hyperlink{beecrypt_8h_a30}{random\-Generator\-Get} (int)
+\item 
+const \hyperlink{structrandomGenerator}{random\-Generator} $\ast$ \hyperlink{beecrypt_8h_a31}{random\-Generator\-Find} (const char $\ast$)
+\item 
+const \hyperlink{structrandomGenerator}{random\-Generator} $\ast$ \hyperlink{beecrypt_8h_a32}{random\-Generator\-Default} (void)
+\item 
+int \hyperlink{beecrypt_8h_a33}{random\-Generator\-Context\-Init} (\hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, const \hyperlink{structrandomGenerator}{random\-Generator} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a34}{random\-Generator\-Context\-Free} (\hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a35}{random\-Generator\-Context\-Next} (\hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\item 
+int \hyperlink{beecrypt_8h_a36}{hash\-Function\-Count} (void)
+\item 
+const \hyperlink{structhashFunction}{hash\-Function} $\ast$ \hyperlink{beecrypt_8h_a37}{hash\-Function\-Get} (int)
+\item 
+const \hyperlink{structhashFunction}{hash\-Function} $\ast$ \hyperlink{beecrypt_8h_a38}{hash\-Function\-Find} (const char $\ast$)
+\item 
+const \hyperlink{structhashFunction}{hash\-Function} $\ast$ \hyperlink{beecrypt_8h_a39}{hash\-Function\-Default} (void)
+\item 
+int \hyperlink{beecrypt_8h_a40}{hash\-Function\-Context\-Init} (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$, const \hyperlink{structhashFunction}{hash\-Function} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a41}{hash\-Function\-Context\-Free} (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a42}{hash\-Function\-Context\-Reset} (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a43}{hash\-Function\-Context\-Update} (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\item 
+int \hyperlink{beecrypt_8h_a44}{hash\-Function\-Context\-Update\-MC} (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$, const \hyperlink{structmemchunk}{memchunk} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a45}{hash\-Function\-Context\-Update\-MP} (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a46}{hash\-Function\-Context\-Digest} (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a47}{hash\-Function\-Context\-Digest\-MP} (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a48}{hash\-Function\-Context\-Digest\-Match} (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a49}{keyed\-Hash\-Function\-Count} (void)
+\item 
+const \hyperlink{structkeyedHashFunction}{keyed\-Hash\-Function} $\ast$ \hyperlink{beecrypt_8h_a50}{keyed\-Hash\-Function\-Get} (int)
+\item 
+const \hyperlink{structkeyedHashFunction}{keyed\-Hash\-Function} $\ast$ \hyperlink{beecrypt_8h_a51}{keyed\-Hash\-Function\-Find} (const char $\ast$)
+\item 
+const \hyperlink{structkeyedHashFunction}{keyed\-Hash\-Function} $\ast$ \hyperlink{beecrypt_8h_a52}{keyed\-Hash\-Function\-Default} (void)
+\item 
+int \hyperlink{beecrypt_8h_a53}{keyed\-Hash\-Function\-Context\-Init} (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, const \hyperlink{structkeyedHashFunction}{keyed\-Hash\-Function} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a54}{keyed\-Hash\-Function\-Context\-Free} (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a55}{keyed\-Hash\-Function\-Context\-Setup} (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\item 
+int \hyperlink{beecrypt_8h_a56}{keyed\-Hash\-Function\-Context\-Reset} (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a57}{keyed\-Hash\-Function\-Context\-Update} (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\item 
+int \hyperlink{beecrypt_8h_a58}{keyed\-Hash\-Function\-Context\-Update\-MC} (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, const \hyperlink{structmemchunk}{memchunk} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a59}{keyed\-Hash\-Function\-Context\-Update\-MP} (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a60}{keyed\-Hash\-Function\-Context\-Digest} (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a61}{keyed\-Hash\-Function\-Context\-Digest\-MP} (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a62}{keyed\-Hash\-Function\-Context\-Digest\-Match} (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a63}{block\-Cipher\-Count} (void)
+\begin{CompactList}\small\item\em This function returns the number of blockciphers implemented by the library. \item\end{CompactList}\item 
+const \hyperlink{structblockCipher}{block\-Cipher} $\ast$ \hyperlink{beecrypt_8h_a64}{block\-Cipher\-Get} (int)
+\begin{CompactList}\small\item\em This function returns the {\em n\/} -th blockcipher implemented by the library. \item\end{CompactList}\item 
+const \hyperlink{structblockCipher}{block\-Cipher} $\ast$ \hyperlink{beecrypt_8h_a65}{block\-Cipher\-Find} (const char $\ast$)
+\begin{CompactList}\small\item\em This function returns the blockcipher specified by the given name. \item\end{CompactList}\item 
+const \hyperlink{structblockCipher}{block\-Cipher} $\ast$ \hyperlink{beecrypt_8h_a66}{block\-Cipher\-Default} (void)
+\begin{CompactList}\small\item\em This functions returns the default blockcipher; the default value can be specified by setting environment variable BEECRYPT\_\-CIPHER. \item\end{CompactList}\item 
+int \hyperlink{beecrypt_8h_a67}{block\-Cipher\-Context\-Init} (\hyperlink{structblockCipherContext}{block\-Cipher\-Context} $\ast$, const \hyperlink{structblockCipher}{block\-Cipher} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a68}{block\-Cipher\-Context\-Setup} (\hyperlink{structblockCipherContext}{block\-Cipher\-Context} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t, \hyperlink{beecrypt_8h_a73}{cipher\-Operation})
+\item 
+int \hyperlink{beecrypt_8h_a69}{block\-Cipher\-Context\-Set\-IV} (\hyperlink{structblockCipherContext}{block\-Cipher\-Context} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a70}{block\-Cipher\-Context\-Free} (\hyperlink{structblockCipherContext}{block\-Cipher\-Context} $\ast$)
+\item 
+int \hyperlink{beecrypt_8h_a71}{block\-Cipher\-Context\-ECB} (\hyperlink{structblockCipherContext}{block\-Cipher\-Context} $\ast$, uint32\_\-t $\ast$, const uint32\_\-t $\ast$, int)
+\item 
+int \hyperlink{beecrypt_8h_a72}{block\-Cipher\-Context\-CBC} (\hyperlink{structblockCipherContext}{block\-Cipher\-Context} $\ast$, uint32\_\-t $\ast$, const uint32\_\-t $\ast$, int)
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Bee\-Crypt API, headers. 
+
+These API functions provide an abstract way for using most of the various algorithms implemented by the library.
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{beecrypt_8h-source}{beecrypt.h}.
+
+\subsection{Typedef Documentation}
+\hypertarget{beecrypt_8h_a20}{
+\index{beecrypt.h@{beecrypt.h}!blockCipherFeedback@{blockCipherFeedback}}
+\index{blockCipherFeedback@{blockCipherFeedback}!beecrypt.h@{beecrypt.h}}
+\subsubsection[blockCipherFeedback]{\setlength{\rightskip}{0pt plus 5cm}typedef uint32\_\-t$\ast$($\ast$ \hyperlink{beecrypt_8h_a20}{block\-Cipher\-Feedback})(\hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$)}}
+\label{beecrypt_8h_a20}
+
+
+Definition at line 538 of file beecrypt.h.\hypertarget{beecrypt_8h_a9}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionDigest@{hashFunctionDigest}}
+\index{hashFunctionDigest@{hashFunctionDigest}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionDigest]{\setlength{\rightskip}{0pt plus 5cm}typedef int($\ast$ \hyperlink{beecrypt_8h_a9}{hash\-Function\-Digest})(\hyperlink{group__HASH__m_ga0}{hash\-Function\-Param} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)}}
+\label{beecrypt_8h_a9}
+
+
+Definition at line 256 of file beecrypt.h.\hypertarget{beecrypt_8h_a7}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionReset@{hashFunctionReset}}
+\index{hashFunctionReset@{hashFunctionReset}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionReset]{\setlength{\rightskip}{0pt plus 5cm}typedef int($\ast$ \hyperlink{beecrypt_8h_a7}{hash\-Function\-Reset})(\hyperlink{group__HASH__m_ga0}{hash\-Function\-Param} $\ast$)}}
+\label{beecrypt_8h_a7}
+
+
+Definition at line 254 of file beecrypt.h.\hypertarget{beecrypt_8h_a8}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionUpdate@{hashFunctionUpdate}}
+\index{hashFunctionUpdate@{hashFunctionUpdate}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionUpdate]{\setlength{\rightskip}{0pt plus 5cm}typedef int($\ast$ \hyperlink{beecrypt_8h_a8}{hash\-Function\-Update})(\hyperlink{group__HASH__m_ga0}{hash\-Function\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)}}
+\label{beecrypt_8h_a8}
+
+
+Definition at line 255 of file beecrypt.h.\hypertarget{beecrypt_8h_a14}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionDigest@{keyedHashFunctionDigest}}
+\index{keyedHashFunctionDigest@{keyedHashFunctionDigest}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionDigest]{\setlength{\rightskip}{0pt plus 5cm}typedef int($\ast$ \hyperlink{beecrypt_8h_a14}{keyed\-Hash\-Function\-Digest})(\hyperlink{group__HMAC__m_ga1}{keyed\-Hash\-Function\-Param} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)}}
+\label{beecrypt_8h_a14}
+
+
+Definition at line 367 of file beecrypt.h.\hypertarget{beecrypt_8h_a12}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionReset@{keyedHashFunctionReset}}
+\index{keyedHashFunctionReset@{keyedHashFunctionReset}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionReset]{\setlength{\rightskip}{0pt plus 5cm}typedef int($\ast$ \hyperlink{beecrypt_8h_a12}{keyed\-Hash\-Function\-Reset})(\hyperlink{group__HMAC__m_ga1}{keyed\-Hash\-Function\-Param} $\ast$)}}
+\label{beecrypt_8h_a12}
+
+
+Definition at line 365 of file beecrypt.h.\hypertarget{beecrypt_8h_a11}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionSetup@{keyedHashFunctionSetup}}
+\index{keyedHashFunctionSetup@{keyedHashFunctionSetup}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionSetup]{\setlength{\rightskip}{0pt plus 5cm}typedef int($\ast$ \hyperlink{beecrypt_8h_a11}{keyed\-Hash\-Function\-Setup})(\hyperlink{group__HMAC__m_ga1}{keyed\-Hash\-Function\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)}}
+\label{beecrypt_8h_a11}
+
+
+Definition at line 364 of file beecrypt.h.\hypertarget{beecrypt_8h_a13}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionUpdate@{keyedHashFunctionUpdate}}
+\index{keyedHashFunctionUpdate@{keyedHashFunctionUpdate}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionUpdate]{\setlength{\rightskip}{0pt plus 5cm}typedef int($\ast$ \hyperlink{beecrypt_8h_a13}{keyed\-Hash\-Function\-Update})(\hyperlink{group__HMAC__m_ga1}{keyed\-Hash\-Function\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)}}
+\label{beecrypt_8h_a13}
+
+
+Definition at line 366 of file beecrypt.h.\hypertarget{beecrypt_8h_a5}{
+\index{beecrypt.h@{beecrypt.h}!randomGeneratorCleanup@{randomGeneratorCleanup}}
+\index{randomGeneratorCleanup@{randomGeneratorCleanup}!beecrypt.h@{beecrypt.h}}
+\subsubsection[randomGeneratorCleanup]{\setlength{\rightskip}{0pt plus 5cm}typedef int($\ast$ \hyperlink{beecrypt_8h_a5}{random\-Generator\-Cleanup})(\hyperlink{beecrypt_8h_a1}{random\-Generator\-Param} $\ast$)}}
+\label{beecrypt_8h_a5}
+
+
+Definition at line 130 of file beecrypt.h.\hypertarget{beecrypt_8h_a4}{
+\index{beecrypt.h@{beecrypt.h}!randomGeneratorNext@{randomGeneratorNext}}
+\index{randomGeneratorNext@{randomGeneratorNext}!beecrypt.h@{beecrypt.h}}
+\subsubsection[randomGeneratorNext]{\setlength{\rightskip}{0pt plus 5cm}typedef int($\ast$ \hyperlink{beecrypt_8h_a4}{random\-Generator\-Next})(\hyperlink{beecrypt_8h_a1}{random\-Generator\-Param} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)}}
+\label{beecrypt_8h_a4}
+
+
+Definition at line 129 of file beecrypt.h.\hypertarget{beecrypt_8h_a1}{
+\index{beecrypt.h@{beecrypt.h}!randomGeneratorParam@{randomGeneratorParam}}
+\index{randomGeneratorParam@{randomGeneratorParam}!beecrypt.h@{beecrypt.h}}
+\subsubsection[randomGeneratorParam]{\setlength{\rightskip}{0pt plus 5cm}typedef void \hyperlink{beecrypt_8h_a1}{random\-Generator\-Param}}}
+\label{beecrypt_8h_a1}
+
+
+Definition at line 125 of file beecrypt.h.\hypertarget{beecrypt_8h_a3}{
+\index{beecrypt.h@{beecrypt.h}!randomGeneratorSeed@{randomGeneratorSeed}}
+\index{randomGeneratorSeed@{randomGeneratorSeed}!beecrypt.h@{beecrypt.h}}
+\subsubsection[randomGeneratorSeed]{\setlength{\rightskip}{0pt plus 5cm}typedef int($\ast$ \hyperlink{beecrypt_8h_a3}{random\-Generator\-Seed})(\hyperlink{beecrypt_8h_a1}{random\-Generator\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)}}
+\label{beecrypt_8h_a3}
+
+
+Definition at line 128 of file beecrypt.h.\hypertarget{beecrypt_8h_a2}{
+\index{beecrypt.h@{beecrypt.h}!randomGeneratorSetup@{randomGeneratorSetup}}
+\index{randomGeneratorSetup@{randomGeneratorSetup}!beecrypt.h@{beecrypt.h}}
+\subsubsection[randomGeneratorSetup]{\setlength{\rightskip}{0pt plus 5cm}typedef int($\ast$ \hyperlink{beecrypt_8h_a2}{random\-Generator\-Setup})(\hyperlink{beecrypt_8h_a1}{random\-Generator\-Param} $\ast$)}}
+\label{beecrypt_8h_a2}
+
+
+Definition at line 127 of file beecrypt.h.
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{beecrypt_8h_a73}{
+\index{beecrypt.h@{beecrypt.h}!cipherOperation@{cipherOperation}}
+\index{cipherOperation@{cipherOperation}!beecrypt.h@{beecrypt.h}}
+\subsubsection[cipherOperation]{\setlength{\rightskip}{0pt plus 5cm}enum \hyperlink{beecrypt_8h_a73}{cipher\-Operation}}}
+\label{beecrypt_8h_a73}
+
+
+Specifies whether to perform encryption or decryption. 
+
+\begin{Desc}
+\item[Enumeration values: ]\par
+\begin{description}
+\index{NOCRYPT@{NOCRYPT}!beecrypt.h@{beecrypt.h}}\index{beecrypt.h@{beecrypt.h}!NOCRYPT@{NOCRYPT}}\item[{\em 
+\hypertarget{beecrypt_8h_a73a21}{
+NOCRYPT}
+\label{beecrypt_8h_a73a21}
+}]\index{ENCRYPT@{ENCRYPT}!beecrypt.h@{beecrypt.h}}\index{beecrypt.h@{beecrypt.h}!ENCRYPT@{ENCRYPT}}\item[{\em 
+\hypertarget{beecrypt_8h_a73a22}{
+ENCRYPT}
+\label{beecrypt_8h_a73a22}
+}]\index{DECRYPT@{DECRYPT}!beecrypt.h@{beecrypt.h}}\index{beecrypt.h@{beecrypt.h}!DECRYPT@{DECRYPT}}\item[{\em 
+\hypertarget{beecrypt_8h_a73a23}{
+DECRYPT}
+\label{beecrypt_8h_a73a23}
+}]\end{description}
+\end{Desc}
+
+Definition at line 484 of file beecrypt.h.
+
+\subsection{Function Documentation}
+\hypertarget{beecrypt_8h_a72}{
+\index{beecrypt.h@{beecrypt.h}!blockCipherContextCBC@{blockCipherContextCBC}}
+\index{blockCipherContextCBC@{blockCipherContextCBC}!beecrypt.h@{beecrypt.h}}
+\subsubsection[blockCipherContextCBC]{\setlength{\rightskip}{0pt plus 5cm}int block\-Cipher\-Context\-CBC (\hyperlink{structblockCipherContext}{block\-Cipher\-Context} $\ast$, uint32\_\-t $\ast$, const uint32\_\-t $\ast$, int)}}
+\label{beecrypt_8h_a72}
+
+
+\hypertarget{beecrypt_8h_a71}{
+\index{beecrypt.h@{beecrypt.h}!blockCipherContextECB@{blockCipherContextECB}}
+\index{blockCipherContextECB@{blockCipherContextECB}!beecrypt.h@{beecrypt.h}}
+\subsubsection[blockCipherContextECB]{\setlength{\rightskip}{0pt plus 5cm}int block\-Cipher\-Context\-ECB (\hyperlink{structblockCipherContext}{block\-Cipher\-Context} $\ast$, uint32\_\-t $\ast$, const uint32\_\-t $\ast$, int)}}
+\label{beecrypt_8h_a71}
+
+
+\hypertarget{beecrypt_8h_a70}{
+\index{beecrypt.h@{beecrypt.h}!blockCipherContextFree@{blockCipherContextFree}}
+\index{blockCipherContextFree@{blockCipherContextFree}!beecrypt.h@{beecrypt.h}}
+\subsubsection[blockCipherContextFree]{\setlength{\rightskip}{0pt plus 5cm}int block\-Cipher\-Context\-Free (\hyperlink{structblockCipherContext}{block\-Cipher\-Context} $\ast$)}}
+\label{beecrypt_8h_a70}
+
+
+\hypertarget{beecrypt_8h_a67}{
+\index{beecrypt.h@{beecrypt.h}!blockCipherContextInit@{blockCipherContextInit}}
+\index{blockCipherContextInit@{blockCipherContextInit}!beecrypt.h@{beecrypt.h}}
+\subsubsection[blockCipherContextInit]{\setlength{\rightskip}{0pt plus 5cm}int block\-Cipher\-Context\-Init (\hyperlink{structblockCipherContext}{block\-Cipher\-Context} $\ast$, const \hyperlink{structblockCipher}{block\-Cipher} $\ast$)}}
+\label{beecrypt_8h_a67}
+
+
+\hypertarget{beecrypt_8h_a69}{
+\index{beecrypt.h@{beecrypt.h}!blockCipherContextSetIV@{blockCipherContextSetIV}}
+\index{blockCipherContextSetIV@{blockCipherContextSetIV}!beecrypt.h@{beecrypt.h}}
+\subsubsection[blockCipherContextSetIV]{\setlength{\rightskip}{0pt plus 5cm}int block\-Cipher\-Context\-Set\-IV (\hyperlink{structblockCipherContext}{block\-Cipher\-Context} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)}}
+\label{beecrypt_8h_a69}
+
+
+\hypertarget{beecrypt_8h_a68}{
+\index{beecrypt.h@{beecrypt.h}!blockCipherContextSetup@{blockCipherContextSetup}}
+\index{blockCipherContextSetup@{blockCipherContextSetup}!beecrypt.h@{beecrypt.h}}
+\subsubsection[blockCipherContextSetup]{\setlength{\rightskip}{0pt plus 5cm}int block\-Cipher\-Context\-Setup (\hyperlink{structblockCipherContext}{block\-Cipher\-Context} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t, \hyperlink{beecrypt_8h_a73}{cipher\-Operation})}}
+\label{beecrypt_8h_a68}
+
+
+\hypertarget{beecrypt_8h_a63}{
+\index{beecrypt.h@{beecrypt.h}!blockCipherCount@{blockCipherCount}}
+\index{blockCipherCount@{blockCipherCount}!beecrypt.h@{beecrypt.h}}
+\subsubsection[blockCipherCount]{\setlength{\rightskip}{0pt plus 5cm}int block\-Cipher\-Count (void)}}
+\label{beecrypt_8h_a63}
+
+
+This function returns the number of blockciphers implemented by the library. 
+
+\begin{Desc}
+\item[Returns:]The number of implemented blockciphers. \end{Desc}
+\hypertarget{beecrypt_8h_a66}{
+\index{beecrypt.h@{beecrypt.h}!blockCipherDefault@{blockCipherDefault}}
+\index{blockCipherDefault@{blockCipherDefault}!beecrypt.h@{beecrypt.h}}
+\subsubsection[blockCipherDefault]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structblockCipher}{block\-Cipher} $\ast$ block\-Cipher\-Default (void)}}
+\label{beecrypt_8h_a66}
+
+
+This functions returns the default blockcipher; the default value can be specified by setting environment variable BEECRYPT\_\-CIPHER. 
+
+\begin{Desc}
+\item[Returns:]A pointer to a blockcipher or null, in case an error occured. \end{Desc}
+\hypertarget{beecrypt_8h_a65}{
+\index{beecrypt.h@{beecrypt.h}!blockCipherFind@{blockCipherFind}}
+\index{blockCipherFind@{blockCipherFind}!beecrypt.h@{beecrypt.h}}
+\subsubsection[blockCipherFind]{\setlength{\rightskip}{0pt plus 5cm}const block\-CIiher $\ast$ block\-Cipher\-Find (const char $\ast$ {\em name})}}
+\label{beecrypt_8h_a65}
+
+
+This function returns the blockcipher specified by the given name. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em name}]Name of the requested blockcipher. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]A pointer to a blockcipher or null, if the name wasn't found. \end{Desc}
+\hypertarget{beecrypt_8h_a64}{
+\index{beecrypt.h@{beecrypt.h}!blockCipherGet@{blockCipherGet}}
+\index{blockCipherGet@{blockCipherGet}!beecrypt.h@{beecrypt.h}}
+\subsubsection[blockCipherGet]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structblockCipher}{block\-Cipher} $\ast$ block\-Cipher\-Get (int {\em n})}}
+\label{beecrypt_8h_a64}
+
+
+This function returns the {\em n\/} -th blockcipher implemented by the library. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em n}]Index of the requested blockcipher; legal values are 0 through \hyperlink{beecrypt_8h_a63}{block\-Cipher\-Count()} - 1. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]A pointer to a blockcipher or null, if the index was out of range. \end{Desc}
+\hypertarget{beecrypt_8h_a28}{
+\index{beecrypt.h@{beecrypt.h}!entropyGatherNext@{entropyGatherNext}}
+\index{entropyGatherNext@{entropyGatherNext}!beecrypt.h@{beecrypt.h}}
+\subsubsection[entropyGatherNext]{\setlength{\rightskip}{0pt plus 5cm}int entropy\-Gather\-Next (\hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$ {\em data}, size\_\-t {\em size})}}
+\label{beecrypt_8h_a28}
+
+
+This function gathers {\em size\/} bytes of entropy into {\em data\/}. 
+
+Unless environment variable BEECRYPT\_\-ENTROPY is set, this function will try each successive entropy source to gather up the requested amount.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]Points to where the entropy should be stored. \item[{\em size}]Indicates how many bytes of entropy should be gathered. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]On success. \item[{\em -1}]On failure. \end{description}
+\end{Desc}
+\hypertarget{beecrypt_8h_a24}{
+\index{beecrypt.h@{beecrypt.h}!entropySourceCount@{entropySourceCount}}
+\index{entropySourceCount@{entropySourceCount}!beecrypt.h@{beecrypt.h}}
+\subsubsection[entropySourceCount]{\setlength{\rightskip}{0pt plus 5cm}int entropy\-Source\-Count (void)}}
+\label{beecrypt_8h_a24}
+
+
+This function returns the number of entropy sources implemented by the library. 
+
+\begin{Desc}
+\item[Returns:]The number of implemented entropy sources. \end{Desc}
+\hypertarget{beecrypt_8h_a27}{
+\index{beecrypt.h@{beecrypt.h}!entropySourceDefault@{entropySourceDefault}}
+\index{entropySourceDefault@{entropySourceDefault}!beecrypt.h@{beecrypt.h}}
+\subsubsection[entropySourceDefault]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structentropySource}{entropy\-Source} $\ast$ entropy\-Source\-Default (void)}}
+\label{beecrypt_8h_a27}
+
+
+This functions returns the default entropy source; the default value can be specified by setting environment variable BEECRYPT\_\-ENTROPY. 
+
+\begin{Desc}
+\item[Returns:]A pointer to an entropy source or null, in case an error occured. \end{Desc}
+\hypertarget{beecrypt_8h_a26}{
+\index{beecrypt.h@{beecrypt.h}!entropySourceFind@{entropySourceFind}}
+\index{entropySourceFind@{entropySourceFind}!beecrypt.h@{beecrypt.h}}
+\subsubsection[entropySourceFind]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structentropySource}{entropy\-Source} $\ast$ entropy\-Source\-Find (const char $\ast$ {\em name})}}
+\label{beecrypt_8h_a26}
+
+
+This function returns the entropy source specified by the given name. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em name}]Name of the requested entropy source. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]A pointer to an entropy source or null, if the name wasn't found. \end{Desc}
+\hypertarget{beecrypt_8h_a25}{
+\index{beecrypt.h@{beecrypt.h}!entropySourceGet@{entropySourceGet}}
+\index{entropySourceGet@{entropySourceGet}!beecrypt.h@{beecrypt.h}}
+\subsubsection[entropySourceGet]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structentropySource}{entropy\-Source} $\ast$ entropy\-Source\-Get (int {\em n})}}
+\label{beecrypt_8h_a25}
+
+
+This function returns the {\em n\/} -th entropy source implemented by the library. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em n}]Index of the requested entropy source; legal values are 0 through \hyperlink{beecrypt_8h_a24}{entropy\-Source\-Count()} - 1. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]A pointer to an entropy source or null, if the index was out of range. \end{Desc}
+\hypertarget{beecrypt_8h_a46}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionContextDigest@{hashFunctionContextDigest}}
+\index{hashFunctionContextDigest@{hashFunctionContextDigest}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionContextDigest]{\setlength{\rightskip}{0pt plus 5cm}int hash\-Function\-Context\-Digest (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)}}
+\label{beecrypt_8h_a46}
+
+
+\hypertarget{beecrypt_8h_a48}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionContextDigestMatch@{hashFunctionContextDigestMatch}}
+\index{hashFunctionContextDigestMatch@{hashFunctionContextDigestMatch}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionContextDigestMatch]{\setlength{\rightskip}{0pt plus 5cm}int hash\-Function\-Context\-Digest\-Match (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{beecrypt_8h_a48}
+
+
+\hypertarget{beecrypt_8h_a47}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionContextDigestMP@{hashFunctionContextDigestMP}}
+\index{hashFunctionContextDigestMP@{hashFunctionContextDigestMP}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionContextDigestMP]{\setlength{\rightskip}{0pt plus 5cm}int hash\-Function\-Context\-Digest\-MP (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{beecrypt_8h_a47}
+
+
+\hypertarget{beecrypt_8h_a41}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionContextFree@{hashFunctionContextFree}}
+\index{hashFunctionContextFree@{hashFunctionContextFree}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionContextFree]{\setlength{\rightskip}{0pt plus 5cm}int hash\-Function\-Context\-Free (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$)}}
+\label{beecrypt_8h_a41}
+
+
+\hypertarget{beecrypt_8h_a40}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionContextInit@{hashFunctionContextInit}}
+\index{hashFunctionContextInit@{hashFunctionContextInit}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionContextInit]{\setlength{\rightskip}{0pt plus 5cm}int hash\-Function\-Context\-Init (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$, const \hyperlink{structhashFunction}{hash\-Function} $\ast$)}}
+\label{beecrypt_8h_a40}
+
+
+\hypertarget{beecrypt_8h_a42}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionContextReset@{hashFunctionContextReset}}
+\index{hashFunctionContextReset@{hashFunctionContextReset}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionContextReset]{\setlength{\rightskip}{0pt plus 5cm}int hash\-Function\-Context\-Reset (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$)}}
+\label{beecrypt_8h_a42}
+
+
+\hypertarget{beecrypt_8h_a43}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionContextUpdate@{hashFunctionContextUpdate}}
+\index{hashFunctionContextUpdate@{hashFunctionContextUpdate}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionContextUpdate]{\setlength{\rightskip}{0pt plus 5cm}int hash\-Function\-Context\-Update (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)}}
+\label{beecrypt_8h_a43}
+
+
+\hypertarget{beecrypt_8h_a44}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionContextUpdateMC@{hashFunctionContextUpdateMC}}
+\index{hashFunctionContextUpdateMC@{hashFunctionContextUpdateMC}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionContextUpdateMC]{\setlength{\rightskip}{0pt plus 5cm}int hash\-Function\-Context\-Update\-MC (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$, const \hyperlink{structmemchunk}{memchunk} $\ast$)}}
+\label{beecrypt_8h_a44}
+
+
+\hypertarget{beecrypt_8h_a45}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionContextUpdateMP@{hashFunctionContextUpdateMP}}
+\index{hashFunctionContextUpdateMP@{hashFunctionContextUpdateMP}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionContextUpdateMP]{\setlength{\rightskip}{0pt plus 5cm}int hash\-Function\-Context\-Update\-MP (\hyperlink{structhashFunctionContext}{hash\-Function\-Context} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{beecrypt_8h_a45}
+
+
+\hypertarget{beecrypt_8h_a36}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionCount@{hashFunctionCount}}
+\index{hashFunctionCount@{hashFunctionCount}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionCount]{\setlength{\rightskip}{0pt plus 5cm}int hash\-Function\-Count (void)}}
+\label{beecrypt_8h_a36}
+
+
+\hypertarget{beecrypt_8h_a39}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionDefault@{hashFunctionDefault}}
+\index{hashFunctionDefault@{hashFunctionDefault}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionDefault]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structhashFunction}{hash\-Function}$\ast$ hash\-Function\-Default (void)}}
+\label{beecrypt_8h_a39}
+
+
+\hypertarget{beecrypt_8h_a38}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionFind@{hashFunctionFind}}
+\index{hashFunctionFind@{hashFunctionFind}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionFind]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structhashFunction}{hash\-Function}$\ast$ hash\-Function\-Find (const char $\ast$)}}
+\label{beecrypt_8h_a38}
+
+
+\hypertarget{beecrypt_8h_a37}{
+\index{beecrypt.h@{beecrypt.h}!hashFunctionGet@{hashFunctionGet}}
+\index{hashFunctionGet@{hashFunctionGet}!beecrypt.h@{beecrypt.h}}
+\subsubsection[hashFunctionGet]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structhashFunction}{hash\-Function}$\ast$ hash\-Function\-Get (int)}}
+\label{beecrypt_8h_a37}
+
+
+\hypertarget{beecrypt_8h_a60}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionContextDigest@{keyedHashFunctionContextDigest}}
+\index{keyedHashFunctionContextDigest@{keyedHashFunctionContextDigest}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionContextDigest]{\setlength{\rightskip}{0pt plus 5cm}int keyed\-Hash\-Function\-Context\-Digest (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)}}
+\label{beecrypt_8h_a60}
+
+
+\hypertarget{beecrypt_8h_a62}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionContextDigestMatch@{keyedHashFunctionContextDigestMatch}}
+\index{keyedHashFunctionContextDigestMatch@{keyedHashFunctionContextDigestMatch}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionContextDigestMatch]{\setlength{\rightskip}{0pt plus 5cm}int keyed\-Hash\-Function\-Context\-Digest\-Match (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{beecrypt_8h_a62}
+
+
+\hypertarget{beecrypt_8h_a61}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionContextDigestMP@{keyedHashFunctionContextDigestMP}}
+\index{keyedHashFunctionContextDigestMP@{keyedHashFunctionContextDigestMP}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionContextDigestMP]{\setlength{\rightskip}{0pt plus 5cm}int keyed\-Hash\-Function\-Context\-Digest\-MP (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{beecrypt_8h_a61}
+
+
+\hypertarget{beecrypt_8h_a54}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionContextFree@{keyedHashFunctionContextFree}}
+\index{keyedHashFunctionContextFree@{keyedHashFunctionContextFree}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionContextFree]{\setlength{\rightskip}{0pt plus 5cm}int keyed\-Hash\-Function\-Context\-Free (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$)}}
+\label{beecrypt_8h_a54}
+
+
+\hypertarget{beecrypt_8h_a53}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionContextInit@{keyedHashFunctionContextInit}}
+\index{keyedHashFunctionContextInit@{keyedHashFunctionContextInit}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionContextInit]{\setlength{\rightskip}{0pt plus 5cm}int keyed\-Hash\-Function\-Context\-Init (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, const \hyperlink{structkeyedHashFunction}{keyed\-Hash\-Function} $\ast$)}}
+\label{beecrypt_8h_a53}
+
+
+\hypertarget{beecrypt_8h_a56}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionContextReset@{keyedHashFunctionContextReset}}
+\index{keyedHashFunctionContextReset@{keyedHashFunctionContextReset}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionContextReset]{\setlength{\rightskip}{0pt plus 5cm}int keyed\-Hash\-Function\-Context\-Reset (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$)}}
+\label{beecrypt_8h_a56}
+
+
+\hypertarget{beecrypt_8h_a55}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionContextSetup@{keyedHashFunctionContextSetup}}
+\index{keyedHashFunctionContextSetup@{keyedHashFunctionContextSetup}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionContextSetup]{\setlength{\rightskip}{0pt plus 5cm}int keyed\-Hash\-Function\-Context\-Setup (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)}}
+\label{beecrypt_8h_a55}
+
+
+\hypertarget{beecrypt_8h_a57}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionContextUpdate@{keyedHashFunctionContextUpdate}}
+\index{keyedHashFunctionContextUpdate@{keyedHashFunctionContextUpdate}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionContextUpdate]{\setlength{\rightskip}{0pt plus 5cm}int keyed\-Hash\-Function\-Context\-Update (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)}}
+\label{beecrypt_8h_a57}
+
+
+\hypertarget{beecrypt_8h_a58}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionContextUpdateMC@{keyedHashFunctionContextUpdateMC}}
+\index{keyedHashFunctionContextUpdateMC@{keyedHashFunctionContextUpdateMC}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionContextUpdateMC]{\setlength{\rightskip}{0pt plus 5cm}int keyed\-Hash\-Function\-Context\-Update\-MC (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, const \hyperlink{structmemchunk}{memchunk} $\ast$)}}
+\label{beecrypt_8h_a58}
+
+
+\hypertarget{beecrypt_8h_a59}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionContextUpdateMP@{keyedHashFunctionContextUpdateMP}}
+\index{keyedHashFunctionContextUpdateMP@{keyedHashFunctionContextUpdateMP}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionContextUpdateMP]{\setlength{\rightskip}{0pt plus 5cm}int keyed\-Hash\-Function\-Context\-Update\-MP (\hyperlink{structkeyedHashFunctionContext}{keyed\-Hash\-Function\-Context} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{beecrypt_8h_a59}
+
+
+\hypertarget{beecrypt_8h_a49}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionCount@{keyedHashFunctionCount}}
+\index{keyedHashFunctionCount@{keyedHashFunctionCount}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionCount]{\setlength{\rightskip}{0pt plus 5cm}int keyed\-Hash\-Function\-Count (void)}}
+\label{beecrypt_8h_a49}
+
+
+\hypertarget{beecrypt_8h_a52}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionDefault@{keyedHashFunctionDefault}}
+\index{keyedHashFunctionDefault@{keyedHashFunctionDefault}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionDefault]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structkeyedHashFunction}{keyed\-Hash\-Function}$\ast$ keyed\-Hash\-Function\-Default (void)}}
+\label{beecrypt_8h_a52}
+
+
+\hypertarget{beecrypt_8h_a51}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionFind@{keyedHashFunctionFind}}
+\index{keyedHashFunctionFind@{keyedHashFunctionFind}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionFind]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structkeyedHashFunction}{keyed\-Hash\-Function}$\ast$ keyed\-Hash\-Function\-Find (const char $\ast$)}}
+\label{beecrypt_8h_a51}
+
+
+\hypertarget{beecrypt_8h_a50}{
+\index{beecrypt.h@{beecrypt.h}!keyedHashFunctionGet@{keyedHashFunctionGet}}
+\index{keyedHashFunctionGet@{keyedHashFunctionGet}!beecrypt.h@{beecrypt.h}}
+\subsubsection[keyedHashFunctionGet]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structkeyedHashFunction}{keyed\-Hash\-Function}$\ast$ keyed\-Hash\-Function\-Get (int)}}
+\label{beecrypt_8h_a50}
+
+
+\hypertarget{beecrypt_8h_a34}{
+\index{beecrypt.h@{beecrypt.h}!randomGeneratorContextFree@{randomGeneratorContextFree}}
+\index{randomGeneratorContextFree@{randomGeneratorContextFree}!beecrypt.h@{beecrypt.h}}
+\subsubsection[randomGeneratorContextFree]{\setlength{\rightskip}{0pt plus 5cm}int random\-Generator\-Context\-Free (\hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$)}}
+\label{beecrypt_8h_a34}
+
+
+\hypertarget{beecrypt_8h_a33}{
+\index{beecrypt.h@{beecrypt.h}!randomGeneratorContextInit@{randomGeneratorContextInit}}
+\index{randomGeneratorContextInit@{randomGeneratorContextInit}!beecrypt.h@{beecrypt.h}}
+\subsubsection[randomGeneratorContextInit]{\setlength{\rightskip}{0pt plus 5cm}int random\-Generator\-Context\-Init (\hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, const \hyperlink{structrandomGenerator}{random\-Generator} $\ast$)}}
+\label{beecrypt_8h_a33}
+
+
+\hypertarget{beecrypt_8h_a35}{
+\index{beecrypt.h@{beecrypt.h}!randomGeneratorContextNext@{randomGeneratorContextNext}}
+\index{randomGeneratorContextNext@{randomGeneratorContextNext}!beecrypt.h@{beecrypt.h}}
+\subsubsection[randomGeneratorContextNext]{\setlength{\rightskip}{0pt plus 5cm}int random\-Generator\-Context\-Next (\hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)}}
+\label{beecrypt_8h_a35}
+
+
+\hypertarget{beecrypt_8h_a29}{
+\index{beecrypt.h@{beecrypt.h}!randomGeneratorCount@{randomGeneratorCount}}
+\index{randomGeneratorCount@{randomGeneratorCount}!beecrypt.h@{beecrypt.h}}
+\subsubsection[randomGeneratorCount]{\setlength{\rightskip}{0pt plus 5cm}int random\-Generator\-Count (void)}}
+\label{beecrypt_8h_a29}
+
+
+\hypertarget{beecrypt_8h_a32}{
+\index{beecrypt.h@{beecrypt.h}!randomGeneratorDefault@{randomGeneratorDefault}}
+\index{randomGeneratorDefault@{randomGeneratorDefault}!beecrypt.h@{beecrypt.h}}
+\subsubsection[randomGeneratorDefault]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structrandomGenerator}{random\-Generator}$\ast$ random\-Generator\-Default (void)}}
+\label{beecrypt_8h_a32}
+
+
+\hypertarget{beecrypt_8h_a31}{
+\index{beecrypt.h@{beecrypt.h}!randomGeneratorFind@{randomGeneratorFind}}
+\index{randomGeneratorFind@{randomGeneratorFind}!beecrypt.h@{beecrypt.h}}
+\subsubsection[randomGeneratorFind]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structrandomGenerator}{random\-Generator}$\ast$ random\-Generator\-Find (const char $\ast$)}}
+\label{beecrypt_8h_a31}
+
+
+\hypertarget{beecrypt_8h_a30}{
+\index{beecrypt.h@{beecrypt.h}!randomGeneratorGet@{randomGeneratorGet}}
+\index{randomGeneratorGet@{randomGeneratorGet}!beecrypt.h@{beecrypt.h}}
+\subsubsection[randomGeneratorGet]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structrandomGenerator}{random\-Generator}$\ast$ random\-Generator\-Get (int)}}
+\label{beecrypt_8h_a30}
+
+

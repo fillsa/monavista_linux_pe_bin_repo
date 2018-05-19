@@ -1,0 +1,275 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 17</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_16.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_18.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX1647"></a>
+<a name="IX1648"></a>
+<h1>
+<a name="CHAP17" href="spec_toc.html#TOC167">
+17. The dnslookup router
+</a></h1>
+<p>
+The <b>dnslookup</b> router looks up the hosts that handle mail for the given
+domain in the DNS. A transport must always be set for this router, unless
+<tt>verify&#095;only</tt> is set.
+</p>
+<p>
+<font color=green>
+If SRV support is configured (see <tt>check&#095;srv</tt> below), Exim first searches for 
+SRV records. If none are found, or if SRV support is not configured,
+MX records are looked up. If no MX records exist, address records are sought.
+However, <tt>mx&#095;domains</tt> can be set to disable the direct use of address records.
+</p>
+<p>
+MX records of equal priority are sorted by Exim into a random order. Exim then
+looks for address records for the host names obtained from MX or SRV records.
+When a host has more than one IP address, they are sorted into a random order,
+except that IPv6 addresses are always sorted before IPv4 addresses. If all the
+IP addresses found are discarded by a setting of the <tt>ignore&#095;target&#095;hosts</tt>
+generic option, the router declines.
+</p>
+<p>
+Unless they have the highest priority (lowest MX value), MX records that point
+to the local host, or to any host name that matches <tt>hosts_treat_as_local</tt>,
+are discarded, together with any other MX records of equal or lower priority.
+</font>
+<a name="IX1649"></a>
+<a name="IX1650"></a>
+<a name="IX1651"></a>
+</p>
+<p>
+If the host pointed to by the highest priority MX record, or looked up as an
+address record, is the local host, or matches <tt>hosts_treat_as_local</tt>, what
+happens is controlled by the generic <tt>self</tt> option.
+</p>
+<p>
+There are a number of private options that can be used to vary the way the DNS
+lookup is handled.
+<a name="IX1652"></a>
+<hr></p>
+<a name="IX1653"></a>
+<a name="IX1654"></a>
+<h3>check_secondary_mx</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set, the router declines unless the local host is found in
+(and removed from) the list of hosts obtained by MX lookup. This can be used to
+process domains for which the local host is a secondary mail exchanger
+differently to other domains. The way in which Exim decides whether a host is
+the local host is described in section <a href="spec_13.html#SECT13.6">13.6</a>.
+<font color=green><hr></p>
+<a name="IX1655"></a>
+<a name="IX1656"></a>
+<h3>check_srv</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The dnslookup router supports the use of SRV records (see RFC 2782) in
+addition to MX and address records. The support is disabled by default. To
+enable SRV support, set the <tt>check&#095;srv</tt> option to the name of the service
+required. For example,
+<pre>
+&nbsp;&nbsp;check_srv = smtp
+</pre>
+</p>
+<p>
+looks for SRV records that refer to the normal smtp service. The option is
+expanded, so the service name can vary from message to message or address
+to address. This might be helpful if SRV records are being used for a
+submission service. If the expansion is forced to fail, the <tt>check&#095;srv</tt>
+option is ignored, and the router proceeds to look for MX records in the
+normal way.
+</p>
+<p>
+When the expansion succeeds, the router searches first for SRV records for
+the given service (it assumes TCP protocol). A single SRV record with the
+host name <tt>.</tt> indicates &#147;no such service for this domain&#148;; if this is
+encountered, the router declines. If other kinds of SRV record are found,
+they are used to construct a host list for delivery according to the rules
+of RFC 2782. MX records are not sought in this case.
+</p>
+<p>
+However, when no SRV records are found, MX records (and address records)
+are sought in the traditional way. In other words, SRV records take
+precedence over MX records, just as MX records take precedence over address
+records. Note that this behaviour is not sanctioned by RFC 2782, though a
+previous draft RFC defined it. It is apparently believed that MX records
+are sufficient for email and that SRV records should not be used for this
+purpose. However, SRV records have an additional &#147;weight&#148; feature which
+some people might find useful when trying to split an SMTP load between
+hosts of different power.
+</font>
+<hr></p>
+<a name="IX1657"></a>
+<a name="IX1658"></a>
+<a name="IX1659"></a>
+<h3>mx_domains</h3>
+<i>Type:</i>&nbsp; domain list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+<font color=green>
+A domain that matches <tt>mx&#095;domains</tt> is required to have either an MX or an SRV
+record in order to be recognised. (The name of this option could be improved.)
+</font>
+For example, if all the mail hosts in <i>fict.example</i> are known to have MX
+records, except for those in <i>discworld.fict.example</i>, you could use this
+setting:
+<pre>
+&nbsp;&nbsp;mx_domains = ! *.discworld.fict.example : *.fict.example
+</pre>
+</p>
+<p>
+This specifies that messages addressed to a domain that matches the list but
+has no MX record should be bounced immediately instead of being routed using
+the address record.
+<hr></p>
+<a name="IX1660"></a>
+<a name="IX1661"></a>
+<a name="IX1662"></a>
+<h3>qualify_single</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+When this option is true, the resolver option <font size=-1>RES&#095;DEFNAMES</font> is set for DNS
+lookups. Typically, but not standardly, this causes the resolver to qualify
+single-component names with the default domain. For example, on a machine
+called <i>dictionary.ref.example</i>, the domain <i>thesaurus</i> would be changed to
+<i>thesaurus.ref.example</i> inside the resolver. For details of what your resolver
+actually does, consult your man pages for <i>resolver</i> and <i>resolv.conf</i>.
+<hr></p>
+<a name="IX1663"></a>
+<a name="IX1664"></a>
+<a name="IX1665"></a>
+<h3>rewrite_headers</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+If the domain name in the address that is being processed is not fully
+qualified, it may be expanded to its full form by a DNS lookup. For example, if
+an address is specified as <i>dormouse&#064;teaparty</i>, the domain might be
+expanded to <i>teaparty.wonderland.fict.example</i>. Domain expansion can also
+occur as a result of setting the <tt>widen&#095;domains</tt> option. If <tt>rewrite&#095;headers</tt>
+is true, all occurrences of the abbreviated domain name in any <i>Bcc:</i>, <i>Cc:</i>,
+<i>From:</i>, <i>Reply-to:</i>, <i>Sender:</i>, and <i>To:</i> header lines of the message are
+rewritten with the full domain name.
+</p>
+<p>
+This option should be turned off only when it is known that no message is
+ever going to be sent outside an environment where the abbreviation makes
+sense.
+</p>
+<p>
+When an MX record is looked up in the DNS and matches a wildcard record, name
+servers normally return a record containing the name that has been looked up,
+making it impossible to detect whether a wildcard was present or not. However,
+some name servers have recently been seen to return the wildcard entry. If the
+name returned by a DNS lookup begins with an asterisk, it is not used for
+header rewriting.
+<hr></p>
+<a name="IX1666"></a>
+<a name="IX1667"></a>
+<h3>same_domain_copy_routing</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+Addresses with the same domain are normally routed by the <b>dnslookup</b> router
+to the same list of hosts. However, this cannot be presumed, because the router
+options and preconditions may refer to the local part of the address. By
+default, therefore, Exim routes each address in a message independently. DNS
+servers run caches, so repeated DNS lookups are not normally expensive, and in
+any case, personal messages rarely have more than a few recipients.
+</p>
+<p>
+If you are running mailing lists with large numbers of subscribers at the same
+domain, and you are using a <b>dnslookup</b> router which is independent of the
+local part, you can set <tt>same_domain_copy&#095;routing</tt> to bypass repeated DNS
+lookups for identical domains in one message. In this case, when <b>dnslookup</b>
+routes an address to a remote transport, any other unrouted addresses in the
+message that have the same domain are automatically given the same routing
+without processing them independently,
+provided the following conditions are met:
+</p>
+<ul>
+<li><p>
+No router that processed the address specified <tt>headers&#095;add</tt> or 
+<tt>headers&#095;remove</tt>.
+</p>
+</li>
+<li><p>
+The router did not change the address in any way, for example, by &#147;widening&#148; 
+the domain.
+</p>
+</li>
+</ul>
+<hr><a name="IX1668"></a>
+<a name="IX1669"></a>
+<h3>search_parents</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+When this option is true, the resolver option <font size=-1>RES&#095;DNSRCH</font> is set for DNS
+lookups. This is different from the <tt>qualify&#095;single</tt> option in that it applies
+to domains containing dots. Typically, but not standardly, it causes the
+resolver to search for the name in the current domain and in parent domains.
+For example, on a machine in the <i>fict.example</i> domain, if looking up
+<i>teaparty.wonderland</i> failed, the resolver would try
+<i>teaparty.wonderland.fict.example</i>. For details of what your resolver
+actually does, consult your man pages for <i>resolver</i> and <i>resolv.conf</i>.
+</p>
+<p>
+Setting this option true can cause problems in domains that have a wildcard MX
+record, because any domain that does not have its own MX record matches the
+local wildcard.
+<hr></p>
+<a name="IX1670"></a>
+<a name="IX1671"></a>
+<h3>widen_domains</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If a DNS lookup fails and this option is set, each of its strings in turn is
+added onto the end of the domain, and the lookup is tried again. For example,
+if
+<pre>
+&nbsp;&nbsp;widen_domains = fict.example:ref.example
+</pre>
+</p>
+<p>
+is set and a lookup of <i>klingon.dictionary</i> fails,
+<i>klingon.dictionary.fict.example</i> is looked up, and if this fails,
+<i>klingon.dictionary.ref.example</i> is tried. Note that the <tt>qualify&#095;single</tt>
+and <tt>search&#095;parents</tt> options can cause some widening to be undertaken inside
+the DNS resolver.
+<hr><br>
+<font color=green></p>
+<h2>
+<a name="SECT17.1" href="spec_toc.html#TOC168">
+17.1. Effect of qualify&#095;single and search&#095;parents
+</a></h2>
+<p>
+When a domain from an envelope recipient is changed by the resolver as a result 
+of the <tt>qualify&#095;single</tt> or <tt>search&#095;parents</tt> options, Exim rewrites the
+corresponding address in the message's header lines unless <tt>rewrite&#095;headers</tt>
+is set false. Exim then re-routes the address, using the full domain.
+</p>
+<p>
+These two options affect only the DNS lookup that takes place inside the router
+for the domain of the address that is being routed. They do not affect lookups
+such as that implied by
+<pre>
+&nbsp;&nbsp;domains = @mx_any
+</pre>
+</p>
+<p>
+that may happen while processing a router precondition before the router is
+entered. No widening ever takes place for these lookups.
+</font>
+<hr>
+</p>
+<font size=2>
+<a href="spec_16.html">Previous</a>&nbsp;&nbsp;<a href="spec_18.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

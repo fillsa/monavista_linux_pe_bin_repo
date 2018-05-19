@@ -1,0 +1,2005 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 5</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_4.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_6.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX197"></a>
+<a name="IX198"></a>
+<h1>
+<a name="CHAP5" href="spec_toc.html#TOC51">
+5. The Exim command line
+</a></h1>
+<p>
+Exim's command line takes the standard Unix form of a sequence of options,
+each starting with a hyphen character, followed by a number of arguments. The
+options are compatible with the main options of Sendmail, and there are also
+some additional options, some of which are compatible with Smail 3. Certain
+combinations of options do not make sense, and provoke an error if used.
+The form of the arguments depends on which options are set.
+</p>
+<a name="IX199"></a>
+<h2>
+<a name="SECT5.1" href="spec_toc.html#TOC52">
+5.1. Setting options by program name
+</a></h2>
+<p>
+If Exim is called under the name <i>mailq</i>, it behaves as if the option <i>-bp</i>
+were present before any other options. 
+The <i>-bp</i> option requests a listing of the contents of the mail queue on the 
+standard output.
+This feature is for compatibility with some systems that contain a command of
+that name in one of the standard libraries, symbolically linked to
+<i>/usr/sbin/sendmail</i> or <i>/usr/lib/sendmail</i>.
+<a name="IX200"></a>
+</p>
+<p>
+If Exim is called under the name <i>rsmtp</i> it behaves as if the option <i>-bS</i>
+were present before any other options, for compatibility with Smail. The <i>-bS</i>
+option is used for reading in a number of messages in batched SMTP format.
+<a name="IX201"></a>
+</p>
+<p>
+If Exim is called under the name <i>rmail</i> it behaves as if the <i>-i</i> and
+<i>-oee</i> options were present before any other options, for compatibility with
+Smail. The name <i>rmail</i> is used as an interface by some UUCP systems.
+<a name="IX202"></a>
+<a name="IX203"></a>
+</p>
+<p>
+If Exim is called under the name <i>runq</i> it behaves as if the option <i>-q</i> were
+present before any other options, for compatibility with Smail. The <i>-q</i>
+option causes a single queue runner process to be started.
+<a name="IX204"></a>
+<a name="IX205"></a>
+<a name="IX206"></a>
+</p>
+<p>
+If Exim is called under the name <i>newaliases</i> it behaves as if the option
+<i>-bi</i> were present before any other options, for compatibility with Sendmail.
+This option is used for rebuilding Sendmail's alias file. Exim does not have
+the concept of a single alias file, but can be configured to run a given
+command if called with the <i>-bi</i> option.
+</p>
+<h2>
+<a name="SECT5.2" href="spec_toc.html#TOC53">
+5.2. Trusted and admin users
+</a></h2>
+<p>
+Some Exim options are available only to <i>trusted users</i> and others are
+available only to <i>admin users</i>. In the description below, the phrases &#147;Exim
+user&#148; and &#147;Exim group&#148; mean the user and group defined by <font size=-1>EXIM&#095;USER</font> and
+<font size=-1>EXIM&#095;GROUP</font> in <i>Local/Makefile</i> or set by the <tt>exim&#095;user</tt> and
+<tt>exim&#095;group</tt> options. These do not necessarily have to use the name &#147;exim&#148;.
+</p>
+<ul>
+<li><a name="IX207"></a>
+<a name="IX208"></a>
+<p>
+The trusted users are root, the Exim user, any user listed in the
+<tt>trusted&#095;users</tt> configuration option, and any user whose current group or any
+supplementary group is one of those listed in the <tt>trusted&#095;groups</tt>
+configuration option. Note that the Exim group is not automatically trusted.
+<a name="IX209"></a>
+<a name="IX210"></a>
+</p>
+<p>
+<a name="IX211"></a>
+<a name="IX212"></a>
+Trusted users are always permitted to use the <i>-f</i> option or a leading &#147;From &#148;
+line to specify the envelope sender of a message that is passed to Exim through
+the local interface (see the <i>-bm</i> and <i>-f</i> options below). See the
+<tt>untrusted&#095;set&#095;sender</tt> option for a way of permitting non-trusted users to
+set envelope senders.
+For a trusted user, there is never any check on the contents of the <i>From:</i>
+header line, and a <i>Sender:</i> line is never added. Furthermore, any existing
+<i>Sender:</i> line in incoming local (non-TCP/IP) messages is not removed.
+</p>
+<p>
+Trusted users may also specify a host name, host address, interface address,
+protocol name, ident value, and authentication data when submitting a message
+locally. Thus, they are able to insert messages into Exim's queue locally that
+have the characteristics of messages received from a remote host. Untrusted
+users may in some circumstances use <i>-f</i>, but can never set the other values
+that are available to trusted users.
+</p>
+</li>
+<li><a name="IX213"></a>
+<a name="IX214"></a>
+<p>
+The admin users are root, the Exim user, and any user that is a member of the
+Exim group or of any group listed in the <tt>admin&#095;groups</tt> configuration option.
+The current group does not have to be one of these groups.
+</p>
+<p>
+Admin users are permitted to list the queue, and to carry out certain
+operations on messages, for example, to force delivery failures. It is also
+necessary to be an admin user in order to see the full information provided by
+the Exim monitor, and full debugging output.
+</p>
+<p>
+By default, the use of the <i>-M</i>, <i>-q</i>, <i>-R</i>, and <i>-S</i> options to cause Exim
+to attempt delivery of messages on its queue is restricted to admin users.
+However, this restriction can be relaxed by setting the <tt>prod&#095;requires&#095;admin</tt>
+option false (that is, specifying <tt>no&#095;prod&#095;requires&#095;admin</tt>).
+</p>
+<p>
+Similarly, the use of the <i>-bp</i> option to list all the messages in the queue
+is restricted to admin users unless <tt>queue&#095;list&#095;requires&#095;admin</tt> is set
+false.
+</p>
+</li>
+</ul>
+<p>
+<b>Warning</b>: If you configure your system so that admin users are able to 
+edit Exim's configuration file, you are giving those users an easy way of 
+getting root. There is further discussion of this issue at the start of chapter 
+<a href="spec_6.html">6</a>.
+</p>
+<h2>
+<a name="SECT5.3" href="spec_toc.html#TOC54">
+5.3. Command line options
+</a></h2>
+<p>
+The command options are described in alphabetical order below.
+<hr></p>
+<a name="IX215"></a>
+<a name="IX216"></a>
+<h3>-&#045;</h3>
+<p>
+This is a pseudo-option whose only purpose is to terminate the options and
+therefore to cause subsequent command line items to be treated as arguments
+rather than options, even if they begin with hyphens.
+<hr></p>
+<a name="IX217"></a>
+<h3>--help</h3>
+<p>
+This option causes Exim to output a few sentences stating what it is.
+The same output is generated if the Exim binary is called with no options and 
+no arguments.
+<hr></p>
+<a name="IX218"></a>
+<a name="IX219"></a>
+<a name="IX220"></a>
+<h3>-B &#060;<em>type</em>&#062;</h3>
+<p>
+This is a Sendmail option for selecting 7 or 8 bit processing. Exim is 8-bit
+clean; it ignores this option.
+<hr></p>
+<a name="IX221"></a>
+<a name="IX222"></a>
+<a name="IX223"></a>
+<a name="IX224"></a>
+<h3>-bd</h3>
+<p>
+This option runs Exim as a daemon, awaiting incoming SMTP connections. Usually
+the <i>-bd</i> option is combined with the <i>-q</i>&#060;<em>time</em>&#062; option, to specify that
+the daemon should also initiate periodic queue runs.
+</p>
+<p>
+The <i>-bd</i> option can be used only by an admin user. If either of the <i>-d</i>
+(debugging) or <i>-v</i> (verifying) options are set, the daemon does not
+disconnect from the controlling terminal. When running this way, it can be
+stopped by pressing ctrl-C.
+</p>
+<p>
+By default, Exim listens for incoming connections to the standard SMTP port on
+all the host's running interfaces. However, it is possible to listen on other
+ports, on multiple ports, and only on specific interfaces. Chapter
+<a href="spec_13.html">13</a> contains a description of the options that control this.
+<a name="IX225"></a>
+<a name="IX226"></a>
+</p>
+<p>
+When a listening daemon is started without the use of <i>-oX</i> (that is, without
+overriding the normal configuration), it writes its process id to a file called
+<i>exim-daemon.pid</i> in Exim's spool directory. This location can be overridden
+by setting <font size=-1>PID&#095;FILE&#095;PATH</font> in <i>Local/Makefile</i>. The file is written while
+Exim is still running as root.
+</p>
+<p>
+When <i>-oX</i> is used on the command line to start a listening daemon, the
+process id is not written to the normal pid file path. However, <i>-oP</i> can be
+used to specify a path on the command line if a pid file is required.
+<a name="IX227"></a>
+</p>
+<p>
+The <font size=-1>SIGHUP</font> signal can be used to cause the daemon to re-exec itself. This
+should be done whenever Exim's configuration file, or any file that is
+incorporated into it by means of the <tt>.include</tt> facility, is changed, and also 
+whenever a new version of Exim is installed. It is not necessary to do this
+when other files that are referenced from the configuration (for example, alias
+files) are changed, because these are reread each time they are used.
+<hr></p>
+<a name="IX228"></a>
+<h3>-bdf</h3>
+<p>
+This option has the same effect as <i>-bd</i> except that it never disconnects from
+the controlling terminal, even when no debugging is specified.
+<hr></p>
+<a name="IX229"></a>
+<a name="IX230"></a>
+<a name="IX231"></a>
+<h3>-be</h3>
+<p>
+Run Exim in expansion testing mode. Exim discards its root privilege, to
+prevent ordinary users from using this mode to read otherwise inaccessible
+files. If no arguments are given, Exim runs interactively, prompting for lines
+of data. Long expressions can be split over several lines by using backslash
+continuations. 
+As in Exim's run time configuration, whitespace at the start of continuation
+lines is ignored.
+</p>
+<p>
+Each argument or data line is passed through the string expansion mechanism,
+and the result is output. Variable values from the configuration file (for
+example, <tt>$qualify&#095;domain</tt>) are available, but no message-specific values
+(such as <tt>$domain</tt>) are set, because no message is being processed.
+<hr></p>
+<a name="IX232"></a>
+<a name="IX233"></a>
+<a name="IX234"></a>
+<h3>-bF &nbsp;&#060;<em>filename</em>&#062;</h3>
+<p>
+This option is the same as <i>-bf</i> except that it assumes that the filter being
+tested is a system filter. The additional commands that are available only in
+system filters are recognized.
+<hr></p>
+<a name="IX235"></a>
+<a name="IX236"></a>
+<a name="IX237"></a>
+<a name="IX238"></a>
+<a name="IX239"></a>
+<a name="IX240"></a>
+<h3>-bf &nbsp;&#060;<em>filename</em>&#062;</h3>
+<p>
+This option runs Exim in filter testing mode; the file is the filter file to be
+tested, and a test message must be supplied on the standard input. If there are
+no message-dependent tests in the filter, an empty file can be supplied. If a
+system filter file is being tested, <i>-bF</i> should be used instead of <i>-bf</i>. If
+the test file does not begin with 
+one of the special lines
+<pre>
+&nbsp;&nbsp;# Exim filter
+&nbsp;&nbsp;# Sieve filter
+</pre>
+</p>
+<p>
+it is taken to be a normal <i>.forward</i> file, and is tested for validity under
+that interpretation. See sections <a href="spec_22.html#SECT22.4">22.4</a> to <a href="spec_22.html#SECT22.6">22.6</a> for a 
+description of the possible contents of non-filter redirection lists.
+</p>
+<p>
+The result of an Exim command that uses <i>-bf</i>, provided no errors are
+detected, is a list of the actions that Exim would try to take if presented
+with the message for real. More details of filter testing are given in the
+separate document entitled <i>Exim's interfaces to mail filtering</i>.
+<a name="IX241"></a>
+<a name="IX242"></a>
+<a name="IX243"></a>
+</p>
+<p>
+When testing a filter file, the envelope sender can be set by the <i>-f</i> option,
+or by a &#147;From &#148; line at the start of the test message. Various parameters that
+would normally be taken from the envelope recipient address of the message can
+be set by means of additional command line options. These are:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<i>-bfd</i>&nbsp;&nbsp;</td><td>&#060;<em>domain</em>&#062;&nbsp;&nbsp;</td><td>default is the qualify domain</td></tr>
+<tr><td>&nbsp;&nbsp;<i>-bfl</i>&nbsp;&nbsp;</td><td>&#060;<em>local&#095;part</em>&#062;&nbsp;&nbsp;</td><td>default is the logged in user</td></tr>
+<tr><td>&nbsp;&nbsp;<i>-bfp</i>&nbsp;&nbsp;</td><td>&#060;<em>local&#095;part&#095;prefix</em>&#062;&nbsp;&nbsp;</td><td>default is null</td></tr>
+<tr><td>&nbsp;&nbsp;<i>-bfs</i>&nbsp;&nbsp;</td><td>&#060;<em>local&#095;part&#095;suffix</em>&#062;&nbsp;&nbsp;</td><td>default is null</td></tr>
+</table>
+</p>
+<p>
+The local part should always be set to the incoming address with any prefix or
+suffix stripped, because that is how it appears to the filter when a message is
+actually being delivered.
+<hr></p>
+<a name="IX244"></a>
+<a name="IX245"></a>
+<a name="IX246"></a>
+<a name="IX247"></a>
+<a name="IX248"></a>
+<a name="IX249"></a>
+<a name="IX250"></a>
+<h3>-bh &nbsp;&#060;<em>IP address</em>&#062;</h3>
+<p>
+This option runs a fake SMTP session as if from the given IP address, using the
+standard input and output. The IP address may include a port number at the end,
+after a full stop. For example:
+<pre>
+&nbsp;&nbsp;exim -bh 10.9.8.7.1234
+&nbsp;&nbsp;exim -bh fe80::a00:20ff:fe86:a061.5678
+</pre>
+</p>
+<p>
+Comments as to what is going on are written to the standard error file. These
+include lines beginning with &#147;LOG&#148; for anything that would have been logged.
+This facility is provided for testing configuration options for incoming 
+messages, to make sure they implement the required policy. For example, you can 
+test your relay controls using <i>-bh</i>.
+<a name="IX251"></a>
+</p>
+<p>
+<b>Warning 1</b>: You cannot test features of the configuration that rely on
+ident (RFC 1413) callouts. These cannot be done when testing using
+<i>-bh</i> because there is no incoming SMTP connection.
+</p>
+<p>
+<b>Warning 2</b>: Address verification callouts (see section <a href="spec_38.html#SECT38.21">38.21</a>) are
+also skipped when testing using <i>-bh</i>. If you want these callouts to occur, 
+use <i>-bhc</i> instead.
+</p>
+<p>
+Messages supplied during the testing session are discarded, and nothing is
+written to any of the real log files. There may be pauses when DNS (and other)
+lookups are taking place, and of course these may time out. The <i>-oMi</i> option
+can be used to specify a specific IP interface and port if this is important.
+</p>
+<p>
+The <i>exim&#095;checkaccess</i> utility is a &#147;packaged&#148; version of <i>-bh</i> whose
+output just states whether a given recipient address from a given host is
+acceptable or not. See section <a href="spec_46.html#SECT46.8">46.8</a>.
+<hr></p>
+<a name="IX252"></a>
+<h3>-bhc &nbsp;&#060;<em>IP address</em>&#062;</h3>
+<p>
+This option operates in the same way as <i>-bh</i>, except that address 
+verification callouts are performed if required. This includes consulting and 
+updating the callout cache database. 
+<hr></p>
+<a name="IX253"></a>
+<a name="IX254"></a>
+<a name="IX255"></a>
+<a name="IX256"></a>
+<h3>-bi</h3>
+<p>
+Sendmail interprets the <i>-bi</i> option as a request to rebuild its alias file.
+Exim does not have the concept of a single alias file, and so it cannot mimic
+this behaviour. However, calls to <i>/usr/lib/sendmail</i> with the <i>-bi</i> option
+tend to appear in various scripts such as NIS make files, so the option must be
+recognized.
+</p>
+<p>
+If <i>-bi</i> is encountered, the command specified by the <tt>bi&#095;command</tt>
+configuration option is run, under the uid and gid of the caller of Exim. If
+the <i>-oA</i> option is used, its value is passed to the command as an argument.
+The command set by <tt>bi&#095;command</tt> may not contain arguments. The command can use
+the <i>exim&#095;dbmbuild</i> utility, or some other means, to rebuild alias files if
+this is required. If the <tt>bi&#095;command</tt> option is not set, calling Exim with
+<i>-bi</i> is a no-op.
+<hr></p>
+<a name="IX257"></a>
+<a name="IX258"></a>
+<h3>-bm</h3>
+<p>
+This option runs an Exim receiving process that accepts an incoming,
+locally-generated message on the current input. The recipients are given as the
+command arguments (except when <i>-t</i> is also present &#150; see below). Each
+argument can be a comma-separated list of RFC 2822 addresses. This is the
+default option for selecting the overall action of an Exim call; it is assumed
+if no other conflicting option is present.
+</p>
+<p>
+If any addresses in the message are unqualified (have no domain), they are
+qualified by the values of the <tt>qualify&#095;domain</tt> or <tt>qualify&#095;recipient</tt>
+options, as appropriate. The <i>-bnq</i> option (see below) provides a way of
+suppressing this for special cases.
+</p>
+<p>
+<a name="IX259"></a>
+Policy checks on the contents of local messages can be enforced by means of the 
+non-SMTP ACL. See chapter <a href="spec_38.html">38</a> for details.
+The return code is zero if the message is successfully accepted. Otherwise, the
+action is controlled by the <i>-oe<em>x</em></i> option setting &#150; see below.
+<a name="IX260"></a>
+<a name="IX261"></a>
+<a name="IX262"></a>
+<a name="IX263"></a>
+<a name="IX264"></a>
+</p>
+<p>
+The format of the message must be as defined in RFC 2822, except that, for
+compatibility with Sendmail and Smail, a line in one of the forms
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>From sender Fri Jan  5 12:55 GMT 1997</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>From sender Fri, 5 Jan 97 12:55:01</tt><br>
+</p>
+<p>
+<a name="IX265"></a>
+(with the weekday optional, and possibly with additional text after the date)
+is permitted to appear at the start of the message. There appears to be no
+authoritative specification of the format of this line. Exim recognizes it by
+matching against the regular expression defined by the <tt>uucp&#095;from&#095;pattern</tt>
+option, which can be changed if necessary. 
+The specified sender is treated as if it were given as the argument to the
+<i>-f</i> option, but if a <i>-f</i> option is also present, its argument is used in
+preference to the address taken from the message. The caller of Exim must be a
+trusted user for the sender of a message to be set in this way.
+<hr></p>
+<a name="IX266"></a>
+<a name="IX267"></a>
+<h3>-bnq</h3>
+<p>
+By default, Exim automatically qualifies unqualified addresses (those
+without domains) that appear in messages that are submitted locally (that
+is, not over TCP/IP). This qualification applies both to addresses in
+envelopes, and addresses in header lines. Sender addresses are qualified using 
+<tt>qualify&#095;domain</tt>, and recipient addresses using <tt>qualify&#095;recipient</tt> (which 
+defaults to the value of <tt>qualify&#095;domain</tt>).
+</p>
+<p>
+Sometimes, qualification is not wanted. For example, if <i>-bS</i> (batch SMTP) is
+being used to re-submit messages that originally came from remote hosts after
+content scanning, you probably do not want to qualify unqualified addresses in
+header lines. (Such lines will be present only if you have not enabled a header
+syntax check in the appropriate ACL.)
+</p>
+<p>
+The <i>-bnq</i> option suppresses all qualification of unqualified addresses in
+messages that originate on the local host. When this is used, unqualified
+addresses in the envelope provoke errors (causing message rejection) and
+unqualified addresses in header lines are left alone.
+<hr></p>
+<a name="IX268"></a>
+<a name="IX269"></a>
+<a name="IX270"></a>
+<h3>-bP</h3>
+<p>
+If this option is given with no arguments, it causes the values of all Exim's
+main configuration options to be written to the standard output. The values
+of one or more specific options can be requested by giving their names as
+arguments, for example:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>exim -bP qualify&#095;domain hold&#095;domains</tt><br>
+</p>
+<p>
+However, any option setting that is preceded by the word &#147;hide&#148; in the
+configuration file is not shown in full, except to an admin user. For other
+users, the output is as in this example:
+<pre>
+&nbsp;&nbsp;mysql_servers = &#060;value not displayable&#062;
+</pre>
+</p>
+<p>
+If <tt>configure&#095;file</tt> is given as an argument, the name of the run time
+configuration file is output.
+If a list of configuration files was supplied, the value that is output here 
+is the name of the file that was actually used.
+<a name="IX271"></a>
+<a name="IX272"></a>
+</p>
+<p>
+If <tt>log_file_path</tt> or <tt>pid&#095;file&#095;path</tt> are given, the names of the
+directories where log files and daemon pid files are written are output,
+respectively. If these values are unset, log files are written in a
+sub-directory of the spool directory called <tt>log</tt>, and the pid file is written
+directly into the spool directory.
+</p>
+<p>
+If <i>-bP</i> is followed by a name preceded by <tt>+</tt>, for example,
+<pre>
+&nbsp;&nbsp;exim -bP +local_domains
+</pre>
+</p>
+<p>
+it searches for a matching named list of any type (domain, host, address, or
+local part) and outputs what it finds.
+<a name="IX273"></a>
+<a name="IX274"></a>
+</p>
+<p>
+If one of the words <tt>router</tt>, <tt>transport</tt>, or <tt>authenticator</tt> is given,
+followed by the name of an appropriate driver instance, the option settings for
+that driver are output. For example:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>exim -bP transport local&#095;delivery</tt><br>
+</p>
+<p>
+The generic driver options are output first, followed by the driver's private
+options. A list of the names of drivers of a particular type can be obtained by
+using one of the words <tt>router&#095;list</tt>, <tt>transport&#095;list</tt>, or
+<tt>authenticator&#095;list</tt>, and a complete list of all drivers with their option
+settings can be obtained by using <tt>routers</tt>, <tt>transports</tt>, or <tt>authenticators</tt>.
+<hr></p>
+<a name="IX275"></a>
+<a name="IX276"></a>
+<a name="IX277"></a>
+<h3>-bp</h3>
+<p>
+This option requests a listing of the contents of the mail queue on the
+standard output. If the <i>-bp</i> option is followed by a list of message ids,
+just those messages are listed. By default, this option can be used only by an
+admin user. However, the <tt>queue_list_requires_admin</tt> option can be set false
+to allow any user to see the queue.
+</p>
+<p>
+Each message on the queue is displayed as in the following example:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>25m  2.9K 0t5C6f-0000c8-00 &#060;alice&#064;wonderland.fict.example&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>          red.king&#064;looking-glass.fict.example</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>          &#060;<em>other addresses</em>&#062;</tt><br>
+<a name="IX278"></a>
+<a name="IX279"></a>
+</p>
+<p>
+<a name="IX280"></a>
+The first line contains the length of time the message has been on the queue
+(in this case 25 minutes), the size of the message (2.9K), the unique local
+identifier for the message, and the message sender, as contained in the
+envelope. For bounce messages, the sender address is empty, and appears as
+&#147;&#060;&#062;&#148;. If the message was submitted locally by an untrusted user who overrode
+the default sender address, the user's login name is shown in parentheses
+before the sender address.
+If the message is frozen (attempts to deliver it are suspended) then the text
+&#147;*** frozen ***&#148; is displayed at the end of this line.
+</p>
+<p>
+The recipients of the message (taken from the envelope, not the headers) are
+displayed on subsequent lines. Those addresses to which the message has already
+been delivered are marked with the letter D. If an original address gets
+expanded into several addresses via an alias or forward file, the original is
+displayed with a D only when deliveries for all of its child addresses are
+complete.
+<hr></p>
+<a name="IX281"></a>
+<h3>-bpa</h3>
+<p>
+This option operates like <i>-bp</i>, but in addition it shows delivered addresses
+that were generated from the original top level address(es) in each message by
+alias or forwarding operations. These addresses are flagged with &#147;+D&#148; instead
+of just &#147;D&#148;.
+<hr></p>
+<a name="IX282"></a>
+<a name="IX283"></a>
+<h3>-bpc</h3>
+<p>
+This option counts the number of messages on the queue, and writes the total
+to the standard output. It is restricted to admin users, unless
+<tt>queue_list_requires_admin</tt> is set false.
+<hr></p>
+<a name="IX284"></a>
+<h3>-bpr</h3>
+<p>
+This option operates like <i>-bp</i>, but the output is not sorted into
+chronological order of message arrival. This can speed it up when there are
+lots of messages on the queue, and is particularly useful if the output is
+going to be post-processed in a way that doesn't need the sorting.
+<hr></p>
+<a name="IX285"></a>
+<h3>-bpra</h3>
+<p>
+This option is a combination of <i>-bpr</i> and <i>-bpa</i>.
+<hr></p>
+<a name="IX286"></a>
+<h3>-bpru</h3>
+<p>
+This option is a combination of <i>-bpr</i> and <i>-bpu</i>.
+<hr></p>
+<a name="IX287"></a>
+<h3>-bpu</h3>
+<p>
+This option operates like <i>-bp</i> but shows only undelivered top-level addresses
+for each message displayed. Addresses generated by aliasing or forwarding are
+not shown, unless the message was deferred after processing by a router with
+the <tt>one&#095;time</tt> option set.
+<hr></p>
+<a name="IX288"></a>
+<a name="IX289"></a>
+<a name="IX290"></a>
+<h3>-brt</h3>
+<p>
+This option is for testing retry rules, and it must be followed by up to three
+arguments. It causes Exim to look for a retry rule that matches the values
+and to write it to the standard output. For example:
+<pre>
+&nbsp;&nbsp;exim -brt bach.comp.mus.example
+&nbsp;&nbsp;Retry rule: *.comp.mus.example  F,2h,15m; F,4d,30m;
+</pre>
+</p>
+<p>
+See chapter <a href="spec_32.html">32</a> for a description of Exim's retry rules. The first
+argument, which is required, can be a complete address in the form
+<i>local&#095;part&#064;domain</i>, or it can be just a domain name. The second argument is
+an optional second domain name; if no retry rule is found for the first
+argument, the second is tried. This ties in with Exim's behaviour when looking
+for retry rules for remote hosts &#150; if no rule is found that matches the host,
+one that matches the mail domain is sought. The final argument is the name of a
+specific delivery error, as used in setting up retry rules, for example
+&#147;quota&#095;3d&#148;.
+<hr></p>
+<a name="IX291"></a>
+<a name="IX292"></a>
+<a name="IX293"></a>
+<h3>-brw</h3>
+<p>
+This option is for testing address rewriting rules, and it must be followed by
+a single argument, consisting of either a local part without a domain, or a
+complete address with a fully qualified domain. Exim outputs how this address
+would be rewritten for each possible place it might appear. See chapter
+<a href="spec_31.html">31</a> for further details.
+<hr></p>
+<a name="IX294"></a>
+<a name="IX295"></a>
+<a name="IX296"></a>
+<h3>-bS</h3>
+<p>
+This option is used for batched SMTP input, which is an alternative interface
+for non-interactive local message submission. A number of messages can be
+submitted in a single run. However, despite its name, this is not really SMTP
+input. Exim reads each message's envelope from SMTP commands on the standard
+input, but generates no responses. If the caller is trusted, or
+<tt>untrusted&#095;set&#095;sender</tt> is set, the senders in the SMTP <font size=-1>MAIL</font> commands are
+believed; otherwise the sender is always the caller of Exim.
+</p>
+<p>
+The message itself is read from the standard input, in SMTP format (leading
+dots doubled), terminated by a line containing just a single dot. An error is
+provoked if the terminating dot is missing. A further message may then follow.
+</p>
+<p>
+As for other local message submissions, the contents of incoming batch SMTP
+messages can be checked using the non-SMTP ACL (see chapter <a href="spec_38.html">38</a>).
+Unqualified addresses are automatically qualified using <tt>qualify&#095;domain</tt> and
+<tt>qualify&#095;recipient</tt>, as appropriate, unless the <i>-bnq</i> option is used.
+</p>
+<p>
+Some other SMTP commands are recognized in the input. <font size=-1>HELO</font> and <font size=-1>EHLO</font> act
+as <font size=-1>RSET</font>; <font size=-1>VRFY</font>, <font size=-1>EXPN</font>, <font size=-1>ETRN</font>, and <font size=-1>HELP</font> act as <font size=-1>NOOP</font>;
+<font size=-1>QUIT</font> quits, ignoring the rest of the standard input.
+</p>
+<p>
+<a name="IX297"></a>
+If any error is encountered, reports are written to the standard output and
+error streams, and Exim gives up immediately.
+The return code is 0 if no error was detected; it is 1 if one or more messages
+were accepted before the error was detected; otherwise it is 2.
+</p>
+<p>
+More details of input using batched SMTP are given in section
+<a href="spec_43.html#SECT43.12">43.12</a>.
+<hr></p>
+<a name="IX298"></a>
+<a name="IX299"></a>
+<a name="IX300"></a>
+<h3>-bs</h3>
+<p>
+This option causes Exim to accept one or more messages by reading SMTP commands
+on the standard input, and producing SMTP replies on the standard output. SMTP
+policy controls, as defined in ACLs (see chapter <a href="spec_38.html">38</a>) are applied. 
+</p>
+<p>
+<a name="IX301"></a>
+Some user agents use this interface as a way of passing locally-generated
+messages to the MTA.
+In this usage, if the caller of Exim is trusted, or <tt>untrusted&#095;set&#095;sender</tt> is
+set, the senders of messages are taken from the SMTP <font size=-1>MAIL</font> commands.
+Otherwise the content of these commands is ignored and the sender is set up as
+the calling user. Unqualified addresses are automatically qualified using
+<tt>qualify&#095;domain</tt> and <tt>qualify&#095;recipient</tt>, as appropriate, unless the <i>-bnq</i>
+option is used.
+<a name="IX302"></a>
+</p>
+<p>
+The <i>-bs</i> option is also used to run Exim from <i>inetd</i>, as an alternative to
+using a listening daemon. Exim can distinguish the two cases by checking
+whether the standard input is a TCP/IP socket. When Exim is called from 
+<i>inetd</i>, the source of the mail is assumed to be remote, and the comments 
+above concerning senders and qualification do not apply. In this situation, 
+Exim behaves in exactly the same way as it does when receiving a message via 
+the listening daemon.
+<hr></p>
+<a name="IX303"></a>
+<a name="IX304"></a>
+<a name="IX305"></a>
+<h3>-bt</h3>
+<p>
+This option runs Exim in address testing mode, in which each argument is taken
+as an address to be tested for deliverability. The results are written to the
+standard output. 
+If a test fails, and the caller is not an admin user, no details of the 
+failure are output, because these might contain sensitive information such as 
+usernames and passwords for database lookups.
+</p>
+<p>
+If no arguments are given, Exim runs in an interactive manner, prompting with a
+right angle bracket for addresses to be tested. Each address is handled as if
+it were the recipient address of a message (compare the <i>-bv</i> option). It is
+passed to the routers and the result is written to the standard output.
+However, any router that has <tt>no&#095;address&#095;test</tt> set is bypassed. This can 
+make <i>-bt</i> easier to use for genuine routing tests if your first router passes
+everything to a scanner program.
+<a name="IX306"></a>
+</p>
+<p>
+The return code is 2 if any address failed outright; it is 1 if no address
+failed outright but at least one could not be resolved for some reason. Return
+code 0 is given only when all addresses succeed.
+</p>
+<p>
+<a name="IX307"></a>
+<b>Warning</b>: <i>-bt</i> can only do relatively simple testing. If any of the
+routers in the configuration makes any tests on the sender address of a
+message, 
+you can use the <i>-f</i> option to set an appropriate sender when running
+<i>-bt</i> tests. Without it, the sender is assumed to be the calling user at the
+default qualifying domain. However, if you have set up (for example) routers
+whose behaviour depends on the contents of an incoming message, you cannot test
+those conditions using <i>-bt</i>. The <i>-N</i> option provides a possible way of
+doing such tests.
+<hr></p>
+<a name="IX308"></a>
+<a name="IX309"></a>
+<h3>-bV</h3>
+<p>
+This option causes Exim to write the current version number, compilation
+number, and compilation date of the <i>exim</i> binary to the standard output.
+It also lists the DBM library this is being used, the optional modules (such as
+specific lookup types), the drivers that are included in the binary, and the
+name of the run time configuration file that is in use.
+<hr></p>
+<a name="IX310"></a>
+<a name="IX311"></a>
+<a name="IX312"></a>
+<h3>-bv</h3>
+<p>
+This option runs Exim in address verification mode, in which each argument is
+taken as an address to be verified. During normal operation, verification
+happens mostly as a consequence processing a <tt>verify</tt> condition in an ACL (see
+chapter <a href="spec_38.html">38</a>). If you want to test an entire ACL, see the <i>-bh</i> option.
+</p>
+<p>
+If verification fails, and the caller is not an admin user, no details of the
+failure are output, because these might contain sensitive information such as
+usernames and passwords for database lookups.
+</p>
+<p>
+If no arguments are given, Exim runs in an interactive manner, prompting with a
+right angle bracket for addresses to be verified. Verification differs from
+address testing (the <i>-bt</i> option) in that routers that have <tt>no&#095;verify</tt> set
+are skipped, and if the address is accepted by a router that has <tt>fail&#095;verify</tt>
+set, verification fails. The address is verified as a recipient if <i>-bv</i> is
+used; to test verification for a sender address, <i>-bvs</i> should be used.
+</p>
+<p>
+If the <i>-v</i> option is not set, the output consists of a single line for each
+address, stating whether it was verified or not, and giving a reason in the
+latter case. Otherwise, more details are given of how the address has been
+handled, and in the case of address redirection, all the generated addresses
+are also considered. Without <i>-v</i>, generating more than one address by
+redirection causes verification to end sucessfully.
+<a name="IX313"></a>
+</p>
+<p>
+The return code is 2 if any address failed outright; it is 1 if no address
+failed outright but at least one could not be resolved for some reason. Return
+code 0 is given only when all addresses succeed.
+</p>
+<p>
+If any of the routers in the configuration makes any tests on the sender
+address of a message, you should use the <i>-f</i> option to set an appropriate
+sender when running <i>-bv</i> tests. Without it, the sender is assumed to be the
+calling user at the default qualifying domain.
+<hr></p>
+<a name="IX314"></a>
+<h3>-bvs</h3>
+<p>
+This option acts like <i>-bv</i>, but verifies the address as a sender rather
+than a recipient address. This affects any rewriting and qualification that
+might happen.
+<hr></p>
+<a name="IX315"></a>
+<a name="IX316"></a>
+<a name="IX317"></a>
+<a name="IX318"></a>
+<h3>-C &nbsp;&#060;<em>filelist</em>&#062;</h3>
+<p>
+This option causes Exim to find the run time configuration file from the given
+list instead of from the list specified by the <font size=-1>CONFIGURE&#095;FILE</font>
+compile-time setting. Usually, the list will consist of just a single file
+name, but it can be a colon-separated list of names. In this case, the first
+file that exists is used. Failure to open an existing file stops Exim from
+proceeding any further along the list, and an error is generated.
+</p>
+<p>
+When this option is used by a caller other than root or the Exim user,
+and the list is different from the compiled-in list, Exim gives up
+its root privilege immediately, and runs with the real and effective uid and
+gid set to those of the caller.
+However, if <font size=-1>ALT&#095;CONFIG&#095;ROOT&#095;ONLY</font> is defined in <i>Local/Makefile</i>, root
+privilege is retained for <i>-C</i> only if the caller of Exim is root.
+This option is not set by default.
+</p>
+<p>
+Setting <font size=-1>ALT&#095;CONFIG&#095;ROOT&#095;ONLY</font> locks out the possibility of testing a
+configuration using <i>-C</i> right through message reception and delivery, even if
+the caller is root. The reception works, but by that time, Exim is running as
+the Exim user, so when it re-execs to regain privilege for the delivery, the
+use of <i>-C</i> causes privilege to be lost. However, root can test reception and
+delivery using two separate commands (one to put a message on the queue, using 
+<i>-odq</i>, and another to do the delivery, using <i>-M</i>).
+</p>
+<p>
+If <font size=-1>ALT&#095;CONFIG&#095;PREFIX</font> is defined <i>in Local/Makefile</i>, it specifies a
+prefix string with which any file named in a <i>-C</i> command line option
+must start. In addition, the file name must not contain the sequence <tt>/../</tt>.
+However, if the value of the <i>-C</i> option is identical to the value of
+<font size=-1>CONFIGURE&#095;FILE</font> in <i>Local/Makefile</i>, Exim ignores <i>-C</i> and proceeds as
+usual. There is no default setting for <font size=-1>ALT&#095;CONFIG&#095;PREFIX</font>; when it is 
+unset, any file name can be used with <i>-C</i>.
+</p>
+<p>
+<font size=-1>ALT&#095;CONFIG&#095;PREFIX</font> can be used to confine alternative configuration files
+to a directory to which only root has access. This prevents someone who has
+broken into the Exim account from running a privileged Exim with an arbitrary
+configuration file.
+</p>
+<p>
+The <i>-C</i> facility is useful for ensuring that configuration files are
+syntactically correct, but cannot be used for test deliveries, unless the
+caller is privileged, or unless it is an exotic configuration that does not
+require privilege. No check is made on the owner or group of the files
+specified by this option.
+<hr></p>
+<a name="IX319"></a>
+<a name="IX320"></a>
+<h3>-D &#060;<em>macro</em>&#062;=&#060;<em>value</em>&#062;</h3>
+<p>
+This option can be used to override macro definitions in the configuration file
+(see section <a href="spec_6.html#SECT6.4">6.4</a>). However, like <i>-C</i>, if it is used by an
+unprivileged caller, it causes Exim to give up its root privilege. 
+If <font size=-1>DISABLE&#095;D&#095;OPTION</font> is defined in <i>Local/Makefile</i>, the use of <i>-D</i> is
+completely disabled, and its use causes an immediate error exit.
+</p>
+<p>
+The entire option (including equals sign if present) must all be within one
+command line item. <i>-D</i> can be used to set the value of a macro to the empty 
+string, in which case the equals sign is optional. These two commands are 
+synonymous:
+<pre>
+&nbsp;&nbsp;exim -DABC  ...
+&nbsp;&nbsp;exim -DABC= ...
+</pre>
+</p>
+<p>
+To include spaces in a macro definition item, quotes must be used. If you use 
+quotes, spaces are permitted around the macro name and the equals sign. For 
+example:
+<pre>
+&nbsp;&nbsp;exim '-D ABC = something' ...
+</pre>
+</p>
+<p>
+<i>-D</i> may be repeated up to 10 times on a command line.
+<hr></p>
+<a name="IX321"></a>
+<a name="IX322"></a>
+<a name="IX323"></a>
+<h3>-d &#060;<em>debug options</em>&#062;</h3>
+<p>
+This option causes debugging information to be written to the standard
+error stream. It is restricted to admin users because debugging output may show
+database queries that contain password information. Also, the details of users'
+filter files should be protected. When <i>-d</i> is used, <i>-v</i> is assumed. If
+<i>-d</i> is given on its own, a lot of standard debugging data is output. This can
+be reduced, or increased to include some more rarely needed information, by
+following <i>-d</i> with a string made up of names preceded by plus or minus
+characters. These add or remove sets of debugging data, respectively. For
+example, <i>-d+filter</i> adds filter debugging, whereas <i>-d-all+filter</i> selects
+only filter debugging. The available debugging categories are:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>acl&nbsp;&nbsp;</tt></td><td>ACL interpretation</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>auth&nbsp;&nbsp;</tt></td><td>authenticators</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>deliver&nbsp;&nbsp;</tt></td><td>general delivery logic</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>dns&nbsp;&nbsp;</tt></td><td>DNS lookups (see also resolver)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>dnsbl&nbsp;&nbsp;</tt></td><td>DNS black list (aka RBL) code</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>exec&nbsp;&nbsp;</tt></td><td>arguments for <tt>execv&#040;&#041;</tt> calls</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>expand&nbsp;&nbsp;</tt></td><td>detailed debugging for string expansions</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>filter&nbsp;&nbsp;</tt></td><td>filter handling</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>hints&#095;lookup&nbsp;&nbsp;</tt></td><td>hints data lookups</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>host&#095;lookup&nbsp;&nbsp;</tt></td><td>all types of name-to-IP address handling</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>ident&nbsp;&nbsp;</tt></td><td>ident lookup</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>interface&nbsp;&nbsp;</tt></td><td>lists of local interfaces</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>lists&nbsp;&nbsp;</tt></td><td>matching things in lists</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>load&nbsp;&nbsp;</tt></td><td>system load checks</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>local&#095;scan&nbsp;&nbsp;</tt></td><td>can be used by <i>local&#095;scan()</i> (see chapter <a href="spec_39.html">39</a>)<tt> </tt></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>lookup&nbsp;&nbsp;</tt></td><td>general lookup code and all lookups</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>memory&nbsp;&nbsp;</tt></td><td>memory handling</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>pid&nbsp;&nbsp;</tt></td><td>add pid to debug output lines</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>process&#095;info&nbsp;&nbsp;</tt></td><td>setting info for the process log</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>queue&#095;run&nbsp;&nbsp;</tt></td><td>queue runs</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>receive&nbsp;&nbsp;</tt></td><td>general message reception logic</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>resolver&nbsp;&nbsp;</tt></td><td>turn on the DNS resolver's debugging output</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>retry&nbsp;&nbsp;</tt></td><td>retry handling</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>rewrite&nbsp;&nbsp;</tt></td><td>address rewriting</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>route&nbsp;&nbsp;</tt></td><td>address routing</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>timestamp&nbsp;&nbsp;</tt></td><td>add timestamp to debug output lines</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>tls&nbsp;&nbsp;</tt></td><td>TLS logic</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>transport&nbsp;&nbsp;</tt></td><td>transports</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>uid&nbsp;&nbsp;</tt></td><td>changes of uid/gid and looking up uid/gid</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>verify&nbsp;&nbsp;</tt></td><td>address verification logic</td></tr>
+<tr><td>&nbsp;&nbsp;</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>all&nbsp;&nbsp;</tt></td><td>all of the above, and also <i>-v</i></td></tr>
+</table>
+<font color=green><a name="IX324"></a>
+<a name="IX325"></a>
+</p>
+<p>
+The <tt>resolver</tt> option produces output only if the DNS resolver was compiled 
+with <font size=-1>DEBUG</font> enabled. This is not the case in some operating systems. Also,
+unfortunately, debugging output from the DNS resolver is written to stdout
+rather than stderr.
+</font>
+</p>
+<p>
+The default (<i>-d</i> with no argument) omits <tt>expand</tt>, <tt>filter</tt>,
+<tt>interface</tt>, <tt>load</tt>, <tt>memory</tt>, <tt>pid</tt>, <tt>resolver</tt>, and <tt>timestamp</tt>.
+However, the <tt>pid</tt> selector is forced when debugging is turned on for a
+daemon, which then passes it on to any re-executed Exims. Exim also
+automatically adds the pid to debug lines when several remote deliveries are
+run in parallel.
+</p>
+<p>
+The <tt>timestamp</tt> selector causes the current time to be inserted at the start
+of all debug output lines. This can be useful when trying to track down delays
+in processing.
+</p>
+<p>
+If the <tt>debug&#095;print</tt> option is set in any driver, it produces output whenever
+any debugging is selected, or if <i>-v</i> is used.
+<hr></p>
+<a name="IX326"></a>
+<h3>-dropcr</h3>
+<p>
+This is an obsolete option that is now a no-op. It used to affect the way Exim 
+handled CR and LF characters in incoming messages. What happens now is 
+described in section <a href="spec_44.html#SECT44.1">44.1</a>.
+<hr></p>
+<a name="IX327"></a>
+<a name="IX328"></a>
+<h3>-E</h3>
+<p>
+This option specifies that an incoming message is a locally-generated delivery
+failure report. It is used internally by Exim when handling delivery failures
+and is not intended for external use. Its only effect is to stop Exim
+generating certain messages to the postmaster, as otherwise message cascades
+could occur in some situations. As part of the same option, a message id may
+follow the characters <i>-E</i>. If it does, the log entry for the receipt of the
+new message contains the id, following &#147;R=&#148;, as a cross-reference.
+<hr></p>
+<a name="IX329"></a>
+<h3>-e<em>x</em></h3>
+<p>
+There are a number of Sendmail options starting with <i>-oe</i> which seem to be
+called by various programs without the leading <tt>o</tt> in the option. For example,
+the <tt>vacation</tt> program uses <i>-eq</i>. Exim treats all options of the form
+<i>-e<em>x</em></i> as synonymous with the corresponding <i>-oe<em>x</em></i> options.
+<hr></p>
+<a name="IX330"></a>
+<a name="IX331"></a>
+<a name="IX332"></a>
+<h3>-F &nbsp;&#060;<em>string</em>&#062;</h3>
+<p>
+This option sets the sender's full name for use when a locally-generated
+message is being accepted. In the absence of this option, the user's <i>gecos</i>
+entry from the password data is used. As users are generally permitted to alter
+their <i>gecos</i> entries, no security considerations are involved. White space
+between <i>-F</i> and the &#060;<em>string</em>&#062; is optional.
+<hr></p>
+<a name="IX333"></a>
+<a name="IX334"></a>
+<a name="IX335"></a>
+<a name="IX336"></a>
+<a name="IX337"></a>
+<a name="IX338"></a>
+<h3>-f &nbsp;&#060;<em>address</em>&#062;</h3>
+<p>
+This option sets the address of the envelope sender of a locally-generated
+message (also known as the return path). The option can normally be used only
+by a trusted user, but <tt>untrusted&#095;set&#095;sender</tt> can be set to allow untrusted
+users to use it. In the absence of <i>-f</i>, or if the caller is not allowed to
+use it, the sender of a local message is set to the caller's login name at the
+default qualify domain.
+</p>
+<p>
+There is one exception to the restriction on the use of <i>-f</i>: an empty sender 
+can be specified by any user, to create a message that can never provoke a
+bounce. An empty sender can be specified either as an empty string, or as a
+pair of angle brackets with nothing between them, as in these examples of shell 
+commands:
+<pre>
+&nbsp;&nbsp;exim -f '&#060;&#062;' user@domain
+&nbsp;&nbsp;exim -f "" user@domain
+</pre>
+</p>
+<p>
+In addition, the use of <i>-f</i> is not restricted when testing a filter file with
+<i>-bf</i> or when testing or verifying addresses using the <i>-bt</i> or <i>-bv</i>
+options.
+</p>
+<p>
+Allowing untrusted users to change the sender address does not of itself make
+it possible to send anonymous mail. Exim still checks that the <i>From:</i> header
+refers to the local user, and if it does not, it adds a <i>Sender:</i> header,
+though this can be overridden by setting <tt>no&#095;local&#095;from&#095;check</tt>.
+<a name="IX339"></a>
+</p>
+<p>
+White space between <i>-f</i> and the &#060;<em>address</em>&#062; is optional
+(that is, they can be given as two arguments or one combined argument).
+The sender of a locally-generated message can also be set (when permitted) by
+an initial &#147;From &#148; line in the message &#150; see the description of <i>-bm</i> above
+&#150; but if <i>-f</i> is also present, it overrides &#147;From&#148;.
+<hr></p>
+<a name="IX340"></a>
+<a name="IX341"></a>
+<h3>-G</h3>
+<p>
+This is a Sendmail option which is ignored by Exim.
+<hr></p>
+<a name="IX342"></a>
+<a name="IX343"></a>
+<h3>-h &nbsp;&#060;<em>number</em>&#062;</h3>
+<p>
+This option is accepted for compatibility with Sendmail, but has no effect. (In
+Sendmail it overrides the &#147;hop count&#148; obtained by counting <i>Received:</i>
+headers.)
+<hr></p>
+<a name="IX344"></a>
+<a name="IX345"></a>
+<a name="IX346"></a>
+<h3>-i</h3>
+<p>
+This option, which has the same effect as <i>-oi</i>, specifies that a dot on a
+line by itself should not terminate an incoming, non-SMTP message. I can find
+no documentation for this option in Solaris 2.4 Sendmail, but the <i>mailx</i>
+command in Solaris 2.4 uses it. See also <i>-ti</i>.
+<hr></p>
+<a name="IX347"></a>
+<a name="IX348"></a>
+<a name="IX349"></a>
+<a name="IX350"></a>
+<h3>-M &nbsp;&#060;<em>message id</em>&#062;&nbsp;&#060;<em>message id</em>&#062; ...</h3>
+<p>
+<a name="IX351"></a>
+This option requests Exim to run a delivery attempt on each message in turn. If
+any of the messages are frozen, they are automatically thawed before the
+delivery attempt. The settings of <tt>queue&#095;domains</tt>, <tt>queue&#095;smtp&#095;domains</tt>, and
+<tt>hold&#095;domains</tt> are ignored. 
+Retry hints for any of the addresses are
+overridden &#150; Exim tries to deliver even if the normal retry time has not yet
+been reached. This option requires the caller to be an admin user. However,
+there is an option called <tt>prod&#095;requires&#095;admin</tt> which can be set false to
+relax this restriction (and also the same requirement for the <i>-q</i>, <i>-R</i>, and
+<i>-S</i> options).
+<hr></p>
+<a name="IX352"></a>
+<a name="IX353"></a>
+<a name="IX354"></a>
+<h3>-Mar &nbsp;&#060;<em>message id</em>&#062;&nbsp;&#060;<em>address</em>&#062;&nbsp;&#060;<em>address</em>&#062; ...</h3>
+<p>
+This option requests Exim to add the addresses to the list of recipients of the
+message (&#147;ar&#148; for &#147;add recipients&#148;). The first argument must be a message id,
+and the remaining ones must be email addresses. However, if the message is
+active (in the middle of a delivery attempt), it is not altered. This option
+can be used only by an admin user.
+<a name="IX355"></a>
+<a name="IX356"></a>
+<a name="IX357"></a>
+<hr></p>
+<a name="IX358"></a>
+<h3>-MC &nbsp;&#060;<em>transport</em>&#062;&nbsp;&#060;<em>hostname</em>&#062;&nbsp;&#060;<em>sequence number</em>&#062;&nbsp;&#060;<em>message id</em>&#062;</h3>
+<p>
+This option is not intended for use by external callers. It is used internally
+by Exim to invoke another instance of itself to deliver a waiting message using
+an existing SMTP connection, which is passed as the standard input. Details are
+given in chapter <a href="spec_43.html">43</a>. This must be the final option, and the caller must
+be root or the Exim user in order to use it.
+<hr></p>
+<a name="IX359"></a>
+<h3>-MCA</h3>
+<p>
+This option is not intended for use by external callers. It is used internally
+by Exim in conjunction with the <i>-MC</i> option. It signifies that the connection
+to the remote host has been authenticated.
+<hr></p>
+<a name="IX360"></a>
+<h3>-MCP</h3>
+<p>
+This option is not intended for use by external callers. It is used internally 
+by Exim in conjunction with the <i>-MC</i> option. It signifies that the server to 
+which Exim is connected supports pipelining.
+<hr></p>
+<a name="IX361"></a>
+<h3>-MCQ &nbsp;&#060;<em>process id</em>&#062; &#060;<em>pipe fd</em>&#062;</h3>
+<p>
+This option is not intended for use by external callers. It is used internally
+by Exim in conjunction with the <i>-MC</i> option when the original delivery was
+started by a queue runner. It passes on the process id of the queue runner,
+together with the file descriptor number of an open pipe. Closure of the pipe
+signals the final completion of the sequence of processes that are passing
+messages through the same SMTP connection.
+<hr></p>
+<a name="IX362"></a>
+<h3>-MCS</h3>
+<p>
+This option is not intended for use by external callers. It is used internally
+by Exim in conjunction with the <i>-MC</i> option, and passes on the fact that the
+SMTP <font size=-1>SIZE</font> option should be used on messages delivered down the existing
+connection.
+<hr></p>
+<a name="IX363"></a>
+<h3>-MCT</h3>
+<p>
+This option is not intended for use by external callers. It is used internally
+by Exim in conjunction with the <i>-MC</i> option, and passes on the fact that the
+host to which Exim is connected supports TLS encryption.
+<hr></p>
+<a name="IX364"></a>
+<a name="IX365"></a>
+<a name="IX366"></a>
+<h3>-Mc &nbsp;&#060;<em>message id</em>&#062;&nbsp;&#060;<em>message id</em>&#062; ...</h3>
+<p>
+This option requests Exim to run a delivery attempt on each message in turn,
+but unlike the <i>-M</i> option, it does check for retry hints, and respects any
+that are found. This option is not very useful to external callers. It is
+provided mainly for internal use by Exim when it needs to re-invoke itself in
+order to regain root privilege for a delivery (see chapter <a href="spec_48.html">48</a>).
+However, <i>-Mc</i> can be useful when testing, in order to run a delivery that
+respects retry times and other options such as <tt>hold&#095;domains</tt> that are
+overridden when <i>-M</i> is used. Such a delivery does not count as a queue run.
+If you want to run a specific delivery as if in a queue run, you should use
+<i>-q</i> with a message id argument. A distinction between queue run deliveries
+and other deliveries is made in one or two places.
+<hr></p>
+<a name="IX367"></a>
+<a name="IX368"></a>
+<a name="IX369"></a>
+<h3>-Mes &nbsp;&#060;<em>message id</em>&#062;&nbsp;&#060;<em>address</em>&#062;</h3>
+<p>
+This option requests Exim to change the sender address in the message to the
+given address, which must be a fully qualified address or &#147;&#060;&#062;&#148; (&#147;es&#148; for &#147;edit
+sender&#148;). There must be exactly two arguments. The first argument must be a
+message id, and the second one an email address. However, if the message is
+active (in the middle of a delivery attempt), its status is not altered. This
+option can be used only by an admin user.
+<hr></p>
+<a name="IX370"></a>
+<a name="IX371"></a>
+<a name="IX372"></a>
+<h3>-Mf &nbsp;&#060;<em>message id</em>&#062;&nbsp;&#060;<em>message id</em>&#062; ...</h3>
+<p>
+This option requests Exim to mark each listed message as &#147;frozen&#148;. This
+prevents any delivery attempts taking place until the message is &#147;thawed&#148;,
+either manually or as a result of the <tt>auto&#095;thaw</tt> configuration option.
+However, if any of the messages are active (in the middle of a delivery
+attempt), their status is not altered. This option can be used only by an admin
+user.
+<hr></p>
+<a name="IX373"></a>
+<a name="IX374"></a>
+<a name="IX375"></a>
+<a name="IX376"></a>
+<h3>-Mg &nbsp;&#060;<em>message id</em>&#062;&nbsp;&#060;<em>message id</em>&#062; ...</h3>
+<p>
+This option requests Exim to give up trying to deliver the listed messages,
+including any that are frozen. However, if any of the messages are active,
+their status is not altered. 
+For non-bounce messages, a delivery error message is sent to the sender,
+containing the text &#147;cancelled by administrator&#148;. Bounce messages are just
+discarded.
+This option can be used only by an admin user.
+<hr></p>
+<a name="IX377"></a>
+<a name="IX378"></a>
+<h3>-Mmad &nbsp;&#060;<em>message id</em>&#062;&nbsp;&#060;<em>message id</em>&#062; ...</h3>
+<p>
+This option requests Exim to mark all the recipient addresses in the messages
+as already delivered (&#147;mad&#148; for &#147;mark all delivered&#148;). However, if any message
+is active (in the middle of a delivery attempt), its status is not altered.
+This option can be used only by an admin user.
+<hr></p>
+<a name="IX379"></a>
+<a name="IX380"></a>
+<a name="IX381"></a>
+<a name="IX382"></a>
+<h3>-Mmd &nbsp;&#060;<em>message id</em>&#062;&nbsp;&#060;<em>address</em>&#062;&nbsp;&#060;<em>address</em>&#062; ...</h3>
+<p>
+This option requests Exim to mark the given addresses as already delivered
+(&#147;md&#148; for &#147;mark delivered&#148;). The first argument must be a message id, and the
+remaining ones must be email addresses. These are matched to recipient
+addresses in the message in a case-sensitive manner. If the message is active
+(in the middle of a delivery attempt), its status is not altered. This option
+can be used only by an admin user.
+<hr></p>
+<a name="IX383"></a>
+<a name="IX384"></a>
+<a name="IX385"></a>
+<a name="IX386"></a>
+<h3>-Mrm &nbsp;&#060;<em>message id</em>&#062;&nbsp;&#060;<em>message id</em>&#062; ...</h3>
+<p>
+This option requests Exim to remove the given messages from the queue. No
+bounce messages are sent; each message is simply forgotten. However, if any of
+the messages are active, their status is not altered. This option can be used
+only by an admin user or by the user who originally caused the message to be
+placed on the queue.
+<hr></p>
+<a name="IX387"></a>
+<a name="IX388"></a>
+<a name="IX389"></a>
+<a name="IX390"></a>
+<a name="IX391"></a>
+<h3>-Mt &nbsp;&#060;<em>message id</em>&#062;&nbsp;&#060;<em>message id</em>&#062; ...</h3>
+<p>
+This option requests Exim to &#147;thaw&#148; any of the listed messages that are
+&#147;frozen&#148;, so that delivery attempts can resume. However, if any of the messages
+are active, their status is not altered. This option can be used only by an
+admin user.
+<hr></p>
+<a name="IX392"></a>
+<a name="IX393"></a>
+<a name="IX394"></a>
+<h3>-Mvb &nbsp;&#060;<em>message id</em>&#062;</h3>
+<p>
+This option causes the contents of the message body (-D) spool file to be
+written to the standard output. This option can be used only by an admin user.
+<hr></p>
+<a name="IX395"></a>
+<a name="IX396"></a>
+<a name="IX397"></a>
+<a name="IX398"></a>
+<h3>-Mvh &nbsp;&#060;<em>message id</em>&#062;</h3>
+<p>
+This option causes the contents of the message headers (-H) spool file to be
+written to the standard output. This option can be used only by an admin user.
+<hr></p>
+<a name="IX399"></a>
+<a name="IX400"></a>
+<a name="IX401"></a>
+<h3>-Mvl &nbsp;&#060;<em>message id</em>&#062;</h3>
+<p>
+This option causes the contents of the message log spool file to be written to
+the standard output. This option can be used only by an admin user.
+<hr></p>
+<a name="IX402"></a>
+<h3>-m</h3>
+<p>
+This is apparently a synonym for <i>-om</i> that is accepted by Sendmail, so Exim
+treats it that way too.
+<hr></p>
+<a name="IX403"></a>
+<a name="IX404"></a>
+<a name="IX405"></a>
+<h3>-N</h3>
+<p>
+This is a debugging option that inhibits delivery of a message at the transport
+level. It implies <i>-v</i>. Exim goes through many of the motions of delivery &#150;
+it just doesn't actually transport the message, but instead behaves as if it
+had successfully done so. However, it does not make any updates to the retry
+database, and the log entries for deliveries are flagged with &#147;*&#062;&#148; rather
+than &#147;=&#062;&#148;.
+</p>
+<p>
+Because <i>-N</i> discards any message to which it applies, only root or the Exim
+user are allowed to use it with <i>-bd</i>, <i>-q</i>, <i>-R</i> or <i>-M</i>. In other words,
+an ordinary user can use it only when supplying an incoming message to which it
+will apply. Although transportation never fails when <i>-N</i> is set, an address
+may be deferred because of a configuration problem on a transport, or a routing
+problem. Once <i>-N</i> has been used for a delivery attempt, it sticks to the
+message, and applies to any subsequent delivery attempts that may happen for
+that message.
+<hr></p>
+<a name="IX406"></a>
+<a name="IX407"></a>
+<h3>-n</h3>
+<p>
+This option is interpreted by Sendmail to mean &#147;no aliasing&#148;. It is ignored by
+Exim.
+<hr></p>
+<a name="IX408"></a>
+<h3>-O &nbsp;&#060;<em>data</em>&#062;</h3>
+<p>
+This option is interpreted by Sendmail to mean `set option`. It is ignored by 
+Exim.
+<hr></p>
+<a name="IX409"></a>
+<a name="IX410"></a>
+<h3>-oA &nbsp;&#060;<em>file name</em>&#062;</h3>
+<p>
+This option is used by Sendmail in conjunction with <i>-bi</i> to specify an
+alternative alias file name. Exim handles <i>-bi</i> differently; see the
+description above.
+<a name="IX411"></a>
+<hr></p>
+<a name="IX412"></a>
+<a name="IX413"></a>
+<a name="IX414"></a>
+<h3>-oB &nbsp;&#060;<em>n</em>&#062;</h3>
+<p>
+This is a debugging option which limits the maximum number of messages that can
+be delivered down one SMTP connection, overriding the value set in any <b>smtp</b>
+transport. If &#060;<em>n</em>&#062; is omitted, the limit is set to 1.
+<hr></p>
+<a name="IX415"></a>
+<a name="IX416"></a>
+<a name="IX417"></a>
+<h3>-odb</h3>
+<p>
+This option applies to all modes in which Exim accepts incoming messages,
+including the listening daemon. It requests &#147;background&#148; delivery of such
+messages, which means that the accepting process automatically starts delivery
+process for each message received, but does not wait for the delivery process
+to complete. This is the default action if none of the <i>-od</i> options are
+present. 
+</p>
+<p>
+If one of the queueing options in the configuration file
+(<tt>queue&#095;only</tt> or <tt>queue&#095;only&#095;file</tt>, for example) is in effect, <i>-odb</i>
+overrides it if <tt>queue&#095;only&#095;override</tt> is set true, which is the default
+setting. If <tt>queue&#095;only&#095;override</tt> is set false, <i>-odb</i> has no effect.
+<hr></p>
+<a name="IX418"></a>
+<a name="IX419"></a>
+<a name="IX420"></a>
+<h3>-odf</h3>
+<p>
+This option requests &#147;foreground&#148; (synchronous) delivery when Exim has accepted
+a locally-generated message. (For the daemon it is exactly the same as
+<i>-odb</i>.) A delivery process is automatically started to deliver the
+message, and Exim waits for it to complete before proceeding.
+However, like <i>-odb</i>, this option has no effect if <tt>queue&#095;only&#095;override</tt> is 
+false and one of the queueing options in the configuration file is in effect.
+<hr></p>
+<a name="IX421"></a>
+<h3>-odi</h3>
+<p>
+This option is synonymous with <i>-odf</i>. It is provided for compatibility with
+Sendmail.
+<hr></p>
+<a name="IX422"></a>
+<a name="IX423"></a>
+<a name="IX424"></a>
+<a name="IX425"></a>
+<h3>-odq</h3>
+<p>
+This option applies to all modes in which Exim accepts incoming messages,
+including the listening daemon. It specifies that the accepting process should
+not automatically start a delivery process for each message received. Messages
+are placed on the queue, and remain there until a subsequent queue runner
+process encounters them.
+There are several configuration options (such as <tt>queue&#095;only</tt>) that can be
+used to queue incoming messages under certain conditions. This option overrides
+all of them and also <i>-odqs</i>. It always forces queueing.
+<hr></p>
+<a name="IX426"></a>
+<a name="IX427"></a>
+<h3>-odqs</h3>
+<p>
+This option is a hybrid between <i>-odb</i>/<i>-odi</i> and <i>-odq</i>. 
+However, like <i>-odb</i> and <i>-odi</i>, this option has no effect if
+<tt>queue&#095;only&#095;override</tt> is false and one of the queueing options in the
+configuration file is in effect.
+</p>
+<p>
+When <i>-odqs</i> does operate, a delivery process is started for each incoming
+message, in the background by default, but in the foreground if <i>-odi</i> is also
+present.
+The recipient addresses are routed, and local deliveries are done in the normal
+way. However, if any SMTP deliveries are required, they are not done at this
+time, so the message remains on the queue until a subsequent queue runner
+process encounters it. Because routing was done, Exim knows which messages are
+waiting for which hosts, and so a number of messages for the same host can be
+sent in a single SMTP connection. The <tt>queue&#095;smtp&#095;domains</tt> configuration
+option has the same effect for specific domains. See also the <i>-qq</i> option.
+<hr></p>
+<a name="IX428"></a>
+<a name="IX429"></a>
+<h3>-oee</h3>
+<p>
+<a name="IX430"></a>
+If an error is detected while a non-SMTP message is being received (for
+example, a malformed address), the error is reported to the sender in a mail
+message.
+Provided this error message is successfully sent, the Exim receiving process
+exits with a return code of zero. If not, the return code is 2 if the problem
+is that the original message has no recipients, or 1 any other error. This is
+the default <i>-oe<em>x</em></i> option if Exim is called as <i>rmail</i>.
+<hr></p>
+<a name="IX431"></a>
+<a name="IX432"></a>
+<a name="IX433"></a>
+<h3>-oem</h3>
+<p>
+This is the same as <i>-oee</i>, except that Exim always exits with a non-zero
+return code, whether or not the error message was successfully sent.
+This is the default <i>-oe<em>x</em></i> option, unless Exim is called as <i>rmail</i>.
+<hr></p>
+<a name="IX434"></a>
+<a name="IX435"></a>
+<h3>-oep</h3>
+<p>
+<a name="IX436"></a>
+If an error is detected while a non-SMTP message is being received, the
+error is reported by writing a message to the standard error file (stderr).
+The return code is 1 for all errors.
+<hr></p>
+<a name="IX437"></a>
+<a name="IX438"></a>
+<h3>-oeq</h3>
+<p>
+This option is supported for compatibility with Sendmail, but has the same
+effect as <i>-oep</i>.
+<hr></p>
+<a name="IX439"></a>
+<a name="IX440"></a>
+<h3>-oew</h3>
+<p>
+This option is supported for compatibility with Sendmail, but has the same
+effect as <i>-oem</i>.
+<hr></p>
+<a name="IX441"></a>
+<a name="IX442"></a>
+<h3>-oi</h3>
+<p>
+This option, which has the same effect as <i>-i</i>, specifies that a dot on a line
+by itself should not terminate an incoming, non-SMTP message.
+<font color=green>
+Otherwise, a single dot does terminate, though Exim does no special processing 
+for other lines that start with a dot.
+</font>
+This option is set by default if Exim is called as <i>rmail</i>. See also <i>-ti</i>.
+<hr></p>
+<a name="IX443"></a>
+<h3>-oitrue</h3>
+<p>
+This option is treated as synonymous with <i>-oi</i>.
+<hr></p>
+<a name="IX444"></a>
+<a name="IX445"></a>
+<h3>-oMa &nbsp;&#060;<em>host address</em>&#062;</h3>
+<p>
+A number of options starting with <i>-oM</i> can be used to set values associated
+with remote hosts on locally-submitted messages (that is, messages not received
+over TCP/IP). These options can be used by any caller in conjunction with the
+<i>-bh</i>, 
+<i>-be</i>,
+<i>-bf</i>, <i>-bF</i>, <i>-bt</i>, or <i>-bv</i> testing options. In other circumstances, they
+are ignored unless the caller is trusted.
+</p>
+<p>
+The <i>-oMa</i> option sets the sender host address. This may include a port number
+at the end, after a full stop (period). For example:
+<pre>
+&nbsp;&nbsp;exim -bs -oMa 10.9.8.7.1234
+</pre>
+</p>
+<p>
+An alternative syntax is to enclose the IP address in square brackets, followed
+by a colon and the port number:
+<pre>
+&nbsp;&nbsp;exim -bs -oMa [10.9.8.7]:1234
+</pre>
+</p>
+<p>
+The IP address is placed in the <tt>$sender&#095;host&#095;address</tt> variable, and the
+port, if present, in <tt>$sender&#095;host&#095;port</tt>.
+<hr></p>
+<a name="IX446"></a>
+<a name="IX447"></a>
+<h3>-oMaa &nbsp;&#060;<em>name</em>&#062;</h3>
+<p>
+See <i>-oMa</i> above for general remarks about the <i>-oM</i> options. The <i>-oMaa</i>
+option sets the value of <tt>$sender&#095;host&#095;authenticated</tt> (the authenticator
+name). See chapter <a href="spec_33.html">33</a> for a discussion of SMTP authentication.
+<hr></p>
+<a name="IX448"></a>
+<a name="IX449"></a>
+<h3>-oMai &nbsp;&#060;<em>string</em>&#062;</h3>
+<p>
+See <i>-oMa</i> above for general remarks about the <i>-oM</i> options. The <i>-oMai</i>
+option sets the 
+value of <tt>$authenticated&#095;id</tt> (the id that was authenticated).
+This overrides the default value (the caller's login id) for messages from
+local sources. See chapter <a href="spec_33.html">33</a> for a discussion of authenticated
+ids.
+<hr></p>
+<a name="IX450"></a>
+<a name="IX451"></a>
+<h3>-oMas &nbsp;&#060;<em>address</em>&#062;</h3>
+<p>
+See <i>-oMa</i> above for general remarks about the <i>-oM</i> options. The <i>-oMas</i>
+option sets the authenticated sender value
+in <tt>$authenticated&#095;sender</tt>. 
+It overrides the sender address that is created from the caller's login id for
+messages from local sources. See chapter <a href="spec_33.html">33</a> for a discussion of
+authenticated senders.
+<hr></p>
+<a name="IX452"></a>
+<a name="IX453"></a>
+<h3>-oMi &nbsp;&#060;<em>interface address</em>&#062;</h3>
+<p>
+See <i>-oMa</i> above for general remarks about the <i>-oM</i> options. The <i>-oMi</i>
+option sets the IP interface address value. A port number may be included,
+using the same syntax as for <i>-oMa</i>.
+The interface address is placed in <tt>$interface&#095;address</tt> and the port number, 
+if present, in <tt>$interface&#095;port</tt>.
+<hr></p>
+<a name="IX454"></a>
+<a name="IX455"></a>
+<h3>-oMr &nbsp;&#060;<em>protocol name</em>&#062;</h3>
+<p>
+See <i>-oMa</i> above for general remarks about the <i>-oM</i> options. The <i>-oMr</i>
+option sets the received protocol value
+in <tt>$received&#095;protocol</tt>. 
+However, this applies only when <i>-bs</i> is not used. For interactive SMTP input,
+the protocol is determined by whether <font size=-1>EHLO</font> or <font size=-1>HELO</font> is used, and is
+always either &#147;local-esmtp&#148; or &#147;local-smtp&#148;. For <i>-bS</i> (batch SMTP) however,
+the protocol can be set by <i>-oMr</i>.
+<hr></p>
+<a name="IX456"></a>
+<a name="IX457"></a>
+<h3>-oMs &nbsp;&#060;<em>host name</em>&#062;</h3>
+<p>
+See <i>-oMa</i> above for general remarks about the <i>-oM</i> options. The <i>-oMs</i>
+option sets the sender host name 
+in <tt>$sender&#095;host&#095;name</tt>. When this option is present, Exim does not attempt 
+to look up a host name from an IP address; it uses the name it is given.
+<hr></p>
+<a name="IX458"></a>
+<a name="IX459"></a>
+<h3>-oMt &nbsp;&#060;<em>ident string</em>&#062;</h3>
+<p>
+See <i>-oMa</i> above for general remarks about the <i>-oM</i> options. The <i>-oMt</i>
+option sets the sender ident value
+in <tt>$sender&#095;ident</tt>. 
+The default setting for local callers is the login id of the calling process.
+<hr></p>
+<a name="IX460"></a>
+<a name="IX461"></a>
+<h3>-om</h3>
+<p>
+In Sendmail, this option means &#147;me too&#148;, indicating that the sender of a
+message should receive a copy of the message if the sender appears in an alias
+expansion. Exim always does this, so the option does nothing.
+<hr></p>
+<a name="IX462"></a>
+<a name="IX463"></a>
+<h3>-oo</h3>
+<p>
+This option is ignored. In Sendmail it specifies &#147;old style headers&#148;, whatever
+that means.
+<hr></p>
+<a name="IX464"></a>
+<a name="IX465"></a>
+<a name="IX466"></a>
+<h3>-oP &nbsp;&#060;<em>path</em>&#062;</h3>
+<p>
+This option is useful only in conjunction with <i>-bd</i> or <i>-q</i> with a time 
+value. The option specifies the file to which the process id of the daemon is
+written. When <i>-oX</i> is used with <i>-bd</i>, or when <i>-q</i> with a time is used
+without <i>-bd</i>, this is the only way of causing Exim to write a pid file,
+because in those cases, the normal pid file is not used.
+<hr></p>
+<a name="IX467"></a>
+<a name="IX468"></a>
+<h3>-or &nbsp;&#060;<em>time</em>&#062;</h3>
+<p>
+This option sets a timeout value for incoming non-SMTP messages. If it is not
+set, Exim will wait forever for the standard input. The value can also be set
+by the <tt>receive&#095;timeout</tt> option. The format used for specifying times is
+described in section <a href="spec_6.html#SECT6.11">6.11</a>.
+<hr></p>
+<a name="IX469"></a>
+<a name="IX470"></a>
+<a name="IX471"></a>
+<h3>-os &nbsp;&#060;<em>time</em>&#062;</h3>
+<p>
+This option sets a timeout value for incoming SMTP messages. The timeout
+applies to each SMTP command and block of data. The value can also be set by
+the <tt>smtp&#095;receive&#095;timeout</tt> option; it defaults to 5 minutes. The format used
+for specifying times is described in section <a href="spec_6.html#SECT6.11">6.11</a>.
+<hr></p>
+<a name="IX472"></a>
+<h3>-ov</h3>
+<p>
+This option has exactly the same effect as <i>-v</i>.
+<hr></p>
+<a name="IX473"></a>
+<a name="IX474"></a>
+<a name="IX475"></a>
+<a name="IX476"></a>
+<h3>-oX &nbsp;&#060;<em>number or string</em>&#062;</h3>
+<p>
+This option is relevant only when the <i>-bd</i> (start listening daemon) option is
+also given. It controls which ports and interfaces the daemon uses. Details of
+the syntax, and how it interacts with configuration file options, are given in
+chapter <a href="spec_13.html">13</a>. When <i>-oX</i> is used to start a daemon, no pid file is
+written unless <i>-oP</i> is also present to specify a pid file name.
+<hr></p>
+<a name="IX477"></a>
+<a name="IX478"></a>
+<h3>-pd</h3>
+<p>
+This option applies when an embedded Perl interpreter is linked with Exim (see
+chapter <a href="spec_12.html">12</a>). It overrides the setting of the <tt>perl&#095;at&#095;start</tt> option,
+forcing the starting of the interpreter to be delayed until it is needed.
+<hr></p>
+<a name="IX479"></a>
+<a name="IX480"></a>
+<h3>-ps</h3>
+<p>
+This option applies when an embedded Perl interpreter is linked with Exim (see
+chapter <a href="spec_12.html">12</a>). It overrides the setting of the <tt>perl&#095;at&#095;start</tt> option,
+forcing the starting of the interpreter to occur as soon as Exim is started.
+<font color=green><hr></p>
+<a name="IX481"></a>
+<h3>-p&#060;<em>rval</em>&#062;:&#060;<em>sval</em>&#062;</h3>
+<p>
+For compatibility with Sendmail, this option
+is equivalent to
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>-oMr &#060;<em>rval</em>&#062; -oMs &#060;<em>sval</em>&#062;</tt><br>
+</p>
+<p>
+It sets the incoming protocol and host name (for trusted callers). The
+host name and its colon can be omitted when only the protocol is to be set.
+Note the Exim already has two private options, <i>-pd</i> and <i>-ps</i>, that refer to
+embedded Perl. It is therefore impossible to set a protocol value of <tt>p</tt> or
+<tt>s</tt> using this option (but that does not seem a real limitation).
+</font>
+<hr></p>
+<a name="IX482"></a>
+<a name="IX483"></a>
+<h3>-q</h3>
+<p>
+This option is normally restricted to admin users. However, there is a
+configuration option called <tt>prod&#095;requires&#095;admin</tt> which can be set false to
+relax this restriction (and also the same requirement for the <i>-M</i>, <i>-R</i>, and
+<i>-S</i> options).
+<a name="IX484"></a>
+</p>
+<p>
+<a name="IX485"></a>
+<a name="IX486"></a>
+<a name="IX487"></a>
+The <i>-q</i> option starts one queue runner process. This scans the queue of
+waiting messages, and runs a delivery process for each one in turn. It waits
+for each delivery process to finish before starting the next one. A delivery
+process may not actually do any deliveries if the retry times for the addresses
+have not been reached. Use <i>-qf</i> (see below) if you want to override this.
+If the delivery process spawns other processes to deliver other messages down
+passed SMTP connections, the queue runner waits for these to finish before
+proceeding.
+</p>
+<p>
+When all the queued messages have been considered, the original queue runner
+process terminates. In other words, a single pass is made over the waiting
+mail, one message at a time. Use <i>-q</i> with a time (see below) if you want this
+to be repeated periodically.
+</p>
+<p>
+Exim processes the waiting messages in an unpredictable order. It isn't very
+random, but it is likely to be different each time, which is all that matters.
+If one particular message screws up a remote MTA, other messages to the same
+MTA have a chance of getting through if they get tried first.
+</p>
+<p>
+It is possible to cause the messages to be processed in lexical message id
+order, which is essentially the order in which they arrived, by setting the
+<tt>queue&#095;run&#095;in&#095;order</tt> option, but this is not recommended for normal use.
+<hr></p>
+<a name="IX488"></a>
+<h3>-q &#060;<em>qflags</em>&#062;</h3>
+<p>
+The <i>-q</i> option may be followed by one or more flag letters that change its
+behaviour. They are all optional, but if more than one is present, they must
+appear in the correct order. Each flag is described in a separate item below.
+<hr></p>
+<a name="IX489"></a>
+<a name="IX490"></a>
+<a name="IX491"></a>
+<a name="IX492"></a>
+<h3>-qq...</h3>
+<p>
+<a name="IX493"></a>
+<a name="IX494"></a>
+<a name="IX495"></a>
+<a name="IX496"></a>
+An option starting with <i>-qq</i> requests a two-stage queue run. In the first
+stage, the queue is scanned as if the <tt>queue&#095;smtp&#095;domains</tt> option matched
+every domain. Addresses are routed, local deliveries happen, but no remote
+transports are run. 
+The hints database that remembers which messages are
+waiting for specific hosts is updated, as if delivery to those hosts had been
+deferred. After this is complete, a second, normal queue scan happens, with
+routing and delivery taking place as normal. Messages that are routed to the
+same host should mostly be delivered down a single SMTP
+connection because of the hints that were set up during the first queue scan.
+This option may be useful for hosts that are connected to the Internet
+intermittently.
+<hr></p>
+<a name="IX497"></a>
+<a name="IX498"></a>
+<h3>-q[q]i...</h3>
+<p>
+If the <i>i</i> flag is present, the queue runner runs delivery processes only for
+those messages that haven't previously been tried. (<i>i</i> stands for &#147;initial
+delivery&#148;.) This can be helpful if you are putting messages on the queue using
+<i>-odq</i> and want a queue runner just to process the new messages.
+<hr></p>
+<a name="IX499"></a>
+<a name="IX500"></a>
+<a name="IX501"></a>
+<h3>-q[q][i]f...</h3>
+<p>
+If one <i>f</i> flag is present, a delivery attempt is forced for each non-frozen
+message, whereas without <tt>f</tt> only those non-frozen addresses that have passed
+their retry times are tried.
+<hr></p>
+<a name="IX502"></a>
+<a name="IX503"></a>
+<h3>-q[q][i]ff...</h3>
+<p>
+If <i>ff</i> is present, a delivery attempt is forced for every message, whether
+frozen or not.
+<hr></p>
+<a name="IX504"></a>
+<a name="IX505"></a>
+<h3>-q[q][i][f[f]]l</h3>
+<p>
+The <i>l</i> (the letter &#147;ell&#148;) flag specifies that only local deliveries are to be
+done. If a message requires any remote deliveries, it remains on the queue for
+later delivery.
+<hr></p>
+<a name="IX506"></a>
+<a name="IX507"></a>
+<h3>-q &#060;<em>qflags</em>&#062;&nbsp;&#060;<em>start id</em>&#062;&nbsp;&#060;<em>end id</em>&#062;</h3>
+<p>
+When scanning the queue, Exim can be made to skip over messages whose ids are
+lexically less than a given value by following the <i>-q</i> option with a starting
+message id. For example:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>exim -q 0t5C6f-0000c8-00</tt><br>
+</p>
+<p>
+Messages that arrived earlier than <tt>0t5C6f-0000c8-00</tt> are not inspected. If a
+second message id is given, messages whose ids are lexically greater than it
+are also skipped. If the same id is given twice, for example,
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>exim -q 0t5C6f-0000c8-00 0t5C6f-0000c8-00</tt><br>
+</p>
+<p>
+just one delivery process is started, for that message. This differs from <i>-M</i>
+in that retry data is respected, and it also differs from <i>-Mc</i> in that it
+counts as a delivery from a queue run. Note that the selection mechanism does
+not affect the order in which the messages are scanned. There are also other
+ways of selecting specific sets of messages for delivery in a queue run &#150; see
+<i>-R</i> and <i>-S</i>.
+<hr></p>
+<a name="IX508"></a>
+<a name="IX509"></a>
+<a name="IX510"></a>
+<h3>-q &#060;<em>qflags</em>&#062;&#060;<em>time</em>&#062;</h3>
+<p>
+When a time value is present, the <i>-q</i> option causes Exim to run as a daemon,
+starting a queue runner process at intervals specified by the given time value
+(whose format is described in section <a href="spec_6.html#SECT6.11">6.11</a>). This form of the <i>-q</i>
+option is commonly combined with the <i>-bd</i> option, in which case a single
+daemon process handles both functions. A common way of starting up a combined
+daemon at system boot time is to use a command such as
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>/usr/exim/bin/exim -bd -q30m</tt><br>
+</p>
+<p>
+Such a daemon listens for incoming SMTP calls, and also starts a queue runner
+process every 30 minutes.
+</p>
+<p>
+When a daemon is started by <i>-q</i> with a time value, but without <i>-bd</i>, no pid 
+file is written unless one is explicitly requested by the <i>-oP</i> option.
+<hr></p>
+<a name="IX511"></a>
+<h3>-qR &#060;<em>rsflags</em>&#062;&nbsp;&#060;<em>string</em>&#062;</h3>
+<p>
+This option is synonymous with <i>-R</i>. It is provided for Sendmail
+compatibility.
+<hr></p>
+<a name="IX512"></a>
+<h3>-qS &#060;<em>rsflags</em>&#062;&nbsp;&#060;<em>string</em>&#062;</h3>
+<p>
+This option is synonymous with <i>-S</i>.
+<hr></p>
+<a name="IX513"></a>
+<a name="IX514"></a>
+<a name="IX515"></a>
+<a name="IX516"></a>
+<h3>-R &#060;<em>rsflags</em>&#062;&nbsp;&#060;<em>string</em>&#062;</h3>
+<p>
+The &#060;<em>rsflags</em>&#062; may be empty, in which case the white space before the string
+is optional, unless the string is <i>f</i>, <i>ff</i>, <i>r</i>, <i>rf</i>, or <i>rff</i>,
+which are the possible values for &#060;<em>rsflags</em>&#062;. White space is required if
+&#060;<em>rsflags</em>&#062; is not empty.
+</p>
+<p>
+This option is similar to <i>-q</i> with no time value, that is, it causes Exim to
+perform a single queue run, except that, when scanning the messages on the
+queue, Exim processes only those that have at least one undelivered recipient
+address containing the given string, which is checked in a case-independent
+way. If the &#060;<em>rsflags</em>&#062; start with <i>r</i>, &#060;<em>string</em>&#062; is interpreted as a regular
+expression; otherwise it is a literal string.
+</p>
+<p>
+Once a message is selected, all its addresses are processed. For the first
+selected message, Exim overrides any retry information and forces a delivery
+attempt for each undelivered address. This means that if delivery of any
+address in the first message is successful, any existing retry information is
+deleted, and so delivery attempts for that address in subsequently selected
+messages (which are processed without forcing) will run. However, if delivery
+of any address does not succeed, the retry information is updated, and in
+subsequently selected messages, the failing address will be skipped.
+</p>
+<p>
+<a name="IX517"></a>
+If the &#060;<em>rsflags</em>&#062; contain <i>f</i> or <i>ff</i>, the delivery forcing applies to all
+selected messages, not just the first;
+frozen messages are included when <i>ff</i> is present.
+</p>
+<p>
+The <i>-R</i> option makes it straightforward to initiate delivery of all messages
+to a given domain after a host has been down for some time. When the SMTP
+command <font size=-1>ETRN</font> is accepted by its ACL (see chapter <a href="spec_38.html">38</a>), its default
+effect is to run Exim with the <i>-R</i> option, but it can be configured to run an
+arbitrary command instead.
+<hr></p>
+<a name="IX518"></a>
+<h3>-r</h3>
+<p>
+This is a documented (for Sendmail) obsolete alternative name for <i>-f</i>.
+<a name="IX519"></a>
+<hr></p>
+<a name="IX520"></a>
+<a name="IX521"></a>
+<h3>-S &#060;<em>rsflags</em>&#062;&nbsp;&#060;<em>string</em>&#062;</h3>
+<p>
+This option acts like <i>-R</i> except that it checks the string against each
+message's sender instead of against the recipients. If <i>-R</i> is also set, both
+conditions must be met for a message to be selected. If either of the options
+has <i>f</i> or <i>ff</i> in its flags, the associated action is taken.
+<font color=green><hr></p>
+<a name="IX522"></a>
+<h3>-Tqt&nbsp;&#060;<em>times</em>&#062;</h3>
+<p>
+This an option that is exclusively for use by the Exim testing suite.
+It is not recognized when Exim is run normally. It allows for the setting up
+of explicit &#147;queue times&#148; so that various warning/retry features can be 
+tested. 
+</font>
+<hr></p>
+<a name="IX523"></a>
+<a name="IX524"></a>
+<a name="IX525"></a>
+<a name="IX526"></a>
+<a name="IX527"></a>
+<h3>-t</h3>
+<p>
+When Exim is receiving a locally-generated, non-SMTP message on its standard
+input, the <i>-t</i> option causes the recipients of the message to be obtained
+from the <i>To:</i>, <i>Cc:</i>, and <i>Bcc:</i> header lines in the message instead of from
+the command arguments. The addresses are extracted before any rewriting takes
+place.
+<a name="IX528"></a>
+</p>
+<p>
+If the command has any arguments, they specify addresses to which the message
+is <em>not</em> to be delivered. That is, the argument addresses are removed from
+the recipients list obtained from the headers. This is compatible with Smail 3
+and in accordance with the documented behaviour of several versions of
+Sendmail, as described in man pages on a number of operating systems (e.g.
+Solaris 8, IRIX 6.5, HP-UX 11). However, some versions of Sendmail <em>add</em>
+argument addresses to those obtained from the headers, and the O'Reilly
+Sendmail book documents it that way. Exim can be made to add argument addresses
+instead of subtracting them by setting the option
+<tt>extract_addresses_remove_arguments</tt> false.
+</p>
+<p>
+If a <i>Bcc:</i> header line is present, it is removed from the message unless
+there is no <i>To:</i> or <i>Cc:</i>, in which case a <i>Bcc:</i> line with no data is
+created. This is necessary for conformity with the original RFC 822 standard;
+the requirement has been removed in RFC 2822, but that is still very new.
+<a name="IX529"></a>
+</p>
+<p>
+If there are any <tt>Resent&#045;</tt> header lines in the message, Exim extracts 
+recipients from all <i>Resent-To:</i>, <i>Resent-Cc:</i>, and <i>Resent-Bcc:</i> header
+lines instead of from <i>To:</i>, <i>Cc:</i>, and <i>Bcc:</i>. This is for compatibility 
+with Sendmail and other MTAs. (Prior to release 4.20, Exim gave an error if 
+<i>-t</i> was used in conjunction with <tt>Resent&#045;</tt> header lines.)
+</p>
+<p>
+RFC 2822 talks about different sets of <tt>Resent&#045;</tt> header lines (for when a
+message is resent several times). The RFC also specifies that they should be
+added at the front of the message, and separated by <i>Received:</i> lines. It is
+not at all clear how <i>-t</i> should operate in the present of multiple sets,
+nor indeed exactly what constitutes a &#147;set&#148;.
+In practice, it seems that MUAs do not follow the RFC. The <tt>Resent&#045;</tt> lines are
+often added at the end of the header, and if a message is resent more than
+once, it is common for the original set of <tt>Resent&#045;</tt> headers to be renamed as
+<tt>X-Resent&#045;</tt> when a new set is added. This removes any possible ambiguity.
+<hr></p>
+<a name="IX530"></a>
+<h3>-ti</h3>
+<p>
+This option is exactly equivalent to <i>-t</i> <i>-i</i>. It is provided for 
+compatibility with Sendmail.
+<hr></p>
+<a name="IX531"></a>
+<a name="IX532"></a>
+<a name="IX533"></a>
+<h3>-tls-on-connect</h3>
+<p>
+This option is available when Exim is compiled with TLS support. It makes it
+possible to support legacy clients that do not support the <font size=-1>STARTTLS</font>
+command, but instead expect to start up a TLS session as soon as a connection
+to the server is established. These clients use a special port (usually called
+the &#147;ssmtp&#148; port) instead of the normal SMTP port 25. The <i>-tls-on-connect</i>
+option can be used to run Exim in this way from <i>inetd</i>, and it can also be
+used to run a special daemon that operates in this manner (use <i>-oX</i> to
+specify the port). However, although it is possible to run one daemon that
+listens on several ports, it is not possible to have some of them operate one
+way and some the other. With only a few clients that need the legacy support, a
+convenient approach is to use a daemon for normal SMTP (with or without
+<font size=-1>STARTTLS</font>) and <i>inetd</i> with <i>-tls-on-connect</i> for the legacy clients.
+<hr></p>
+<a name="IX534"></a>
+<a name="IX535"></a>
+<h3>-U</h3>
+<p>
+Sendmail uses this option for &#147;initial message submission&#148;, and its
+documentation states that in future releases, it may complain about
+syntactically invalid messages rather than fixing them when this flag is not
+set. Exim ignores this option.
+<hr></p>
+<a name="IX536"></a>
+<h3>-v</h3>
+<p>
+This option causes Exim to write information to the standard error stream,
+describing what it is doing. In particular, it shows the log lines for
+receiving and delivering a message, and if an SMTP connection is made, the SMTP
+dialogue is shown. Some of the log lines shown may not actually be written to
+the log if the setting of <tt>log&#095;selector</tt> discards them. Any relevant selectors
+are shown with each log line. If none are shown, the logging is unconditional.
+<hr></p>
+<a name="IX537"></a>
+<h3>-x</h3>
+<p>
+AIX uses <i>-x</i> for a private purpose (&#147;mail from a local mail program has
+National Language Support extended characters in the body of the mail item&#148;).
+It sets <i>-x</i> when calling the MTA from its <tt>mail</tt> command. Exim ignores this
+option.
+<hr><br>
+<hr>
+</p>
+<font size=2>
+<a href="spec_4.html">Previous</a>&nbsp;&nbsp;<a href="spec_6.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

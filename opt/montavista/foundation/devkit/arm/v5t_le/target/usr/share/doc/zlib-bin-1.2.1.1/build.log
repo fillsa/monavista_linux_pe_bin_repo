@@ -1,0 +1,31 @@
+Checking for shared library support...
+Building shared library libz.so.1.2.1.1 with arm_v5t_le-gcc .
+Checking for unistd.h... Yes.
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf()
+Checking for vsnprintf() in stdio.h... Yes.
+Checking for return value of vsnprintf()... Yes.
+Checking for errno.h... Yes.
+Checking for mmap support... Yes.
+Checking for snprintf...	 Yes.
+Checking for vsnprintf...	 Yes.
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf   -c -o example.o example.c
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf   -c -o adler32.o adler32.c
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf   -c -o compress.o compress.c
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf   -c -o crc32.o crc32.c
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf   -c -o gzio.o gzio.c
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf   -c -o uncompr.o uncompr.c
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf   -c -o deflate.o deflate.c
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf   -c -o trees.o trees.c
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf   -c -o zutil.o zutil.c
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf   -c -o inflate.o inflate.c
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf   -c -o infback.o infback.c
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf   -c -o inftrees.o inftrees.c
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf   -c -o inffast.o inffast.c
+arm_v5t_le-gcc  -shared -Wl,-soname,libz.so.1 -lc -o libz.so.1.2.1.1 adler32.o compress.o crc32.o gzio.o uncompr.o deflate.o trees.o zutil.o inflate.o infback.o inftrees.o inffast.o
+rm -f libz.so libz.so.1
+ln -s libz.so.1.2.1.1 libz.so
+ln -s libz.so.1.2.1.1 libz.so.1
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf -o example example.o -L. libz.so.1.2.1.1
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf   -c -o minigzip.o minigzip.c
+arm_v5t_le-gcc  -O2 -D_REENTRANT -fPIC -g -DUSE_MMAP -DHAS_snprintf -DHAS_vsnprintf -o minigzip minigzip.o -L. libz.so.1.2.1.1
+arm_v5t_le-ar rc libz.a adler32.o compress.o crc32.o gzio.o uncompr.o deflate.o trees.o zutil.o inflate.o infback.o inftrees.o inffast.o 

@@ -1,0 +1,389 @@
+/* MACHINE-GENERATED. DO NOT EDIT ! */
+
+/*
+ * meters.tc - Convenience macros for implementing traffic meters
+ *
+ * Written 2001,2002 by Werner Almesberger
+ * Copyright 2001,2002 Network Robots
+ */
+
+/*
+ * Note: this doesn't always work yet. Although the default and the -B
+ * algorithm can both handle ! and such, they don't scale very well.
+ *
+ * In particular, the default algorithm freaks out rather quickly when
+ * encountering negation. The macros beginning with __ are better in this
+ * respect, see below.
+ */
+
+#ifndef METERS_TC
+#define METERS_TC
+
+/*
+ * This file defines the following "official" macros:
+ *
+ * SLB			define single leaky bucket meter
+ * SLB_ok		test SLB for conformance
+ * SLB_else_drop	test SLB for conformance, and drop if non-conformant
+ *
+ * DLB			define double leaky bucket meter
+ * DLB_ok		test DLB for conformance
+ * DLB_else_drop	test DLB for conformance, and drop if non-conformant
+ *
+ * srTCM		define single-rate three color marker
+ * srTCM_green		test if srTCM color is "green"
+ * srTCM_yellow		test if srTCM color is "yellow"
+ * srTCM_red		test if srTCM color is "red"
+ *
+ * trTCM		define two-rate three color marker
+ * trTCM_green		test if trTCM color is "green"
+ * trTCM_yellow		test if trTCM color is "yellow"
+ * trTCM_red		test if trTCM color is "red"
+ *
+ * Furthermore, it defines the following macros which are optimized for
+ * performance, but are constrained in where and how they can be used:
+ *
+ * __srTCM_green	like srTCM_green
+ * __srTCM_yellow	like srTCM_yellow
+ * __srTCM_red		like srTCM_red
+ *
+ * __trTCM_green	like trTCM_green
+ * __trTCM_yellow	like trTCM_yellow
+ * __trTCM_red		like trTCM_red
+ *
+ * All tests for conformance or color imply that the packet is attributed
+ * to the respective class, and update the bucket counter(s) accordingly.
+ */
+
+/*
+ * The macros set_SLB, set_DLB, set_srTCM, and set_trTCM are obsolete and
+ * should be replaced with their counterparts without set_ prefix.
+ */
+
+
+/* ----- Two color meters -------------------------------------------------- */
+
+/*
+ * xLB_else_drop are convenient short-cuts for the common drop policer idiom.
+ * The following two expressions are equivalent:
+ *
+ * xxx if condition && SLB_ok(...)
+ * drop if condition
+ *
+ * and
+ *
+ * xxx if condition && SLB_else_drop(...)
+ */
+
+/*
+ * Single Leaky Bucket
+ */
+
+#define __set_SLB_fixed2(name,CIR,CBS,MTU,MPU,TAG,PRAGMA) \
+  name = bucket(rate CIR,burst CBS,mpu MPU,tag TAG,pragma (PRAGMA))
+#define __set_SLB_fixed(name,CIR,CBS,MTU,MPU) \
+  __set_SLB_fixed2(name,CIR,CBS,MTU,MPU,"","")
+
+#define SLB_ok(name) { $__ = (name); conform $__ && count $__; }
+
+#define SLB_else_drop(name) (SLB_ok(name) || drop)
+
+
+/*
+ * Double Leaky Bucket
+ */
+
+#define __set_DLB_fixed2(name,CIR,CBS,PIR,PBS,MTU,MPU,TAG,PRAGMA) \
+  name._Tc = bucket(rate CIR,burst CBS,mpu MPU,tag TAG,pragma (PRAGMA)); \
+  name._Tp = bucket(rate PIR,burst PBS,mpu MPU,tag TAG,pragma (PRAGMA))
+#define __set_DLB_fixed(name,CIR,CBS,PIR,PBS,MTU,MPU) \
+  __set_DLB_fixed2(name,CIR,CBS,PIR,PBS,MTU,MPU,"","")
+
+#define DLB_ok(name) \
+  { $__ = (name); \
+  conform $__._Tc && conform $__._Tp && \
+  count $__._Tc && count $__._Tp; }
+
+#define DLB_else_drop(name) (DLB_ok(name) || drop)
+
+
+/* ----- Three color meters ------------------------------------------------ */
+
+/*
+ * The color test macros not beginning with __ can be used in any order, some
+ * of them can be omitted, and each of them can be combined with any other
+ * conditions.
+ *
+ * The __* versions are order-dependent, need to be applied green to red, only
+ * tests at the end may be omitted (e.g. green-yellow or just green are valid,
+ * but yellow-red isn't), and the same pre-conditions must be used with all of
+ * them.
+ *
+ * The __* macros are easier to process for tcc, so they may be useful if
+ * converting a given configuration consumes too many resources.
+ */
+
+/*
+ * Color-blind Single Rate Three Color Marker (srTCM), RFC2697
+ */
+
+#define __set_srTCM_fixed2(name,CIR,CBS,EBS,MTU,MPU,TAG,PRAGMA) \
+  name._Te = bucket(rate 0 kbps,burst EBS,mpu MPU,tag TAG,pragma (PRAGMA)); \
+  name._Tc = bucket(rate CIR,burst CBS,mpu MPU,overflow bucket name._Te, \
+    tag TAG,pragma (PRAGMA))
+#define __set_srTCM_fixed(name,CIR,CBS,EBS,MTU,MPU) \
+  __set_srTCM_fixed2(name,CIR,CBS,EBS,MTU,MPU,"","")
+
+#define __srTCM_green(name) \
+  { $__ = (name); \
+  conform bucket $__._Tc && count $__._Tc; }
+#define __srTCM_yellow(name) \
+  { $__ = (name); \
+  conform bucket $__._Te && count bucket $__._Te; }
+#define __srTCM_red(name) 1
+
+#define srTCM_green(name) __srTCM_green(name)
+#define srTCM_yellow(name) \
+  { $__ = (name); \
+  !conform bucket $__._Tc && __srTCM_yellow($__); }
+#define srTCM_red(name) \
+  { $__ = (name); \
+  !conform bucket $__._Tc && !conform bucket $__._Te; }
+
+
+/*
+ * Color-blind Two Rate Three Color Marker (trTCM), RFC2698
+ */
+
+#define __set_trTCM_fixed2(name,CIR,CBS,PIR,PBS,MTU,MPU,TAG,PRAGMA) \
+  name._Tc = bucket(rate CIR,burst CBS,mpu MPU,tag TAG,pragma (PRAGMA)); \
+  name._Tp = bucket(rate PIR,burst PBS,mpu MPU,tag TAG,pragma (PRAGMA))
+#define __set_trTCM_fixed(name,CIR,CBS,PIR,PBS,MTU,MPU) \
+  __set_trTCM_fixed2(name,CIR,CBS,PIR,PBS,MTU,MPU,"","")
+
+#define __trTCM_green(name) \
+  { $__ = (name); \
+  conform bucket $__._Tc && conform bucket $__._Tp && \
+  count bucket $__._Tc && count bucket $__._Tp; }
+#define __trTCM_yellow(name) \
+  { $__ = (name); \
+  conform bucket $__._Tp && count bucket $__._Tp; }
+#define __trTCM_red(name) 1
+
+#define trTCM_green(name) __trTCM_green(name)
+#define trTCM_yellow(name) \
+  { $__ = (name); \
+  !conform bucket $__._Tc && __trTCM_yellow(name); }
+#define trTCM_red(name) \
+  { $__ = (name); \
+  !conform bucket $__._Tp; }
+
+
+/* ----- Position-independent macros --------------------------------------- */
+
+/*
+ * The following macros turn a parameter list with the usual tcng syntax
+ * param_name param_value  into a list of fixed-position values. They also
+ * handle default values to some extent.
+ */
+
+#define __m_set_SLB_
+
+#define __m_set_SLB_cir $__set_SLB_cir =
+#define __m_set_SLB_cbs $__set_SLB_cbs =
+#define __m_set_SLB_mtu $__set_SLB_mtu =
+#define __m_set_SLB_mpu $__set_SLB_mpu =
+#define __m_set_SLB_tag $__set_SLB_tag =
+#define __m_set_SLB_pragma $__set_SLB_pragma =
+
+#define __m_set_SLB_set1(arg,...) __m_set_SLB_##arg;
+#define __m_set_SLB_set2(arg,...) \
+  __m_set_SLB_##arg; __m_set_SLB_set1(__VA_ARGS__)
+#define __m_set_SLB_set3(arg,...) \
+  __m_set_SLB_##arg; __m_set_SLB_set2(__VA_ARGS__)
+#define __m_set_SLB_set4(arg,...) \
+  __m_set_SLB_##arg; __m_set_SLB_set3(__VA_ARGS__)
+#define __m_set_SLB_set5(arg,...) \
+  __m_set_SLB_##arg; __m_set_SLB_set4(__VA_ARGS__)
+#define __m_set_SLB_set6(arg,...) \
+  __m_set_SLB_##arg; __m_set_SLB_set5(__VA_ARGS__)
+
+#define __set_SLB(var,...) \
+  /* set defaults */ \
+  $__set_SLB_cir =  -1; \
+  $__set_SLB_cbs =  -1; \
+  $__set_SLB_mtu =  1.5kB; \
+  $__set_SLB_mpu =  0B; \
+  $__set_SLB_tag =  ""; \
+  $__set_SLB_pragma =  ""; \
+  /* "use" all variables */ \
+  field __set_SLB_dummy = raw if $__set_SLB_cir == $__set_SLB_cir; \
+  field __set_SLB_dummy = raw if $__set_SLB_cbs == $__set_SLB_cbs; \
+  field __set_SLB_dummy = raw if $__set_SLB_mtu == $__set_SLB_mtu; \
+  field __set_SLB_dummy = raw if $__set_SLB_mpu == $__set_SLB_mpu; \
+  field __set_SLB_dummy = raw if $__set_SLB_tag == $__set_SLB_tag; \
+  field __set_SLB_dummy = raw if $__set_SLB_pragma == $__set_SLB_pragma; \
+  /* copy parameters to variables */ \
+  __m_set_SLB_set6(__VA_ARGS__); \
+  /* invoke next macro */ \
+  __set_SLB_fixed2(var,$__set_SLB_cir,$__set_SLB_cbs,$__set_SLB_mtu,$__set_SLB_mpu,$__set_SLB_tag,$__set_SLB_pragma)
+
+#define set_SLB(...) __set_SLB(__VA_ARGS__) /* expand macros */
+#define __m_set_DLB_
+
+#define __m_set_DLB_cir $__set_DLB_cir =
+#define __m_set_DLB_cbs $__set_DLB_cbs =
+#define __m_set_DLB_pir $__set_DLB_pir =
+#define __m_set_DLB_pbs $__set_DLB_pbs =
+#define __m_set_DLB_mtu $__set_DLB_mtu =
+#define __m_set_DLB_mpu $__set_DLB_mpu =
+#define __m_set_DLB_tag $__set_DLB_tag =
+#define __m_set_DLB_pragma $__set_DLB_pragma =
+
+#define __m_set_DLB_set1(arg,...) __m_set_DLB_##arg;
+#define __m_set_DLB_set2(arg,...) \
+  __m_set_DLB_##arg; __m_set_DLB_set1(__VA_ARGS__)
+#define __m_set_DLB_set3(arg,...) \
+  __m_set_DLB_##arg; __m_set_DLB_set2(__VA_ARGS__)
+#define __m_set_DLB_set4(arg,...) \
+  __m_set_DLB_##arg; __m_set_DLB_set3(__VA_ARGS__)
+#define __m_set_DLB_set5(arg,...) \
+  __m_set_DLB_##arg; __m_set_DLB_set4(__VA_ARGS__)
+#define __m_set_DLB_set6(arg,...) \
+  __m_set_DLB_##arg; __m_set_DLB_set5(__VA_ARGS__)
+#define __m_set_DLB_set7(arg,...) \
+  __m_set_DLB_##arg; __m_set_DLB_set6(__VA_ARGS__)
+#define __m_set_DLB_set8(arg,...) \
+  __m_set_DLB_##arg; __m_set_DLB_set7(__VA_ARGS__)
+
+#define __set_DLB(var,...) \
+  /* set defaults */ \
+  $__set_DLB_cir =  -1; \
+  $__set_DLB_cbs =  -1; \
+  $__set_DLB_pir =  -1; \
+  $__set_DLB_pbs =  -1; \
+  $__set_DLB_mtu =  1.5kB; \
+  $__set_DLB_mpu =  0B; \
+  $__set_DLB_tag =  ""; \
+  $__set_DLB_pragma =  ""; \
+  /* "use" all variables */ \
+  field __set_DLB_dummy = raw if $__set_DLB_cir == $__set_DLB_cir; \
+  field __set_DLB_dummy = raw if $__set_DLB_cbs == $__set_DLB_cbs; \
+  field __set_DLB_dummy = raw if $__set_DLB_pir == $__set_DLB_pir; \
+  field __set_DLB_dummy = raw if $__set_DLB_pbs == $__set_DLB_pbs; \
+  field __set_DLB_dummy = raw if $__set_DLB_mtu == $__set_DLB_mtu; \
+  field __set_DLB_dummy = raw if $__set_DLB_mpu == $__set_DLB_mpu; \
+  field __set_DLB_dummy = raw if $__set_DLB_tag == $__set_DLB_tag; \
+  field __set_DLB_dummy = raw if $__set_DLB_pragma == $__set_DLB_pragma; \
+  /* copy parameters to variables */ \
+  __m_set_DLB_set8(__VA_ARGS__); \
+  /* invoke next macro */ \
+  __set_DLB_fixed2(var,$__set_DLB_cir,$__set_DLB_cbs,$__set_DLB_pir,$__set_DLB_pbs,$__set_DLB_mtu,$__set_DLB_mpu,$__set_DLB_tag,$__set_DLB_pragma)
+
+#define set_DLB(...) __set_DLB(__VA_ARGS__) /* expand macros */
+#define __m_set_srTCM_
+
+#define __m_set_srTCM_cir $__set_srTCM_cir =
+#define __m_set_srTCM_cbs $__set_srTCM_cbs =
+#define __m_set_srTCM_ebs $__set_srTCM_ebs =
+#define __m_set_srTCM_mtu $__set_srTCM_mtu =
+#define __m_set_srTCM_mpu $__set_srTCM_mpu =
+#define __m_set_srTCM_tag $__set_srTCM_tag =
+#define __m_set_srTCM_pragma $__set_srTCM_pragma =
+
+#define __m_set_srTCM_set1(arg,...) __m_set_srTCM_##arg;
+#define __m_set_srTCM_set2(arg,...) \
+  __m_set_srTCM_##arg; __m_set_srTCM_set1(__VA_ARGS__)
+#define __m_set_srTCM_set3(arg,...) \
+  __m_set_srTCM_##arg; __m_set_srTCM_set2(__VA_ARGS__)
+#define __m_set_srTCM_set4(arg,...) \
+  __m_set_srTCM_##arg; __m_set_srTCM_set3(__VA_ARGS__)
+#define __m_set_srTCM_set5(arg,...) \
+  __m_set_srTCM_##arg; __m_set_srTCM_set4(__VA_ARGS__)
+#define __m_set_srTCM_set6(arg,...) \
+  __m_set_srTCM_##arg; __m_set_srTCM_set5(__VA_ARGS__)
+#define __m_set_srTCM_set7(arg,...) \
+  __m_set_srTCM_##arg; __m_set_srTCM_set6(__VA_ARGS__)
+
+#define __set_srTCM(var,...) \
+  /* set defaults */ \
+  $__set_srTCM_cir =  -1; \
+  $__set_srTCM_cbs =  -1; \
+  $__set_srTCM_ebs =  -1; \
+  $__set_srTCM_mtu =  1.5kB; \
+  $__set_srTCM_mpu =  0B; \
+  $__set_srTCM_tag =  ""; \
+  $__set_srTCM_pragma =  ""; \
+  /* "use" all variables */ \
+  field __set_srTCM_dummy = raw if $__set_srTCM_cir == $__set_srTCM_cir; \
+  field __set_srTCM_dummy = raw if $__set_srTCM_cbs == $__set_srTCM_cbs; \
+  field __set_srTCM_dummy = raw if $__set_srTCM_ebs == $__set_srTCM_ebs; \
+  field __set_srTCM_dummy = raw if $__set_srTCM_mtu == $__set_srTCM_mtu; \
+  field __set_srTCM_dummy = raw if $__set_srTCM_mpu == $__set_srTCM_mpu; \
+  field __set_srTCM_dummy = raw if $__set_srTCM_tag == $__set_srTCM_tag; \
+  field __set_srTCM_dummy = raw if $__set_srTCM_pragma == $__set_srTCM_pragma; \
+  /* copy parameters to variables */ \
+  __m_set_srTCM_set7(__VA_ARGS__); \
+  /* invoke next macro */ \
+  __set_srTCM_fixed2(var,$__set_srTCM_cir,$__set_srTCM_cbs,$__set_srTCM_ebs,$__set_srTCM_mtu,$__set_srTCM_mpu,$__set_srTCM_tag,$__set_srTCM_pragma)
+
+#define set_srTCM(...) __set_srTCM(__VA_ARGS__) /* expand macros */
+#define __m_set_trTCM_
+
+#define __m_set_trTCM_cir $__set_trTCM_cir =
+#define __m_set_trTCM_cbs $__set_trTCM_cbs =
+#define __m_set_trTCM_pir $__set_trTCM_pir =
+#define __m_set_trTCM_pbs $__set_trTCM_pbs =
+#define __m_set_trTCM_mtu $__set_trTCM_mtu =
+#define __m_set_trTCM_mpu $__set_trTCM_mpu =
+#define __m_set_trTCM_tag $__set_trTCM_tag =
+#define __m_set_trTCM_pragma $__set_trTCM_pragma =
+
+#define __m_set_trTCM_set1(arg,...) __m_set_trTCM_##arg;
+#define __m_set_trTCM_set2(arg,...) \
+  __m_set_trTCM_##arg; __m_set_trTCM_set1(__VA_ARGS__)
+#define __m_set_trTCM_set3(arg,...) \
+  __m_set_trTCM_##arg; __m_set_trTCM_set2(__VA_ARGS__)
+#define __m_set_trTCM_set4(arg,...) \
+  __m_set_trTCM_##arg; __m_set_trTCM_set3(__VA_ARGS__)
+#define __m_set_trTCM_set5(arg,...) \
+  __m_set_trTCM_##arg; __m_set_trTCM_set4(__VA_ARGS__)
+#define __m_set_trTCM_set6(arg,...) \
+  __m_set_trTCM_##arg; __m_set_trTCM_set5(__VA_ARGS__)
+#define __m_set_trTCM_set7(arg,...) \
+  __m_set_trTCM_##arg; __m_set_trTCM_set6(__VA_ARGS__)
+#define __m_set_trTCM_set8(arg,...) \
+  __m_set_trTCM_##arg; __m_set_trTCM_set7(__VA_ARGS__)
+
+#define __set_trTCM(var,...) \
+  /* set defaults */ \
+  $__set_trTCM_cir =  -1; \
+  $__set_trTCM_cbs =  -1; \
+  $__set_trTCM_pir =  -1; \
+  $__set_trTCM_pbs =  -1; \
+  $__set_trTCM_mtu =  1.5kB; \
+  $__set_trTCM_mpu =  0B; \
+  $__set_trTCM_tag =  ""; \
+  $__set_trTCM_pragma =  ""; \
+  /* "use" all variables */ \
+  field __set_trTCM_dummy = raw if $__set_trTCM_cir == $__set_trTCM_cir; \
+  field __set_trTCM_dummy = raw if $__set_trTCM_cbs == $__set_trTCM_cbs; \
+  field __set_trTCM_dummy = raw if $__set_trTCM_pir == $__set_trTCM_pir; \
+  field __set_trTCM_dummy = raw if $__set_trTCM_pbs == $__set_trTCM_pbs; \
+  field __set_trTCM_dummy = raw if $__set_trTCM_mtu == $__set_trTCM_mtu; \
+  field __set_trTCM_dummy = raw if $__set_trTCM_mpu == $__set_trTCM_mpu; \
+  field __set_trTCM_dummy = raw if $__set_trTCM_tag == $__set_trTCM_tag; \
+  field __set_trTCM_dummy = raw if $__set_trTCM_pragma == $__set_trTCM_pragma; \
+  /* copy parameters to variables */ \
+  __m_set_trTCM_set8(__VA_ARGS__); \
+  /* invoke next macro */ \
+  __set_trTCM_fixed2(var,$__set_trTCM_cir,$__set_trTCM_cbs,$__set_trTCM_pir,$__set_trTCM_pbs,$__set_trTCM_mtu,$__set_trTCM_mpu,$__set_trTCM_tag,$__set_trTCM_pragma)
+
+#define set_trTCM(...) __set_trTCM(__VA_ARGS__) /* expand macros */
+
+#define SLB(...) { set_SLB($__,__VA_ARGS__); $__; }
+#define DLB(...) { set_DLB($__,__VA_ARGS__); $__; }
+#define srTCM(...) { set_srTCM($__,__VA_ARGS__); $__; }
+#define trTCM(...) { set_trTCM($__,__VA_ARGS__); $__; }
+
+#endif /* METERS_TC */

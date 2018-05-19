@@ -1,0 +1,1248 @@
+checking what to build and install...  agent apps man local mibs
+using default "enterprise.net-snmp"
+using default enterprise sysOID "NET-SNMP-MIB::netSnmpAgentOIDs..."
+using default notifications "NET-SNMP-MIB::netSnmpNotifications"
+checking if I need to feed myself to ksh... no
+checking for armv5tl-montavista-linuxeabi-gcc... arm_v5t_le-gcc 
+checking for C compiler default output... a.out
+checking whether the C compiler works... yes
+checking whether we are cross compiling... yes
+checking for suffix of executables... 
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether arm_v5t_le-gcc  accepts -g... yes
+checking for arm_v5t_le-gcc  option to accept ANSI C... none needed
+checking how to run the C preprocessor... arm_v5t_le-cpp 
+checking for egrep... grep -E
+checking for AIX... no
+checking build system type... i686-pc-linux-gnu
+checking host system type... armv5tl-montavista-linux-gnueabi
+checking for ld used by GCC... arm_v5t_le-ld
+checking if the linker (arm_v5t_le-ld) is GNU ld... yes
+checking for arm_v5t_le-ld option to reload object files... -r
+checking for BSD-compatible nm... arm_v5t_le-nm
+checking for a sed that does not truncate output... /usr/bin/sed
+checking whether ln -s works... yes
+checking how to recognise dependent libraries... file_magic ELF [0-9][0-9]*-bit [LM]SB (shared object|dynamic lib )
+checking command to parse arm_v5t_le-nm output... ok
+checking for ANSI C header files... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for unistd.h... yes
+checking dlfcn.h usability... yes
+checking dlfcn.h presence... yes
+checking for dlfcn.h... yes
+checking for armv5tl-montavista-linuxeabi-file... no
+checking for file... /usr/bin/file
+checking for armv5tl-montavista-linuxeabi-ranlib... arm_v5t_le-ranlib
+checking for armv5tl-montavista-linuxeabi-strip... true
+checking for objdir... .libs
+checking for arm_v5t_le-gcc option to produce PIC... -fPIC
+checking if arm_v5t_le-gcc PIC flag -fPIC works... yes
+checking if arm_v5t_le-gcc static flag -static works... yes
+checking if arm_v5t_le-gcc supports -c -o file.o... yes
+checking if arm_v5t_le-gcc supports -c -o file.lo... yes
+checking if arm_v5t_le-gcc supports -fno-rtti -fno-exceptions... yes
+checking whether the linker (arm_v5t_le-ld) supports shared libraries... yes
+checking how to hardcode library paths into programs... immediate
+checking whether stripping libraries is possible... no
+checking dynamic linker characteristics... GNU/Linux ld.so
+checking if libtool supports shared libraries... yes
+checking whether to build shared libraries... yes
+checking whether to build static libraries... yes
+checking whether -lc should be explicitly linked in... no
+creating libtool
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether ln -s works... yes
+checking whether make sets $(MAKE)... yes
+checking for ps... /bin/ps
+checking for perl... /usr/bin/perl
+checking for whoami... whoami
+checking for sed... /usr/bin/sed
+checking for autoconf... autoconf-2.57
+checking for autoheader... no
+checking for uname... /bin/uname
+checking for an ANSI C-conforming const... yes
+checking for inline... inline
+checking for net-snmp version number... 5.1.1
+checking for developer gcc flags... 
+checking target system type... armv5tl-montavista-linux-gnueabi
+checking for system include file... net-snmp/system/linux.h
+checking for machine-type include file... net-snmp/machine/generic.h
+checking for arm_v5t_le-gcc... /opt/montavista/foundation/devkit/arm/v5t_le/bin/arm_v5t_le-gcc
+checking for additional cpp flags... 
+checking ipv6 stack type... "linux-glibc, yes, using libc"
+checking whether we have to build PIC code... no
+checking for platform specific source... checking for and configuring transport modules to use...  Callback Unix TCP UDP TCPIPv6 UDPIPv6.
+checking for security modules to use...  usm
+checking for and configuring mib modules to use...  mibII ucd_snmp snmpv3mibs notification target agent_mibs agentx agent_mibs utilities host ipfwchains/ipfwchains smux agentx mibII/ipv6.
+checking for and configuring mib modules pieces to use...  mibII ucd_snmp snmpv3mibs notification target agent_mibs agentx agent_mibs utilities host ipfwchains/ipfwchains smux agentx mibII/ipv6 mibII/system_mib mibII/sysORTable mibII/interfaces mibII/snmp_mib mibII/tcp mibII/icmp mibII/udp mibII/vacm_vars mibII/setSerialNo ucd-snmp/memory ucd-snmp/vmstat ucd-snmp/proc ucd-snmp/versioninfo ucd-snmp/pass ucd-snmp/pass_persist ucd-snmp/disk ucd-snmp/loadave ucd-snmp/extensible ucd-snmp/errormib ucd-snmp/file ucd-snmp/dlmod ucd-snmp/proxy ucd-snmp/logmatch snmpv3/snmpEngine snmpv3/snmpMPDStats snmpv3/usmStats snmpv3/usmUser notification/snmpNotifyTable notification/snmpNotifyFilterTable notification/snmpNotifyFilterProfileTable target/snmpTargetAddrEntry target/snmpTargetParamsEntry target/target target/target_counters agent/nsTransactionTable agent/nsModuleTable agent/nsDebug agent/nsCache agent/nsLogging agentx/master agentx/subagent utilities/override host/hr_system host/hr_storage host/hr_device host/hr_other host/hr_proc host/hr_network host/hr_print host/hr_disk host/hr_partition host/hr_filesys host/hr_swrun host/hr_swinst util_funcs ipfwchains/libipfwc smux/smux mibII/route_write mibII/kernel_linux mibII/tcpTable mibII/udpTable mibII/vacm_context utilities/execute header_complex agentx/protocol agentx/client agentx/master_admin agentx/agentx_config.
+checking if directories need to be created... mkdir ./agent/mibgroup/ipfwchains
+mkdir ./agent/mibgroup/mibII
+mkdir ./agent/mibgroup/ucd-snmp
+mkdir ./agent/mibgroup/snmpv3
+mkdir ./agent/mibgroup/notification
+mkdir ./agent/mibgroup/target
+mkdir ./agent/mibgroup/agent
+mkdir ./agent/mibgroup/agentx
+mkdir ./agent/mibgroup/utilities
+mkdir ./agent/mibgroup/host
+mkdir ./agent/mibgroup/smux
+.
+checking default mib files to read... IP-MIB:IF-MIB:TCP-MIB:UDP-MIB:HOST-RESOURCES-MIB:SNMPv2-MIB:RFC1213-MIB:NOTIFICATION-LOG-MIB:UCD-SNMP-MIB:UCD-DEMO-MIB:SNMP-TARGET-MIB:NET-SNMP-AGENT-MIB:HOST-RESOURCES-TYPES:IPFWCHAINS-MIB:IPV6-ICMP-MIB:IPV6-MIB:IPV6-TCP-MIB:IPV6-UDP-MIB:SNMP-VIEW-BASED-ACM-MIB:SNMP-COMMUNITY-MIB:UCD-DLMOD-MIB:SNMP-FRAMEWORK-MIB:SNMP-MPD-MIB:SNMP-USER-BASED-SM-MIB:SNMP-NOTIFICATION-MIB:SNMPv2-TM
+checking for location of system kernel... unknown
+checking for mount table location... /etc/mtab
+checking for location of swap device... none
+checking for asin in -lm... yes
+checking for nlist in -lelf... yes
+checking for gethostbyname... yes
+checking for getservbyname... yes
+checking for kstat_lookup in -lkstat... no
+checking for nlist in -lmld... no
+checking for EVP_md5 in -lcrypto... yes
+checking for AES_cfb128_encrypt... no
+checking tcpd.h usability... yes
+checking tcpd.h presence... yes
+checking for tcpd.h... yes
+checking for TCP wrappers library -lwrap... yes
+checking for kvm_read in -lkvm... no
+checking for dlopen... no
+checking for dlopen in -ldl... yes
+checking for kvm_openfiles... no
+checking for nlist... yes
+checking for knlist... no
+checking for kvm_getprocs... no
+checking for ANSI C header files... (cached) yes
+checking for dirent.h that defines DIR... yes
+checking for library containing opendir... none required
+checking for sys/wait.h that is POSIX.1 compatible... yes
+checking stdarg.h usability... yes
+checking stdarg.h presence... yes
+checking for stdarg.h... yes
+checking for string.h... (cached) yes
+checking fcntl.h usability... yes
+checking fcntl.h presence... yes
+checking for fcntl.h... yes
+checking limits.h usability... yes
+checking limits.h presence... yes
+checking for limits.h... yes
+checking sys/file.h usability... yes
+checking sys/file.h presence... yes
+checking for sys/file.h... yes
+checking sys/ioctl.h usability... yes
+checking sys/ioctl.h presence... yes
+checking for sys/ioctl.h... yes
+checking syslog.h usability... yes
+checking syslog.h presence... yes
+checking for syslog.h... yes
+checking for unistd.h... (cached) yes
+checking netinet/tcpip.h usability... no
+checking netinet/tcpip.h presence... no
+checking for netinet/tcpip.h... no
+checking netinet/in.h usability... yes
+checking netinet/in.h presence... yes
+checking for netinet/in.h... yes
+checking netinet/ip.h usability... yes
+checking netinet/ip.h presence... yes
+checking for netinet/ip.h... yes
+checking netinet/ip_icmp.h usability... yes
+checking netinet/ip_icmp.h presence... yes
+checking for netinet/ip_icmp.h... yes
+checking net/if.h usability... yes
+checking net/if.h presence... yes
+checking for net/if.h... yes
+checking netdb.h usability... yes
+checking netdb.h presence... yes
+checking for netdb.h... yes
+checking sys/dmap.h usability... no
+checking sys/dmap.h presence... no
+checking for sys/dmap.h... no
+checking machine/pte.h usability... no
+checking machine/pte.h presence... no
+checking for machine/pte.h... no
+checking xti.h usability... no
+checking xti.h presence... no
+checking for xti.h... no
+checking sys/sockio.h usability... no
+checking sys/sockio.h presence... no
+checking for sys/sockio.h... no
+checking sys/socket.h usability... yes
+checking sys/socket.h presence... yes
+checking for sys/socket.h... yes
+checking sys/un.h usability... yes
+checking sys/un.h presence... yes
+checking for sys/un.h... yes
+checking fstab.h usability... yes
+checking fstab.h presence... yes
+checking for fstab.h... yes
+checking sys/fs.h usability... no
+checking sys/fs.h presence... no
+checking for sys/fs.h... no
+checking mtab.h usability... no
+checking mtab.h presence... no
+checking for mtab.h... no
+checking ufs/fs.h usability... no
+checking ufs/fs.h presence... no
+checking for ufs/fs.h... no
+checking ufs/ffs/fs.h usability... no
+checking ufs/ffs/fs.h presence... no
+checking for ufs/ffs/fs.h... no
+checking sys/fixpoint.h usability... no
+checking sys/fixpoint.h presence... no
+checking for sys/fixpoint.h... no
+checking machine/param.h usability... no
+checking machine/param.h presence... no
+checking for machine/param.h... no
+checking sys/vm.h usability... no
+checking sys/vm.h presence... no
+checking for sys/vm.h... no
+checking vm/vm.h usability... no
+checking vm/vm.h presence... no
+checking for vm/vm.h... no
+checking sys/vmmeter.h usability... no
+checking sys/vmmeter.h presence... no
+checking for sys/vmmeter.h... no
+checking sys/vmparam.h usability... no
+checking sys/vmparam.h presence... no
+checking for sys/vmparam.h... no
+checking sys/vmmac.h usability... no
+checking sys/vmmac.h presence... no
+checking for sys/vmmac.h... no
+checking sys/vmsystm.h usability... no
+checking sys/vmsystm.h presence... no
+checking for sys/vmsystm.h... no
+checking sys/mbuf.h usability... no
+checking sys/mbuf.h presence... no
+checking for sys/mbuf.h... no
+checking sys/time.h usability... yes
+checking sys/time.h presence... yes
+checking for sys/time.h... yes
+checking sys/swap.h usability... yes
+checking sys/swap.h presence... yes
+checking for sys/swap.h... yes
+checking inet/mib2.h usability... no
+checking inet/mib2.h presence... no
+checking for inet/mib2.h... no
+checking sys/statvfs.h usability... yes
+checking sys/statvfs.h presence... yes
+checking for sys/statvfs.h... yes
+checking sys/vfs.h usability... yes
+checking sys/vfs.h presence... yes
+checking for sys/vfs.h... yes
+checking sys/mnttab.h usability... no
+checking sys/mnttab.h presence... no
+checking for sys/mnttab.h... no
+checking sys/user.h usability... yes
+checking sys/user.h presence... yes
+checking for sys/user.h... yes
+checking sys/proc.h usability... no
+checking sys/proc.h presence... no
+checking for sys/proc.h... no
+checking sys/select.h usability... yes
+checking sys/select.h presence... yes
+checking for sys/select.h... yes
+checking mntent.h usability... yes
+checking mntent.h presence... yes
+checking for mntent.h... yes
+checking sys/mntent.h usability... no
+checking sys/mntent.h presence... no
+checking for sys/mntent.h... no
+checking kstat.h usability... no
+checking kstat.h presence... no
+checking for kstat.h... no
+checking utsname.h usability... no
+checking utsname.h presence... no
+checking for utsname.h... no
+checking sys/utsname.h usability... yes
+checking sys/utsname.h presence... yes
+checking for sys/utsname.h... yes
+checking sys/cdefs.h usability... yes
+checking sys/cdefs.h presence... yes
+checking for sys/cdefs.h... yes
+checking getopt.h usability... yes
+checking getopt.h presence... yes
+checking for getopt.h... yes
+checking locale.h usability... yes
+checking locale.h presence... yes
+checking for locale.h... yes
+checking pthread.h usability... yes
+checking pthread.h presence... yes
+checking for pthread.h... yes
+checking sys/loadavg.h usability... no
+checking sys/loadavg.h presence... no
+checking for sys/loadavg.h... no
+checking regex.h usability... yes
+checking regex.h presence... yes
+checking for regex.h... yes
+checking linux/tasks.h usability... no
+checking linux/tasks.h presence... no
+checking for linux/tasks.h... no
+checking pwd.h usability... yes
+checking pwd.h presence... yes
+checking for pwd.h... yes
+checking grp.h usability... yes
+checking grp.h presence... yes
+checking for grp.h... yes
+checking utmpx.h usability... yes
+checking utmpx.h presence... yes
+checking for utmpx.h... yes
+checking malloc.h usability... yes
+checking malloc.h presence... yes
+checking for malloc.h... yes
+checking sys/param.h usability... yes
+checking sys/param.h presence... yes
+checking for sys/param.h... yes
+checking net/if_dl.h usability... no
+checking net/if_dl.h presence... no
+checking for net/if_dl.h... no
+checking sys/sysctl.h usability... yes
+checking sys/sysctl.h presence... yes
+checking for sys/sysctl.h... yes
+checking for stdlib.h... (cached) yes
+checking net/if_mib.h usability... no
+checking net/if_mib.h presence... no
+checking for net/if_mib.h... no
+checking net/if_types.h usability... no
+checking net/if_types.h presence... no
+checking for net/if_types.h... no
+checking net/if_var.h usability... no
+checking net/if_var.h presence... no
+checking for net/if_var.h... no
+checking sys/queue.h usability... yes
+checking sys/queue.h presence... yes
+checking for sys/queue.h... yes
+checking osreldate.h usability... no
+checking osreldate.h presence... no
+checking for osreldate.h... no
+checking machine/types.h usability... no
+checking machine/types.h presence... no
+checking for machine/types.h... no
+checking sys/socketvar.h usability... yes
+checking sys/socketvar.h presence... yes
+checking for sys/socketvar.h... yes
+checking sys/conf.h usability... no
+checking sys/conf.h presence... no
+checking for sys/conf.h... no
+checking netinet/in_systm.h usability... yes
+checking netinet/in_systm.h presence... yes
+checking for netinet/in_systm.h... yes
+checking netinet/tcp.h usability... yes
+checking netinet/tcp.h presence... yes
+checking for netinet/tcp.h... yes
+checking netinet/udp.h usability... yes
+checking netinet/udp.h presence... yes
+checking for netinet/udp.h... yes
+checking netinet/in_var.h usability... no
+checking netinet/in_var.h presence... no
+checking for netinet/in_var.h... no
+checking netinet/if_ether.h usability... yes
+checking netinet/if_ether.h presence... yes
+checking for netinet/if_ether.h... yes
+checking netinet/ip_var.h usability... no
+checking netinet/ip_var.h presence... no
+checking for netinet/ip_var.h... no
+checking netinet/tcp_timer.h usability... no
+checking netinet/tcp_timer.h presence... no
+checking for netinet/tcp_timer.h... no
+checking netinet/tcp_var.h usability... no
+checking netinet/tcp_var.h presence... no
+checking for netinet/tcp_var.h... no
+checking netinet/tcp_fsm.h usability... no
+checking netinet/tcp_fsm.h presence... no
+checking for netinet/tcp_fsm.h... no
+checking netinet/udp_var.h usability... no
+checking netinet/udp_var.h presence... no
+checking for netinet/udp_var.h... no
+checking netinet/icmp_var.h usability... no
+checking netinet/icmp_var.h presence... no
+checking for netinet/icmp_var.h... no
+checking sys/protosw.h usability... no
+checking sys/protosw.h presence... no
+checking for sys/protosw.h... no
+checking nlist.h usability... yes
+checking nlist.h presence... yes
+checking for nlist.h... yes
+checking ioctls.h usability... no
+checking ioctls.h presence... no
+checking for ioctls.h... no
+checking asm/page.h usability... yes
+checking asm/page.h presence... yes
+checking for asm/page.h... yes
+checking netipx/ipx.h usability... yes
+checking netipx/ipx.h presence... yes
+checking for netipx/ipx.h... yes
+checking arpa/inet.h usability... yes
+checking arpa/inet.h presence... yes
+checking for arpa/inet.h... yes
+checking kvm.h usability... no
+checking kvm.h presence... no
+checking for kvm.h... no
+checking sys/pool.h usability... no
+checking sys/pool.h presence... no
+checking for sys/pool.h... no
+checking uvm/uvm_param.h usability... no
+checking uvm/uvm_param.h presence... no
+checking for uvm/uvm_param.h... no
+checking uvm/uvm_extern.h usability... no
+checking uvm/uvm_extern.h presence... no
+checking for uvm/uvm_extern.h... no
+checking vm/vm_param.h usability... no
+checking vm/vm_param.h presence... no
+checking for vm/vm_param.h... no
+checking vm/vm_extern.h usability... no
+checking vm/vm_extern.h presence... no
+checking for vm/vm_extern.h... no
+checking sys/mount.h usability... yes
+checking sys/mount.h presence... yes
+checking for sys/mount.h... yes
+checking vm/swap_pager.h usability... no
+checking vm/swap_pager.h presence... no
+checking for vm/swap_pager.h... no
+checking ufs/ufs/dinode.h usability... no
+checking ufs/ufs/dinode.h presence... no
+checking for ufs/ufs/dinode.h... no
+checking for sys/stat.h... (cached) yes
+checking sys/vnode.h usability... no
+checking sys/vnode.h presence... no
+checking for sys/vnode.h... no
+checking ufs/ufs/quota.h usability... no
+checking ufs/ufs/quota.h presence... no
+checking for ufs/ufs/quota.h... no
+checking ufs/ufs/inode.h usability... no
+checking ufs/ufs/inode.h presence... no
+checking for ufs/ufs/inode.h... no
+checking sys/hashing.h usability... no
+checking sys/hashing.h presence... no
+checking for sys/hashing.h... no
+checking sys/tcpipstats.h usability... no
+checking sys/tcpipstats.h presence... no
+checking for sys/tcpipstats.h... no
+checking sys/sysmp.h usability... no
+checking sys/sysmp.h presence... no
+checking for sys/sysmp.h... no
+checking err.h usability... yes
+checking err.h presence... yes
+checking for err.h... yes
+checking sys/filio.h usability... no
+checking sys/filio.h presence... no
+checking for sys/filio.h... no
+checking sgtty.h usability... yes
+checking sgtty.h presence... yes
+checking for sgtty.h... yes
+checking sys/statfs.h usability... yes
+checking sys/statfs.h presence... yes
+checking for sys/statfs.h... yes
+checking net/route.h usability... yes
+checking net/route.h presence... yes
+checking for net/route.h... yes
+checking sys/dkio.h usability... no
+checking sys/dkio.h presence... no
+checking for sys/dkio.h... no
+checking sys/diskio.h usability... no
+checking sys/diskio.h presence... no
+checking for sys/diskio.h... no
+checking sys/pstat.h usability... no
+checking sys/pstat.h presence... no
+checking for sys/pstat.h... no
+checking linux/hdreg.h usability... yes
+checking linux/hdreg.h presence... yes
+checking for linux/hdreg.h... yes
+checking pkglocs.h usability... no
+checking pkglocs.h presence... no
+checking for pkglocs.h... no
+checking pkginfo.h usability... no
+checking pkginfo.h presence... no
+checking for pkginfo.h... no
+checking winsock.h usability... no
+checking winsock.h presence... no
+checking for winsock.h... no
+checking io.h usability... no
+checking io.h presence... no
+checking for io.h... no
+checking sys/stream.h usability... no
+checking sys/stream.h presence... no
+checking for sys/stream.h... no
+checking netinet/ip6.h usability... yes
+checking netinet/ip6.h presence... yes
+checking for netinet/ip6.h... yes
+checking netinet6/in6_var.h usability... no
+checking netinet6/in6_var.h presence... no
+checking for netinet6/in6_var.h... no
+checking netinet6/in6_pcb.h usability... no
+checking netinet6/in6_pcb.h presence... no
+checking for netinet6/in6_pcb.h... no
+checking netinet6/ip6_var.h usability... no
+checking netinet6/ip6_var.h presence... no
+checking for netinet6/ip6_var.h... no
+checking netinet6/tcp6.h usability... no
+checking netinet6/tcp6.h presence... no
+checking for netinet6/tcp6.h... no
+checking netinet6/tcp6_fsm.h usability... no
+checking netinet6/tcp6_fsm.h presence... no
+checking for netinet6/tcp6_fsm.h... no
+checking netinet6/nd6.h usability... no
+checking netinet6/nd6.h presence... no
+checking for netinet6/nd6.h... no
+checking netinet6/tcp6_timer.h usability... no
+checking netinet6/tcp6_timer.h presence... no
+checking for netinet6/tcp6_timer.h... no
+checking netinet6/tcp6_var.h usability... no
+checking netinet6/tcp6_var.h presence... no
+checking for netinet6/tcp6_var.h... no
+checking for dlfcn.h... (cached) yes
+checking search.h usability... yes
+checking search.h presence... yes
+checking for search.h... yes
+checking for netinet/in_pcb.h... no
+checking for sys/disklabel.h... no
+checking openssl/hmac.h usability... yes
+checking openssl/hmac.h presence... yes
+checking for openssl/hmac.h... yes
+checking openssl/evp.h usability... yes
+checking openssl/evp.h presence... yes
+checking for openssl/evp.h... yes
+checking openssl/aes.h usability... yes
+checking openssl/aes.h presence... yes
+checking for openssl/aes.h... yes
+checking openssl/des.h usability... yes
+checking openssl/des.h presence... yes
+checking for openssl/des.h... yes
+checking security/cryptoki.h usability... no
+checking security/cryptoki.h presence... no
+checking for security/cryptoki.h... no
+checking for lpstat... no
+checking for cgetnext... no
+checking for authentication support... OpenSSL Support
+checking for off_t... yes
+checking for pid_t... yes
+checking whether time.h and sys/time.h may both be included... yes
+checking for socklen_t... yes
+checking for in_addr_t... yes
+checking for ssize_t... yes
+checking for correct flags to ps... 
+checking for working alloca.h... yes
+checking for alloca... yes
+checking whether arm_v5t_le-gcc  needs -traditional... no
+checking for working memcmp... no
+checking return type of signal handlers... void
+checking for getmntent in -lsun... no
+checking for getmntent in -lseq... no
+checking for getmntent in -lgen... no
+checking for getmntent... yes
+checking for setmntent... yes
+checking for gethostname... yes
+checking for uname... yes
+checking for gettimeofday... yes
+checking for select... yes
+checking for socket... yes
+checking for strtol... yes
+checking for strtoul... yes
+checking for strlcpy... no
+checking for strchr... yes
+checking for strdup... yes
+checking for memcpy... yes
+checking for memmove... yes
+checking for index... yes
+checking for bcopy... yes
+checking for strcasestr... yes
+checking for regcomp... yes
+checking for signal... yes
+checking for setsid... yes
+checking for sigset... yes
+checking for sigblock... yes
+checking for sighold... yes
+checking for strerror... yes
+checking for setenv... yes
+checking for vsnprintf... yes
+checking for snprintf... yes
+checking for sigaction... yes
+checking for snprintf... (cached) yes
+checking for strtoul... (cached) yes
+checking for random... yes
+checking for lrand48... yes
+checking for rand... yes
+checking for execv... yes
+checking for system... yes
+checking for fork... yes
+checking for getpid... yes
+checking for strncasecmp... yes
+checking for sigalrm... no
+checking for getloadavg... yes
+checking for getaddrinfo... yes
+checking for getipnodebyname... no
+checking for statvfs... yes
+checking for statfs... yes
+checking for getdtablesize... yes
+checking for getfsstat... no
+checking for usleep... yes
+checking for setlocale... yes
+checking for tcgetattr... yes
+checking for if_nameindex... yes
+checking for if_freenameindex... yes
+checking for getpagesize... yes
+checking for mkstemp... yes
+checking for getpwnam... yes
+checking for getgrnam... yes
+checking for setgid... yes
+checking for setuid... yes
+checking for setgroups... yes
+checking for setitimer... yes
+checking for SIOCGIFADDR in sys/ioctl.h... yes
+checking for two-argument statfs with struct fs_data (Ultrix)... no
+checking if __FUNCTION__ is defined... yes
+checking for sigaction.sa_sigaction... yes
+checking for sockaddr.sa_len... no
+checking for sockaddr.sa_union.sa_generic.sa_family2... no
+checking for rtentry.rt_dst... yes
+checking type of rtentry structure... Unknown
+unknown
+checking for struct rtentry... rtentry
+checking for rtentry.rt_unit... no
+checking for rtentry.rt_refcnt... no
+checking for rtentry.rt_hash... no
+checking for rtentry.rt_use... no
+checking for tcpstat.tcp_rcvmemdrop... no
+checking for ifnet.if_mtu... no
+checking if _KERNEL needs to be defined for if_mtu... no
+checking for ifaddr.ifa_next... yes
+checking for ifnet.if_baudrate... no
+checking for ifnet.if_baudrate.ifs_value... no
+checking for ifnet.if_speed... yes
+checking for ifnet.if_type... yes
+checking for ifnet.if_imcasts... no
+checking for ifnet.if_iqdrops... yes
+checking for ifnet.if_noproto... no
+checking for ifnet.if_omcasts... no
+checking for ifnet.if_xname... no
+checking for ifnet.if_lastchange.tv_sec... no
+checking for ifnet.if_obytes... yes
+checking for ifnet.if_ibytes... yes
+checking for ifnet.if_addrlist... no
+checking for ifnet.if_addrhead.tqh_first... no
+checking for udpstat.udps_discard... no
+checking for udpstat.udps_noport... no
+checking for udpstat.udps_noportbcast... no
+checking for udpstat.udps_fullsock... no
+checking for arphd.at_next... no
+checking for swdevt.sw_nblksenabled... no
+checking for statvfs.f_frsize... yes
+checking for statvfs.f_files... yes
+checking for statfs.f_files... yes
+checking for statfs.f_ffree... yes
+checking for statfs.f_favail... no
+checking for nlist.n_value... yes
+checking for ipstat.ips_cantforward... no
+checking for ipstat.ips_cantfrag... no
+checking for ipstat.ips_delivered... no
+checking for ipstat.ips_fragdropped... no
+checking for ipstat.ips_fragtimeout... no
+checking for ipstat.ips_localout... no
+checking for ipstat.ips_noproto... no
+checking for ipstat.ips_noroute... no
+checking for ipstat.ips_odropped... no
+checking for ipstat.ips_ofragments... no
+checking for ipstat.ips_reassembled... no
+checking for des_ks_struct.weak_key... no
+checking whether TCP timers depend on `hz'... no
+checking if you have run configure before... no
+checking Default version of SNMP to use... 
+setting Default version of SNMP to use to...  3
+checking System Contact Information... (cached) root@localhost
+checking System Location... (cached) unknown
+checking Location to write logfile... (cached) 
+checking Location to write persistent information... (cached) /var/net-snmp
+configure: creating ./config.status
+config.status: creating Makefile
+config.status: creating snmplib/Makefile
+config.status: creating apps/Makefile
+config.status: creating apps/snmpnetstat/Makefile
+config.status: creating agent/Makefile
+config.status: creating agent/helpers/Makefile
+config.status: creating agent/mibgroup/Makefile
+config.status: creating local/Makefile
+config.status: creating testing/Makefile
+config.status: creating man/Makefile
+config.status: creating mibs/Makefile
+config.status: creating net-snmp-config
+config.status: creating include/net-snmp/net-snmp-config.h
+config.status: executing default commands
+
+---------------------------------------------------------
+            Net-SNMP configuration summary:
+---------------------------------------------------------
+
+  Net-SNMP Version:           5.1.1
+  Building for:               linux
+  Network transport support:  Callback Unix TCP UDP TCPIPv6 UDPIPv6
+  SNMPv3 Security Modules:    usm
+  Agent MIB code:             mibII ucd_snmp snmpv3mibs notification target agent_mibs agentx agent_mibs utilities host ipfwchains/ipfwchains smux agentx mibII/ipv6
+  SNMP Perl modules:          enabled
+  Embedded perl support:      disabled
+  Authentication support:     MD5 SHA1
+  Encryption support:         DES AES128 AES192 AES256
+
+---------------------------------------------------------
+
+WARNING: not running autoheader
+arm_v5t_le-cpp -Iinclude -I../include -I../agent/mibgroup -I. -I.. -DDONT_INC_STRUCTS -DBINDIR=/usr/bin  ../sedscript.in | egrep '^s[/#]' | sed 's/REMOVEME//g;s# */#/#g;s/ *#/#/g;s#/ *#/#g;s/# g/#g/;' > sedscript
+echo 's#DATADIR#/usr/share#g' >> sedscript
+echo 's#LIBDIR#/usr/lib#g' >> sedscript
+echo 's#BINDIR#/usr/bin#g' >> sedscript
+echo 's#PERSISTENT_DIRECTORY#/var/net-snmp#g' >> sedscript
+echo 's#SYSCONFDIR#/etc#g' >> sedscript
+/usr/bin/sed -f sedscript ../EXAMPLE.conf.def > EXAMPLE.conf
+making all in /var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib
+make[1]: Entering directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib'
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmp_client.lo ../../snmplib/snmp_client.c
+mkdir .libs
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_client.c  -fPIC -DPIC -o .libs/snmp_client.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_client.c -o snmp_client.o >/dev/null 2>&1
+mv -f .libs/snmp_client.lo snmp_client.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o mib.lo ../../snmplib/mib.c
+rm -f .libs/mib.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/mib.c  -fPIC -DPIC -o .libs/mib.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/mib.c -o mib.o >/dev/null 2>&1
+mv -f .libs/mib.lo mib.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o parse.lo ../../snmplib/parse.c
+rm -f .libs/parse.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/parse.c  -fPIC -DPIC -o .libs/parse.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/parse.c -o parse.o >/dev/null 2>&1
+mv -f .libs/parse.lo parse.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmp_api.lo ../../snmplib/snmp_api.c
+rm -f .libs/snmp_api.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_api.c  -fPIC -DPIC -o .libs/snmp_api.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_api.c -o snmp_api.o >/dev/null 2>&1
+mv -f .libs/snmp_api.lo snmp_api.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmp.lo ../../snmplib/snmp.c
+rm -f .libs/snmp.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp.c  -fPIC -DPIC -o .libs/snmp.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp.c -o snmp.o >/dev/null 2>&1
+mv -f .libs/snmp.lo snmp.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmp_auth.lo ../../snmplib/snmp_auth.c
+rm -f .libs/snmp_auth.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_auth.c  -fPIC -DPIC -o .libs/snmp_auth.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_auth.c -o snmp_auth.o >/dev/null 2>&1
+mv -f .libs/snmp_auth.lo snmp_auth.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o asn1.lo ../../snmplib/asn1.c
+rm -f .libs/asn1.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/asn1.c  -fPIC -DPIC -o .libs/asn1.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/asn1.c -o asn1.o >/dev/null 2>&1
+mv -f .libs/asn1.lo asn1.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o md5.lo ../../snmplib/md5.c
+rm -f .libs/md5.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/md5.c  -fPIC -DPIC -o .libs/md5.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/md5.c -o md5.o >/dev/null 2>&1
+mv -f .libs/md5.lo md5.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmp_parse_args.lo ../../snmplib/snmp_parse_args.c
+rm -f .libs/snmp_parse_args.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_parse_args.c  -fPIC -DPIC -o .libs/snmp_parse_args.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_parse_args.c -o snmp_parse_args.o >/dev/null 2>&1
+mv -f .libs/snmp_parse_args.lo snmp_parse_args.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o system.lo ../../snmplib/system.c
+rm -f .libs/system.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/system.c  -fPIC -DPIC -o .libs/system.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/system.c -o system.o >/dev/null 2>&1
+mv -f .libs/system.lo system.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o vacm.lo ../../snmplib/vacm.c
+rm -f .libs/vacm.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/vacm.c  -fPIC -DPIC -o .libs/vacm.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/vacm.c -o vacm.o >/dev/null 2>&1
+mv -f .libs/vacm.lo vacm.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o int64.lo ../../snmplib/int64.c
+rm -f .libs/int64.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/int64.c  -fPIC -DPIC -o .libs/int64.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/int64.c -o int64.o >/dev/null 2>&1
+mv -f .libs/int64.lo int64.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o read_config.lo ../../snmplib/read_config.c
+rm -f .libs/read_config.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/read_config.c  -fPIC -DPIC -o .libs/read_config.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/read_config.c -o read_config.o >/dev/null 2>&1
+mv -f .libs/read_config.lo read_config.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmp_debug.lo ../../snmplib/snmp_debug.c
+rm -f .libs/snmp_debug.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_debug.c  -fPIC -DPIC -o .libs/snmp_debug.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_debug.c -o snmp_debug.o >/dev/null 2>&1
+mv -f .libs/snmp_debug.lo snmp_debug.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o tools.lo ../../snmplib/tools.c
+rm -f .libs/tools.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/tools.c  -fPIC -DPIC -o .libs/tools.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/tools.c -o tools.o >/dev/null 2>&1
+mv -f .libs/tools.lo tools.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmp_logging.lo ../../snmplib/snmp_logging.c
+rm -f .libs/snmp_logging.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_logging.c  -fPIC -DPIC -o .libs/snmp_logging.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_logging.c -o snmp_logging.o >/dev/null 2>&1
+mv -f .libs/snmp_logging.lo snmp_logging.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmpv3.lo ../../snmplib/snmpv3.c
+rm -f .libs/snmpv3.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpv3.c  -fPIC -DPIC -o .libs/snmpv3.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpv3.c -o snmpv3.o >/dev/null 2>&1
+mv -f .libs/snmpv3.lo snmpv3.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o lcd_time.lo ../../snmplib/lcd_time.c
+rm -f .libs/lcd_time.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/lcd_time.c  -fPIC -DPIC -o .libs/lcd_time.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/lcd_time.c -o lcd_time.o >/dev/null 2>&1
+mv -f .libs/lcd_time.lo lcd_time.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o keytools.lo ../../snmplib/keytools.c
+rm -f .libs/keytools.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/keytools.c  -fPIC -DPIC -o .libs/keytools.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/keytools.c -o keytools.o >/dev/null 2>&1
+mv -f .libs/keytools.lo keytools.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o scapi.lo ../../snmplib/scapi.c
+rm -f .libs/scapi.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/scapi.c  -fPIC -DPIC -o .libs/scapi.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/scapi.c -o scapi.o >/dev/null 2>&1
+mv -f .libs/scapi.lo scapi.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o callback.lo ../../snmplib/callback.c
+rm -f .libs/callback.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/callback.c  -fPIC -DPIC -o .libs/callback.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/callback.c -o callback.o >/dev/null 2>&1
+mv -f .libs/callback.lo callback.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o default_store.lo ../../snmplib/default_store.c
+rm -f .libs/default_store.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/default_store.c  -fPIC -DPIC -o .libs/default_store.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/default_store.c -o default_store.o >/dev/null 2>&1
+mv -f .libs/default_store.lo default_store.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmp_alarm.lo ../../snmplib/snmp_alarm.c
+rm -f .libs/snmp_alarm.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_alarm.c  -fPIC -DPIC -o .libs/snmp_alarm.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_alarm.c -o snmp_alarm.o >/dev/null 2>&1
+mv -f .libs/snmp_alarm.lo snmp_alarm.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o data_list.lo ../../snmplib/data_list.c
+rm -f .libs/data_list.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/data_list.c  -fPIC -DPIC -o .libs/data_list.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/data_list.c -o data_list.o >/dev/null 2>&1
+mv -f .libs/data_list.lo data_list.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o oid_stash.lo ../../snmplib/oid_stash.c
+rm -f .libs/oid_stash.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/oid_stash.c  -fPIC -DPIC -o .libs/oid_stash.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/oid_stash.c -o oid_stash.o >/dev/null 2>&1
+mv -f .libs/oid_stash.lo oid_stash.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o mt_support.lo ../../snmplib/mt_support.c
+rm -f .libs/mt_support.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/mt_support.c  -fPIC -DPIC -o .libs/mt_support.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/mt_support.c -o mt_support.o >/dev/null 2>&1
+mv -f .libs/mt_support.lo mt_support.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmp_enum.lo ../../snmplib/snmp_enum.c
+rm -f .libs/snmp_enum.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_enum.c  -fPIC -DPIC -o .libs/snmp_enum.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_enum.c -o snmp_enum.o >/dev/null 2>&1
+mv -f .libs/snmp_enum.lo snmp_enum.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmp-tc.lo ../../snmplib/snmp-tc.c
+rm -f .libs/snmp-tc.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp-tc.c  -fPIC -DPIC -o .libs/snmp-tc.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp-tc.c -o snmp-tc.o >/dev/null 2>&1
+mv -f .libs/snmp-tc.lo snmp-tc.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snprintf.lo ../../snmplib/snprintf.c
+rm -f .libs/snprintf.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snprintf.c  -fPIC -DPIC -o .libs/snprintf.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snprintf.c -o snprintf.o >/dev/null 2>&1
+mv -f .libs/snprintf.lo snprintf.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o strlcpy.lo ../../snmplib/strlcpy.c
+rm -f .libs/strlcpy.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/strlcpy.c  -fPIC -DPIC -o .libs/strlcpy.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/strlcpy.c -o strlcpy.o >/dev/null 2>&1
+mv -f .libs/strlcpy.lo strlcpy.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o strtol.lo ../../snmplib/strtol.c
+rm -f .libs/strtol.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/strtol.c  -fPIC -DPIC -o .libs/strtol.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/strtol.c -o strtol.o >/dev/null 2>&1
+mv -f .libs/strtol.lo strtol.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o strtoul.lo ../../snmplib/strtoul.c
+rm -f .libs/strtoul.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/strtoul.c  -fPIC -DPIC -o .libs/strtoul.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/strtoul.c -o strtoul.o >/dev/null 2>&1
+mv -f .libs/strtoul.lo strtoul.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmp_transport.lo ../../snmplib/snmp_transport.c
+rm -f .libs/snmp_transport.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_transport.c  -fPIC -DPIC -o .libs/snmp_transport.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_transport.c -o snmp_transport.o >/dev/null 2>&1
+mv -f .libs/snmp_transport.lo snmp_transport.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmpUDPIPv6Domain.lo ../../snmplib/snmpUDPIPv6Domain.c
+rm -f .libs/snmpUDPIPv6Domain.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpUDPIPv6Domain.c  -fPIC -DPIC -o .libs/snmpUDPIPv6Domain.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpUDPIPv6Domain.c -o snmpUDPIPv6Domain.o >/dev/null 2>&1
+mv -f .libs/snmpUDPIPv6Domain.lo snmpUDPIPv6Domain.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmpTCPIPv6Domain.lo ../../snmplib/snmpTCPIPv6Domain.c
+rm -f .libs/snmpTCPIPv6Domain.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpTCPIPv6Domain.c  -fPIC -DPIC -o .libs/snmpTCPIPv6Domain.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpTCPIPv6Domain.c -o snmpTCPIPv6Domain.o >/dev/null 2>&1
+mv -f .libs/snmpTCPIPv6Domain.lo snmpTCPIPv6Domain.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmpUDPDomain.lo ../../snmplib/snmpUDPDomain.c
+rm -f .libs/snmpUDPDomain.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpUDPDomain.c  -fPIC -DPIC -o .libs/snmpUDPDomain.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpUDPDomain.c -o snmpUDPDomain.o >/dev/null 2>&1
+mv -f .libs/snmpUDPDomain.lo snmpUDPDomain.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmpTCPDomain.lo ../../snmplib/snmpTCPDomain.c
+rm -f .libs/snmpTCPDomain.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpTCPDomain.c  -fPIC -DPIC -o .libs/snmpTCPDomain.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpTCPDomain.c -o snmpTCPDomain.o >/dev/null 2>&1
+mv -f .libs/snmpTCPDomain.lo snmpTCPDomain.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmpUnixDomain.lo ../../snmplib/snmpUnixDomain.c
+rm -f .libs/snmpUnixDomain.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpUnixDomain.c  -fPIC -DPIC -o .libs/snmpUnixDomain.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpUnixDomain.c -o snmpUnixDomain.o >/dev/null 2>&1
+mv -f .libs/snmpUnixDomain.lo snmpUnixDomain.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmpCallbackDomain.lo ../../snmplib/snmpCallbackDomain.c
+rm -f .libs/snmpCallbackDomain.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpCallbackDomain.c  -fPIC -DPIC -o .libs/snmpCallbackDomain.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpCallbackDomain.c -o snmpCallbackDomain.o >/dev/null 2>&1
+mv -f .libs/snmpCallbackDomain.lo snmpCallbackDomain.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmp_secmod.lo ../../snmplib/snmp_secmod.c
+rm -f .libs/snmp_secmod.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_secmod.c  -fPIC -DPIC -o .libs/snmp_secmod.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_secmod.c -o snmp_secmod.o >/dev/null 2>&1
+mv -f .libs/snmp_secmod.lo snmp_secmod.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmpusm.lo ../../snmplib/snmpusm.c
+rm -f .libs/snmpusm.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpusm.c  -fPIC -DPIC -o .libs/snmpusm.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmpusm.c -o snmpusm.o >/dev/null 2>&1
+mv -f .libs/snmpusm.lo snmpusm.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o snmp_version.lo ../../snmplib/snmp_version.c
+rm -f .libs/snmp_version.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_version.c  -fPIC -DPIC -o .libs/snmp_version.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/snmp_version.c -o snmp_version.o >/dev/null 2>&1
+mv -f .libs/snmp_version.lo snmp_version.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o check_varbind.lo ../../snmplib/check_varbind.c
+rm -f .libs/check_varbind.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/check_varbind.c  -fPIC -DPIC -o .libs/check_varbind.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/check_varbind.c -o check_varbind.o >/dev/null 2>&1
+mv -f .libs/check_varbind.lo check_varbind.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o container.lo ../../snmplib/container.c
+rm -f .libs/container.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/container.c  -fPIC -DPIC -o .libs/container.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/container.c -o container.o >/dev/null 2>&1
+mv -f .libs/container.lo container.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o container_binary_array.lo ../../snmplib/container_binary_array.c
+rm -f .libs/container_binary_array.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/container_binary_array.c  -fPIC -DPIC -o .libs/container_binary_array.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/container_binary_array.c -o container_binary_array.o >/dev/null 2>&1
+mv -f .libs/container_binary_array.lo container_binary_array.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o container_null.lo ../../snmplib/container_null.c
+rm -f .libs/container_null.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/container_null.c  -fPIC -DPIC -o .libs/container_null.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/container_null.c -o container_null.o >/dev/null 2>&1
+mv -f .libs/container_null.lo container_null.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o container_list_ssll.lo ../../snmplib/container_list_ssll.c
+rm -f .libs/container_list_ssll.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/container_list_ssll.c  -fPIC -DPIC -o .libs/container_list_ssll.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/container_list_ssll.c -o container_list_ssll.o >/dev/null 2>&1
+mv -f .libs/container_list_ssll.lo container_list_ssll.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o container_iterator.lo ../../snmplib/container_iterator.c
+rm -f .libs/container_iterator.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/container_iterator.c  -fPIC -DPIC -o .libs/container_iterator.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/container_iterator.c -o container_iterator.o >/dev/null 2>&1
+mv -f .libs/container_iterator.lo container_iterator.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o cmu_compat.lo ../../snmplib/cmu_compat.c
+rm -f .libs/cmu_compat.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/cmu_compat.c  -fPIC -DPIC -o .libs/cmu_compat.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/cmu_compat.c -o cmu_compat.o >/dev/null 2>&1
+mv -f .libs/cmu_compat.lo cmu_compat.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/..  -DINET6 -O2 -Dlinux  -c -o ucd_compat.lo ../../snmplib/ucd_compat.c
+rm -f .libs/ucd_compat.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/ucd_compat.c  -fPIC -DPIC -o .libs/ucd_compat.lo
+arm_v5t_le-gcc -I../../include -I../include -I. -I.. -I../../snmplib -I../../snmplib/.. -DINET6 -O2 -Dlinux -c ../../snmplib/ucd_compat.c -o ucd_compat.o >/dev/null 2>&1
+mv -f .libs/ucd_compat.lo ucd_compat.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -DINET6 -O2 -Dlinux  -rpath /usr/lib -version-info 6:1:1 -o libnetsnmp.la snmp_client.lo mib.lo parse.lo snmp_api.lo snmp.lo snmp_auth.lo asn1.lo md5.lo snmp_parse_args.lo system.lo vacm.lo int64.lo read_config.lo snmp_debug.lo tools.lo  snmp_logging.lo snmpv3.lo lcd_time.lo keytools.lo scapi.lo callback.lo default_store.lo snmp_alarm.lo data_list.lo oid_stash.lo mt_support.lo snmp_enum.lo snmp-tc.lo snprintf.lo strlcpy.lo strtol.lo strtoul.lo snmp_transport.lo  snmpUDPIPv6Domain.lo snmpTCPIPv6Domain.lo snmpUDPDomain.lo snmpTCPDomain.lo snmpUnixDomain.lo snmpCallbackDomain.lo snmp_secmod.lo  snmpusm.lo snmp_version.lo check_varbind.lo container.lo container_binary_array.lo container_null.lo container_list_ssll.lo container_iterator.lo cmu_compat.lo ucd_compat.lo  -lcrypto
+rm -fr .libs/libnetsnmp.la .libs/libnetsnmp.* .libs/libnetsnmp.*
+arm_v5t_le-gcc  -shared  snmp_client.lo mib.lo parse.lo snmp_api.lo snmp.lo snmp_auth.lo asn1.lo md5.lo snmp_parse_args.lo system.lo vacm.lo int64.lo read_config.lo snmp_debug.lo tools.lo snmp_logging.lo snmpv3.lo lcd_time.lo keytools.lo scapi.lo callback.lo default_store.lo snmp_alarm.lo data_list.lo oid_stash.lo mt_support.lo snmp_enum.lo snmp-tc.lo snprintf.lo strlcpy.lo strtol.lo strtoul.lo snmp_transport.lo snmpUDPIPv6Domain.lo snmpTCPIPv6Domain.lo snmpUDPDomain.lo snmpTCPDomain.lo snmpUnixDomain.lo snmpCallbackDomain.lo snmp_secmod.lo snmpusm.lo snmp_version.lo check_varbind.lo container.lo container_binary_array.lo container_null.lo container_list_ssll.lo container_iterator.lo cmu_compat.lo ucd_compat.lo  -lcrypto  -Wl,-soname -Wl,libnetsnmp.so.5 -o .libs/libnetsnmp.so.5.1.1
+(cd .libs && rm -f libnetsnmp.so.5 && ln -s libnetsnmp.so.5.1.1 libnetsnmp.so.5)
+(cd .libs && rm -f libnetsnmp.so && ln -s libnetsnmp.so.5.1.1 libnetsnmp.so)
+arm_v5t_le-ar cru .libs/libnetsnmp.a  snmp_client.o mib.o parse.o snmp_api.o snmp.o snmp_auth.o asn1.o md5.o snmp_parse_args.o system.o vacm.o int64.o read_config.o snmp_debug.o tools.o snmp_logging.o snmpv3.o lcd_time.o keytools.o scapi.o callback.o default_store.o snmp_alarm.o data_list.o oid_stash.o mt_support.o snmp_enum.o snmp-tc.o snprintf.o strlcpy.o strtol.o strtoul.o snmp_transport.o snmpUDPIPv6Domain.o snmpTCPIPv6Domain.o snmpUDPDomain.o snmpTCPDomain.o snmpUnixDomain.o snmpCallbackDomain.o snmp_secmod.o snmpusm.o snmp_version.o check_varbind.o container.o container_binary_array.o container_null.o container_list_ssll.o container_iterator.o cmu_compat.o ucd_compat.o 
+arm_v5t_le-ranlib .libs/libnetsnmp.a
+creating libnetsnmp.la
+(cd .libs && rm -f libnetsnmp.la && ln -s ../libnetsnmp.la libnetsnmp.la)
+: libnetsnmp.la
+make[1]: Leaving directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib'
+making all in /var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers
+make[1]: Entering directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers'
+make[1]: Leaving directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers'
+making all in /var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/mibgroup
+make[1]: Entering directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/mibgroup'
+make[1]: Leaving directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/mibgroup'
+making all in /var/tmp/BUILD/net-snmp-5.1.1/objdir/apps
+make[1]: Entering directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/apps'
+making all in /var/tmp/BUILD/net-snmp-5.1.1/objdir/apps/snmpnetstat
+make[2]: Entering directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/apps/snmpnetstat'
+/bin/sh ../../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include  -DINET6 -O2 -Dlinux  -c -o inet.lo ../../../apps/snmpnetstat/inet.c
+mkdir .libs
+arm_v5t_le-gcc -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include -DINET6 -O2 -Dlinux -c ../../../apps/snmpnetstat/inet.c  -fPIC -DPIC -o .libs/inet.lo
+arm_v5t_le-gcc -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include -DINET6 -O2 -Dlinux -c ../../../apps/snmpnetstat/inet.c -o inet.o >/dev/null 2>&1
+mv -f .libs/inet.lo inet.lo
+/bin/sh ../../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include  -DINET6 -O2 -Dlinux  -c -o inet6.lo ../../../apps/snmpnetstat/inet6.c
+rm -f .libs/inet6.lo
+arm_v5t_le-gcc -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include -DINET6 -O2 -Dlinux -c ../../../apps/snmpnetstat/inet6.c  -fPIC -DPIC -o .libs/inet6.lo
+arm_v5t_le-gcc -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include -DINET6 -O2 -Dlinux -c ../../../apps/snmpnetstat/inet6.c -o inet6.o >/dev/null 2>&1
+mv -f .libs/inet6.lo inet6.lo
+/bin/sh ../../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include  -DINET6 -O2 -Dlinux  -c -o if.lo ../../../apps/snmpnetstat/if.c
+rm -f .libs/if.lo
+arm_v5t_le-gcc -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include -DINET6 -O2 -Dlinux -c ../../../apps/snmpnetstat/if.c  -fPIC -DPIC -o .libs/if.lo
+arm_v5t_le-gcc -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include -DINET6 -O2 -Dlinux -c ../../../apps/snmpnetstat/if.c -o if.o >/dev/null 2>&1
+mv -f .libs/if.lo if.lo
+/bin/sh ../../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include  -DINET6 -O2 -Dlinux  -c -o main.lo ../../../apps/snmpnetstat/main.c
+rm -f .libs/main.lo
+arm_v5t_le-gcc -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include -DINET6 -O2 -Dlinux -c ../../../apps/snmpnetstat/main.c  -fPIC -DPIC -o .libs/main.lo
+arm_v5t_le-gcc -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include -DINET6 -O2 -Dlinux -c ../../../apps/snmpnetstat/main.c -o main.o >/dev/null 2>&1
+mv -f .libs/main.lo main.lo
+/bin/sh ../../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include  -DINET6 -O2 -Dlinux  -c -o route.lo ../../../apps/snmpnetstat/route.c
+rm -f .libs/route.lo
+arm_v5t_le-gcc -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include -DINET6 -O2 -Dlinux -c ../../../apps/snmpnetstat/route.c  -fPIC -DPIC -o .libs/route.lo
+arm_v5t_le-gcc -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include -DINET6 -O2 -Dlinux -c ../../../apps/snmpnetstat/route.c -o route.o >/dev/null 2>&1
+mv -f .libs/route.lo route.lo
+/bin/sh ../../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include  -DINET6 -O2 -Dlinux  -c -o winstub.lo ../../../apps/snmpnetstat/winstub.c
+rm -f .libs/winstub.lo
+arm_v5t_le-gcc -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include -DINET6 -O2 -Dlinux -c ../../../apps/snmpnetstat/winstub.c  -fPIC -DPIC -o .libs/winstub.lo
+arm_v5t_le-gcc -I../../include -I../.. -I../../../apps/snmpnetstat/../.. -I../../../apps/snmpnetstat/../../include -DINET6 -O2 -Dlinux -c ../../../apps/snmpnetstat/winstub.c -o winstub.o >/dev/null 2>&1
+mv -f .libs/winstub.lo winstub.lo
+/bin/sh ../../libtool  --mode=link arm_v5t_le-gcc  -o snmpnetstat inet.lo inet6.lo if.lo main.lo route.lo winstub.lo   ../../snmplib/libnetsnmp.la -lelf -lm 
+arm_v5t_le-gcc -o .libs/snmpnetstat inet.o inet6.o if.o main.o route.o winstub.o  ../../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmpnetstat
+make[2]: Leaving directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/apps/snmpnetstat'
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmptrapd_handlers.lo ../../apps/snmptrapd_handlers.c
+mkdir .libs
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmptrapd_handlers.c  -fPIC -DPIC -o .libs/snmptrapd_handlers.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmptrapd_handlers.c -o snmptrapd_handlers.o >/dev/null 2>&1
+mv -f .libs/snmptrapd_handlers.lo snmptrapd_handlers.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmptrapd_log.lo ../../apps/snmptrapd_log.c
+rm -f .libs/snmptrapd_log.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmptrapd_log.c  -fPIC -DPIC -o .libs/snmptrapd_log.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmptrapd_log.c -o snmptrapd_log.o >/dev/null 2>&1
+mv -f .libs/snmptrapd_log.lo snmptrapd_log.lo
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o notification_log.lo ../../apps/notification_log.c
+rm -f .libs/notification_log.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/notification_log.c  -fPIC -DPIC -o .libs/notification_log.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/notification_log.c -o notification_log.o >/dev/null 2>&1
+mv -f .libs/notification_log.lo notification_log.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -DINET6 -O2 -Dlinux  -rpath /usr/lib -version-info 6:1:1 -o libnetsnmptrapd.la snmptrapd_handlers.lo snmptrapd_log.lo notification_log.lo   
+rm -fr .libs/libnetsnmptrapd.la .libs/libnetsnmptrapd.* .libs/libnetsnmptrapd.*
+arm_v5t_le-gcc  -shared  snmptrapd_handlers.lo snmptrapd_log.lo notification_log.lo   -Wl,-soname -Wl,libnetsnmptrapd.so.5 -o .libs/libnetsnmptrapd.so.5.1.1
+(cd .libs && rm -f libnetsnmptrapd.so.5 && ln -s libnetsnmptrapd.so.5.1.1 libnetsnmptrapd.so.5)
+(cd .libs && rm -f libnetsnmptrapd.so && ln -s libnetsnmptrapd.so.5.1.1 libnetsnmptrapd.so)
+arm_v5t_le-ar cru .libs/libnetsnmptrapd.a  snmptrapd_handlers.o snmptrapd_log.o notification_log.o 
+arm_v5t_le-ranlib .libs/libnetsnmptrapd.a
+creating libnetsnmptrapd.la
+(cd .libs && rm -f libnetsnmptrapd.la && ln -s ../libnetsnmptrapd.la libnetsnmptrapd.la)
+: libnetsnmptrapd.la
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmpget.lo ../../apps/snmpget.c
+rm -f .libs/snmpget.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpget.c  -fPIC -DPIC -o .libs/snmpget.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpget.c -o snmpget.o >/dev/null 2>&1
+mv -f .libs/snmpget.lo snmpget.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmpget snmpget.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/snmpget snmpget.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmpget
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmpgetnext.lo ../../apps/snmpgetnext.c
+rm -f .libs/snmpgetnext.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpgetnext.c  -fPIC -DPIC -o .libs/snmpgetnext.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpgetnext.c -o snmpgetnext.o >/dev/null 2>&1
+mv -f .libs/snmpgetnext.lo snmpgetnext.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmpgetnext snmpgetnext.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/snmpgetnext snmpgetnext.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmpgetnext
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmpset.lo ../../apps/snmpset.c
+rm -f .libs/snmpset.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpset.c  -fPIC -DPIC -o .libs/snmpset.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpset.c -o snmpset.o >/dev/null 2>&1
+mv -f .libs/snmpset.lo snmpset.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmpset snmpset.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/snmpset snmpset.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmpset
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmpusm.lo ../../apps/snmpusm.c
+rm -f .libs/snmpusm.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpusm.c  -fPIC -DPIC -o .libs/snmpusm.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpusm.c -o snmpusm.o >/dev/null 2>&1
+mv -f .libs/snmpusm.lo snmpusm.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmpusm snmpusm.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/snmpusm snmpusm.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmpusm
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmpwalk.lo ../../apps/snmpwalk.c
+rm -f .libs/snmpwalk.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpwalk.c  -fPIC -DPIC -o .libs/snmpwalk.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpwalk.c -o snmpwalk.o >/dev/null 2>&1
+mv -f .libs/snmpwalk.lo snmpwalk.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmpwalk snmpwalk.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/snmpwalk snmpwalk.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmpwalk
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmpbulkwalk.lo ../../apps/snmpbulkwalk.c
+rm -f .libs/snmpbulkwalk.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpbulkwalk.c  -fPIC -DPIC -o .libs/snmpbulkwalk.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpbulkwalk.c -o snmpbulkwalk.o >/dev/null 2>&1
+mv -f .libs/snmpbulkwalk.lo snmpbulkwalk.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmpbulkwalk snmpbulkwalk.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/snmpbulkwalk snmpbulkwalk.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmpbulkwalk
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmptable.lo ../../apps/snmptable.c
+rm -f .libs/snmptable.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmptable.c  -fPIC -DPIC -o .libs/snmptable.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmptable.c -o snmptable.o >/dev/null 2>&1
+mv -f .libs/snmptable.lo snmptable.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmptable snmptable.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/snmptable snmptable.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmptable
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmptrap.lo ../../apps/snmptrap.c
+rm -f .libs/snmptrap.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmptrap.c  -fPIC -DPIC -o .libs/snmptrap.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmptrap.c -o snmptrap.o >/dev/null 2>&1
+mv -f .libs/snmptrap.lo snmptrap.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmptrap snmptrap.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/snmptrap snmptrap.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmptrap
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmpbulkget.lo ../../apps/snmpbulkget.c
+rm -f .libs/snmpbulkget.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpbulkget.c  -fPIC -DPIC -o .libs/snmpbulkget.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpbulkget.c -o snmpbulkget.o >/dev/null 2>&1
+mv -f .libs/snmpbulkget.lo snmpbulkget.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmpbulkget snmpbulkget.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/snmpbulkget snmpbulkget.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmpbulkget
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmptranslate.lo ../../apps/snmptranslate.c
+rm -f .libs/snmptranslate.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmptranslate.c  -fPIC -DPIC -o .libs/snmptranslate.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmptranslate.c -o snmptranslate.o >/dev/null 2>&1
+mv -f .libs/snmptranslate.lo snmptranslate.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmptranslate snmptranslate.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/snmptranslate snmptranslate.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmptranslate
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmpstatus.lo ../../apps/snmpstatus.c
+rm -f .libs/snmpstatus.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpstatus.c  -fPIC -DPIC -o .libs/snmpstatus.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpstatus.c -o snmpstatus.o >/dev/null 2>&1
+mv -f .libs/snmpstatus.lo snmpstatus.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmpstatus snmpstatus.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/snmpstatus snmpstatus.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmpstatus
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmpdelta.lo ../../apps/snmpdelta.c
+rm -f .libs/snmpdelta.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpdelta.c  -fPIC -DPIC -o .libs/snmpdelta.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpdelta.c -o snmpdelta.o >/dev/null 2>&1
+mv -f .libs/snmpdelta.lo snmpdelta.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmpdelta snmpdelta.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/snmpdelta snmpdelta.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmpdelta
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmptest.lo ../../apps/snmptest.c
+rm -f .libs/snmptest.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmptest.c  -fPIC -DPIC -o .libs/snmptest.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmptest.c -o snmptest.o >/dev/null 2>&1
+mv -f .libs/snmptest.lo snmptest.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmptest snmptest.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/snmptest snmptest.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmptest
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o encode_keychange.lo ../../apps/encode_keychange.c
+rm -f .libs/encode_keychange.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/encode_keychange.c  -fPIC -DPIC -o .libs/encode_keychange.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/encode_keychange.c -o encode_keychange.o >/dev/null 2>&1
+mv -f .libs/encode_keychange.lo encode_keychange.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o encode_keychange encode_keychange.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/encode_keychange encode_keychange.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating encode_keychange
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmpdf.lo ../../apps/snmpdf.c
+rm -f .libs/snmpdf.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpdf.c  -fPIC -DPIC -o .libs/snmpdf.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpdf.c -o snmpdf.o >/dev/null 2>&1
+mv -f .libs/snmpdf.lo snmpdf.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmpdf snmpdf.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/snmpdf snmpdf.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmpdf
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmpvacm.lo ../../apps/snmpvacm.c
+rm -f .libs/snmpvacm.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpvacm.c  -fPIC -DPIC -o .libs/snmpvacm.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmpvacm.c -o snmpvacm.o >/dev/null 2>&1
+mv -f .libs/snmpvacm.lo snmpvacm.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmpvacm snmpvacm.lo -L../snmplib -L../agent -L../agent/helpers  ../snmplib/libnetsnmp.la  -lelf -lm  
+arm_v5t_le-gcc -o .libs/snmpvacm snmpvacm.o  -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm 
+creating snmpvacm
+/bin/sh ../libtool  --mode=compile arm_v5t_le-gcc  -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux  -c -o snmptrapd.lo ../../apps/snmptrapd.c
+rm -f .libs/snmptrapd.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmptrapd.c  -fPIC -DPIC -o .libs/snmptrapd.lo
+arm_v5t_le-gcc -I../../include -I../include -I.. -I../../apps/.. -I../../apps/../snmplib -I../../apps/../agent -I../agent/helpers -I../../apps/../agent/mibgroup -DINET6 -O2 -Dlinux -c ../../apps/snmptrapd.c -o snmptrapd.o >/dev/null 2>&1
+mv -f .libs/snmptrapd.lo snmptrapd.lo
+/bin/sh ../libtool  --mode=link arm_v5t_le-gcc  -o snmptrapd snmptrapd.lo libnetsnmptrapd.la -L../snmplib -L../agent -L../agent/helpers  ../agent/libnetsnmpagent.la ../agent/libnetsnmpmibs.la ../agent/helpers/libnetsnmphelpers.la ../snmplib/libnetsnmp.la  -lelf -lm  -ldl  -lwrap
+arm_v5t_le-gcc -o .libs/snmptrapd snmptrapd.o  ./.libs/libnetsnmptrapd.so -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/snmplib -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent -L/var/tmp/BUILD/net-snmp-5.1.1/objdir/agent/helpers ../agent/.libs/libnetsnmpagent.so ../agent/.libs/libnetsnmpmibs.so ../agent/helpers/.libs/libnetsnmphelpers.so ../snmplib/.libs/libnetsnmp.so -lcrypto -lelf -lm -ldl -lwrap 
+creating snmptrapd
+make[1]: Leaving directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/apps'
+making all in /var/tmp/BUILD/net-snmp-5.1.1/objdir/man
+make[1]: Entering directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/man'
+/usr/bin/sed -f ../sedscript < ../../man/snmpd.conf.5.def > snmpd.conf.5
+/usr/bin/sed -f ../sedscript < ../../man/snmptrapd.conf.5.def > snmptrapd.conf.5
+/usr/bin/sed -f ../sedscript < ../../man/snmp.conf.5.def > snmp.conf.5
+/usr/bin/sed -f ../sedscript < ../../man/snmp_config.5.def > snmp_config.5
+/usr/bin/sed -f ../sedscript < ../../man/variables.5.def > variables.5
+/usr/bin/sed -f ../sedscript < ../../man/snmpbulkget.1.def > snmpbulkget.1
+/usr/bin/sed -f ../sedscript < ../../man/snmpcmd.1.def > snmpcmd.1
+/usr/bin/sed -f ../sedscript < ../../man/snmpget.1.def > snmpget.1
+/usr/bin/sed -f ../sedscript < ../../man/snmpset.1.def > snmpset.1
+/usr/bin/sed -f ../sedscript < ../../man/snmpwalk.1.def > snmpwalk.1
+/usr/bin/sed -f ../sedscript < ../../man/snmpbulkwalk.1.def > snmpbulkwalk.1
+/usr/bin/sed -f ../sedscript < ../../man/snmpgetnext.1.def > snmpgetnext.1
+/usr/bin/sed -f ../sedscript < ../../man/snmptest.1.def > snmptest.1
+/usr/bin/sed -f ../sedscript < ../../man/snmptranslate.1.def > snmptranslate.1
+/usr/bin/sed -f ../sedscript < ../../man/snmptrap.1.def > snmptrap.1
+/usr/bin/sed -f ../sedscript < ../../man/snmpusm.1.def > snmpusm.1
+/usr/bin/sed -f ../sedscript < ../../man/snmpvacm.1.def > snmpvacm.1
+/usr/bin/sed -f ../sedscript < ../../man/snmptable.1.def > snmptable.1
+/usr/bin/sed -f ../sedscript < ../../man/snmpstatus.1.def > snmpstatus.1
+/usr/bin/sed -f ../sedscript < ../../man/snmpconf.1.def > snmpconf.1
+/usr/bin/sed -f ../sedscript < ../../man/mib2c.1.def > mib2c.1
+awk '{ if ($0 == "     * begin storage definitions ") { p = 1 } else if ($0 == "     * end storage definitions ") { p = 0 } else if (p) { print $0}}' < ../../man/../include/net-snmp/library/default_store.h > default_store.3.h
+/usr/bin/sed -f ../sedscript < ../../man/default_store.3.top > default_store.3
+cat default_store.3.h ../../man/default_store.3.bot >> default_store.3
+/usr/bin/sed -f ../sedscript < ../../man/mib_api.3.def > mib_api.3
+/usr/bin/sed -f ../sedscript < ../../man/read_config.3.def > read_config.3
+/usr/bin/sed -f ../sedscript < ../../man/snmp_agent_api.3.def > snmp_agent_api.3
+/usr/bin/sed -f ../sedscript < ../../man/snmp_alarm.3.def > snmp_alarm.3
+/usr/bin/sed -f ../sedscript < ../../man/snmp_api.3.def > snmp_api.3
+/usr/bin/sed -f ../sedscript < ../../man/snmp_sess_api.3.def > snmp_sess_api.3
+/usr/bin/sed -f ../sedscript < ../../man/snmp_trap_api.3.def > snmp_trap_api.3
+/usr/bin/sed -f ../sedscript < ../../man/snmptrapd.8.def > snmptrapd.8
+/usr/bin/sed -f ../sedscript < ../../man/snmpd.8.def > snmpd.8
+make[1]: Leaving directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/man'
+making all in /var/tmp/BUILD/net-snmp-5.1.1/objdir/local
+make[1]: Entering directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/local'
+/usr/bin/sed -f ../sedscript ../../local/snmpcheck.def > snmpcheck
+if test "x/usr/bin/perl" != "x" ; then \
+  /usr/bin/perl -p -e 's%^#!.*/perl.*%#!/usr/bin/perl%' snmpcheck > snmpcheck.made ; \
+else \
+  touch snmpcheck.made ; \
+        fi
+if test "x/usr/bin/perl" != "x" ; then \
+  /usr/bin/perl -p -e 's%^#!.*/perl.*%#!/usr/bin/perl%' ../../local/tkmib > tkmib.made; \
+else \
+  touch tkmib.made; \
+        fi
+if test "x/usr/bin/perl" != "x" ; then \
+  /usr/bin/perl -p -e 's%^#!.*/perl.*%#!/usr/bin/perl%;s#/usr/local/share/snmp#/usr/share/snmp#;s#/usr/local/etc/snmp#/etc/snmp#;' ../../local/mib2c > mib2c.made; \
+else \
+  touch mib2c.made; \
+        fi
+if test "x/usr/bin/perl" != "x" ; then \
+  /usr/bin/perl -p -e 's%^#!.*/perl.*%#!/usr/bin/perl%' ../../local/fixproc > fixproc.made; \
+else \
+  touch fixproc.made; \
+        fi
+if test "x/usr/bin/perl" != "x" ; then \
+  /usr/bin/perl -p -e 's%^#!.*/perl.*%#!/usr/bin/perl%' ../../local/ipf-mod.pl > ipf-mod.pl.made; \
+else \
+  touch ipf-mod.pl.made; \
+        fi
+if test "x/usr/bin/perl" != "x" ; then \
+  /usr/bin/perl -p -e 's%^#!.*/perl.*%#!/usr/bin/perl%; s#/usr/local/share#/usr/share#g; s#/usr/local/etc/snmp#/etc/snmp#g' ../../local/snmpconf > snmpconf.made; \
+else \
+  touch snmpconf.made; \
+        fi
+if test "x/usr/bin/perl" != "x" ; then \
+  /usr/bin/perl -p -e 's%^#!.*/perl.*%#!/usr/bin/perl%; s#/usr/local/share#/usr/share#g; s#/usr/local/etc/snmp##g' ../../local/traptoemail > traptoemail.made; \
+else \
+  touch traptoemail.made; \
+        fi
+make[1]: Leaving directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/local'
+making all in /var/tmp/BUILD/net-snmp-5.1.1/objdir/mibs
+make[1]: Entering directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/mibs'
+make[1]: Leaving directory `/var/tmp/BUILD/net-snmp-5.1.1/objdir/mibs'
+chmod a+x net-snmp-config
+touch net-snmp-config-x

@@ -1,0 +1,37 @@
+This is the Debian GNU/Linux prepackaged version of the "man_db"
+Manual Page Browser Utility Package Version 2.4.2; it was written 
+by Graeme Wilford <G.Wilford@ee.surrey.ac.uk>, with documentation
+reorganized by Nils Magnus <n_magnus@informatik.uni-kl.de>.
+
+The author no longer works on it. Until 2001 it was maintained by the
+late Fabrizio Polacco <fpolacco@debian.org>. It is now maintained by
+Colin Watson <cjwatson@debian.org>.
+
+The original upstream sources as maintained by Graeme Wilford are
+available at ftp://ftp.ee.surrey.ac.uk/pub/software/unix/wilf/man_db/.
+
+The current upstream source is held in CVS at
+http://savannah.nongnu.org/projects/man-db/, and future upstream
+releases will take place from there.
+
+This program is under the GNU General Public License, Version 2.
+The primary copyright holder is Graeme Wilford.
+Portions are copyrighted by Free Software Foundation, Inc.
+Portions are copyrighted by John W. Eaton.
+Portions are copyrighted by Markus Armbruster.
+Portions are copyrighted by Fabrizio Polacco.
+Portions are copyrighted by Colin Watson.
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; version 2 dated June, 1991.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   A copy of the GNU General Public License is available in
+   /usr/share/common-licenses/GPL (as installed by package base-files);
+   if not, write to the Free Software Foundation, Inc.,
+   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.

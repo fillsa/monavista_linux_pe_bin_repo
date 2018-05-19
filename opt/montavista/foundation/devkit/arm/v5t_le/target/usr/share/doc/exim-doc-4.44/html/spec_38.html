@@ -1,0 +1,1909 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 38</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_37.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_39.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2352"></a>
+<a name="IX2353"></a>
+<a name="IX2354"></a>
+<a name="IX2355"></a>
+<h1>
+<a name="CHAP38" href="spec_toc.html#TOC271">
+38. Access control lists
+</a></h1>
+<p>
+Access Control Lists (ACLs) are defined in a separate section of the run time
+configuration file, headed by &#147;begin acl&#148;. Each ACL definition starts with a
+name, terminated by a colon. Here is a complete ACL section which contains just
+one very small ACL:
+<pre>
+&nbsp;&nbsp;begin acl
+&nbsp;&nbsp;
+&nbsp;&nbsp;small_acl:
+&nbsp;&nbsp;  accept   hosts = one.host.only
+</pre>
+</p>
+<p>
+You can have as many lists as you like in the ACL section, and the order in
+which they appear does not matter. The lists are self-terminating.
+</p>
+<p>
+The majority of ACLs are used to control Exim's behaviour when it receives
+certain SMTP commands. This applies both to incoming TCP/IP connections, and
+when a local process submits a message over a pipe (using the <i>-bs</i> option).
+The most common use is for controlling which recipients are accepted in
+incoming messages. In addition, you can also define an ACL that is used to
+check local non-SMTP messages. The default configuration file contains an
+example of a realistic ACL for checking <font size=-1>RCPT</font> commands. This is discussed in
+chapter <a href="spec_7.html">7</a>.
+</p>
+<h2>
+<a name="SECT38.1" href="spec_toc.html#TOC272">
+38.1. Testing ACLs
+</a></h2>
+<p>
+The <i>-bh</i> command line option provides a way of testing your ACL configuration
+locally by running a fake SMTP session with which you interact. The host
+<i>relay-test.mail-abuse.org</i> provides a service for checking your relaying
+configuration (see section <a href="spec_38.html#SECT38.27">38.27</a> for more details).
+</p>
+<a name="IX2356"></a>
+<h2>
+<a name="SECT38.2" href="spec_toc.html#TOC273">
+38.2. Specifying when ACLs are used
+</a></h2>
+<p>
+<a name="IX2357"></a>
+<a name="IX2358"></a>
+<a name="IX2359"></a>
+<a name="IX2360"></a>
+<a name="IX2361"></a>
+<a name="IX2362"></a>
+<a name="IX2363"></a>
+<a name="IX2364"></a>
+<a name="IX2365"></a>
+<a name="IX2366"></a>
+In order to cause an ACL to be used, you have to name it in one of the relevant
+options in the main part of the configuration. These options are:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt><tt>acl&#095;not&#095;smtp</tt>&nbsp;&nbsp;</tt></td><td>ACL for non-SMTP messages</td></tr>
+<tr><td>&nbsp;&nbsp;<tt><tt>acl&#095;smtp&#095;auth</tt>&nbsp;&nbsp;</tt></td><td>ACL for <font size=-1>AUTH</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt><tt>acl&#095;smtp&#095;connect</tt>&nbsp;&nbsp;</tt></td><td>ACL for start of SMTP connection</td></tr>
+<tr><td>&nbsp;&nbsp;<tt><tt>acl&#095;smtp&#095;data</tt>&nbsp;&nbsp;</tt></td><td>ACL after <font size=-1>DATA</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt><tt>acl&#095;smtp&#095;etrn</tt>&nbsp;&nbsp;</tt></td><td>ACL for <font size=-1>ETRN</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt><tt>acl&#095;smtp&#095;expn</tt>&nbsp;&nbsp;</tt></td><td>ACL for <font size=-1>EXPN</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt><tt>acl&#095;smtp&#095;helo</tt>&nbsp;&nbsp;</tt></td><td>ACL for <font size=-1>HELO</font> or <font size=-1>EHLO</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt><tt>acl&#095;smtp&#095;mail</tt>&nbsp;&nbsp;</tt></td><td>ACL for <font size=-1>MAIL</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt><tt>acl&#095;smtp&#095;mailauth</tt>&nbsp;&nbsp;</tt></td><td>ACL for the <font size=-1>AUTH</font> parameter of <font size=-1>MAIL</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt><tt>acl&#095;smtp&#095;rcpt</tt>&nbsp;&nbsp;</tt></td><td>ACL for <font size=-1>RCPT</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt><tt>acl&#095;smtp&#095;starttls</tt>&nbsp;&nbsp;</tt></td><td>ACL for <font size=-1>STARTTLS</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt><tt>acl&#095;smtp&#095;vrfy</tt>&nbsp;&nbsp;</tt></td><td>ACL for <font size=-1>VRFY</font></td></tr>
+</table>
+</p>
+<p>
+For example, if you set
+<pre>
+&nbsp;&nbsp;acl_smtp_rcpt = small_acl
+</pre>
+</p>
+<p>
+the little ACL defined above is used whenever Exim receives a <font size=-1>RCPT</font> command
+in an SMTP dialogue. The majority of policy tests on incoming messages can be
+done when <font size=-1>RCPT</font> commands arrive. A rejection of <font size=-1>RCPT</font> should cause the
+sending MTA to give up on the recipient address contained in the <font size=-1>RCPT</font>
+command, whereas rejection at other times may cause the client MTA to keep on 
+trying to deliver the message. It is therefore recommended that you do as much 
+testing as possible at <font size=-1>RCPT</font> time.
+</p>
+<p>
+However, you cannot test the contents of the message, for example, to verify
+addresses in the headers, at <font size=-1>RCPT</font> time. Such tests have to appear in the
+ACL that is run after the message has been received, before the final response
+to the <font size=-1>DATA</font> command is sent. This is the ACL specified by
+<tt>acl&#095;smtp&#095;data</tt>. At this time, it is no longer possible to reject individual
+recipients. An error response should reject the entire message. Unfortunately,
+it is known that some MTAs do not treat hard (5<em>xx</em>) errors correctly at
+this point &#150; they keep the message on their queues and try again later, but
+that is their problem, though it does waste some of your resources.
+</p>
+<p>
+The ACL test specified by <tt>acl&#095;smtp&#095;connect</tt> happens after the test specified
+by <tt>host_reject_connection</tt> (which is now an anomaly) and any TCP Wrappers
+testing (if configured).
+</p>
+<p>
+The non-SMTP ACL applies to all non-interactive incoming messages, that is, it
+applies to batch SMTP as well as to non-SMTP messages. (Batch SMTP is not
+really SMTP.) This ACL is run just before the <i>local&#095;scan()</i> function. Any
+kind of rejection is treated as permanent, because there is no way of sending a
+temporary error for these kinds of message. Many of the ACL conditions (for
+example, host tests, and tests on the state of the SMTP connection such as
+encryption and authentication) are not relevant and are forbidden in this ACL.
+</p>
+<a name="IX2367"></a>
+<h2>
+<a name="SECT38.3" href="spec_toc.html#TOC274">
+38.3. ACL return codes
+</a></h2>
+<p>
+The result of running an ACL is either &#147;accept&#148; or &#147;deny&#148;, or, if some test
+cannot be completed (for example, if a database is down), &#147;defer&#148;. These
+results cause 2<em>xx</em>, 5<em>xx</em>, and 4<em>xx</em> return codes, respectively, to
+be used in the SMTP dialogue. A fourth return, &#147;error&#148;, occurs when there is an
+error such as invalid syntax in the ACL. This also causes a 4<em>xx</em> return
+code.
+</p>
+<p>
+The ACLs that are relevant to message reception may also return &#147;discard&#148;. This
+has the effect of &#147;accept&#148;, but causes either the entire message or an
+individual recipient address to be discarded. In other words, it is a
+blackholing facility. Use it with great care.
+</p>
+<p>
+If the ACL for <font size=-1>MAIL</font> returns &#147;discard&#148;, all recipients are discarded, and no
+ACL is run for subsequent <font size=-1>RCPT</font> commands. The effect of &#147;discard&#148; in a
+<font size=-1>RCPT</font> ACL is to discard just the one address. If there are no recipients
+left when the message's data is received, the <font size=-1>DATA</font> ACL is not run. A 
+&#147;discard&#148; return from the <font size=-1>DATA</font> or the non-SMTP ACL discards all the 
+remaining recipients.
+</p>
+<p>
+The <i>local&#095;scan()</i> function is always run, even if there are no remaining 
+recipients; it may create new recipients.
+</p>
+<a name="IX2368"></a>
+<h2>
+<a name="SECT38.4" href="spec_toc.html#TOC275">
+38.4. Unset ACL options
+</a></h2>
+<p>
+<font color=green>
+The default actions when any of the <tt>acl&#095;<em>xxx</em></tt> options are unset are not
+all the same. <b>Note</b>: These defaults apply only when the relevant ACL is
+not defined at all. For any defined ACL, the default action if control reaches
+the end of the ACL statements is &#147;deny&#148;.
+</font>
+</p>
+<p>
+For <tt>acl&#095;not&#095;smtp</tt>, <tt>acl&#095;smtp&#095;auth</tt>, <tt>acl&#095;smtp&#095;connect</tt>,
+<tt>acl&#095;smtp&#095;data</tt>, <tt>acl&#095;smtp&#095;helo</tt>, <tt>acl_smtp_mail</tt>, <tt>acl&#095;smtp&#095;mailauth</tt>,
+and <tt>acl&#095;smtp&#095;starttls</tt>, the 
+<font color=green>
+action when the ACL is not defined is &#147;accept&#148;.
+</p>
+<p>
+For the others (<tt>acl&#095;smtp&#095;etrn</tt>, <tt>acl&#095;smtp&#095;expn</tt>, <tt>acl&#095;smtp&#095;rcpt</tt>, and
+<tt>acl&#095;smtp&#095;vrfy</tt>), the action when the ACL is not defined is &#147;deny&#148;.
+</font>
+This means that <tt>acl&#095;smtp&#095;rcpt</tt> must be defined in order to receive any
+messages over an SMTP connection. For an example, see the ACL in the default
+configuration file.
+</p>
+<a name="IX2369"></a>
+<h2>
+<a name="SECT38.5" href="spec_toc.html#TOC276">
+38.5. Data for message ACLs
+</a></h2>
+<p>
+When an ACL for <font size=-1>MAIL</font>, <font size=-1>RCPT</font>, or <font size=-1>DATA</font> is being run, the variables
+that contain information about the host and the message's sender (for example,
+<tt>$sender&#095;host&#095;address</tt> and <tt>$sender&#095;address</tt>) are set, and can be used in
+ACL statements. In the case of <font size=-1>RCPT</font> (but not <font size=-1>MAIL</font> or <font size=-1>DATA</font>),
+<tt>$domain</tt> and <tt>$local&#095;part</tt> are set from the argument address.
+</p>
+<p>
+When an ACL for the <font size=-1>AUTH</font> parameter of <font size=-1>MAIL</font> is being run, the variables 
+that contain information about the host are set, but <tt>$sender&#095;address</tt> is not 
+yet set.
+</p>
+<p>
+The <tt>$message&#095;size</tt> variable is set to the value of the <font size=-1>SIZE</font> parameter on
+the <font size=-1>MAIL</font> command at <font size=-1>MAIL</font> and <font size=-1>RCPT</font> time, or -1 if that parameter was
+not given. 
+Its value is updated to the true message size by the time the ACL after
+<font size=-1>DATA</font> is run.
+</p>
+<p>
+The <tt>$rcpt&#095;count</tt> variable increases by one for each <font size=-1>RCPT</font> command
+received. The <tt>$recipients&#095;count</tt> variable increases by one each time a
+<font size=-1>RCPT</font> command is accepted, so while an ACL for <font size=-1>RCPT</font> is being processed,
+it contains the number of previously accepted recipients. At <font size=-1>DATA</font> time,
+<tt>$rcpt&#095;count</tt> contains the total number of <font size=-1>RCPT</font> commands, and
+<tt>$recipients&#095;count</tt> contains the total number of accepted recipients.
+</p>
+<a name="IX2370"></a>
+<h2>
+<a name="SECT38.6" href="spec_toc.html#TOC277">
+38.6. Data for non-message ACLs
+</a></h2>
+<p>
+When an ACL for <font size=-1>AUTH</font>, <font size=-1>ETRN</font>, <font size=-1>EXPN</font>, 
+<font size=-1>STARTTLS</font>,
+or <font size=-1>VRFY</font> is being run, the remainder of the SMTP command line is placed in
+<tt>$smtp&#095;command&#095;argument</tt>. This can be tested using a <tt>condition</tt> condition.
+For example, here is an ACL for use with <font size=-1>AUTH</font>, which insists that either
+the session is encrypted, or the CRAM-MD5 authentication method is used. In
+other words, it does not permit authentication methods that use cleartext
+passwords on unencrypted connections.
+<pre>
+&nbsp;&nbsp;acl_check_auth:
+&nbsp;&nbsp;  accept encrypted = *
+&nbsp;&nbsp;  accept condition = ${if eq{${uc:$smtp_command_argument}}\
+&nbsp;&nbsp;                      {CRAM-MD5}{yes}{no}}
+&nbsp;&nbsp;  deny   message   = TLS encryption or CRAM-MD5 required
+</pre>
+</p>
+<p>
+(Another way of applying this restriction is to arrange for the authenticators 
+that use cleartext passwords not to be advertised when the connection is not 
+encrypted. You can use the generic <tt>server&#095;advertise&#095;condition</tt> authenticator 
+option to do this.)
+</p>
+<a name="IX2371"></a>
+<h2>
+<a name="SECT38.7" href="spec_toc.html#TOC278">
+38.7. Use of the ACL selection options
+</a></h2>
+<p>
+The value of an <tt>acl&#095;smtp&#095;<em>xxx</em></tt> option is expanded before use, so you can
+use different ACLs in different circumstances, and in fact the resulting string
+does not have to be the name of a configured list. Having expanded the string,
+Exim searches for an ACL as follows:
+</p>
+<ul>
+<li><p>
+If the string begins with a slash, Exim attempts to open the file and read
+its contents as an ACL. 
+The lines are processed in the same way as lines in the Exim configuration
+file. In particular, continuation lines are supported, blank lines are ignored,
+as are lines whose first non-whitespace character is &#147;&#035;&#148;.
+If the file does not exist or cannot be read, an error occurs (typically
+causing a temporary failure of whatever caused the ACL to be run). For example:
+<pre>
+&nbsp;&nbsp;acl_smtp_data = /etc/acls/\
+&nbsp;&nbsp;  ${lookup{$sender_host_address}lsearch\
+&nbsp;&nbsp;  {/etc/acllist}{$value}{default}}
+</pre>
+</p>
+<p>
+This looks up an ACL file to use on the basis of the host's IP address, falling
+back to a default if the lookup fails. If an ACL is successfully read from a
+file, it is retained in memory for the duration of the Exim process, so that it
+can be re-used without having to re-read the file.
+</p>
+</li>
+<li><p>
+If the string does not start with a slash, and does not contain any spaces,
+Exim searches the ACL section of the configuration for a list whose name
+matches the string.
+</p>
+</li>
+<li><p>
+If no named ACL is found, or if the string contains spaces, Exim parses
+the string as an inline ACL. This can save typing in cases where you just
+want to have something like
+<pre>
+&nbsp;&nbsp;acl_smtp_vrfy = accept
+</pre>
+</p>
+<p>
+in order to allow free use of the <font size=-1>VRFY</font> command.
+Such a string may contain newlines; it is processed in the same way as an ACL 
+that is read from a file.
+</p>
+</li>
+</ul>
+<a name="IX2372"></a>
+<a name="IX2373"></a>
+<h2>
+<a name="SECT38.8" href="spec_toc.html#TOC279">
+38.8. Format of an ACL
+</a></h2>
+<p>
+An individual ACL consists of a number of statements. Each statement starts
+with a verb, optionally followed by a number of conditions and other modifiers.
+If all the conditions are met, the verb is obeyed. 
+The same condition may be used (with different arguments) more than once in the 
+same statement. This provides a means of specifying an &#147;and&#148; conjunction 
+between conditions. For example:
+<pre>
+&nbsp;&nbsp;deny  dnslists = list1.example
+&nbsp;&nbsp;      dnslists = list2.example
+</pre>
+</p>
+<p>
+If there are no conditions, the verb is always obeyed. What happens if any of
+the conditions are not met depends on the verb (and in one case, on a special
+modifier). Not all the conditions make sense at every testing point. For
+example, you cannot test a sender address in the ACL that is run for a <font size=-1>VRFY</font>
+command.
+</p>
+<p>
+The verbs are as follows:
+</p>
+<ul>
+<li><p>
+<tt>accept</tt>: If all the conditions are met, the ACL returns &#147;accept&#148;. If any of
+the conditions are not met, what happens depends on whether <tt>endpass</tt> appears
+among the conditions (for syntax see below). If the failing condition precedes
+<tt>endpass</tt>, control is passed to the next ACL statement; if it follows
+<tt>endpass</tt>, the ACL returns &#147;deny&#148;. Consider this statement, used to check a
+<font size=-1>RCPT</font> command:
+<pre>
+&nbsp;&nbsp;accept domains = +local_domains
+&nbsp;&nbsp;       endpass
+&nbsp;&nbsp;       verify = recipient
+</pre>
+</p>
+<p>
+If the recipient domain does not match the <tt>domains</tt> condition, control passes
+to the next statement. If it does match, the recipient is verified, and the
+command is accepted if verification succeeds. However, if verification fails,
+the ACL yields &#147;deny&#148;, because the failing condition is after <tt>endpass</tt>.
+</p>
+</li>
+<li><p>
+<tt>defer</tt>: If all the conditions are met, the ACL returns &#147;defer&#148; which, in an 
+SMTP session, causes a 4<i>xx</i> response to be given. For a non-SMTP ACL, 
+<tt>defer</tt> is the same as <tt>deny</tt>, because there is no way of sending a temporary
+error. For a <font size=-1>RCPT</font> command, <tt>defer</tt> is much the same as using a
+<b>redirect</b> router and <tt>:defer:</tt> while verifying, but the <tt>defer</tt> verb can
+be used in any ACL, and even for a recipient it might be a simpler approach.
+</p>
+</li>
+<li><p>
+<tt>deny</tt>: If all the conditions are met, the ACL returns &#147;deny&#148;. If any of the
+conditions are not met, control is passed to the next ACL statement. For
+example,
+<pre>
+&nbsp;&nbsp;deny dnslists = blackholes.mail-abuse.org
+</pre>
+</p>
+<p>
+rejects commands from hosts that are on a DNS black list.
+</p>
+</li>
+<li><p>
+<tt>discard</tt>: This verb behaves like <tt>accept</tt>, except that it returns &#147;discard&#148; 
+from the ACL instead of &#147;accept&#148;. It is permitted only on ACLs that are
+concerned with receiving messages, and it causes recipients to be discarded.
+If the <tt>log&#095;message</tt> modifier is set when <tt>discard</tt> operates, its contents are 
+added to the line that is automatically written to the log. 
+</p>
+<p>
+If <tt>discard</tt> is used in an ACL for <font size=-1>RCPT</font>, just the one recipient is
+discarded; if used for <font size=-1>MAIL</font>, <font size=-1>DATA</font> or in the non-SMTP ACL, all the
+message's recipients are discarded. Recipients that are discarded before
+<font size=-1>DATA</font> do not appear in the log line when the <tt>log&#095;recipients</tt> log selector
+is set.
+</p>
+</li>
+<li><p>
+<tt>drop</tt>: This verb behaves like <tt>deny</tt>, except that an SMTP connection is
+forcibly closed after the 5<i>xx</i> error message has been sent. For example:
+<pre>
+&nbsp;&nbsp;drop   message   = I don't take more than 20 RCPTs
+&nbsp;&nbsp;       condition = ${if &#062; {$rcpt_count}{20}{yes}{no}}
+</pre>
+</p>
+<p>
+There is no difference between <tt>deny</tt> and <tt>drop</tt> for the connect-time ACL. The
+connection is always dropped after sending a 550 response.
+</p>
+</li>
+<li><p>
+<tt>require</tt>: If all the conditions are met, control is passed to the next ACL
+statement. If any of the conditions are not met, the ACL returns &#147;deny&#148;. For
+example, when checking a <font size=-1>RCPT</font> command,
+<pre>
+&nbsp;&nbsp;require verify = sender
+</pre>
+</p>
+<p>
+passes control to subsequent statements only if the message's sender can be
+verified. Otherwise, it rejects the command.
+</p>
+</li>
+<li><p>
+<font color=green>
+<tt>warn</tt>: If all the conditions are met, a header line is added to an incoming
+message and/or a line is written to Exim's main log. In all cases, control
+passes to the next ACL statement. The text of the added header line and the log
+line are specified by modifiers; if they are not present, a <tt>warn</tt> verb just
+checks its conditions and obeys any &#147;immediate&#148; modifiers such as <tt>set</tt> and
+<tt>logwrite</tt>.
+</p>
+<p>
+If any condition on a <tt>warn</tt> statement cannot be completed (that is, there is
+some sort of defer), no header is added and the configured log line is not
+written. No further conditions or modifiers in the <tt>warn</tt> statement are
+processed. The incident is logged, but the ACL continues to be processed, from
+the next statement onwards.
+</p>
+<p>
+When testing an incoming message, the <tt>message</tt> modifier can be used on a 
+<tt>warn</tt> statement to add an extra header line,
+</font>
+as in this example:
+<pre>
+&nbsp;&nbsp;warn message = X-blacklisted-at: $dnslist_domain
+&nbsp;&nbsp;     dnslists = blackholes.mail-abuse.org : \
+&nbsp;&nbsp;                dialup.mail-abuse.org
+</pre>
+</p>
+<p>
+If an identical header line is requested several times (provoked, for example,
+by multiple <font size=-1>RCPT</font> commands), only one copy is actually added to the message.
+<font color=green>
+If the text of the <tt>message</tt> modifier is not a valid header line, 
+<tt>X-ACL-Warn:</tt> is added to the front of it.
+</font>
+</p>
+<p>
+Header lines that are added by an ACL at <font size=-1>MAIL</font> or <font size=-1>RCPT</font> time are not
+visible in string expansions in the ACL for subsequent <font size=-1>RCPT</font> commands.
+However they are visible in string expansions in the ACL that is run after
+<font size=-1>DATA</font>. If you want to preserve data between <font size=-1>MAIL</font> and <font size=-1>RCPT</font> ACLs, you
+can use ACL variables, as described in the next section. If a message is
+rejected after <font size=-1>DATA</font>, all added header lines are included in the entry that
+is written to the reject log.
+</p>
+<p>
+If a <tt>message</tt> modifier is present on a <tt>warn</tt> verb in an ACL that is not 
+testing an incoming message, it is ignored, and the incident is logged.
+</p>
+<p>
+A <tt>warn</tt> statement may use the <tt>log&#095;message</tt> modifier to cause a line to be 
+written to the main log when the statement's conditions are true. 
+<font color=green>
+Just as for <tt>message</tt>, if an identical log line is requested several times in 
+the same message, only one copy is actually written to the log. If you want to
+force duplicates to be written, use the <tt>logwrite</tt> modifier instead.
+</font>
+</p>
+<p>
+When one of the <tt>warn</tt> conditions is an address verification that fails, the
+text of the verification failure message is in <tt>$acl&#095;verify&#095;message</tt>. If you
+want this logged, you must set it up explicitly. For example:
+<pre>
+&nbsp;&nbsp;warn   !verify = sender
+&nbsp;&nbsp;        log_message = sender verify failed: $acl_verify_message
+</pre>
+</p>
+</li>
+</ul>
+<p>
+At the end of each ACL there is an implicit unconditional <tt>deny</tt>.
+</p>
+<p>
+As you can see from the examples above, the conditions and modifiers are
+written one to a line, with the first one on the same line as the verb, and
+subsequent ones on following lines. If you have a very long condition, you can
+continue it onto several physical lines by the usual &#092; continuation mechanism.
+It is conventional to align the conditions vertically.
+</p>
+<a name="IX2374"></a>
+<h2>
+<a name="SECT38.9" href="spec_toc.html#TOC280">
+38.9. ACL variables
+</a></h2>
+<p>
+There are some special variables that can be set during ACL processing. They
+can be used to pass information between different ACLs, different
+invocations of the same ACL in the same SMTP connection, and between ACLs and
+the routers, transports, and filters that are used to deliver a message.
+There are two sets of these variables:
+</p>
+<ul>
+<li><p>
+The values of <tt>$acl&#095;c0</tt> to <tt>$acl&#095;c9</tt> persist throughout an SMTP connection.
+They are never reset. Thus, a value that is set while receiving one message is 
+still available when receiving the next message on the same SMTP connection.
+</p>
+</li>
+<li><p>
+The values of <tt>$acl&#095;m0</tt> to <tt>$acl&#095;m9</tt> persist only while a message is being
+received. They are reset afterwards. They are also reset by <font size=-1>MAIL</font>, <font size=-1>RSET</font>,
+<font size=-1>EHLO</font>, <font size=-1>HELO</font>, and after starting up a TLS session.
+</p>
+</li>
+</ul>
+<p>
+When a message is accepted, the current values of all the ACL variables are 
+preserved with the message and are subsequently made available at delivery
+time.
+</p>
+<p>
+The ACL variables are set by modifier called <tt>set</tt>. For example:
+<pre>
+&nbsp;&nbsp;accept hosts = whatever
+&nbsp;&nbsp;       set acl_m4 = some value
+</pre>
+</p>
+<p>
+Note that the leading dollar sign is not used when naming a variable that is to
+be set. If you want to set a variable without taking any action, you can use a
+<tt>warn</tt> verb without any other modifiers.
+</p>
+<a name="IX2375"></a>
+<a name="IX2376"></a>
+<h2>
+<a name="SECT38.10" href="spec_toc.html#TOC281">
+38.10. Condition and modifier processing
+</a></h2>
+<p>
+An exclamation mark preceding a condition negates its result. For example,
+<pre>
+&nbsp;&nbsp;deny   domains = *.dom.example
+&nbsp;&nbsp;      !verify = recipient
+</pre>
+</p>
+<p>
+causes the ACL to return &#147;deny&#148; if the recipient domain ends in
+<i>dom.example</i>, but the recipient address cannot be verified.
+</p>
+<p>
+The arguments of conditions and modifiers are expanded. A forced failure
+of an expansion causes a condition to be ignored, that is, it behaves as if the
+condition is true. Consider these two statements:
+<pre>
+&nbsp;&nbsp;accept  senders = ${lookup{$host_name}lsearch\
+&nbsp;&nbsp;                  {/some/file}{$value}fail}
+&nbsp;&nbsp;accept  senders = ${lookup{$host_name}lsearch\
+&nbsp;&nbsp;                  {/some/file}{$value}{}}
+</pre>
+</p>
+<p>
+Each attempts to look up a list of acceptable senders. If the lookup succeeds,
+the returned list is searched, but if the lookup fails the behaviour is
+different in the two cases. The <tt>fail</tt> in the first statement causes the
+condition to be ignored, leaving no further conditions. The <tt>accept</tt> verb
+therefore succeeds. The second statement, however, generates an empty list when
+the lookup fails. No sender can match an empty list, so the condition fails,
+and therefore the <tt>accept</tt> also fails.
+</p>
+<p>
+ACL modifiers appear mixed in with conditions in ACL statements. Some of them
+specify actions that are taken as the conditions for a statement are checked;
+others specify text for messages that are used when access is denied or a
+warning is generated.
+</p>
+<p>
+The positioning of the modifiers in an ACL statement important, because the
+processing of a verb ceases as soon as its outcome is known. Only those
+modifiers that have already been encountered will take effect. For the <tt>accept</tt>
+and <tt>require</tt> statements, this means that processing stops as soon as a false
+condition is met. For example, consider this use of the <tt>message</tt> modifier:
+<pre>
+&nbsp;&nbsp;require message = Can't verify sender
+&nbsp;&nbsp;        verify = sender
+&nbsp;&nbsp;        message = Can't verify recipient
+&nbsp;&nbsp;        verify = recipient
+&nbsp;&nbsp;        message = This message cannot be used
+</pre>
+</p>
+<p>
+If sender verification fails, Exim knows that the result of the statement is 
+&#147;deny&#148;, so it goes no further. The first <tt>message</tt> modifier has been seen, so 
+its text is used as the error message. If sender verification succeeds, but
+recipient verification fails, the second message is used. If recipient
+verification succeeds, the third message becomes &#147;current&#148;, but is never used
+because there are no more conditions to cause failure.
+</p>
+<p>
+For the <tt>deny</tt> verb, on the other hand, it is always the last <tt>message</tt>
+modifier that is used, because all the conditions must be true for rejection to 
+happen. Specifying more than one <tt>message</tt> modifier does not make sense, and 
+the message can even be specified after all the conditions. For example:
+<pre>
+&nbsp;&nbsp;deny   hosts = ...
+&nbsp;&nbsp;      !senders = *@my.domain.example
+&nbsp;&nbsp;       message = Invalid sender from client host
+</pre>
+</p>
+<p>
+The &#147;deny&#148; result does not happen until the end of the statement is reached, by 
+which time Exim has set up the message.
+</p>
+<a name="IX2377"></a>
+<h2>
+<a name="SECT38.11" href="spec_toc.html#TOC282">
+38.11. ACL modifiers
+</a></h2>
+<p>
+The ACL modifiers are as follows:
+<hr></p>
+<p>
+<a name="IX2378"></a>
+<b>control = &#060;<em>text</em>&#062;</b>
+</p>
+<p>
+This modifier may appear only in ACLs for commands relating to incoming 
+messages. It affects the subsequent processing of the message, provided that
+the message is eventually accepted. 
+<font color=green>
+The text must be one of the words &#147;freeze&#148;, &#147;queue&#095;only&#148;, or &#147;submission&#148; (in 
+the latter case, optionally followed by slash-delimited options). The first two
+cause the message to be frozen or just queued (without immediate delivery),
+respectively. The third tells Exim that this message is a submission from a
+local MUA. In this case, Exim applies certain fixups to the message if
+necessary. For example, it add a <i>Date:</i> header line if one is not present.
+Details are given in chapter <a href="spec_44.html">44</a>.
+</font>
+</p>
+<p>
+Once one of these controls is set, it remains set for the message. For example,
+if <tt>control</tt> is used in a <font size=-1>RCPT</font> ACL, it applies to the whole message, not
+just the individual recipient. The <tt>control</tt> modifier can be used in several
+different ways. For example:
+</p>
+<ul>
+<li><p>
+It can be at the end of an <tt>accept</tt> statement:
+<pre>
+&nbsp;&nbsp;accept  ...some conditions...
+&nbsp;&nbsp;        control = queue_only
+</pre>
+</p>
+<p>
+In this case, the control is applied when this statement yields &#147;accept&#148;.
+</p>
+</li>
+<li><p>
+It can be in the middle of an <tt>accept</tt> statement:
+<pre>
+&nbsp;&nbsp;accept  ...some conditions...
+&nbsp;&nbsp;        control = queue_only
+&nbsp;&nbsp;        ...some more conditions...
+</pre>
+</p>
+<p>
+If the first set of conditions are true, the control is applied, even if the 
+statement does not accept because one of the second set of conditions is false.
+In this case, some subsequent statement must yield &#147;accept&#148; for the control to
+be relevant.
+</p>
+</li>
+<li><p>
+It can be used with <tt>warn</tt> to apply the control, leaving the
+decision about accepting or denying to a subsequent verb. For
+example:
+<pre>
+&nbsp;&nbsp;warn    ...some conditions...
+&nbsp;&nbsp;        control = freeze
+&nbsp;&nbsp;accept  ...
+</pre>
+</p>
+<p>
+<font color=green>
+This example of <tt>warn</tt> does not contain <tt>message</tt>, <tt>log&#095;message</tt>, or
+<tt>logwrite</tt>, so it does not add anything to the message and does not write a log
+entry.
+</font>
+</p>
+</li>
+</ul>
+<hr><p>
+<a name="IX2379"></a>
+<b>delay = &#060;<em>time</em>&#062;</b>
+</p>
+<p>
+This modifier causes Exim to wait for the time interval before proceeding. The
+time is given in the usual Exim notation. This modifier may appear in any ACL.
+The delay happens as soon as the modifier is processed.
+<font color=green>
+However, when testing Exim using the <i>-bh</i> option, the delay is not actually 
+imposed (an appropriate message is output).
+</font>
+</p>
+<p>
+Like <tt>control</tt>, <tt>delay</tt> can be used with <tt>accept</tt> or
+<tt>deny</tt>, for example:
+<pre>
+&nbsp;&nbsp;deny    ...some conditions...
+&nbsp;&nbsp;        delay = 30s
+</pre>
+</p>
+<p>
+The delay happens if all the conditions are true, before the statement returns 
+&#147;deny&#148;. Compare this with:
+<pre>
+&nbsp;&nbsp;deny    delay = 30s
+&nbsp;&nbsp;        ...some conditions...
+</pre>
+</p>
+<p>
+which waits for 30s before processing the conditions. The <tt>delay</tt> modifier can
+also be used with <tt>warn</tt> and together with <tt>control</tt>:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>warn    ...some conditions...</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>        delay = 2m</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>        control = freeze</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>accept  ...</tt><br>
+<hr></p>
+<p>
+<b>endpass</b>
+</p>
+<p>
+This modifier, which has no argument, is recognized only in <tt>accept</tt>
+statements. It marks the boundary between the conditions whose failure causes
+control to pass to the next statement, and the conditions whose failure causes
+the ACL to return &#147;deny&#148;. See the description of <tt>accept</tt> above.
+<hr></p>
+<p>
+<b>log&#095;message = &#060;<em>text</em>&#062;</b>
+</p>
+<p>
+This modifier sets up a message that is used as part of the log message if the
+ACL denies access
+<font color=green>
+or a <tt>warn</tt> statement's conditions are true. 
+</font>
+For example:
+<pre>
+&nbsp;&nbsp;require log_message = wrong cipher suite $tls_cipher
+&nbsp;&nbsp;        encrypted   = DES-CBC3-SHA
+</pre>
+</p>
+<p>
+<tt>log&#095;message</tt> adds to any underlying error message that may exist because of
+the condition failure. For example, while verifying a recipient address, a
+<i>:fail:</i> redirection might have already set up a message. Although the message
+is usually defined before the conditions to which it applies, the expansion
+does not happen until Exim decides that access is to be denied. This means that
+any variables that are set by the condition are available for inclusion in the
+message. For example, the <tt>$dnslist&#095;&#060;<em>xxx</em>&#062;</tt> variables are set after a DNS
+black list lookup succeeds. If the expansion of <tt>log&#095;message</tt> fails, or if the 
+result is an empty string, the modifier is ignored.
+</p>
+<p>
+If you want to use a <tt>warn</tt> statement to log the result of an address
+verification, you can use <tt>$acl_verify_message</tt> to include the verification
+error message.
+</p>
+<p>
+<font color=green>
+If <tt>log&#095;message</tt> is used with a <tt>warn</tt> statement, &#147;Warning:&#148; is added to the
+start of the logged message. If the same warning log message is requested more
+than once while receiving  a single email message, only one copy is actually
+logged. If you want to log multiple copies, use <tt>logwrite</tt> instead of
+<tt>log&#095;message</tt>. In the absence of <tt>log&#095;message</tt> and <tt>logwrite</tt>, nothing is
+logged for a succesful <tt>warn</tt> statement.
+</font>
+</p>
+<p>
+If <tt>log&#095;message</tt> is not present and there is no underlying error message (for
+example, from the failure of address verification), but <tt>message</tt> is present,
+the <tt>message</tt> text is used for logging rejections. However, if any text for
+logging contains newlines, only the first line is logged. In the absence of
+both <tt>log&#095;message</tt> and <tt>message</tt>, a default built-in message is used for
+logging rejections.
+<hr></p>
+<p>
+<a name="IX2380"></a>
+<b>logwrite = &#060;<em>text</em>&#062;</b>
+</p>
+<p>
+This modifier writes a message to a log file as soon as it is encountered when
+processing an ACL. (Compare <tt>log&#095;message</tt>, which,
+<font color=green>
+except in the case of <tt>warn</tt>,
+</font>
+is used only if the ACL statement denies access.) The <tt>logwrite</tt> modifier can
+be used to log special incidents in ACLs. For example:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>accept &#060;<em>some special conditions</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>       control  = freeze</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>       logwrite = froze message because ...</tt><br>
+</p>
+<p>
+By default, the message is written to the main log. However, it may begin
+with a colon, followed by a comma-separated list of log names, and then
+another colon, to specify exactly which logs are to be written. For
+example:
+<pre>
+&nbsp;&nbsp;logwrite = :main,reject: text for main and reject logs
+&nbsp;&nbsp;logwrite = :panic: text for panic log only
+</pre>
+<hr></p>
+<p>
+<b>message = &#060;<em>text</em>&#062;</b>
+</p>
+<p>
+This modifier sets up a text string that is expanded and used as an error
+message if the current statement causes the ACL to deny access. The expansion 
+happens at the time Exim decides that access is to be denied, not at the time 
+it processes <tt>message</tt>. If the expansion fails, or generates an empty string,
+the modifier is ignored. For ACLs that are triggered by SMTP commands, the
+message is returned as part of the SMTP error response.
+</p>
+<p>
+The <tt>message</tt> modifier is also used with the <tt>warn</tt> verb to specify one or more
+header lines to be added to an incoming message when all the conditions are 
+true. 
+If <tt>message</tt> is used with <tt>warn</tt> in an ACL that is not concerned with receiving
+a message, it has no effect.
+</p>
+<p>
+The text is literal; any quotes are taken as literals, but because the string
+is expanded, backslash escapes are processed anyway. If the message contains
+newlines, this gives rise to a multi-line SMTP response. Like <tt>log&#095;message</tt>,
+the contents of <tt>message</tt> are not expanded until after a condition has failed.
+</p>
+<p>
+If <tt>message</tt> is used on a statement that verifies an address, the message 
+specified overrides any message that is generated by the verification process. 
+However, the original message is available in the variable
+<tt>$acl&#095;verify&#095;message</tt>, so you can incorporate it into your message if you
+wish. In particular, if you want the text from <tt>:fail:</tt> items in <b>redirect</b>
+routers to be passed back as part of the SMTP response, you should either not
+use a <tt>message</tt> modifier, or make use of <tt>$acl&#095;verify&#095;message</tt>.
+<hr></p>
+<p>
+<b>set &#060;<em>acl&#095;name</em>&#062; = &#060;<em>value</em>&#062;</b>
+</p>
+<p>
+This modifier puts a value into one of the ACL variables (see section 
+<a href="spec_38.html#SECT38.9">38.9</a>).
+<hr><br>
+</p>
+<a name="IX2381"></a>
+<h2>
+<a name="SECT38.12" href="spec_toc.html#TOC283">
+38.12. ACL conditions
+</a></h2>
+<p>
+Not all conditions are relevant in all circumstances. For example, testing
+senders and recipients does not make sense in an ACL that is being run as the
+result of the arrival of an <font size=-1>ETRN</font> command, and checks on message headers can
+be done only in the ACLs specified by <tt>acl&#095;smtp&#095;data</tt> 
+and <tt>acl_not_smtp</tt>.
+You can use the same condition (obviously with different parameters) more than 
+once in the same ACL statement. This provides a way of specifying an &#147;and&#148; 
+conjunction.
+The conditions are as follows:
+<hr></p>
+<p>
+<a name="IX2382"></a>
+<a name="IX2383"></a>
+<b>acl = &#060;<em>name of acl or ACL string or file name </em>&#062;</b>
+</p>
+<p>
+The possible values of the argument are the same as for the
+<tt>acl&#095;smtp&#095;<em>xxx</em></tt> options. The named or inline ACL is run. If it returns
+&#147;accept&#148; the condition is true; if it returns &#147;deny&#148; the condition is false; if
+it returns &#147;defer&#148;, the current ACL returns &#147;defer&#148;. 
+If it returns &#147;drop&#148; and the outer condition denies access, the connection is 
+dropped. If it returns &#147;discard&#148;, the verb must be <tt>accept</tt> or <tt>discard</tt>, and 
+the action is taken immediately &#150; no further conditions are tested.
+</p>
+<p>
+ACLs may be nested up to 20 deep; the limit exists purely to catch runaway
+loops. This condition allows you to use different ACLs in different 
+circumstances. For example, different ACLs can be used to handle <font size=-1>RCPT</font>
+commands for different local users or different local domains.
+<hr></p>
+<p>
+<a name="IX2384"></a>
+<a name="IX2385"></a>
+<b>authenticated = &#060;<em>string list</em>&#062;</b>
+</p>
+<p>
+If the SMTP connection is not authenticated, the condition is false. Otherwise,
+the name of the authenticator is tested against the list. To test for
+authentication by any authenticator, you can set
+<pre>
+&nbsp;&nbsp;authenticated = *
+</pre>
+<hr></p>
+<p>
+<a name="IX2386"></a>
+<a name="IX2387"></a>
+<b>condition = &#060;<em>string</em>&#062;</b>
+</p>
+<p>
+This feature allows you to make up custom conditions. If the result of
+expanding the string is an empty string, the number zero, or one of the strings
+&#147;no&#148; or &#147;false&#148;, the condition is false. If the result is any non-zero number,
+or one of the strings &#147;yes&#148; or &#147;true&#148;, the condition is true. For any other
+values, some error is assumed to have occured, and the ACL returns &#147;defer&#148;.
+<hr></p>
+<p>
+<a name="IX2388"></a>
+<a name="IX2389"></a>
+<a name="IX2390"></a>
+<b>dnslists = &#060;<em>list of domain names and other data</em>&#062;</b>
+</p>
+<p>
+This condition checks for entries in DNS black lists. These are also known as
+&#147;RBL lists&#148;, after the original Realtime Blackhole List, but note that the use
+of the lists at <i>mail-abuse.org</i> now carries a charge. 
+There are too many different variants of this condition to describe briefly 
+here. See sections <a href="spec_38.html#SECT38.13">38.13</a>--<a href="spec_38.html#SECT38.19">38.19</a> for details.
+<hr></p>
+<p>
+<a name="IX2391"></a>
+<a name="IX2392"></a>
+<b>domains = &#060;<em>domain list</em>&#062;</b>
+</p>
+<p>
+This condition is relevant only after a <font size=-1>RCPT</font> command. It checks that the
+domain of the recipient address is in the domain list. If percent-hack
+processing is enabled, it is done before this test is done. If the check
+succeeds with a lookup, the result of the lookup is placed in <tt>$domain&#095;data</tt>
+until the next <tt>domains</tt> test.
+<hr></p>
+<p>
+<a name="IX2393"></a>
+<a name="IX2394"></a>
+<b>encrypted = &#060;<em>string list</em>&#062;</b>
+</p>
+<p>
+If the SMTP connection is not encrypted, the condition is false. Otherwise, the
+name of the cipher suite in use is tested against the list. To test for
+encryption without testing for any specific cipher suite(s), set
+<pre>
+&nbsp;&nbsp;encrypted = *
+</pre>
+<hr></p>
+<p>
+<a name="IX2395"></a>
+<a name="IX2396"></a>
+<b>hosts = &#060;<em> host list</em>&#062;</b>
+</p>
+<p>
+This condition tests that the calling host matches the host list. If you have
+name lookups or wildcarded host names and IP addresses in the same host list,
+you should normally put the IP addresses first. For example, you could have:
+<pre>
+&nbsp;&nbsp;accept hosts = 10.9.8.7 : dbm;/etc/friendly/hosts
+</pre>
+</p>
+<p>
+The reason for this lies in the left-to-right way that Exim processes lists.
+It can test IP addresses without doing any DNS lookups, but when it reaches an
+item that requires a host name, it fails if it cannot find a host name to
+compare with the pattern. If the above list is given in the opposite order, the
+<tt>accept</tt> statement fails for a host whose name cannot be found, even if its
+IP address is 10.9.8.7.
+</p>
+<p>
+If you really do want to do the name check first, and still recognize the IP
+address even if the name lookup fails, you can rewrite the ACL like this:
+<pre>
+&nbsp;&nbsp;accept hosts = dbm;/etc/friendly/hosts
+&nbsp;&nbsp;accept hosts = 10.9.8.7
+</pre>
+</p>
+<p>
+The default action on failing to find the host name is to assume that the host
+is not in the list, so the first <tt>accept</tt> statement fails. The second statement
+can then check the IP address.
+</p>
+<p>
+If a <tt>hosts</tt> condition is satisfied by means of a lookup, the result
+of the lookup is made available in the <tt>$host&#095;data</tt> variable. This
+allows you, for example, to set up a statement like this:
+<pre>
+&nbsp;&nbsp;deny  hosts = net-lsearch;/some/file
+&nbsp;&nbsp;      message = $host_data
+</pre>
+</p>
+<p>
+which gives a custom error message for each denied host.
+<hr></p>
+<p>
+<a name="IX2397"></a>
+<a name="IX2398"></a>
+<b>local&#095;parts = &#060;<em>local part list</em>&#062;</b>
+</p>
+<p>
+This condition is relevant only after a <font size=-1>RCPT</font> command. It checks that the
+local part of the recipient address is in the list. If percent-hack processing
+is enabled, it is done before this test. If the check succeeds with a lookup,
+the result of the lookup is placed in <tt>$local&#095;part&#095;data</tt> until the next
+<tt>local&#095;parts</tt> test.
+<hr></p>
+<p>
+<a name="IX2399"></a>
+<a name="IX2400"></a>
+<b>recipients = &#060;<em>address list</em>&#062;</b>
+</p>
+<p>
+This condition is relevant only after a <font size=-1>RCPT</font> command. It checks the entire
+recipient address against a list of recipients.
+<hr></p>
+<p>
+<a name="IX2401"></a>
+<a name="IX2402"></a>
+<b>sender&#095;domains = &#060;<em>domain list</em>&#062;</b>
+</p>
+<p>
+This condition tests the domain of the sender of the message against the given
+domain list.
+<b>Note</b>: the domain of the sender address is in
+<tt>$sender&#095;address&#095;domain</tt>. It is <i>not</i> put in <tt>$domain</tt> during the testing 
+of this condition. This is an exception to the general rule for testing 
+domain lists. It is done this way so that, if this condition is used in an 
+ACL for a <font size=-1>RCPT</font> command, the recipient's domain (which is in <tt>$domain</tt>) can
+be used to influence the sender checking.
+<hr></p>
+<p>
+<a name="IX2403"></a>
+<a name="IX2404"></a>
+<b>senders = &#060;<em>address list</em>&#062;</b>
+</p>
+<p>
+This condition tests the sender of the message against the given list. To test
+for a bounce message, which has an empty sender, set
+<pre>
+&nbsp;&nbsp;senders = :
+</pre>
+<hr></p>
+<p>
+<a name="IX2405"></a>
+<a name="IX2406"></a>
+<a name="IX2407"></a>
+<b>verify = certificate</b>
+</p>
+<p>
+This condition is true in an SMTP session if the session is encrypted, and a
+certificate was received from the client, and the certificate was verified. The
+server requests a certificate only if the client matches <tt>tls&#095;verify&#095;hosts</tt>
+or <tt>tls&#095;try&#095;verify&#095;hosts</tt> (see chapter <a href="spec_37.html">37</a>).
+<hr></p>
+<p>
+<a name="IX2408"></a>
+<a name="IX2409"></a>
+<a name="IX2410"></a>
+<a name="IX2411"></a>
+<b>verify = header&#095;sender/&#060;<em>options</em>&#062;</b>
+</p>
+<p>
+This condition is relevant only in an ACL that is run after a message has been
+received, that is, in an ACL specified by <tt>acl&#095;smtp&#095;data</tt>. It checks that
+there is a verifiable sender address in at least one of the <i>Sender:</i>,
+<i>Reply-To:</i>, or <i>From:</i> header lines. Details of address verification and the
+options are given later, starting at section <a href="spec_38.html#SECT38.20">38.20</a>. You can
+combine this condition with the <tt>senders</tt> condition to restrict it to bounce
+messages only:
+<pre>
+&nbsp;&nbsp;deny    senders = :
+&nbsp;&nbsp;        message = A valid sender header is required for bounces
+&nbsp;&nbsp;       !verify  = header_sender
+</pre>
+<hr></p>
+<p>
+<a name="IX2412"></a>
+<a name="IX2413"></a>
+<a name="IX2414"></a>
+<b>verify = header&#095;syntax</b>
+</p>
+<p>
+This condition is relevant only in an ACL that is run after a message has been
+received, that is, in an ACL specified by <tt>acl&#095;smtp&#095;data</tt>
+or <tt>acl&#095;not&#095;smtp</tt>.
+It checks the syntax of all header lines that can contain lists of addresses
+(<i>Sender:</i>, <i>From:</i>, <i>Reply-To:</i>, <i>To:</i>, <i>Cc:</i>, and <i>Bcc:</i>). 
+Unqualified addresses (local parts without domains) are permitted only in
+locally generated messages and from hosts that match
+<tt>sender&#095;unqualified&#095;hosts</tt> or <tt>recipient&#095;unqualified&#095;hosts</tt>, as
+appropriate.
+</p>
+<p>
+Note that this condition is a syntax check only. However, a common spamming
+ploy is to send syntactically invalid headers such as
+<pre>
+&nbsp;&nbsp;To: @
+</pre>
+</p>
+<p>
+and this condition can be used to reject such messages.
+<hr></p>
+<p>
+<a name="IX2415"></a>
+<a name="IX2416"></a>
+<a name="IX2417"></a>
+<a name="IX2418"></a>
+<a name="IX2419"></a>
+<b>verify = helo</b>
+</p>
+<p>
+This condition is true if a <font size=-1>HELO</font> or <font size=-1>EHLO</font> command has been received from
+the client host, and its contents have been verified. Verification of these
+commands does not happen by default. See the description of the
+<tt>helo&#095;verify&#095;hosts</tt> and <tt>helo&#095;try&#095;verify&#095;hosts</tt> options for details of how
+to request it.
+<hr></p>
+<p>
+<a name="IX2420"></a>
+<a name="IX2421"></a>
+<a name="IX2422"></a>
+<b>verify = recipient/&#060;<em>options</em>&#062;</b>
+</p>
+<p>
+This condition is relevant only after a <font size=-1>RCPT</font> command. It verifies the
+current recipient. Details of address verification are given later, starting at
+section <a href="spec_38.html#SECT38.20">38.20</a>. After a recipient has been verified, the
+value of <tt>$address&#095;data</tt> is the last value that was set while routing the
+address. This applies even if the verification fails. When an address that is
+being verified is redirected to a single address, verification continues with
+the new address, and in that case, the subsequent value of <tt>$address&#095;data</tt> is
+the value for the child address.
+<hr></p>
+<p>
+<a name="IX2423"></a>
+<a name="IX2424"></a>
+<b>verify = reverse&#095;host&#095;lookup</b>
+</p>
+<p>
+This condition ensures that a verified host name has been looked up from the IP
+address of the client host. (This may have happened already if the host name
+was needed for checking a host list, or if the host matched <tt>host&#095;lookup</tt>.)
+Verification ensures that the host name obtained from a reverse DNS lookup, or
+one of its aliases, does, when it is itself looked up in the DNS, yield the
+original IP address.
+</p>
+<p>
+If this condition is used for a locally generated message (that is, when there 
+is no client host involved), it always succeeds.
+<hr></p>
+<p>
+<a name="IX2425"></a>
+<a name="IX2426"></a>
+<a name="IX2427"></a>
+<b>verify = sender/&#060;<em>options</em>&#062;</b>
+</p>
+<p>
+This condition is relevant only after a 
+<font size=-1>MAIL</font> or <font size=-1>RCPT</font> command, or after a message has been received (the 
+<tt>acl&#095;smtp&#095;data</tt> or <tt>acl&#095;not&#095;smtp</tt> ACLs).
+If the message's sender is empty (that is, this is a bounce message), the
+condition is true. Otherwise, the sender address is verified. Details of
+verification are given later, starting at section <a href="spec_38.html#SECT38.20">38.20</a>.
+Exim caches the result of sender verification, to avoid doing it more than once
+per message.
+<hr></p>
+<p>
+<b>verify = sender=address/&#060;<em>options</em>&#062;</b>
+</p>
+<p>
+This is a variation of the previous option, in which a modified address is
+verified as a sender.
+<hr><br>
+</p>
+<a name="IX2428"></a>
+<a name="IX2429"></a>
+<a name="IX2430"></a>
+<h2>
+<a name="SECT38.13" href="spec_toc.html#TOC284">
+38.13. Using DNS lists
+</a></h2>
+<p>
+In its simplest form, the <tt>dnslists</tt> condition tests whether the calling host
+is on a DNS list by looking up the inverted IP address in one or more DNS
+domains. For example, if the calling host's IP address is 192.168.62.43, and
+the ACL statement is
+<pre>
+&nbsp;&nbsp;deny dnslists = blackholes.mail-abuse.org : \
+&nbsp;&nbsp;                dialups.mail-abuse.org
+</pre>
+</p>
+<p>
+the following domains are looked up:
+<pre>
+&nbsp;&nbsp;43.62.168.192.blackholes.mail-abuse.org
+&nbsp;&nbsp;43.62.168.192.dialups.mail-abuse.org                            
+</pre>
+</p>
+<p>
+<a name="IX2431"></a>
+<a name="IX2432"></a>
+<a name="IX2433"></a>
+If a DNS lookup times out or otherwise fails to give a decisive answer, Exim
+behaves as if the host is not on the relevant list. This is usually the
+required action when <tt>dnslists</tt> is used with <tt>deny</tt> (which is the most common
+usage), because it prevents a DNS failure from blocking mail. However, you can
+change this behaviour by putting one of the following special items in the
+list:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>+include&#095;unknown    </tt>behave as if the item is on the list<br>
+<tt>&nbsp;&nbsp;</tt><tt>+exclude&#095;unknown    </tt>behave as if the item is not on the list (default)<br>
+<tt>&nbsp;&nbsp;</tt><tt>+defer&#095;unknown      </tt>give a temporary error<br>
+</p>
+<p>
+Each of these applies to any subsequent items on the list. For example:
+<pre>
+&nbsp;&nbsp;deny dnslists = +defer_unknown : foo.bar.example
+</pre>
+</p>
+<p>
+Testing the list of domains stops as soon as a match is found. If you want to
+warn for one list and block for another, you can use two different statements:
+<pre>
+&nbsp;&nbsp;deny  dnslists = blackholes.mail-abuse.org
+&nbsp;&nbsp;warn  message  = X-Warn: sending host is on dialups list
+&nbsp;&nbsp;      dnslists = dialups.mail-abuse.org
+</pre>
+</p>
+<p>
+DNS list lookups are cached by Exim for the duration of the SMTP session,
+so a lookup based on the IP address is done at most once for any incoming
+connection. Exim does not share information between multiple incoming
+connections (but your local name server cache should be active).
+</p>
+<h2>
+<a name="SECT38.14" href="spec_toc.html#TOC285">
+38.14. DNS lists keyed on domain names
+</a></h2>
+<p>
+There are some lists that are keyed on domain names rather than inverted IP
+addresses (see for example the <i>domain based zones</i> link at
+<a href="http://www.rfc-ignorant.org/">http://www.rfc-ignorant.org/</a>). 
+<font color=green>
+No reversing of components is used with these lists.
+</font>
+You can change the name that is looked up in a DNS list by adding additional
+data to a <tt>dnslists</tt> item, introduced by a slash. For example,
+<pre>
+&nbsp;&nbsp;deny  message  = Sender's domain is listed at $dnslist_domain
+&nbsp;&nbsp;      dnslists = dsn.rfc-ignorant.org/$sender_address_domain
+</pre>
+</p>
+<p>
+This particular example is useful only in ACLs that are obeyed after the
+<font size=-1>RCPT</font> or <font size=-1>DATA</font> commands, when a sender address is available. If (for
+example) the message's sender is <i>user&#064;tld.example</i> the name that is looked
+up by this example is
+<pre>
+&nbsp;&nbsp;tld.example.dsn.rfc-ignorant.org
+</pre>
+</p>
+<p>
+You can mix entries with and without additional data in the same <tt>dnslists</tt>
+condition.
+</p>
+<h2>
+<a name="SECT38.15" href="spec_toc.html#TOC286">
+38.15. Data returned by DNS lists
+</a></h2>
+<p>
+DNS lists are constructed using address records in the DNS. The original RBL
+just used the address 127.0.0.1 on the right hand side of each record, but the
+RBL+ list and some other lists use a number of values with different meanings.
+The values used on the RBL+ list are:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;127.1.0.1&nbsp;&nbsp;</td><td>RBL</td></tr>
+<tr><td>&nbsp;&nbsp;127.1.0.2&nbsp;&nbsp;</td><td>DUL</td></tr>
+<tr><td>&nbsp;&nbsp;127.1.0.3&nbsp;&nbsp;</td><td>DUL and RBL</td></tr>
+<tr><td>&nbsp;&nbsp;127.1.0.4&nbsp;&nbsp;</td><td>RSS</td></tr>
+<tr><td>&nbsp;&nbsp;127.1.0.5&nbsp;&nbsp;</td><td>RSS and RBL</td></tr>
+<tr><td>&nbsp;&nbsp;127.1.0.6&nbsp;&nbsp;</td><td>RSS and DUL</td></tr>
+<tr><td>&nbsp;&nbsp;127.1.0.7&nbsp;&nbsp;</td><td>RSS and DUL and RBL</td></tr>
+</table>
+</p>
+<p>
+Some DNS lists may return more than one address record.
+</p>
+<h2>
+<a name="SECT38.16" href="spec_toc.html#TOC287">
+38.16. Variables set from DNS lists
+</a></h2>
+<p>
+When an entry is found in a DNS list, the variable <tt>$dnslist&#095;domain</tt>
+contains the name of the domain that matched, <tt>$dnslist&#095;value</tt> contains the
+data from the entry, and <tt>$dnslist&#095;text</tt> contains the contents of any
+associated TXT record. If more than one address record is returned by the DNS
+lookup, all the IP addresses are included in <tt>$dnslist&#095;value</tt>, separated by
+commas and spaces.
+</p>
+<p>
+You can use these variables in <tt>message</tt> or <tt>log&#095;message</tt> modifiers &#150;
+although these appear before the condition in the ACL, they are not expanded
+until after it has failed. For example:
+<pre>
+&nbsp;&nbsp;deny    hosts = !+local_networks
+&nbsp;&nbsp;        message = $sender_host_address is listed \
+&nbsp;&nbsp;                  at $dnslist_domain
+&nbsp;&nbsp;        dnslists = rbl-plus.mail-abuse.example
+</pre>
+</p>
+<h2>
+<a name="SECT38.17" href="spec_toc.html#TOC288">
+38.17. Additional matching conditions for DNS lists
+</a></h2>
+<p>
+If you add an equals sign and an IP address after a <tt>dnslists</tt> domain name, you
+can restrict its action to DNS records with a matching right hand side. For
+example,
+<pre>
+&nbsp;&nbsp;deny dnslists = rblplus.mail-abuse.org=127.0.0.2
+</pre>
+</p>
+<p>
+rejects only those hosts that yield 127.0.0.2. Without this additional data,
+any address record is considered to be a match. If more than one address record
+is found on the list, they are all checked for a matching right-hand side.
+</p>
+<p>
+If you want to specify a constraining address and also change the name that is
+looked up, the address list must be specified first. For example:
+<pre>
+&nbsp;&nbsp;deny dnslists = dsn.rfc-ignorant.org\
+&nbsp;&nbsp;                =127.0.0.2/$sender_address_domain
+</pre>
+</p>
+<p>
+More than one IP address may be given for checking, using a comma as a
+separator. These are alternatives &#150; if any one of them matches, the <tt>dnslists</tt>
+condition is true. For example:
+<pre>
+&nbsp;&nbsp;deny  dnslists = a.b.c=127.0.0.2,127.0.0.3
+</pre>
+</p>
+<p>
+If the character &#147;&#038;&#148; is used instead of &#147;=&#148;, the comparison for each listed
+IP address is done by a bitwise &#147;and&#148; instead of by an equality test. In
+other words, the listed addresses are used as bit masks. The comparison is
+true if all the bits in the mask are present in the address that is being
+tested. For example:
+<pre>
+&nbsp;&nbsp;dnslists = a.b.c&#038;0.0.0.3
+</pre>
+</p>
+<p>
+matches if the address is <i>x.x.x.</i>3, <i>x.x.x.</i>7, <i>x.x.x.</i>11, etc. If you
+want to test whether one bit or another bit is present (as opposed to both
+being present), you must use multiple values. For example:
+<pre>
+&nbsp;&nbsp;dnslists = a.b.c&#038;0.0.0.1,0.0.0.2
+</pre>
+</p>
+<p>
+matches if the final component of the address is an odd number or two times
+an odd number.
+</p>
+<h2>
+<a name="SECT38.18" href="spec_toc.html#TOC289">
+38.18. Negated DNS matching conditions
+</a></h2>
+<p>
+You can supply a negative list of IP addresses as part of a <tt>dnslists</tt>
+condition. Whereas
+<pre>
+&nbsp;&nbsp;deny  dnslists = a.b.c=127.0.0.2,127.0.0.3
+</pre>
+</p>
+<p>
+means &#147;deny if the host is in the black list at the domain <i>a.b.c</i> and the IP
+address yielded by the list is either 127.0.0.2 or 127.0.0.3&#148;,
+<pre>
+&nbsp;&nbsp;deny  dnslists = a.b.c!=127.0.0.2,127.0.0.3
+</pre>
+</p>
+<p>
+means &#147;deny if the host is in the black list at the domain <i>a.b.c</i> and the IP
+address yielded by the list is not 127.0.0.2 and not 127.0.0.3&#148;. In other
+words, the result of the test is inverted if an exclamation mark appears before
+the &#147;=&#148; (or the &#147;&#038;&#148;) sign.
+</p>
+<p>
+<b>Note</b>: this kind of negation is not the same as negation in a domain,
+host, or address list (which is why the syntax is different).
+</p>
+<p>
+If you are using just one list, the negation syntax does not gain you much. The
+previous example is precisely equivalent to
+<pre>
+&nbsp;&nbsp;deny  dnslists = a.b.c
+&nbsp;&nbsp;     !dnslists = a.b.c=127.0.0.2,127.0.0.3
+</pre>
+</p>
+<p>
+However, if you are using multiple lists, the negation syntax is clearer.
+Consider this example:
+<pre>
+&nbsp;&nbsp;deny  dnslists = sbl.spamhaus.org : \
+&nbsp;&nbsp;                 list.dsbl.org : \
+&nbsp;&nbsp;                 dnsbl.njabl.org!=127.0.0.3 : \
+&nbsp;&nbsp;                 relays.ordb.org
+</pre>
+</p>
+<p>
+Using only positive lists, this would have to be:
+<pre>
+&nbsp;&nbsp;deny  dnslists = sbl.spamhaus.org : \
+&nbsp;&nbsp;                 list.dsbl.org
+&nbsp;&nbsp;deny  dnslists = dnsbl.njabl.org
+&nbsp;&nbsp;     !dnslists = dnsbl.njabl.org=127.0.0.3
+&nbsp;&nbsp;deny  dnslists = relays.ordb.org
+</pre>
+</p>
+<p>
+which is less clear, and harder to maintain.
+</p>
+<h2>
+<a name="SECT38.19" href="spec_toc.html#TOC290">
+38.19. DNS lists and IPv6
+</a></h2>
+<p>
+If Exim is asked to do a dnslist lookup for an IPv6 address, it inverts it 
+nibble by nibble. For example, if the calling host's IP address is
+3ffe:ffff:836f:0a00:000a:0800:200a:c031, Exim might look up
+<pre>
+&nbsp;&nbsp;1.3.0.c.a.0.0.2.0.0.8.0.a.0.0.0.0.0.a.0.f.6.3.8.
+&nbsp;&nbsp;  f.f.f.f.e.f.f.3.blackholes.mail-abuse.org
+</pre>
+</p>
+<p>
+(split over two lines here to fit on the page). Unfortunately, some of the DNS
+lists contain wildcard records, intended for IPv4, that interact badly with
+IPv6. For example, the DNS entry
+<pre>
+&nbsp;&nbsp;*.3.some.list.example.    A    127.0.0.1
+</pre>
+</p>
+<p>
+is probably intended to put the entire 3.0.0.0/8 IPv4 network on the list. 
+Unfortunately, it also matches the entire 3&#058;&#058;/124 IPv6 network.
+</p>
+<p>
+You can exclude IPv6 addresses from DNS lookups by making use of a suitable 
+<tt>condition</tt> condition, as in this example:
+<pre>
+&nbsp;&nbsp;deny   condition = ${if isip4{$sender_host_address}{yes}{no}}
+&nbsp;&nbsp;       dnslists  = some.list.example
+</pre>
+</p>
+<a name="IX2434"></a>
+<a name="IX2435"></a>
+<h2>
+<a name="SECT38.20" href="spec_toc.html#TOC291">
+38.20. Address verification
+</a></h2>
+<p>
+Several of the <tt>verify</tt> conditions described in section <a href="spec_38.html#SECT38.12">38.12</a>
+cause addresses to be verified. These conditions can be followed by options
+that modify the verification process. The options are separated from the
+keyword and from each other by slashes, and some of them contain parameters.
+For example:
+<pre>
+&nbsp;&nbsp;verify = sender/callout
+&nbsp;&nbsp;verify = recipient/defer_ok/callout=10s,defer_ok
+</pre>
+</p>
+<p>
+The first stage of verification is to run the address through the routers, in
+&#147;verify mode&#148;. Routers can detect the difference between verification and
+routing for delivery, and their actions can be varied by a number of generic
+options such as <tt>verify</tt> and <tt>verify&#095;only</tt> (see chapter <a href="spec_15.html">15</a>).
+</p>
+<p>
+If there is a defer error while doing this verification routing, the ACL
+normally returns &#147;defer&#148;. However, if you include <tt>defer&#095;ok</tt> in the options,
+the condition is forced to be true instead.
+</p>
+<a name="IX2436"></a>
+<a name="IX2437"></a>
+<a name="IX2438"></a>
+<h2>
+<a name="SECT38.21" href="spec_toc.html#TOC292">
+38.21. Callout verification
+</a></h2>
+<p>
+For non-local addresses, routing verifies the domain, but is unable to do any
+checking of the local part. There are situations where some means of verifying
+the local part is desirable. One way this can be done is to make an SMTP
+<i>callback</i> to the sending host (for a sender address) or a <i>callforward</i> to
+a subsequent host (for a recipient address), to see if the host accepts the
+address. We use the term <i>callout</i> to cover both cases. This facility should
+be used with care, because it can add a lot of resource usage to the cost of
+verifying an address. However, Exim does cache the results of callouts, which
+helps to reduce the cost. Details of caching are in the next section.
+</p>
+<p>
+<font color=green>
+Recipient callouts are usually used only between hosts that are controlled by 
+the same administration. For example, a corporate gateway host could use 
+callouts to check for valid recipients on an internal mailserver.
+</font>
+A successful callout does not guarantee that a real delivery to the address 
+would succeed; on the other hand, a failing callout does guarantee that 
+a delivery would fail.
+</p>
+<p>
+If the <tt>callout</tt> option is present on a condition that verifies an address, a
+second stage of verification occurs if the address is successfully routed to
+one or more remote hosts. The usual case is routing by a <b>dnslookup</b> or a
+<b>manualroute</b> router, where the router specifies the hosts. However, if a 
+router that does not set up hosts routes to an <b>smtp</b> transport with a 
+<tt>hosts</tt> setting, the transport's hosts are used. If an <b>smtp</b> transport has
+<tt>hosts&#095;override</tt> set, its hosts are always used, whether or not the router
+supplies a host list.
+</p>
+<p>
+The port that is used is taken from the transport, if it is specified and is a
+remote transport. (For routers that do verification only, no transport need be
+specified.) Otherwise, the default SMTP port is used. If a remote transport 
+specifies an outgoing interface, this is used; otherwise the interface is not 
+specified.
+</p>
+<p>
+For a sender callout check, Exim makes SMTP connections to the remote hosts, to
+test whether a bounce message could be delivered to the sender address. The
+following SMTP commands are sent:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>HELO &#060;<em>primary host name</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>MAIL FROM:&#060;&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>RCPT TO:&#060;<em>the address to be tested</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>QUIT</tt><br>
+</p>
+<p>
+<font size=-1>LHLO</font> is used instead of <font size=-1>HELO</font> if the transport's <tt>protocol</tt> option is
+set to &#147;lmtp&#148;. 
+</p>
+<p>
+<font color=green>
+A recipient callout check is similar. By default, it also uses an empty address 
+for the sender. This default is chosen because most hosts do not make use of 
+the sender address when verifying a recipient. Using the same address means 
+that a single cache entry can be used for each recipient. Some sites, however, 
+do make use of the sender address when verifying. These are catered for by the 
+<tt>use&#095;sender</tt> and <tt>use&#095;postmaster</tt> options, described in the next section. 
+</font>
+</p>
+<p>
+If the response to the <font size=-1>RCPT</font> command is a 2<em>xx</em> code, the verification
+succeeds. If it is 5<em>xx</em>, the verification fails. For any other condition,
+Exim tries the next host, if any. If there is a problem with all the remote
+hosts, the ACL yields &#147;defer&#148;, unless the <tt>defer&#095;ok</tt> parameter of the
+<tt>callout</tt> option is given, in which case the condition is forced to succeed.
+</p>
+<a name="IX2439"></a>
+<h2>
+<a name="SECT38.22" href="spec_toc.html#TOC293">
+38.22. Additional parameters for callouts
+</a></h2>
+<p>
+The <tt>callout</tt> option can be followed by an equals sign and a number of optional
+parameters, separated by commas. For example:
+<pre>
+&nbsp;&nbsp;verify = recipient/callout=10s,defer_ok
+</pre>
+</p>
+<p>
+The old syntax, which had <tt>callout&#095;defer&#095;ok</tt> and <tt>check&#095;postmaster</tt> as
+separate verify options, is retained for backwards compatibility, but is now
+deprecated. The additional parameters for <tt>callout</tt> are as follows:
+</p>
+<ul>
+<li><p>
+&#060;<em>a time</em>&#062;: This specifies the timeout that applies for the callout attempt to
+each host. For example:
+<pre>
+&nbsp;&nbsp;verify = sender/callout=5s
+</pre>
+</p>
+<p>
+The default is 30 seconds. The timeout is used for each response from the
+remote host.
+</p>
+</li>
+<li><a name="IX2440"></a>
+<p>
+<tt>defer&#095;ok</tt>: Failure to contact any host, or any other kind of temporary error
+is treated as success by the ACL. However, the cache is not updated in this
+circumstance.
+</p>
+</li>
+<li><a name="IX2441"></a>
+<a name="IX2442"></a>
+<p>
+<tt>no&#095;cache</tt>: The callout cache is neither read nor updated.
+</p>
+</li>
+<li><a name="IX2443"></a>
+<p>
+<tt>postmaster</tt>: A successful callout check is followed by a similar check for the
+local part <i>postmaster</i> at the same domain. If this address is rejected, the
+callout fails. The result of the postmaster check is recorded in a cache
+record; if it is a failure, this is used to fail subsequent callouts for the
+domain without a connection being made, until the cache record expires.
+</p>
+</li>
+<li><a name="IX2444"></a>
+<p>
+<tt>random</tt>: Before doing the normal callout check, Exim does a 
+check for a &#147;random&#148; local part at the same domain. The local part is not
+really random &#150; it is defined by the expansion of the option
+<tt>callout&#095;random&#095;local&#095;part</tt>, which defaults to
+<pre>
+&nbsp;&nbsp;$primary_host_name-$tod_epoch-testing
+</pre>
+</p>
+<p>
+The idea here is to try to determine whether the remote host accepts all local
+parts without checking. If it does, there is no point in doing callouts for
+specific local parts. If the &#147;random&#148; check succeeds, the result is saved in
+a cache record, and used to force the current and subsequent callout checks to
+succeed without a connection being made, until the cache record expires.
+</p>
+</li>
+<li><a name="IX2445"></a>
+<p>
+<font color=green>
+<tt>use&#095;postmaster</tt>: This option applies to recipient callouts only. For example:
+<pre>
+&nbsp;&nbsp;deny  !verify = recipient/callout=use_postmaster
+</pre>
+</p>
+<p>
+It causes a non-empty postmaster address to be used in the <font size=-1>MAIL</font> command
+when performing the callout. The local part of the address is <tt>postmaster</tt>
+and the domain is the contents of <tt>$qualify&#095;domain</tt>.
+</p>
+</li>
+<li><p>
+<tt>use&#095;sender</tt>: This option applies to recipient callouts only. For example:
+<pre>
+&nbsp;&nbsp;require  verify = recipient/callout=use_sender
+</pre>
+</p>
+<p>
+It causes the message's actual sender address to be used in the <font size=-1>MAIL</font>
+command when performing the callout, instead of an empty address. The cache for 
+such callouts is keyed by the sender/recipient combination; thus, for any given 
+recipient, many more actual callouts are performed than when an empty sender or 
+postmaster is used. This option should be set only when you know that the
+called hosts make use of the sender when checking recipients.
+</font>
+</p>
+</li>
+</ul>
+<a name="IX2446"></a>
+<a name="IX2447"></a>
+<a name="IX2448"></a>
+<h2>
+<a name="SECT38.23" href="spec_toc.html#TOC294">
+38.23. Callout caching
+</a></h2>
+<p>
+Exim caches the results of callouts in order to reduce the amount of resources 
+used, unless you specify the <tt>no&#095;cache</tt> parameter with the <tt>callout</tt> option.
+A hints database called &#147;callout&#148; is used for the cache. Two different record 
+types are used: one records the result of a callout check for a specific 
+address, and the other records information that applies to the entire domain
+(for example, that it accepts the local part <i>postmaster</i>).
+</p>
+<p>
+When an original callout fails, a detailed SMTP error message is given about
+the failure. However, for subsequent failures use the cache data, this message
+is not available.
+</p>
+<p>
+The expiry times for negative and positive address cache records are
+independent, and can be set by the global options <tt>callout&#095;negative&#095;expire</tt>
+(default 2h) and <tt>callout&#095;positive&#095;expire</tt> (default 24h), respectively.
+</p>
+<p>
+If a host gives a negative response to an SMTP connection, or rejects any
+commands up to and including 
+<pre>
+&nbsp;&nbsp;MAIL FROM:&#060;&#062;
+</pre>
+</p>
+<p>
+<font color=green>
+(but not including the <font size=-1>MAIL</font> command with a non-empty address),
+</font>
+any callout attempt is bound to fail. Exim remembers such failures in a
+domain cache record, which it uses to fail callouts for the domain without
+making new connections, until the domain record times out. There are two
+separate expiry times for domain cache records:
+<tt>callout&#095;domain&#095;negative&#095;expire</tt> (default 3h) and
+<tt>callout_domain_positive&#095;expire</tt> (default 7d).
+</p>
+<p>
+Domain records expire when the negative expiry time is reached if callouts
+cannot be made for the domain, or if the postmaster check failed.
+Otherwise, they expire when the positive expiry time is reached. This
+ensures that, for example, a host that stops accepting &#147;random&#148; local parts
+will eventually be noticed.
+</p>
+<p>
+The callout caching mechanism is based entirely on the domain of the
+address that is being tested. If the domain routes to several hosts, it is
+assumed that their behaviour will be the same.
+</p>
+<a name="IX2449"></a>
+<h2>
+<a name="SECT38.24" href="spec_toc.html#TOC295">
+38.24. Sender address verification reporting
+</a></h2>
+<p>
+When sender verification fails in an ACL, the details of the failure are
+given as additional output lines before the 550 response to the relevant
+SMTP command (<font size=-1>RCPT</font> or <font size=-1>DATA</font>). For example, if sender callout is in use,
+you might see:
+<pre>
+&nbsp;&nbsp;MAIL FROM:&#060;xyz@abc.example&#062;
+&nbsp;&nbsp;250 OK
+&nbsp;&nbsp;RCPT TO:&#060;pqr@def.example&#062;
+&nbsp;&nbsp;550-Verification failed for &#060;xyz@abc.example&#062;
+&nbsp;&nbsp;550-Called:   192.168.34.43
+&nbsp;&nbsp;550-Sent:     RCPT TO:&#060;xyz@abc.example&#062;
+&nbsp;&nbsp;550-Response: 550 Unknown local part xyz in &#060;xyz@abc.example&#062;
+&nbsp;&nbsp;550 Sender verification failed
+</pre>
+</p>
+<p>
+If more than one <font size=-1>RCPT</font> command fails in the same way, the details are given
+only for the first of them. However, some administrators do not want to send
+out this much information. You can suppress the details by adding
+&#147;/no&#095;details&#148; to the ACL statement that requests sender verification. For
+example:
+<pre>
+&nbsp;&nbsp;verify = sender/no_details
+</pre>
+</p>
+<a name="IX2450"></a>
+<a name="IX2451"></a>
+<h2>
+<a name="SECT38.25" href="spec_toc.html#TOC296">
+38.25. Redirection while verifying
+</a></h2>
+<p>
+A dilemma arises when a local address is redirected by aliasing or forwarding
+during verification: should the generated addresses themselves be verified,
+or should the successful expansion of the original address be enough to verify
+it? Exim takes the following pragmatic approach:
+</p>
+<ul>
+<li><p>
+When an incoming address is redirected to just one child address, verification
+continues with the child address, and if that fails to verify, the original
+verification also fails.
+</p>
+</li>
+<li><p>
+When an incoming address is redirected to more than one child address,
+verification does not continue. A success result is returned.
+</p>
+</li>
+</ul>
+<p>
+This seems the most reasonable behaviour for the common use of aliasing as a
+way of redirecting different local parts to the same mailbox. It means, for
+example, that a pair of alias entries of the form
+<pre>
+&nbsp;&nbsp;A.Wol:   aw123
+&nbsp;&nbsp;aw123:   :fail: Gone away, no forwarding address
+</pre>
+</p>
+<p>
+work as expected, with both local parts causing verification failure. When a
+redirection generates more than one address, the behaviour is more like a
+mailing list, where the existence of the alias itself is sufficient for
+verification to succeed.
+</p>
+<a name="IX2452"></a>
+<a name="IX2453"></a>
+<a name="IX2454"></a>
+<h2>
+<a name="SECT38.26" href="spec_toc.html#TOC297">
+38.26. Using an ACL to control relaying
+</a></h2>
+<p>
+<a name="IX2455"></a>
+An MTA is said to <i>relay</i> a message if it receives it from some host and
+delivers it directly to another host as a result of a remote address contained
+within it. Redirecting a local address via an alias or forward file and then
+passing the message on to another host is not relaying,
+but a redirection as a result of the &#147;percent hack&#148; is.
+</p>
+<p>
+Two kinds of relaying exist, which are termed &#147;incoming&#148; and &#147;outgoing&#148;. A host
+which is acting as a gateway or an MX backup is concerned with incoming
+relaying from arbitrary hosts to a specific set of domains. On the other hand,
+a host which is acting as a smart host for a number of clients is concerned
+with outgoing relaying from those clients to the Internet at large. Often the
+same host is fulfilling both functions, as illustrated in the diagram below,
+but in principle these two kinds of relaying are entirely independent. What is
+not wanted is the transmission of mail from arbitrary remote hosts through your
+system to arbitrary domains.
+</p>
+<p>
+<IMG SRC="relaying.gif" alt="Controlled relaying"><br>
+</p>
+<p>
+You can implement relay control by means of suitable statements in the ACL that
+runs for each <font size=-1>RCPT</font> command. For convenience, it is often easiest to use
+Exim's named list facility to define the domains and hosts involved. For
+example, suppose you want to do the following:
+</p>
+<ul>
+<li><p>
+Deliver a number of domains to mailboxes on the local host (or process them
+locally in some other way). Let's say these are <i>my.dom1.example</i> and
+<i>my.dom2.example</i>.
+</p>
+</li>
+<li><p>
+Relay mail for a number of other domains for which you are the secondary MX.
+These might be <i>friend1.example</i> and <i>friend2.example</i>.
+</p>
+</li>
+<li><p>
+Relay mail from the hosts on your local LAN, to whatever domains are involved.
+Suppose your LAN is 192.168.45.0/24.
+</p>
+</li>
+</ul>
+<p>
+In the main part of the configuration, you put the following definitions:
+<pre>
+&nbsp;&nbsp;domainlist local_domains = my.dom1.example : my.dom2.example
+&nbsp;&nbsp;domainlist relay_domains = friend1.example : friend2.example
+&nbsp;&nbsp;hostlist   relay_hosts   = 192.168.45.0/24
+</pre>
+</p>
+<p>
+Now you can use these definitions in the ACL that is run for every <font size=-1>RCPT</font>
+command:
+<pre>
+&nbsp;&nbsp;acl_check_rcpt:
+&nbsp;&nbsp;  accept domains = +local_domains : +relay_domains
+&nbsp;&nbsp;  accept hosts   = +relay_hosts
+</pre>
+</p>
+<p>
+The first statement accepts any <font size=-1>RCPT</font> command that contains an address in
+the local or relay domains. For any other domain, control passes to the second
+statement, which accepts the command only if it comes from one of the relay
+hosts. In practice, you will probably want to make your ACL more sophisticated
+than this, for example, by including sender and recipient verification. The
+default configuration includes a more comprehensive example, which is described
+in chapter <a href="spec_7.html">7</a>.
+</p>
+<a name="IX2456"></a>
+<h2>
+<a name="SECT38.27" href="spec_toc.html#TOC298">
+38.27. Checking a relay configuration
+</a></h2>
+<p>
+You can check the relay characteristics of your configuration in the same way 
+that you can test any ACL behaviour for an incoming SMTP connection, by using 
+the <i>-bh</i> option to run a fake SMTP session with which you interact.
+</p>
+<p>
+For specifically testing for unwanted relaying, the host
+<i>relay-test.mail-abuse.org</i> provides a useful service. If you telnet to this 
+host from the host on which Exim is running, using the normal telnet port, you 
+will see a normal telnet connection message and then quite a long delay. Be 
+patient. The remote host is making an SMTP connection back to your host, and 
+trying a number of common probes to test for open relay vulnerability. The 
+results of the tests will eventually appear on your terminal.
+<hr>
+</p>
+<font size=2>
+<a href="spec_37.html">Previous</a>&nbsp;&nbsp;<a href="spec_39.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

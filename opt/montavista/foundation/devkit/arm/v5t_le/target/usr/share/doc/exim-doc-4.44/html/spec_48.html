@@ -1,0 +1,494 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 48</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_47.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_49.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2803"></a>
+<h1>
+<a name="CHAP48" href="spec_toc.html#TOC403">
+48. Security considerations
+</a></h1>
+<p>
+This chapter discusses a number of issues concerned with security, some of
+which are also covered in other parts of this manual.
+</p>
+<p>
+For reasons that this author does not understand, some people have promoted
+Exim as a &#147;particularly secure&#148; mailer. Perhaps it is because of the existence
+of this chapter in the documentation. However, the intent of the chapter is
+simply to describe the way Exim works in relation to certain security concerns,
+not to make any specific claims about the effectiveness of its security as
+compared with other MTAs.
+</p>
+<p>
+What follows is a description of the way Exim is supposed to be. Best efforts
+have been made to try to ensure that the code agrees with the theory, but an
+absence of bugs can never be guaranteed. Any that are reported will get fixed
+as soon as possible.
+</p>
+<a name="IX2804"></a>
+<h2>
+<a name="SECT48.1" href="spec_toc.html#TOC404">
+48.1. Building a more &#147;hardened&#148; Exim
+</a></h2>
+<p>
+There are a number of build-time options that can be set in <i>Local/Makefile</i>
+to create Exim binaries that are &#147;harder&#148; to attack, in particular by a rogue
+Exim administrator who does not have the root password, or by someone who has
+penetrated the Exim (but not the root) account. These options are as follows:
+</p>
+<ul>
+<li><p>
+<font size=-1>ALT&#095;CONFIG&#095;PREFIX</font> can be set to a string that is required to match the
+start of any file names used with the <i>-C</i> option. When it is set, these file
+names are also not allowed to contain the sequence &#147;/../&#148;. (However, if the
+value of the <i>-C</i> option is identical to the value of <font size=-1>CONFIGURE&#095;FILE</font> in
+<i>Local/Makefile</i>, Exim ignores <i>-C</i> and proceeds as usual.) There is no
+default setting for <tt>ALT&#095;CONFIG&#095;PREFIX</tt>.
+</p>
+<p>
+If the permitted configuration files are confined to a directory to
+which only root has access, this guards against someone who has broken
+into the Exim account from running a privileged Exim with an arbitrary
+configuration file, and using it to break into other accounts.
+</p>
+</li>
+<li><p>
+If <font size=-1>ALT&#095;CONFIG&#095;ROOT&#095;ONLY</font> is defined, root privilege is retained for <i>-C</i>
+and <i>-D</i> only if the caller of Exim is root. Without it, the Exim user may
+also use <i>-C</i> and <i>-D</i> and retain privilege. Setting this option locks out
+the possibility of testing a configuration using <i>-C</i> right through message
+reception and delivery, even if the caller is root. The reception works, but by
+that time, Exim is running as the Exim user, so when it re-execs to regain
+privilege for the delivery, the use of <i>-C</i> causes privilege to be lost.
+However, root can test reception and delivery using two separate commands.
+<font size=-1>ALT&#095;CONFIG&#095;ROOT&#095;ONLY</font> is not set by default.
+</p>
+</li>
+<li><p>
+If <font size=-1>DISABLE&#095;D&#095;OPTION</font> is defined, the use of the <i>-D</i> command line option
+is disabled.
+</p>
+</li>
+<li><p>
+<font size=-1>FIXED&#095;NEVER&#095;USERS</font> can be set to a colon-separated list of users that are
+never to be used for any deliveries. This is like the <tt>never&#095;users</tt> runtime
+option, but it cannot be overridden; the runtime option adds additional users
+to the list. The default setting is &#147;root&#148;; this prevents a non-root user who
+is permitted to modify the runtime file from using Exim as a way to get root.
+</p>
+</li>
+</ul>
+<a name="IX2805"></a>
+<a name="IX2806"></a>
+<h2>
+<a name="SECT48.2" href="spec_toc.html#TOC405">
+48.2. Root privilege
+</a></h2>
+<p>
+The Exim binary is normally setuid to root, which means that it gains root
+privilege (runs as root) when it starts execution. In some special cases (for
+example, when the daemon is not in use and there are no local deliveries), it
+may be possible to run Exim setuid to some user other than root. This is
+discussed in the next section. However, in most installations, root privilege
+is required for two things:
+</p>
+<ul>
+<li><p>
+To set up a socket connected to the standard SMTP port (25) when initialising
+the listening daemon. If Exim is run from <i>inetd</i>, this privileged action is
+not required.
+</p>
+</li>
+<li><p>
+To be able to change uid and gid in order to read users' <i>.forward</i> files and
+perform local deliveries as the receiving user or as specified in the
+configuration.
+</p>
+</li>
+</ul>
+<p>
+It is not necessary to be root to do any of the other things Exim does, such as
+receiving messages and delivering them externally over SMTP, and it is
+obviously more secure if Exim does not run as root except when necessary.
+For this reason, a user and group for Exim to use must be defined in
+<i>Local/Makefile</i>. These are known as &#147;the Exim user&#148; and &#147;the Exim group&#148;.
+Their values can be changed by the run time configuration, though this is not
+recommended. Often a user called <i>exim</i> is used, but some sites use <i>mail</i>
+or another user name altogether.
+</p>
+<p>
+Exim uses <i>setuid()</i> whenever it gives up root privilege. This is a permanent
+abdication; the process cannot regain root afterwards. Prior to release 4.00,
+<i>seteuid()</i> was used in some circumstances, but this is no longer the case.
+</p>
+<p>
+After a new Exim process has interpreted its command line options, it changes
+uid and gid in the following cases:
+</p>
+<ul>
+<li><a name="IX2807"></a>
+<a name="IX2808"></a>
+<p>
+If the <i>-C</i> option is used to specify an alternate configuration file, or if
+the <i>-D</i> option is used to define macro values for the configuration, and the
+calling process is not running as root or the Exim user, the uid and gid are
+changed to those of the calling process.
+However, if <font size=-1>ALT&#095;CONFIG&#095;ROOT&#095;ONLY</font> is defined in <i>Local/Makefile</i>, only 
+root callers may use <i>-C</i> and <i>-D</i> without losing privilege, and if 
+<font size=-1>DISABLE&#095;D&#095;OPTION</font> is set, the <i>-D</i> option may not be used at all.
+</p>
+</li>
+<li><a name="IX2809"></a>
+<a name="IX2810"></a>
+<a name="IX2811"></a>
+<p>
+If the expansion test option (<i>-be</i>) or one of the filter testing options
+(<i>-bf</i> or <i>-bF</i>) are used, the uid and gid are changed to those of the
+calling process.
+</p>
+</li>
+<li><p>
+<a name="IX2812"></a>
+<a name="IX2813"></a>
+If the process is not a daemon process or a queue runner process or a delivery
+process or a process for testing address routing (started with <i>-bt</i>), the uid
+and gid are changed to the Exim user and group. This means that Exim always
+runs under its own uid and gid when receiving messages. This also applies when
+testing address verification 
+(the <i>-bv</i> option) and testing incoming message policy controls (the <i>-bh</i>
+option).
+</p>
+</li>
+<li><p>
+For a daemon, queue runner, delivery, or address testing process, the uid
+remains as root at this stage, but the gid is changed to the Exim group.
+</p>
+</li>
+</ul>
+<p>
+The processes that initially retain root privilege behave as follows:
+</p>
+<ul>
+<li><p>
+A daemon process changes the gid to the Exim group and the uid to the Exim user
+after setting up one or more listening sockets. The <i>initgroups()</i> function
+is called, so that if the Exim user is in any additional groups, they will be
+used during message reception.
+</p>
+</li>
+<li><p>
+A queue runner process retains root privilege throughout its execution. Its job
+is to fork a controlled sequence of delivery processes.
+</p>
+</li>
+<li><p>
+A delivery process retains root privilege throughout most of its execution,
+but any actual deliveries (that is, the transports themselves) are run in
+subprocesses which always change to a non-root uid and gid. For local
+deliveries this is typically the uid and gid of the owner of the mailbox; for
+remote deliveries, the Exim uid and gid are used. Once all the delivery
+subprocesses have been run, a delivery process changes to the Exim uid and gid
+while doing post-delivery tidying up such as updating the retry database and
+generating bounce and warning messages.
+</p>
+<p>
+While the recipient addresses in a message are being routed, the delivery
+process runs as root. However, if a user's filter file has to be processed,
+this is done in a subprocess that runs under the individual user's uid and
+gid. A system filter is run as root unless <tt>system&#095;filter&#095;user</tt> is set.
+</p>
+</li>
+<li><p>
+A process that is testing addresses (the <i>-bt</i> option) runs as root so that
+the routing is done in the same environment as a message delivery.
+</p>
+</li>
+</ul>
+<a name="IX2814"></a>
+<a name="IX2815"></a>
+<a name="IX2816"></a>
+<h2>
+<a name="SECT48.3" href="spec_toc.html#TOC406">
+48.3. Running Exim without privilege
+</a></h2>
+<p>
+Some installations like to run Exim in an unprivileged state for more of its
+operation, for added security. Support for this mode of operation is provided
+by the global option <tt>deliver&#095;drop&#095;privilege</tt>. When this is set, the uid and
+gid are changed to the Exim user and group at the start of a delivery process
+(and also queue runner and address testing processes). This means that address
+routing is no longer run as root, and the deliveries themselves cannot change
+to any other uid.
+</p>
+<p>
+Leaving the binary setuid to root, but setting <tt>deliver&#095;drop&#095;privilege</tt> means
+that the daemon can still be started in the usual way, and it can respond
+correctly to SIGHUP because the re-invocation regains root privilege.
+</p>
+<p>
+An alternative approach is to make Exim setuid to the Exim user and also setgid
+to the Exim group.
+If you do this, the daemon must be started from a root process. (Calling
+Exim from a root process makes it behave in the way it does when it is setuid
+root.) However, the daemon cannot restart itself after a SIGHUP signal because
+it cannot regain privilege.
+</p>
+<p>
+It is still useful to set <tt>deliver&#095;drop&#095;privilege</tt> in this case, because it
+stops Exim from trying to re-invoke itself to do a delivery after a message has
+been received. Such a re-invocation is a waste of resources because it has no
+effect.
+</p>
+<p>
+If restarting the daemon is not an issue (for example, if <i>inetd</i> is being
+used instead of a daemon), having the binary setuid to the Exim user seems a
+clean approach, but there is one complication:
+</p>
+<p>
+In this style of operation, Exim is running with the real uid and gid set to
+those of the calling process, and the effective uid/gid set to Exim's values.
+Ideally, any association with the calling process' uid/gid should be dropped,
+that is, the real uid/gid should be reset to the effective values so as to
+discard any privileges that the caller may have. While some operating systems
+have a function that permits this action for a non-root effective uid, quite a
+number of them do not. Because of this lack of standardization, Exim does not
+address this problem at this time.
+</p>
+<p>
+For this reason, the recommended approach for &#147;mostly unprivileged&#148; running is
+to keep the Exim binary setuid to root, and to set <tt>deliver&#095;drop&#095;privilege</tt>.
+This also has the advantage of allowing a daemon to be used in the most
+straightforward way.
+</p>
+<p>
+If you configure Exim not to run delivery processes as root, there are a
+number of restrictions on what you can do:
+</p>
+<ul>
+<li><p>
+You can deliver only as the Exim user/group. You should  explicitly use the
+<tt>user</tt> and <tt>group</tt> options to override routers or local transports that
+normally deliver as the recipient. This makes sure that configurations that
+work in this mode function the same way in normal mode. Any implicit or
+explicit specification of another user causes an error.
+</p>
+</li>
+<li><p>
+Use of <i>.forward</i> files is severely restricted, such that it is usually
+not worthwhile to include them in the configuration.
+</p>
+</li>
+<li><p>
+Users who wish to use <i>.forward</i> would have to make their home directory and
+the file itself accessible to the Exim user. Pipe and append-to-file entries,
+and their equivalents in Exim filters, cannot be used. While they could be
+enabled in the Exim user's name, that would be insecure and not very useful.
+</p>
+</li>
+<li><p>
+Unless the local user mailboxes are all owned by the Exim user (possible in
+some POP3 or IMAP-only environments):
+</p>
+<ol>
+<li TYPE="1"><p>
+They must be owned by the Exim group and be writable by that group. This
+implies you must set <tt>mode</tt> in the appendfile configuration, as well as the
+mode of the mailbox files themselves.
+</p>
+</li>
+<li TYPE="1"><p>
+You must set <tt>no&#095;check&#095;owner</tt>, since most or all of the files will not be
+owned by the Exim user.
+</p>
+</li>
+<li TYPE="1"><p>
+You must set <tt>file&#095;must&#095;exist</tt>, because Exim cannot set the owner correctly
+on a newly created mailbox when unprivileged. This also implies that new
+mailboxes need to be created manually.
+</p>
+</li>
+</ol>
+</li>
+</ul>
+<p>
+These restrictions severely restrict what can be done in local deliveries.
+However, there are no restrictions on remote deliveries. If you are running a
+gateway host that does no local deliveries, setting <tt>deliver&#095;drop&#095;privilege</tt>
+gives more security at essentially no cost.
+</p>
+<h2>
+<a name="SECT48.4" href="spec_toc.html#TOC407">
+48.4. Delivering to local files
+</a></h2>
+<p>
+Full details of the checks applied by <b>appendfile</b> before it writes to a file
+are given in chapter <a href="spec_26.html">26</a>.
+</p>
+<a name="IX2817"></a>
+<a name="IX2818"></a>
+<h2>
+<a name="SECT48.5" href="spec_toc.html#TOC408">
+48.5. IPv4 source routing
+</a></h2>
+<p>
+Many operating systems suppress IP source-routed packets in the kernel, but
+some cannot be made to do this, so Exim does its own check. It logs incoming
+IPv4 source-routed TCP calls, and then drops them. Things are all different in
+IPv6. No special checking is currently done.
+</p>
+<h2>
+<a name="SECT48.6" href="spec_toc.html#TOC409">
+48.6. The VRFY, EXPN, and ETRN commands in SMTP
+</a></h2>
+<p>
+Support for these SMTP commands is disabled by default. If required, they can
+be enabled by defining suitable ACLs.
+</p>
+<a name="IX2819"></a>
+<a name="IX2820"></a>
+<a name="IX2821"></a>
+<a name="IX2822"></a>
+<a name="IX2823"></a>
+<h2>
+<a name="SECT48.7" href="spec_toc.html#TOC410">
+48.7. Privileged users
+</a></h2>
+<p>
+Exim recognises two sets of users with special privileges. Trusted users are
+able to submit new messages to Exim locally, but supply their own sender
+addresses and information about a sending host. For other users submitting
+local messages, Exim sets up the sender address from the uid, and doesn't
+permit a remote host to be specified.
+<a name="IX2824"></a>
+</p>
+<p>
+However, an untrusted user is permitted to use the <i>-f</i> command line option in
+the special form <i>-f &#060;&#062;</i> to indicate that a delivery failure for the message
+should not cause an error report. This affects the message's envelope, but it
+does not affect the <i>Sender:</i> header. Untrusted users may also be permitted to
+use specific forms of address with the <i>-f</i> option by setting the
+<tt>untrusted&#095;set&#095;sender</tt> option.
+</p>
+<p>
+Trusted users are used to run processes that receive mail messages from some
+other mail domain and pass them on to Exim for delivery either locally, or over
+the Internet. Exim trusts a caller that is running as root, as the Exim user,
+as any user listed in the <tt>trusted&#095;users</tt> configuration option, or under any
+group listed in the <tt>trusted&#095;groups</tt> option.
+</p>
+<p>
+Admin users are permitted to do things to the messages on Exim's queue. They
+can freeze or thaw messages, cause them to be returned to their senders, remove
+them entirely, or modify them in various ways. In addition, admin users can run
+the Exim monitor and see all the information it is capable of providing, which
+includes the contents of files on the spool.
+<a name="IX2825"></a>
+<a name="IX2826"></a>
+</p>
+<p>
+By default, the use of the <i>-M</i> and <i>-q</i> options to cause Exim to attempt
+delivery of messages on its queue is restricted to admin users. This
+restriction can be relaxed by setting the <tt>no&#095;prod&#095;requires&#095;admin</tt> option.
+Similarly, the use of <i>-bp</i> (and its variants) to list the contents of the
+queue is also restricted to admin users. This restriction can be relaxed by
+setting <tt>no&#095;queue&#095;list&#095;requires&#095;admin</tt>.
+</p>
+<p>
+Exim recognises an admin user if the calling process is running as root or as
+the Exim user or if any of the groups associated with the calling process is
+the Exim group. It is not necessary actually to be running under the Exim
+group. However, if admin users who are not root or the Exim user are to access
+the contents of files on the spool via the Exim monitor (which runs
+unprivileged), Exim must be built to allow group read access to its spool
+files.
+</p>
+<a name="IX2827"></a>
+<h2>
+<a name="SECT48.8" href="spec_toc.html#TOC411">
+48.8. Spool files
+</a></h2>
+<p>
+Exim's spool directory and everything it contains is owned by the Exim user and
+set to the Exim group. The mode for spool files is defined in the
+<i>Local/Makefile</i> configuration file, and defaults to 0640. This means that
+any user who is a member of the Exim group can access these files.
+</p>
+<h2>
+<a name="SECT48.9" href="spec_toc.html#TOC412">
+48.9. Use of argv[0]
+</a></h2>
+<p>
+Exim examines the last component of <tt>argv[0]</tt>, and if it matches one of a set
+of specific strings, Exim assumes certain options. For example, calling Exim
+with the last component of <tt>argv[0]</tt> set to &#147;rsmtp&#148; is exactly equivalent to
+calling it with the option <i>-bS</i>. There are no security implications in this.
+</p>
+<h2>
+<a name="SECT48.10" href="spec_toc.html#TOC413">
+48.10. Use of %f formatting
+</a></h2>
+<p>
+The only use made of &#147;%f&#148; by Exim is in formatting load average values. These
+are actually stored in integer variables as 1000 times the load average.
+Consequently, their range is limited and so therefore is the length of the
+converted output.
+</p>
+<h2>
+<a name="SECT48.11" href="spec_toc.html#TOC414">
+48.11. Embedded Exim path
+</a></h2>
+<p>
+Exim uses its own path name, which is embedded in the code, only when it needs
+to re-exec in order to regain root privilege. Therefore, it is not root when it
+does so. If some bug allowed the path to get overwritten, it would lead to an
+arbitrary program's being run as exim, not as root.
+</p>
+<a name="IX2828"></a>
+<h2>
+<a name="SECT48.12" href="spec_toc.html#TOC415">
+48.12. Use of sprintf()
+</a></h2>
+<p>
+A large number of occurrences of &#147;sprintf&#148; in the code are actually calls to
+<i>string&#095;sprintf()</i>, a function that returns the result in malloc'd store.
+The intermediate formatting is done into a large fixed buffer by a function
+that runs through the format string itself, and checks the length of each
+conversion before performing it, thus preventing buffer overruns.
+</p>
+<p>
+The remaining uses of <i>sprintf()</i> happen in controlled circumstances where
+the output buffer is known to be sufficiently long to contain the converted
+string.
+</p>
+<h2>
+<a name="SECT48.13" href="spec_toc.html#TOC416">
+48.13. Use of debug&#095;printf() and log&#095;write()
+</a></h2>
+<p>
+Arbitrary strings are passed to both these functions, but they do their
+formatting by calling the function <i>string&#095;vformat()</i>, which runs through
+the format string itself, and checks the length of each conversion.
+</p>
+<h2>
+<a name="SECT48.14" href="spec_toc.html#TOC417">
+48.14. Use of strcat() and strcpy()
+</a></h2>
+<p>
+These are used only in cases where the output buffer is known to be large
+enough to hold the result.
+<hr>
+</p>
+<font size=2>
+<a href="spec_47.html">Previous</a>&nbsp;&nbsp;<a href="spec_49.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim Filter Specification chapter 1</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="filter_2.html">Next</a>&nbsp;&nbsp;
+<a href="filter_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim Filter Specification)
+</font><hr>
+<h1>
+<a name="CHAP1" href="filter_toc.html#TOC2">
+1. Forwarding and filtering in Exim
+</a></h1>
+<h2>
+<a name="SECT1.1" href="filter_toc.html#TOC3">
+1.1. Introduction
+</a></h2>
+<p>
+Most Unix mail transfer agents (programs that deliver mail) permit individual
+users to specify automatic forwarding of their mail, usually by placing a list
+of forwarding addresses in a file called <i>.forward</i> in their home directories.
+Exim extends this facility by allowing the forwarding instructions to be a set
+of rules rather than just a list of addresses, in effect providing &#147;<i>.forward</i>
+with conditions&#148;. Operating the set of rules is called <em>filtering</em>, and the
+file that contains them is called a <em>filter file</em>.
+</p>
+<p>
+Exim supports two different kinds of filter file. An <i>Exim filter</i> contains 
+instructions in a format that is unique to Exim. A <i>Sieve filter</i> contains 
+instructions in the Sieve format that is defined by RFC 3028. As this is a
+standard format, Sieve filter files may already be familiar to some users.
+Sieve files should also be portable between different environments. However,
+the Exim filtering facility contains more features (such as variable
+expansion), and better integration with the host environment (such as the use
+of external processes and pipes).
+</p>
+<p>
+The choice of which kind of filter to use can be left to the end-user, provided 
+that the system administrator has configured Exim appropriately for both kinds 
+of filter. However, if interoperability is important, Sieve is the only
+choice.
+</p>
+<p>
+The ability to use filtering or traditional forwarding has to be enabled by the
+system administrator, and some of the individual facilities can be separately
+enabled or disabled. A local document should be provided to describe exactly
+what has been enabled. In the absence of this, consult your system
+administrator.
+</p>
+<p>
+It is important to realize that, in Exim, no deliveries are actually made while
+a filter or traditional <i>.forward</i> file is being processed. The result of
+such processing is a list of destinations to which a message should be
+delivered &#150; the deliveries themselves take place later, along with all other
+deliveries for the message. This means that it is not possible to test for
+successful deliveries while filtering. It also means that any duplicate
+addresses that are generated are dropped, since Exim never delivers the same 
+message to the same address more than once.
+</p>
+<p>
+This document describes how to use a filter file and the format of its
+contents. It is intended for use by end-users. Both Sieve filters and Exim
+filters are covered. However, for Sieve filters, only issues that relate to the
+Exim implementation are discussed, since Sieve itself is described elsewhere.
+</p>
+<p>
+The contents of traditional <i>.forward</i> files are not described here. They
+normally contain just a list of addresses, file names, or pipe commands,
+separated by commas or newlines, but other types of item are also available.
+The full details can be found in the chapter on the <b>redirect</b> router in the
+Exim specification, which also describes how the system administrator can set
+up and control the use of filtering.
+</p>
+<h2>
+<a name="SECT1.2" href="filter_toc.html#TOC4">
+1.2. Testing a new filter file
+</a></h2>
+<p>
+Filter files, especially the more complicated ones, should always be tested, as
+it is easy to make mistakes. Exim provides a facility for preliminary testing
+of a filter file before installing it. This tests the syntax of the file and
+its basic operation, and can also be used with traditional <i>.forward</i> files.
+</p>
+<p>
+Because a filter can do tests on the content of messages, a test message is
+required. Suppose you have a new filter file called <i>myfilter</i> and a test
+message called <i>test-message</i>. Assuming that Exim is installed with the
+conventional path name <i>/usr/sbin/sendmail</i> (some operating systems use
+<i>/usr/lib/sendmail</i>), the following command can be used:
+<pre>
+&nbsp;&nbsp;/usr/sbin/sendmail -bf myfilter &#060;test-message
+</pre>
+</p>
+<p>
+The <i>-bf</i> option tells Exim that the following item on the command line is the
+name of a filter file that is to be tested. There is also a <i>-bF</i> option,
+which is similar, but which is used for testing system filter files, as opposed
+to user filter files, and which is therefore of use only to the system
+administrator.
+</p>
+<p>
+The test message is supplied on the standard input. If there are no
+message-dependent tests in the filter, an empty file (<i>/dev/null</i>) can be
+used. A supplied message must start with header lines or the &#147;From&#148; message
+separator line which is found in many multi-message folder files. Note that
+blank lines at the start terminate the header lines. A warning is given if no
+header lines are read.
+</p>
+<p>
+The result of running this command, provided no errors are detected in the
+filter file, is a list of the actions that Exim would try to take if presented
+with the message for real.
+For example, for an Exim filter, the output
+<pre>
+&nbsp;&nbsp;Deliver message to: gulliver@lilliput.fict.example
+&nbsp;&nbsp;Save message to: /home/lemuel/mail/archive
+</pre>
+</p>
+<p>
+means that one copy of the message would be sent to
+<tt>gulliver&#064;lilliput.fict.example</tt>, and another would be added to the file
+<i>/home/lemuel/mail/archive</i>, if all went well.
+</p>
+<p>
+The actions themselves are not attempted while testing a filter file in this
+way; there is no check, for example, that any forwarding addresses are valid.
+For an Exim filter, 
+if you want to know why a particular action is being taken, add the <i>-v</i>
+option to the command. This causes Exim to output the results of any
+conditional tests and to indent its output according to the depth of nesting of
+<tt>if</tt> commands. Further additional output from a filter test can be generated
+by the <tt>testprint</tt> command, which is described below.
+</p>
+<p>
+When Exim is outputting a list of the actions it would take, if any text
+strings are included in the output, non-printing characters therein are
+converted to escape sequences. In particular, if any text string contains a
+newline character, this is shown as &#147;&#092;n&#148; in the testing output.
+</p>
+<p>
+When testing a filter in this way, Exim makes up an &#147;envelope&#148; for the message.
+The recipient is by default the user running the command, and so is the sender,
+but the command can be run with the <i>-f</i> option to supply a different sender.
+For example,
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>/usr/sbin/sendmail -bf myfilter -f islington&#064;never.where &#060;test-message</tt><br>
+</p>
+<p>
+Alternatively, if the <i>-f</i> option is not used, but the first line of the
+supplied message is a &#147;From&#148; separator from a message folder file (not the same
+thing as a <tt>From:</tt> header line), the sender is taken from there. If <i>-f</i> is
+present, the contents of any &#147;From&#148; line are ignored.
+</p>
+<p>
+The &#147;return path&#148; is the same as the envelope sender, unless the message
+contains a <tt>Return-path:</tt> header, in which case it is taken from there. You
+need not worry about any of this unless you want to test out features of a
+filter file that rely on the sender address or the return path.
+</p>
+<p>
+It is possible to change the envelope recipient by specifying further options.
+The <i>-bfd</i> option changes the domain of the recipient address, while the
+<i>-bfl</i> option changes the &#147;local part&#148;, that is, the part before the &#064; sign.
+An adviser could make use of these to test someone else's filter file.
+</p>
+<p>
+The <i>-bfp</i> and <i>-bfs</i> options specify the prefix or suffix for the local part.
+These are relevant only when support for multiple personal mailboxes is
+implemented; see the description in section <a href="filter_3.html#SECT3.29">3.29</a> below.
+</p>
+<h2>
+<a name="SECT1.3" href="filter_toc.html#TOC5">
+1.3. Installing a filter file
+</a></h2>
+<p>
+A filter file is normally installed under the name <i>.forward</i> in your home
+directory &#150; it is distinguished from a conventional <i>.forward</i> file by its
+first line (described below). However, the file name is configurable, and some
+system administrators may choose to use some different name or location for
+filter files.
+</p>
+<h2>
+<a name="SECT1.4" href="filter_toc.html#TOC6">
+1.4. Testing an installed filter file
+</a></h2>
+<p>
+Testing a filter file before installation cannot find every potential problem;
+for example, it does not actually run commands to which messages are piped.
+Some &#147;live&#148; tests should therefore also be done once a filter is installed.
+</p>
+<p>
+If at all possible, test your filter file by sending messages from some other
+account. If you send a message to yourself from the filtered account, and
+delivery fails, the error message will be sent back to the same account, which
+may cause another delivery failure. It won't cause an infinite sequence of such
+messages, because delivery failure messages do not themselves generate further
+messages. However, it does mean that the failure won't be returned to you, and
+also that the postmaster will have to investigate the stuck message.
+</p>
+<p>
+If you have to test an Exim filter from the same account, a sensible precaution
+is to include the line
+<pre>
+&nbsp;&nbsp;if error_message then finish endif
+</pre>
+</p>
+<p>
+as the first filter command, at least while testing. This causes filtering to
+be abandoned for a delivery failure message, and since no destinations are
+generated, the message goes on to be delivered to the original address. Unless
+there is a good reason for not doing so, it is recommended that the above test
+be left in all Exim filter files. 
+(This does not apply to Sieve files.)
+</p>
+<h2>
+<a name="SECT1.5" href="filter_toc.html#TOC7">
+1.5. Details of filtering commands
+</a></h2>
+<p>
+The filtering commands for Sieve and Exim filters are completely different in
+syntax and semantics. The Sieve mechanism is defined in RFC 3028; in the next
+chapter we describe how it is integrated into Exim. The subsequent chapter
+covers Exim filtering commands in detail.
+<hr>
+</p>
+<font size=2>
+<a href="filter_2.html">Next</a>&nbsp;&nbsp;<a href="filter_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim Filter Specification)
+</font>
+</body>
+</html>

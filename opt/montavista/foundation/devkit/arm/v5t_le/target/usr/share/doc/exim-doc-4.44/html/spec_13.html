@@ -1,0 +1,346 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 13</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_12.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_14.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX1008"></a>
+<a name="IX1009"></a>
+<a name="IX1010"></a>
+<a name="IX1011"></a>
+<a name="IX1012"></a>
+<a name="IX1013"></a>
+<a name="IX1014"></a>
+<a name="IX1015"></a>
+<h1>
+<a name="CHAP13" href="spec_toc.html#TOC133">
+13. Starting the daemon and the use of network interfaces
+</a></h1>
+<p>
+A host that is connected to a TCP/IP network may have one or more physical
+hardware network interfaces. Each of these interfaces may be configured as one
+or more &#147;logical&#148; interfaces, which are the entities that a program actually
+works with. Each of these logical interfaces is associated with an IP address.
+In addition, TCP/IP software supports &#147;loopback&#148; interfaces (127.0.0.1 in IPv4
+and &#058;&#058;1 in IPv6), which do not use any physical hardware. Exim requires
+knowledge about the host's interfaces for use in three different circumstances:
+</p>
+<ol>
+<li TYPE="1"><p>
+When a listening daemon is started, Exim needs to know which interfaces
+and ports to listen on.
+</p>
+</li>
+<li TYPE="1"><p>
+When Exim is routing an address, it needs to know which IP addresses
+are associated with local interfaces. This is required for the correct
+processing of MX lists by removing the local host and others with the
+same or higher priority values. Also, Exim needs to detect cases
+when an address is routed to an IP address that in fact belongs to the
+local host. Unless the <tt>self</tt> router option or the <tt>allow&#095;localhost</tt>
+option of the smtp transport is set (as appropriate), this is treated
+as an error situation.
+</p>
+</li>
+<li TYPE="1"><p>
+When Exim connects to a remote host, it may need to know which interface to use
+for the outgoing connection.
+</p>
+</li>
+</ol>
+<p>
+Exim's default behaviour is likely to be appropriate in the vast majority
+of cases. If your host has only one interface, and you want all its IP
+addresses to be treated in the same way, and you are using only the
+standard SMTP port, you should not need to take any special action. The
+rest of this chapter does not apply to you.
+</p>
+<p>
+In a more complicated situation you may want to listen only on certain 
+interfaces, or on different ports, and for this reason there are a number of
+options that can be used to influence Exim's behaviour. The rest of this
+chapter describes how they operate.
+</p>
+<p>
+When a message is received over TCP/IP, the interface and port that were
+actually used are set in <tt>$interface&#095;address</tt> and <tt>$interface&#095;port</tt>.
+</p>
+<h2>
+<a name="SECT13.1" href="spec_toc.html#TOC134">
+13.1. Starting a listening daemon
+</a></h2>
+<p>
+When a listening daemon is started (by means of the <i>-bd</i> command line
+option), the interfaces and ports on which it listens are controlled by the
+following options:
+</p>
+<ul>
+<li><p>
+<tt>daemon&#095;smtp&#095;ports</tt> contains a list of default ports. (For backward
+compatibility, this option can also be specified in the singular.)
+</p>
+</li>
+<li><p>
+<tt>local&#095;interfaces</tt> contains list of interface IP addresses on which to
+listen. Each item may optionally also specify a port.
+</p>
+</li>
+</ul>
+<p>
+The default list separator in both cases is a colon, but this can be changed as
+described in section <a href="spec_6.html#SECT6.15">6.15</a>. When IPv6 addresses are involved, it
+is usually best to change the separator to avoid having to double all the
+colons. For example:
+<pre>
+&nbsp;&nbsp;local_interfaces = &#060;; 127.0.0.1 ; \
+&nbsp;&nbsp;                      192.168.23.65 ; \
+&nbsp;&nbsp;                      ::1 ; \
+&nbsp;&nbsp;                      3ffe:ffff:836f::fe86:a061
+</pre>
+</p>
+<p>
+There are two different formats for specifying a port along with an IP address
+in <tt>local&#095;interfaces</tt>:
+</p>
+<ol>
+<li TYPE="1"><p>
+The port is added onto the address with a dot separator. For example, to listen 
+on port 1234 on two different IP addresses:
+<pre>
+&nbsp;&nbsp;local_interfaces = &#060;; 192.168.23.65.1234 ; \
+&nbsp;&nbsp;                      3ffe:ffff:836f::fe86:a061.1234
+</pre>
+</p>
+</li>
+<li TYPE="1"><p>
+The IP address is enclosed in square brackets, and the port is added
+with a colon separator, for example:
+<pre>
+&nbsp;&nbsp;local_interfaces = &#060;; [192.168.23.65]:1234 ; \
+&nbsp;&nbsp;                      [3ffe:ffff:836f::fe86:a061]:1234
+</pre>
+</p>
+</li>
+</ol>
+<p>
+When a port is not specified, the value of <tt>daemon&#095;smtp&#095;ports</tt> is used. The
+default setting contains just one port:
+<pre>
+&nbsp;&nbsp;daemon_smtp_ports = smtp
+</pre>
+</p>
+<p>
+If more than one port is listed, each interface that does not have its own port
+specified listens on all of them. Ports that are listed in
+<tt>daemon&#095;smtp&#095;ports</tt> can be identified either by name (defined in
+<i>/etc/services</i>) or by number. However, when ports are given with individual
+IP addresses in <tt>local&#095;interfaces</tt>, only numbers (not names) can be used.
+</p>
+<h2>
+<a name="SECT13.2" href="spec_toc.html#TOC135">
+13.2. Special IP listening addresses 
+</a></h2>
+<p>
+The addresses 0.0.0.0 and &#058;&#058;0 are treated specially. They are interpreted
+as &#147;all IPv4 interfaces&#148; and &#147;all IPv6 interfaces&#148;, respectively. In each
+case, Exim tells the TCP/IP stack to &#147;listen on all IPv<i>x</i> interfaces&#148;
+instead of setting up separate listening sockets for each interface. The
+default value of <tt>local&#095;interfaces</tt> is
+<pre>
+&nbsp;&nbsp;local_interfaces = 0.0.0.0
+</pre>
+</p>
+<p>
+when Exim is built without IPv6 support; otherwise it is:
+<pre>
+&nbsp;&nbsp;local_interfaces = &#060;; ::0 ; 0.0.0.0
+</pre>
+</p>
+<p>
+Thus, by default, Exim listens on all available interfaces, on the SMTP port.
+</p>
+<h2>
+<a name="SECT13.3" href="spec_toc.html#TOC136">
+13.3. Overriding local&#095;interfaces and daemon&#095;smtp&#095;ports
+</a></h2>
+<p>
+The <i>-oX</i> command line option can be used to override the values of
+<tt>daemon&#095;smtp&#095;ports</tt> and/or <tt>local&#095;interfaces</tt> for a particular daemon
+instance. Another way of doing this would be to use macros and the <i>-D</i>
+option. However, <i>-oX</i> can be used by any admin user, whereas modification of
+the runtime configuration by <i>-D</i> is allowed only when the caller is root or
+exim.
+</p>
+<p>
+The value of <i>-oX</i> is a list of items. The default colon separator can be
+changed in the usual way if required. If there are any items that do not
+contain dots or colons (that is, are not IP addresses), the value of
+<tt>daemon&#095;smtp&#095;ports</tt> is replaced by the list of those items. If there are any
+items that do contain dots or colons, the value of <tt>local&#095;interfaces</tt> is
+replaced by those items. Thus, for example,
+<pre>
+&nbsp;&nbsp;-oX 1225
+</pre>
+</p>
+<p>
+overrides <tt>daemon&#095;smtp&#095;ports</tt>, but leaves <tt>local&#095;interfaces</tt> unchanged,
+whereas
+<pre>
+&nbsp;&nbsp;-oX 192.168.34.5.1125
+</pre>
+</p>
+<p>
+overrides <tt>local&#095;interfaces</tt>, leaving <tt>daemon&#095;smtp&#095;ports</tt> unchanged.
+(However, since <tt>local&#095;interfaces</tt> now contains no items without ports, the
+value of <tt>daemon&#095;smtp&#095;ports</tt> is no longer relevant in this example.)
+</p>
+<h2>
+<a name="SECT13.4" href="spec_toc.html#TOC137">
+13.4. IPv6 address scopes
+</a></h2>
+<p>
+IPv6 addresses have &#147;scopes&#148;, and a host with multiple hardware interfaces
+can, in principle, have the same link-local IPv6 address on different
+interfaces. Thus, additional information is needed, over and above the IP
+address, to distinguish individual interfaces. A convention of using a
+percent sign followed by something (often the interface name) has been
+adopted in some cases, leading to addresses like this:
+<pre>
+&nbsp;&nbsp;3ffe:2101:12:1:a00:20ff:fe86:a061%eth0
+</pre>
+</p>
+<p>
+To accommodate this usage, a percent sign followed by an arbitrary string is
+allowed at the end of an IPv6 address. By default, Exim calls <i>getaddrinfo()</i>
+to convert a textual IPv6 address for actual use. This function recognizes the
+percent convention in operating systems that support it, and it processes the
+address appropriately. Unfortunately, some older libraries have problems with
+<i>getaddrinfo()</i>. If
+<pre>
+&nbsp;&nbsp;IPV6_USE_INET_PTON=yes
+</pre>
+</p>
+<p>
+is set in <i>Local/Makefile</i> (or an OS-dependent Makefile) when Exim is built,
+Exim uses <i>inet&#095;pton()</i> to convert a textual IPv6 address for actual use,
+instead of <i>getaddrinfo()</i>. (Before version 4.14, it always used this
+function.) Of course, this means that the additional functionality of
+<i>getaddrinfo()</i> &#150; recognizing scoped addresses &#150; is lost.
+</p>
+<h2>
+<a name="SECT13.5" href="spec_toc.html#TOC138">
+13.5. Examples of starting a listening daemon
+</a></h2>
+<p>
+The default case in an IPv6 environment is
+<pre>
+&nbsp;&nbsp;daemon_smtp_port = smtp
+&nbsp;&nbsp;local_interfaces = &#060;; ::0 ; 0.0.0.0
+</pre>
+</p>
+<p>
+This specifies listening on the smtp port on all IPv6 and IPv4 interfaces.
+Either one or two sockets may be used, depending on the characteristics of
+the TCP/IP stack. (This is complicated and messy; for more information,
+read the comments in the <i>daemon.c</i> source file.)
+</p>
+<p>
+To specify listening on ports 25 and 26 on all interfaces:
+<pre>
+&nbsp;&nbsp;daemon_smtp_ports = 25 : 26
+</pre>
+</p>
+<p>
+(leaving <tt>local&#095;interfaces</tt> at the default setting) or, more explicitly:
+<pre>
+&nbsp;&nbsp;local_interfaces = &#060;; ::0.25     ; ::0.26 \
+&nbsp;&nbsp;                      0.0.0.0.25 ; 0.0.0.0.26
+</pre>
+</p>
+<p>
+To listen on the default port on all IPv4 interfaces, and on port 26 on the
+IPv4 loopback address only:
+<pre>
+&nbsp;&nbsp;local_interfaces = 0.0.0.0 : 127.0.0.1.26
+</pre>
+</p>
+<p>
+To specify listening on the default port on specific interfaces only:
+<pre>
+&nbsp;&nbsp;local_interfaces = 192.168.34.67 : 192.168.34.67
+</pre>
+</p>
+<p>
+<b>Note</b>: such a setting excludes listening on the loopback interfaces.
+</p>
+<h2>
+<a name="SECT13.6" href="spec_toc.html#TOC139">
+13.6. Recognising the local host
+</a></h2>
+<p>
+The <tt>local&#095;interfaces</tt> option is also used when Exim needs to determine
+whether or not an IP address refers to the local host. That is, the IP
+addresses of all the interfaces on which a daemon is listening are always
+treated as local.
+</p>
+<p>
+For this usage, port numbers in <tt>local&#095;interfaces</tt> are ignored. If either of
+the items 0.0.0.0 or &#058;&#058;0 are encountered, Exim gets a complete list of
+available interfaces from the operating system, and extracts the relevant
+(that is, IPv4 or IPv6) addresses to use for checking.
+</p>
+<p>
+Some systems set up large numbers of virtual interfaces in order to provide
+many virtual web servers. In this situation, you may want to listen for
+email on only a few of the available interfaces, but nevertheless treat all
+interfaces as local when routing. You can do this by setting
+<tt>extra&#095;local&#095;interfaces</tt> to a list of IP addresses, possibly including the
+&#147;all&#148; wildcard values. These addresses are recognized as local, but are not
+used for listening. Consider this example:
+<pre>
+&nbsp;&nbsp;local_interfaces = &#060;; 127.0.0.1 ; ::1 ; \
+&nbsp;&nbsp;                      192.168.53.235 ; \
+&nbsp;&nbsp;                      3ffe:2101:12:1:a00:20ff:fe86:a061
+&nbsp;&nbsp;
+&nbsp;&nbsp;extra_local_interfaces = &#060;; ::0 ; 0.0.0.0
+</pre>
+</p>
+<p>
+The daemon listens on the loopback interfaces and just one IPv4 and one IPv6
+address, but all available interface addresses are treated as local when
+Exim is routing.
+</p>
+<p>
+In some environments the local host name may be in an MX list, but with an IP 
+address that is not assigned to any local interface. In other cases it may be 
+desirable to treat other host names as if they referred to the local host. Both
+these cases can be handled by setting the <tt>hosts&#095;treat&#095;as&#095;local</tt> option.
+This contains host names rather than IP addresses. When a host is referenced
+during routing, either via an MX record or directly, it is treated as the local
+host if its name matches <tt>hosts&#095;treat&#095;as&#095;local</tt>, or if any of its IP
+addresses match <tt>local&#095;interfaces</tt> or <tt>extra&#095;local&#095;interfaces</tt>.
+</p>
+<h2>
+<a name="SECT13.7" href="spec_toc.html#TOC140">
+13.7. Delivering to a remote host
+</a></h2>
+<p>
+Delivery to a remote host is handled by the smtp transport. By default, it
+allows the system's TCP/IP functions to choose which interface to use (if
+there is more than one) when connecting to a remote host. However, the
+<tt>interface</tt> option can be set to specify which interface is used. See the
+description of the smtp transport in chapter <a href="spec_30.html">30</a> for more details.
+<hr>
+</p>
+<font size=2>
+<a href="spec_12.html">Previous</a>&nbsp;&nbsp;<a href="spec_14.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

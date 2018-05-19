@@ -1,0 +1,733 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 6</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_5.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_7.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX538"></a>
+<a name="IX539"></a>
+<a name="IX540"></a>
+<h1>
+<a name="CHAP6" href="spec_toc.html#TOC55">
+6. The Exim run time configuration file
+</a></h1>
+<p>
+Exim uses a single run time configuration file that is read whenever an Exim
+binary is executed. Note that in normal operation, this happens frequently,
+because Exim is designed to operate in a distributed manner, without central 
+control.
+</p>
+<p>
+The name of the configuration file is compiled into the binary for security
+reasons, and is specified by the <font size=-1>CONFIGURE&#095;FILE</font> compilation option. In
+most configurations, this specifies a single file. However, it is permitted to
+give a colon-separated list of file names, in which case Exim uses the first
+existing file in the list.
+<a name="IX541"></a>
+<a name="IX542"></a>
+<a name="IX543"></a>
+<a name="IX544"></a>
+</p>
+<p>
+The run time configuration file must be owned by root or by the user that
+is specified at compile time by the <font size=-1>EXIM&#095;USER</font> option, 
+<font color=green>
+or by the user that is specified at compile time by the <font size=-1>CONFIGURE&#095;OWNER</font> 
+option (if set).
+</font>
+The configuration file must not be world-writeable or group-writeable, unless
+its group is the one specified at compile time by the <font size=-1>EXIM&#095;GROUP</font> option.
+</p>
+<p>
+<b>Warning</b>: In a conventional configuration, where the Exim binary is setuid 
+to root, anybody who is able to edit the run time configuration file has an 
+easy way to run commands as root. If you make your mail administrators members 
+of the Exim group, but do not trust them with root, make sure that the run time 
+configuration is not group writeable.
+</p>
+<p>
+A default configuration file, which will work correctly in simple situations,
+is provided in the file <i>src/configure.default</i>. 
+If <font size=-1>CONFIGURE&#095;FILE</font> defines just one file name, the installation process
+copies the default configuration to a new file of that name if it did not
+previously exist. If <font size=-1>CONFIGURE&#095;FILE</font> is a list, no default is automatically
+installed. Chapter <a href="spec_7.html">7</a> is a &#147;walk-through&#148; discussion of the
+default configuration.
+<a name="IX545"></a>
+<a name="IX546"></a>
+<a name="IX547"></a>
+</p>
+<p>
+If a syntax error is detected while reading the configuration file, Exim
+writes a message on the standard error, and exits with a non-zero return code.
+The message is also written to the panic log.
+</p>
+<a name="IX548"></a>
+<h2>
+<a name="SECT6.1" href="spec_toc.html#TOC56">
+6.1. Using a different configuration file
+</a></h2>
+<p>
+A one-off alternate configuration can be specified by the <i>-C</i> command line
+option, which may specify a single file or a list of files. However, when <i>-C</i>
+is used, Exim gives up its root privilege, unless called by root or the Exim
+user (or unless the argument for <i>-C</i> is identical to the built-in value from 
+<font size=-1>CONFIGURE&#095;FILE</font>). <i>-C</i> is useful mainly for checking the syntax of
+configuration files before installing them. No owner or group checks are done
+on a configuration file specified by <i>-C</i>.
+</p>
+<p>
+The privileged use of <i>-C</i> by the Exim user can be locked out by setting
+<font size=-1>ALT&#095;CONFIG&#095;ROOT&#095;ONLY</font> in <i>Local/Makefile</i> when building Exim. However,
+if you do this, you also lock out the possibility of testing a
+configuration using <i>-C</i> right through message reception and delivery, even if
+the caller is root. The reception works, but by that time, Exim is running as
+the Exim user, so when it re-execs to regain privilege for the delivery, the
+use of <i>-C</i> causes privilege to be lost. However, root can test reception and
+delivery using two separate commands (one to put a message on the queue, using 
+<i>-odq</i>, and another to do the delivery, using <i>-M</i>).
+</p>
+<p>
+If <font size=-1>ALT&#095;CONFIG&#095;PREFIX</font> is defined <i>in Local/Makefile</i>, it specifies a
+prefix string with which any file named in a <i>-C</i> command line option must
+start. In addition, the file name must not contain the sequence <tt>/../</tt>. There
+is no default setting for <font size=-1>ALT&#095;CONFIG&#095;PREFIX</font>; when it is unset, any file
+name can be used with <i>-C</i>.
+</p>
+<p>
+One-off changes to a configuration can be specified by the <i>-D</i> command line
+option, which defines and overrides values for macros used inside the 
+configuration file. However, like <i>-C</i>, the use of this option by a
+non-privileged user causes Exim to discard its root privilege.
+If <font size=-1>DISABLE&#095;D&#095;OPTION</font> is defined in <i>Local/Makefile</i>, the use of <i>-D</i> is
+completely disabled, and its use causes an immediate error exit.
+</p>
+<p>
+Some sites may wish to use the same Exim binary on different machines that
+share a file system, but to use different configuration files on each machine.
+If <font size=-1>CONFIGURE&#095;FILE&#095;USE&#095;NODE</font> is defined in <i>Local/Makefile</i>, Exim first
+looks for a file whose name is the configuration file name followed by a dot
+and the machine's node name, as obtained from the <i>uname()</i> function. If this
+file does not exist, the standard name is tried. This processing occurs for 
+each file name in the list given by <font size=-1>CONFIGURE&#095;FILE</font> or <i>-C</i>.
+</p>
+<p>
+In some esoteric situations different versions of Exim may be run under
+different effective uids and the <font size=-1>CONFIGURE&#095;FILE&#095;USE&#095;EUID</font> is defined to
+help with this. See the comments in <i>src/EDITME</i> for details.
+</p>
+<a name="IX549"></a>
+<a name="IX550"></a>
+<h2>
+<a name="SECT6.2" href="spec_toc.html#TOC57">
+6.2. Configuration file format
+</a></h2>
+<p>
+Exim's configuration file is divided into a number of different parts. General
+option settings must always appear at the start of the file. The other parts
+are all optional, and may appear in any order. Each part other than the first
+is introduced by the word &#147;begin&#148; followed by the name of the part. The
+optional parts are:
+</p>
+<ul>
+<li><p>
+<i>ACL</i>: Access control lists for controlling incoming SMTP mail.
+</p>
+</li>
+<li><a name="IX551"></a>
+<p>
+<i>authenticators</i>: Configuration settings for the authenticator drivers. These
+are concerned with the SMTP <font size=-1>AUTH</font> command (see chapter <a href="spec_33.html">33</a>).
+</p>
+</li>
+<li><p>
+<i>routers</i>: Configuration settings for the router drivers. Routers process
+addresses and determine how the message is to be delivered.
+</p>
+</li>
+<li><p>
+<i>transports</i>: Configuration settings for the transport drivers. Transports
+define mechanisms for copying messages to destinations.
+</p>
+</li>
+<li><p>
+<i>retry</i>: Retry rules, for use when a message cannot be immediately delivered.
+</p>
+</li>
+<li><p>
+<i>rewrite</i>: Global address rewriting rules, for use when a message arrives and
+when new addresses are generated during delivery.
+</p>
+</li>
+<li><p>
+<i>local&#095;scan</i>: Private options for the <i>local&#095;scan()</i> function. If you
+want to use this feature, you must set
+<pre>
+&nbsp;&nbsp;LOCAL_SCAN_HAS_OPTIONS=yes
+</pre>
+</p>
+<p>
+in <i>Local/Makefile</i> before building Exim. Full details of the 
+<i>local&#095;scan()</i> facility are given in chapter <a href="spec_39.html">39</a>.
+</p>
+</li>
+</ul>
+<p>
+Blank lines in the file, and lines starting with a &#035; character (ignoring
+leading white space) are treated as comments and are ignored. <b>Note</b>: a
+&#035; character other than at the beginning of a line is not treated specially,
+and does not introduce a comment.
+</p>
+<p>
+Any non-comment line can be continued by ending it with a backslash. Trailing
+white space after the backslash is ignored, and leading white space at the
+start of continuation lines is also ignored. 
+Comment lines beginning with &#035; (but not empty lines) may appear in the middle
+of a sequence of continuation lines.
+</p>
+<p>
+A convenient way to create a configuration file is to start from the
+default, which is supplied in <i>src/configure.default</i>, and add, delete, or
+change settings as required.
+</p>
+<p>
+The ACLs, retry rules, and rewriting rules have their own syntax which is
+described in chapters <a href="spec_38.html">38</a>, <a href="spec_32.html">32</a>, and <a href="spec_31.html">31</a>, respectively.
+The other parts of the configuration file have some syntactic items in common,
+and these are described below, from section <a href="spec_6.html#SECT6.6">6.6</a> onwards. Before that, the
+inclusion, macro, and conditional facilities are described.
+</p>
+<a name="IX552"></a>
+<a name="IX553"></a>
+<a name="IX554"></a>
+<a name="IX555"></a>
+<h2>
+<a name="SECT6.3" href="spec_toc.html#TOC58">
+6.3. File inclusions in the configuration file
+</a></h2>
+<p>
+You can include other files inside Exim's run time configuration file by
+using this syntax:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#046;include &#060;<em>file name</em>&#062;</tt><br>
+</p>
+<p>
+or
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#046;include&#095;if&#095;exists &#060;<em>file name</em>&#062;</tt><br>
+</p>
+<p>
+on a line by itself. Double quotes round the file name are optional. If you use 
+the first form, a configuration error occurs if the file does not exist; the 
+second form does nothing for non-existent files.
+</p>
+<p>
+Includes may be nested to any depth, but remember that Exim reads its
+configuration file often, so it is a good idea to keep them to a minimum.
+If you change the contents of an included file, you must HUP the daemon,
+because an included file is read only when the configuration itself is read.
+</p>
+<p>
+The processing of inclusions happens early, at a physical line level, so, like
+comment lines, an inclusion can be used in the middle of an option setting,
+for example:
+<pre>
+&nbsp;&nbsp;hosts_lookup = a.b.c \
+&nbsp;&nbsp;               .include /some/file
+</pre>
+</p>
+<p>
+Include processing happens 
+after 
+macro processing (see below). Its effect is to process the lines of the file as
+if they occurred inline where the inclusion appears.
+</p>
+<a name="IX556"></a>
+<a name="IX557"></a>
+<h2>
+<a name="SECT6.4" href="spec_toc.html#TOC59">
+6.4. Macros in the configuration file
+</a></h2>
+<p>
+If a line in the main part of the configuration (that is, before the first
+&#147;begin&#148; line) begins with an upper case letter, it is taken as a macro
+definition, and must be of the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#060;<em>name</em>&#062; = &#060;<em>rest of line</em>&#062;</tt><br>
+</p>
+<p>
+The name must consist of letters, digits, and underscores, and need not all be
+in upper case, though that is recommended. The rest of the line, including any
+continuations, is the replacement text, and has leading and trailing white
+space removed. Quotes are not removed. The replacement text can never end with
+a backslash character, but this doesn't seem to be a serious limitation.
+</p>
+<p>
+Once a macro is defined, all subsequent lines in the file (and any included
+files) are scanned for the macro name; if there are several macros, the line is
+scanned for each in turn, in the order in which they are defined. The
+replacement text is not re-scanned for the current macro, though it is scanned
+for subsequently defined macros. For this reason, a macro name may not contain
+the name of a previously defined macro as a substring. You could, for example,
+define
+<pre>
+&nbsp;&nbsp;ABCD_XYZ = &#060;&#060;something&#062;&#062;
+&nbsp;&nbsp;ABCD = &#060;&#060;something else&#062;&#062;
+</pre>
+</p>
+<p>
+but putting the definitions in the opposite order would provoke a configuration
+error.
+</p>
+<p>
+Macro expansion is applied to individual lines from the file, before checking
+for line continuation or file inclusion (see below). If a line consists solely
+of a macro name, and the expansion of the macro is empty, the line is ignored.
+A macro at the start of a line may turn the line into a comment line or a
+<tt>.include</tt> line.
+</p>
+<p>
+As an example of macro usage, consider a configuration where aliases are looked
+up in a MySQL database. It helps to keep the file less cluttered if long
+strings such as SQL statements are defined separately as macros, for example:
+<pre>
+&nbsp;&nbsp;ALIAS_QUERY = select mailbox from user where \
+&nbsp;&nbsp;              login=${quote_mysql:$local_part};
+</pre>
+</p>
+<p>
+This can then be used in a <b>redirect</b> router setting like this:
+<pre>
+&nbsp;&nbsp;data = ${lookup mysql{ALIAS_QUERY}}
+</pre>
+</p>
+<p>
+In earlier versions of Exim macros were sometimes used for domain, host, or
+address lists. In Exim 4 these are handled better by named lists &#150; see section
+<a href="spec_10.html#SECT10.5">10.5</a>.
+</p>
+<p>
+Macros in the configuration file can be overridden by the <i>-D</i> command line
+option, but Exim gives up its root privilege when <i>-D</i> is used, unless called
+by root or the Exim user.
+</p>
+<a name="IX558"></a>
+<a name="IX559"></a>
+<h2>
+<a name="SECT6.5" href="spec_toc.html#TOC60">
+6.5. Conditional skips in the configuration file
+</a></h2>
+<p>
+You can use the directives <tt>.ifdef</tt>, <tt>.ifndef</tt>, <tt>.elifdef</tt>,
+<tt>.elifndef</tt>, <tt>.else</tt>, and <tt>.endif</tt> to dynamically include or exclude 
+portions of the configuration file. The processing happens whenever the file is 
+read (that is, when an Exim binary starts to run). 
+</p>
+<p>
+The implementation is very simple. Instances of the first four directives must
+be followed by text that includes the names of one or macros. The condition
+that is tested is whether or not any macro substitution has taken place in the
+line. Thus:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#046;ifdef AAA</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>message&#095;size&#095;limit = 50M</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>&#046;else</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>message&#095;size&#095;limit = 100M</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>&#046;endif</tt><br>
+</p>
+<p>
+sets a message size limit of 50M if the macro <tt>AAA</tt> is defined, and 100M
+otherwise. If there is more than one macro named on the line, the condition
+is true if any of them are defined. That is, it is an &#147;or&#148; condition. To
+obtain an &#147;and&#148; condition, you need to use nested <tt>.ifdef</tt>s.
+</p>
+<p>
+Although you can use a macro expansion to generate one of these directives,
+it is not very useful, because the condition &#147;there was a macro substitution
+in this line&#148; will always be true.
+</p>
+<p>
+Text following <tt>.else</tt> and <tt>.endif</tt> is ignored, and can be used as comment
+to clarify complicated nestings.
+</p>
+<a name="IX560"></a>
+<a name="IX561"></a>
+<a name="IX562"></a>
+<h2>
+<a name="SECT6.6" href="spec_toc.html#TOC61">
+6.6. Common option syntax
+</a></h2>
+<p>
+For the main set of options, driver options, and <i>local&#095;scan()</i> options,
+each setting is on a line by itself, and starts with a name consisting of
+lower-case letters and underscores. Many options require a data value, and in
+these cases the name must be followed by an equals sign (with optional white
+space) and then the value. For example:
+<pre>
+&nbsp;&nbsp;qualify_domain = mydomain.example.com
+</pre>
+</p>
+<p>
+Some option settings may contain sensitive data, for example, passwords for
+accessing databases. To stop non-admin users from using the <i>-bP</i> command line
+option to read these values, you can precede the option settings with the word
+&#147;hide&#148;. For example:
+<pre>
+&nbsp;&nbsp;hide mysql_servers = localhost/users/admin/secret-password
+</pre>
+</p>
+<p>
+For non-admin users, such options are displayed like this:
+<pre>
+&nbsp;&nbsp;mysql_servers = &#060;value not displayable&#062;
+</pre>
+</p>
+<p>
+If &#147;hide&#148; is used on a driver option, it hides the value of that option on all
+instances of the same driver.
+</p>
+<p>
+The following sections describe the syntax used for the different data types
+that are found in option settings.
+</p>
+<a name="IX563"></a>
+<a name="IX564"></a>
+<h2>
+<a name="SECT6.7" href="spec_toc.html#TOC62">
+6.7. Boolean options
+</a></h2>
+<p>
+Options whose type is given as boolean are on/off switches. There are two
+different ways of specifying such options: with and without a data value. If
+the option name is specified on its own without data, the switch is turned on;
+if it is preceded by &#147;no&#095;&#148; or &#147;not&#095;&#148; the switch is turned off. However,
+boolean options may optionally be followed by an equals sign and one of the
+words &#147;true&#148;, &#147;false&#148;, &#147;yes&#148;, or &#147;no&#148;, as an alternative syntax. For example,
+the following two settings have exactly the same effect:
+<pre>
+&nbsp;&nbsp;queue_only
+&nbsp;&nbsp;queue_only = true
+</pre>
+</p>
+<p>
+The following two lines also have the same (opposite) effect:
+<pre>
+&nbsp;&nbsp;no_queue_only
+&nbsp;&nbsp;queue_only = false
+</pre>
+</p>
+<p>
+You can use whichever syntax you prefer.
+</p>
+<a name="IX565"></a>
+<a name="IX566"></a>
+<h2>
+<a name="SECT6.8" href="spec_toc.html#TOC63">
+6.8. Integer values
+</a></h2>
+<p>
+If an integer data item starts with the characters &#147;0x&#148;, the remainder of it
+is interpreted as a hexadecimal number. Otherwise, it is treated as octal if it
+starts with the digit 0, and decimal if not. If an integer value is followed by
+the letter K, it is multiplied by 1024; if it is followed by the letter M, it
+is multiplied by 1024x1024.
+</p>
+<p>
+When the values of integer option settings are output, values which are an
+exact multiple of 1024 or 1024x1024 are 
+sometimes, but not always,
+printed using the letters K and M. The printing style is independent of the
+actual input format that was used.
+</p>
+<a name="IX567"></a>
+<a name="IX568"></a>
+<h2>
+<a name="SECT6.9" href="spec_toc.html#TOC64">
+6.9. Octal integer values
+</a></h2>
+<p>
+The value of an option specified as an octal integer is always interpreted in
+octal, whether or not it starts with the digit zero. Such options are always
+output in octal.
+</p>
+<a name="IX569"></a>
+<a name="IX570"></a>
+<h2>
+<a name="SECT6.10" href="spec_toc.html#TOC65">
+6.10. Fixed point number values
+</a></h2>
+<p>
+A fixed point number consists of a decimal integer, optionally followed by a
+decimal point and up to three further digits.
+</p>
+<a name="IX571"></a>
+<a name="IX572"></a>
+<h2>
+<a name="SECT6.11" href="spec_toc.html#TOC66">
+6.11. Time interval values
+</a></h2>
+<p>
+A time interval is specified as a sequence of numbers, each followed by one of
+the following letters, with no intervening white space:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>s</tt>&nbsp;&nbsp;</td><td>seconds</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>m</tt>&nbsp;&nbsp;</td><td>minutes</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>h</tt>&nbsp;&nbsp;</td><td>hours</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>d</tt>&nbsp;&nbsp;</td><td>days</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>w</tt>&nbsp;&nbsp;</td><td>weeks</td></tr>
+</table>
+</p>
+<p>
+For example, &#147;3h50m&#148; specifies 3 hours and 50 minutes. The values of time
+intervals are output in the same format.
+Exim does not restrict the values; it is perfectly acceptable, for example, to 
+specify &#147;90m&#148; instead of &#147;1h30m&#148;.
+</p>
+<a name="IX573"></a>
+<a name="IX574"></a>
+<h2>
+<a name="SECT6.12" href="spec_toc.html#TOC67">
+6.12. String values
+</a></h2>
+<p>
+If a string data item does not start with a double-quote character, it is taken
+as consisting of the remainder of the line plus any continuation lines,
+starting at the first character after any leading white space, with trailing
+white space characters removed, and with no interpretation of the characters in
+the string. Because Exim removes comment lines (those beginning with &#035;) at an
+early stage, they can appear in the middle of a multi-line string. The
+following settings are therefore equivalent:
+<pre>
+&nbsp;&nbsp;trusted_users = uucp:mail
+&nbsp;&nbsp;
+&nbsp;&nbsp;trusted_users = uucp:\
+&nbsp;&nbsp;                # This comment line is ignored
+&nbsp;&nbsp;                mail
+</pre>
+<a name="IX575"></a>
+<a name="IX576"></a>
+</p>
+<p>
+If a string does start with a double-quote, it must end with a closing
+double-quote, and any backslash characters other than those used for line
+continuation are interpreted as escape characters, as follows:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>&#092;&#092;&nbsp;&nbsp;</tt></td><td>single backslash</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&#092;n&nbsp;&nbsp;</tt></td><td>newline</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&#092;r&nbsp;&nbsp;</tt></td><td>carriage return</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&#092;t&nbsp;&nbsp;</tt></td><td>tab</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&#092;&#060;<em>octal digits</em>&#062;&nbsp;&nbsp;</tt></td><td>up to 3 octal digits specify one character</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&#092;x&#060;<em>hex digits</em>&#062;&nbsp;&nbsp;</tt></td><td>up to 2 hexadecimal digits specify one character</td></tr>
+</table>
+</p>
+<p>
+If a backslash is followed by some other character, including a double-quote
+character, that character replaces the pair.
+</p>
+<p>
+Quoting is necessary only if you want to make use of the backslash escapes to
+insert special characters, or if you need to specify a value with leading or
+trailing spaces. These cases are rare, so quoting is almost never needed in
+current versions of Exim. In versions of Exim before 3.14, quoting was required
+in order to continue lines, so you may come across older configuration files
+and examples that apparently quote unnecessarily.
+</p>
+<a name="IX577"></a>
+<a name="IX578"></a>
+<h2>
+<a name="SECT6.13" href="spec_toc.html#TOC68">
+6.13. Expanded strings
+</a></h2>
+<p>
+Some strings in the configuration file are subjected to <i>string expansion</i>,
+by which means various parts of the string may be changed according to the
+circumstances (see chapter <a href="spec_11.html">11</a>). The input syntax for such strings is
+as just described; in particular, the handling of backslashes in quoted strings
+is done as part of the input process, before expansion takes place. However,
+backslash is also an escape character for the expander, so any backslashes that
+are required for that reason must be doubled if they are within a quoted
+configuration string.
+</p>
+<a name="IX579"></a>
+<a name="IX580"></a>
+<a name="IX581"></a>
+<a name="IX582"></a>
+<h2>
+<a name="SECT6.14" href="spec_toc.html#TOC69">
+6.14. User and group names
+</a></h2>
+<p>
+User and group names are specified as strings, using the syntax described
+above, but the strings are interpreted specially. A user or group name must
+either consist entirely of digits, or be a name that can be looked up using the
+<i>getpwnam()</i> or <i>getgrnam()</i> function, as appropriate.
+</p>
+<a name="IX583"></a>
+<a name="IX584"></a>
+<a name="IX585"></a>
+<h2>
+<a name="SECT6.15" href="spec_toc.html#TOC70">
+6.15. List construction
+</a></h2>
+<p>
+The data for some configuration options is a colon-separated list of items. 
+Many of these options are shown with type &#147;string list&#148; in the descriptions
+later in this document. Others are listed as &#147;domain list&#148;, &#147;host list&#148;, 
+&#147;address list&#148;, or &#147;local part list&#148;. Syntactically, they are all the same; 
+however, those other than &#147;string list&#148; are subject to particular kinds of
+interpretation, as described in chapter <a href="spec_10.html">10</a>.
+</p>
+<p>
+In all these cases, the entire list is treated as a single string as far as the
+input syntax is concerned. The <tt>trusted&#095;users</tt> setting in section
+<a href="spec_6.html#SECT6.12">6.12</a> above is an example. If a colon is actually needed in an item in
+a list, it must be entered as two colons. Leading and trailing white space on
+each item in a list is ignored. This makes it possible to include items that
+start with a colon, and in particular, certain forms of IPv6 address. For
+example, the list
+<pre>
+&nbsp;&nbsp;local_interfaces = 127.0.0.1 : ::::1
+</pre>
+</p>
+<p>
+<a name="IX586"></a>
+<a name="IX587"></a>
+contains two IP addresses, the IPv4 address 127.0.0.1 and the IPv6 address
+&#058;&#058;1. IPv6 addresses are going to become more and more common as the new
+protocol gets more widely deployed.
+Doubling their colons is an unwelcome chore, so a mechanism was introduced to
+allow the separator character to be changed. If a list begins with a left angle
+bracket, followed by any punctuation character, that character is used instead
+of colon as the list separator. For example, the list above can be rewritten to
+use a semicolon separator like this:
+<pre>
+&nbsp;&nbsp;local_interfaces = &#060;; 127.0.0.1 ; ::1
+</pre>
+</p>
+<p>
+This facility applies to all lists, with the exception of the list in
+<tt>log&#095;file&#095;path</tt>. It is recommended that the use of non-colon separators be
+confined to circumstances where they really are needed.
+</p>
+<a name="IX588"></a>
+<h2>
+<a name="SECT6.16" href="spec_toc.html#TOC71">
+6.16. Format of driver configurations
+</a></h2>
+<p>
+There are separate parts in the configuration for defining routers, transports,
+and authenticators. In each part, you are defining a number of driver
+instances, each with its own set of options. Each driver instance is defined by
+a sequence of lines like this:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#060;<em>instance name</em>&#062;:</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>  &#060;<em>option</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>  ...</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>  &#060;<em>option</em>&#062;</tt><br>
+</p>
+<p>
+In the following example, the instance name is <b>localuser</b>, and it is
+followed by three options settings:
+<pre>
+&nbsp;&nbsp;localuser:
+&nbsp;&nbsp;  driver = accept
+&nbsp;&nbsp;  check_local_user
+&nbsp;&nbsp;  transport = local_delivery
+</pre>
+</p>
+<p>
+For each driver instance, you specify which Exim code module it uses &#150; by the 
+setting of the <tt>driver</tt> option &#150; and (optionally) some configuration settings.
+For example, in the case of transports, if you want a transport to deliver with
+SMTP you would use the <b>smtp</b> driver; if you want to deliver to a local file
+you would use the <b>appendfile</b> driver. Each of the drivers is described in
+detail in its own separate chapter later in this manual.
+</p>
+<p>
+You can have several routers, transports, or authenticators that are based on
+the same underlying driver (each must have a different name).
+</p>
+<p>
+The order in which routers are defined is important, because addresses are
+passed to individual routers one by one, in order. The order in which
+transports are defined does not matter at all. The order in which
+authenticators are defined is used only when Exim, as a client, is searching
+them to find one that matches an authentication mechanism offered by the
+server.
+<a name="IX589"></a>
+<a name="IX590"></a>
+</p>
+<p>
+<a name="IX591"></a>
+Within a driver instance definition, there are two kinds of option:
+<em>generic</em> and <em>private</em>. The generic options are those that apply to all
+drivers of the same type (that is, all routers, all transports or all
+authenticators).
+The <tt>driver</tt> option is a generic option that must appear in every definition.
+The private options are special for each driver, and none need appear, because
+they all have default values.
+</p>
+<p>
+The options may appear in any order, except that the <tt>driver</tt> option must
+precede any private options, since these depend on the particular driver. For
+this reason, it is recommended that <tt>driver</tt> always be the first option.
+</p>
+<p>
+Driver instance names, which are used for reference in log entries and
+elsewhere, can be any sequence of letters, digits, and underscores (starting
+with a letter) and must be unique among drivers of the same type. A router and
+a transport (for example) can each have the same name, but no two router
+instances can have the same name. The name of a driver instance should not be
+confused with the name of the underlying driver module. For example, the
+configuration lines:
+<pre>
+&nbsp;&nbsp;remote_smtp:
+&nbsp;&nbsp;  driver = smtp
+</pre>
+</p>
+<p>
+create an instance of the <b>smtp</b> transport driver whose name is
+<b>remote&#095;smtp</b>. The same driver code can be used more than once, with
+different instance names and different option settings each time. A second
+instance of the <b>smtp</b> transport, with different options, might be defined
+thus:
+<pre>
+&nbsp;&nbsp;special_smtp:
+&nbsp;&nbsp;  driver = smtp
+&nbsp;&nbsp;  port = 1234
+&nbsp;&nbsp;  command_timeout = 10s
+</pre>
+</p>
+<p>
+The names <b>remote&#095;smtp</b> and <b>special&#095;smtp</b> would be used to reference
+these transport instances from routers, and these names would appear in log
+lines.
+</p>
+<p>
+Comment lines may be present in the middle of driver specifications. The full
+list of option settings for any particular driver instance, including all the
+defaulted values, can be extracted by making use of the <i>-bP</i> command line
+option.
+<hr>
+</p>
+<font size=2>
+<a href="spec_5.html">Previous</a>&nbsp;&nbsp;<a href="spec_7.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

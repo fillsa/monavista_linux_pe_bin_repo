@@ -1,0 +1,881 @@
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5'
+set -e; for i in src/util src/global src/dns src/master src/postfix src/smtpstone src/sendmail src/error src/pickup src/cleanup src/smtpd src/local src/lmtp src/trivial-rewrite src/qmgr src/oqmgr src/smtp src/bounce src/pipe src/showq src/postalias src/postcat src/postconf src/postdrop src/postkick src/postlock src/postlog src/postmap src/postqueue src/postsuper src/qmqpd src/spawn src/flush src/verify src/virtual src/proxymap; do \
+ (set -e; echo "[$i]"; cd $i; make "CC=arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>'" update MAKELEVEL=) || exit 1; \
+done
+[src/util]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/util'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c alldig.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c argv.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c argv_split.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c attr_print0.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c attr_print64.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c attr_scan0.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c attr_scan64.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c base64_code.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c basename.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c binhash.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c chroot_uid.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c clean_env.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c close_on_exec.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c concatenate.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c ctable.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_alloc.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_db.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_dbm.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_debug.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_env.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_cidr.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_ht.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_ni.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_nis.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_nisplus.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_open.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_pcre.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_regexp.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_static.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_tcp.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dict_unix.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c dir_forest.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c doze.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c duplex_pipe.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c environ.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c events.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c exec_command.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c fifo_listen.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c fifo_trigger.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c file_limit.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c find_inet.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c fsspace.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c fullname.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c get_domainname.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c get_hostname.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c hex_quote.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c host_port.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c htable.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c inet_addr_host.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c inet_addr_list.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c inet_addr_local.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c inet_connect.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c inet_listen.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c inet_trigger.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c inet_util.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c line_wrap.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c lowercase.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c lstat_as.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c mac_expand.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c mac_parse.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c make_dirs.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c match_list.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c match_ops.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c msg.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c msg_output.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c msg_syslog.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c msg_vstream.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c mvect.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c myflock.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c mymalloc.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c myrand.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c mystrtok.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c name_mask.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c netstring.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c non_blocking.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c nvtable.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c open_as.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c open_limit.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c open_lock.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c peekfd.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c percentm.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c posix_signals.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c printable.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c rand_sleep.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c read_wait.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c readable.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c readlline.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c ring.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c safe_getenv.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c safe_open.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c sane_accept.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c sane_link.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c sane_rename.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c sane_socketpair.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c sane_time.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c scan_dir.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c set_eugid.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c set_ugid.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c sigdelay.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c skipblanks.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c spawn_command.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c split_at.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c split_nameval.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c stat_as.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c stream_connect.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c stream_listen.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c stream_trigger.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c sys_compat.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c timed_connect.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c timed_read.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c timed_wait.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c timed_write.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c translit.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c trimblanks.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c unescape.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c unix_connect.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c unix_listen.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c unix_trigger.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c unsafe.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c username.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c valid_hostname.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c vbuf.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c vbuf_print.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c vstream.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c vstream_popen.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c vstring.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c vstring_vstream.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c watchdog.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c writable.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c write_buf.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c write_wait.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c auto_clnt.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c attr_clnt.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c attr_scan_plain.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c attr_print_plain.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c sane_connect.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c neuter.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c name_code.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -DLINUX2 -c uppercase.c
+arm_v5t_le-ar rv libutil.a alldig.o argv.o argv_split.o attr_print0.o attr_print64.o attr_scan0.o attr_scan64.o base64_code.o basename.o binhash.o chroot_uid.o clean_env.o close_on_exec.o concatenate.o ctable.o dict.o dict_alloc.o dict_db.o dict_dbm.o dict_debug.o dict_env.o dict_cidr.o dict_ht.o dict_ni.o dict_nis.o dict_nisplus.o dict_open.o dict_pcre.o dict_regexp.o dict_static.o dict_tcp.o dict_unix.o dir_forest.o doze.o duplex_pipe.o environ.o events.o exec_command.o fifo_listen.o fifo_trigger.o file_limit.o find_inet.o fsspace.o fullname.o get_domainname.o get_hostname.o hex_quote.o host_port.o htable.o inet_addr_host.o inet_addr_list.o inet_addr_local.o inet_connect.o inet_listen.o inet_trigger.o inet_util.o line_wrap.o lowercase.o lstat_as.o mac_expand.o mac_parse.o make_dirs.o match_list.o match_ops.o msg.o msg_output.o msg_syslog.o msg_vstream.o mvect.o myflock.o mymalloc.o myrand.o mystrtok.o name_mask.o netstring.o non_blocking.o nvtable.o open_as.o open_limit.o open_lock.o peekfd.o percentm.o posix_signals.o printable.o rand_sleep.o read_wait.o readable.o readlline.o ring.o safe_getenv.o safe_open.o sane_accept.o sane_link.o sane_rename.o sane_socketpair.o sane_time.o scan_dir.o set_eugid.o set_ugid.o sigdelay.o skipblanks.o spawn_command.o split_at.o split_nameval.o stat_as.o stream_connect.o stream_listen.o stream_trigger.o sys_compat.o timed_connect.o timed_read.o timed_wait.o timed_write.o translit.o trimblanks.o unescape.o unix_connect.o unix_listen.o unix_trigger.o unsafe.o username.o valid_hostname.o vbuf.o vbuf_print.o vstream.o vstream_popen.o vstring.o vstring_vstream.o watchdog.o writable.o write_buf.o write_wait.o auto_clnt.o attr_clnt.o attr_scan_plain.o attr_print_plain.o sane_connect.o neuter.o name_code.o uppercase.o
+a - alldig.o
+a - argv.o
+a - argv_split.o
+a - attr_print0.o
+a - attr_print64.o
+a - attr_scan0.o
+a - attr_scan64.o
+a - base64_code.o
+a - basename.o
+a - binhash.o
+a - chroot_uid.o
+a - clean_env.o
+a - close_on_exec.o
+a - concatenate.o
+a - ctable.o
+a - dict.o
+a - dict_alloc.o
+a - dict_db.o
+a - dict_dbm.o
+a - dict_debug.o
+a - dict_env.o
+a - dict_cidr.o
+a - dict_ht.o
+a - dict_ni.o
+a - dict_nis.o
+a - dict_nisplus.o
+a - dict_open.o
+a - dict_pcre.o
+a - dict_regexp.o
+a - dict_static.o
+a - dict_tcp.o
+a - dict_unix.o
+a - dir_forest.o
+a - doze.o
+a - duplex_pipe.o
+a - environ.o
+a - events.o
+a - exec_command.o
+a - fifo_listen.o
+a - fifo_trigger.o
+a - file_limit.o
+a - find_inet.o
+a - fsspace.o
+a - fullname.o
+a - get_domainname.o
+a - get_hostname.o
+a - hex_quote.o
+a - host_port.o
+a - htable.o
+a - inet_addr_host.o
+a - inet_addr_list.o
+a - inet_addr_local.o
+a - inet_connect.o
+a - inet_listen.o
+a - inet_trigger.o
+a - inet_util.o
+a - line_wrap.o
+a - lowercase.o
+a - lstat_as.o
+a - mac_expand.o
+a - mac_parse.o
+a - make_dirs.o
+a - match_list.o
+a - match_ops.o
+a - msg.o
+a - msg_output.o
+a - msg_syslog.o
+a - msg_vstream.o
+a - mvect.o
+a - myflock.o
+a - mymalloc.o
+a - myrand.o
+a - mystrtok.o
+a - name_mask.o
+a - netstring.o
+a - non_blocking.o
+a - nvtable.o
+a - open_as.o
+a - open_limit.o
+a - open_lock.o
+a - peekfd.o
+a - percentm.o
+a - posix_signals.o
+a - printable.o
+a - rand_sleep.o
+a - read_wait.o
+a - readable.o
+a - readlline.o
+a - ring.o
+a - safe_getenv.o
+a - safe_open.o
+a - sane_accept.o
+a - sane_link.o
+a - sane_rename.o
+a - sane_socketpair.o
+a - sane_time.o
+a - scan_dir.o
+a - set_eugid.o
+a - set_ugid.o
+a - sigdelay.o
+a - skipblanks.o
+a - spawn_command.o
+a - split_at.o
+a - split_nameval.o
+a - stat_as.o
+a - stream_connect.o
+a - stream_listen.o
+a - stream_trigger.o
+a - sys_compat.o
+a - timed_connect.o
+a - timed_read.o
+a - timed_wait.o
+a - timed_write.o
+a - translit.o
+a - trimblanks.o
+a - unescape.o
+a - unix_connect.o
+a - unix_listen.o
+a - unix_trigger.o
+a - unsafe.o
+a - username.o
+a - valid_hostname.o
+a - vbuf.o
+a - vbuf_print.o
+a - vstream.o
+a - vstream_popen.o
+a - vstring.o
+a - vstring_vstream.o
+a - watchdog.o
+a - writable.o
+a - write_buf.o
+a - write_wait.o
+a - auto_clnt.o
+a - attr_clnt.o
+a - attr_scan_plain.o
+a - attr_print_plain.o
+a - sane_connect.o
+a - neuter.o
+a - name_code.o
+a - uppercase.o
+arm_v5t_le-ranlib libutil.a
+cp libutil.a ../../lib
+arm_v5t_le-ranlib ../../lib/libutil.a
+for i in argv.h attr.h base64_code.h binhash.h chroot_uid.h clean_env.h connect.h ctable.h dict.h dict_db.h dict_dbm.h dict_env.h dict_cidr.h dict_ht.h dict_ni.h dict_nis.h dict_nisplus.h dict_pcre.h dict_regexp.h dict_static.h dict_tcp.h dict_unix.h dir_forest.h events.h exec_command.h find_inet.h fsspace.h fullname.h get_domainname.h get_hostname.h hex_quote.h host_port.h htable.h inet_addr_host.h inet_addr_list.h inet_addr_local.h inet_util.h iostuff.h line_wrap.h listen.h lstat_as.h mac_expand.h mac_parse.h make_dirs.h match_list.h match_ops.h msg.h msg_output.h msg_syslog.h msg_vstream.h mvect.h myflock.h mymalloc.h myrand.h name_mask.h netstring.h nvtable.h open_as.h open_lock.h percentm.h posix_signals.h readlline.h ring.h safe.h safe_open.h sane_accept.h sane_fsops.h sane_socketpair.h sane_time.h scan_dir.h set_eugid.h set_ugid.h sigdelay.h spawn_command.h split_at.h stat_as.h stringops.h sys_defs.h timed_connect.h timed_wait.h trigger.h username.h valid_hostname.h vbuf.h vbuf_print.h vstream.h vstring.h vstring_vstream.h watchdog.h auto_clnt.h attr_clnt.h sane_connect.h name_code.h; \
+do \
+  cmp -s $i ../../include/$i 2>/dev/null || cp $i ../../include; \
+done
+cd ../../include; chmod 644 argv.h attr.h base64_code.h binhash.h chroot_uid.h clean_env.h connect.h ctable.h dict.h dict_db.h dict_dbm.h dict_env.h dict_cidr.h dict_ht.h dict_ni.h dict_nis.h dict_nisplus.h dict_pcre.h dict_regexp.h dict_static.h dict_tcp.h dict_unix.h dir_forest.h events.h exec_command.h find_inet.h fsspace.h fullname.h get_domainname.h get_hostname.h hex_quote.h host_port.h htable.h inet_addr_host.h inet_addr_list.h inet_addr_local.h inet_util.h iostuff.h line_wrap.h listen.h lstat_as.h mac_expand.h mac_parse.h make_dirs.h match_list.h match_ops.h msg.h msg_output.h msg_syslog.h msg_vstream.h mvect.h myflock.h mymalloc.h myrand.h name_mask.h netstring.h nvtable.h open_as.h open_lock.h percentm.h posix_signals.h readlline.h ring.h safe.h safe_open.h sane_accept.h sane_fsops.h sane_socketpair.h sane_time.h scan_dir.h set_eugid.h set_ugid.h sigdelay.h spawn_command.h split_at.h stat_as.h stringops.h sys_defs.h timed_connect.h timed_wait.h trigger.h username.h valid_hostname.h vbuf.h vbuf_print.h vstream.h vstring.h vstring_vstream.h watchdog.h auto_clnt.h attr_clnt.h sane_connect.h name_code.h
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/util'
+[src/global]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/global'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c abounce.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c been_here.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c bounce.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c bounce_log.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c canon_addr.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cfg_parser.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup_strerror.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup_strflags.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c clnt_stream.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c debug_peer.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c debug_process.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c defer.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c deliver_completed.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c deliver_flock.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c deliver_pass.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c deliver_request.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c dict_ldap.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c dict_mysql.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c dict_pgsql.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c dict_proxy.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c domain_list.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c dot_lockfile.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c dot_lockfile_as.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c ext_prop.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c file_id.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c flush_clnt.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c header_opts.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c header_token.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c hold_message.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c input_transp.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c is_header.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c log_adhoc.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_addr.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_addr_crunch.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_addr_find.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_addr_map.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_command_client.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_command_server.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_conf.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_conf_bool.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_conf_int.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_conf_raw.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_conf_str.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_conf_time.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_connect.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_copy.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_date.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_dict.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_error.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_flush.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_open_ok.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_params.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_pathname.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_queue.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_run.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_scan_dir.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_stream.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_task.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_trigger.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c maps.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mark_corrupt.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c match_parent_style.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mbox_conf.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mbox_open.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mime_state.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mkmap_db.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mkmap_dbm.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mkmap_open.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mynetworks.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mypwd.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c namadr_list.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c off_cvt.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c opened.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c own_inet_addr.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c pipe_command.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c post_mail.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c quote_821_local.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c quote_822_local.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c rec_streamlf.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c rec_type.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c recipient_list.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c record.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c remove.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c resolve_clnt.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c resolve_local.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c rewrite_clnt.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c sent.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtp_stream.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c split_addr.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c string_list.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c strip_addr.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c sys_exits.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c timed_ipc.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c tok822_find.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c tok822_node.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c tok822_parse.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c tok822_resolve.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c tok822_rewrite.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c tok822_tree.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c trace.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c verify.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c verify_clnt.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c verp_sender.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c virtual8_maps.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c xtext.c
+arm_v5t_le-ar rv libglobal.a abounce.o been_here.o bounce.o bounce_log.o canon_addr.o cfg_parser.o cleanup_strerror.o cleanup_strflags.o clnt_stream.o debug_peer.o debug_process.o defer.o deliver_completed.o deliver_flock.o deliver_pass.o deliver_request.o dict_ldap.o dict_mysql.o dict_pgsql.o dict_proxy.o domain_list.o dot_lockfile.o dot_lockfile_as.o ext_prop.o file_id.o flush_clnt.o header_opts.o header_token.o hold_message.o input_transp.o is_header.o log_adhoc.o mail_addr.o mail_addr_crunch.o mail_addr_find.o mail_addr_map.o mail_command_client.o mail_command_server.o mail_conf.o mail_conf_bool.o mail_conf_int.o mail_conf_raw.o mail_conf_str.o mail_conf_time.o mail_connect.o mail_copy.o mail_date.o mail_dict.o mail_error.o mail_flush.o mail_open_ok.o mail_params.o mail_pathname.o mail_queue.o mail_run.o mail_scan_dir.o mail_stream.o mail_task.o mail_trigger.o maps.o mark_corrupt.o match_parent_style.o mbox_conf.o mbox_open.o mime_state.o mkmap_db.o mkmap_dbm.o mkmap_open.o mynetworks.o mypwd.o namadr_list.o off_cvt.o opened.o own_inet_addr.o pipe_command.o post_mail.o quote_821_local.o quote_822_local.o rec_streamlf.o rec_type.o recipient_list.o record.o remove.o resolve_clnt.o resolve_local.o rewrite_clnt.o sent.o smtp_stream.o split_addr.o string_list.o strip_addr.o sys_exits.o timed_ipc.o tok822_find.o tok822_node.o tok822_parse.o tok822_resolve.o tok822_rewrite.o tok822_tree.o trace.o verify.o verify_clnt.o verp_sender.o virtual8_maps.o xtext.o
+a - abounce.o
+a - been_here.o
+a - bounce.o
+a - bounce_log.o
+a - canon_addr.o
+a - cfg_parser.o
+a - cleanup_strerror.o
+a - cleanup_strflags.o
+a - clnt_stream.o
+a - debug_peer.o
+a - debug_process.o
+a - defer.o
+a - deliver_completed.o
+a - deliver_flock.o
+a - deliver_pass.o
+a - deliver_request.o
+a - dict_ldap.o
+a - dict_mysql.o
+a - dict_pgsql.o
+a - dict_proxy.o
+a - domain_list.o
+a - dot_lockfile.o
+a - dot_lockfile_as.o
+a - ext_prop.o
+a - file_id.o
+a - flush_clnt.o
+a - header_opts.o
+a - header_token.o
+a - hold_message.o
+a - input_transp.o
+a - is_header.o
+a - log_adhoc.o
+a - mail_addr.o
+a - mail_addr_crunch.o
+a - mail_addr_find.o
+a - mail_addr_map.o
+a - mail_command_client.o
+a - mail_command_server.o
+a - mail_conf.o
+a - mail_conf_bool.o
+a - mail_conf_int.o
+a - mail_conf_raw.o
+a - mail_conf_str.o
+a - mail_conf_time.o
+a - mail_connect.o
+a - mail_copy.o
+a - mail_date.o
+a - mail_dict.o
+a - mail_error.o
+a - mail_flush.o
+a - mail_open_ok.o
+a - mail_params.o
+a - mail_pathname.o
+a - mail_queue.o
+a - mail_run.o
+a - mail_scan_dir.o
+a - mail_stream.o
+a - mail_task.o
+a - mail_trigger.o
+a - maps.o
+a - mark_corrupt.o
+a - match_parent_style.o
+a - mbox_conf.o
+a - mbox_open.o
+a - mime_state.o
+a - mkmap_db.o
+a - mkmap_dbm.o
+a - mkmap_open.o
+a - mynetworks.o
+a - mypwd.o
+a - namadr_list.o
+a - off_cvt.o
+a - opened.o
+a - own_inet_addr.o
+a - pipe_command.o
+a - post_mail.o
+a - quote_821_local.o
+a - quote_822_local.o
+a - rec_streamlf.o
+a - rec_type.o
+a - recipient_list.o
+a - record.o
+a - remove.o
+a - resolve_clnt.o
+a - resolve_local.o
+a - rewrite_clnt.o
+a - sent.o
+a - smtp_stream.o
+a - split_addr.o
+a - string_list.o
+a - strip_addr.o
+a - sys_exits.o
+a - timed_ipc.o
+a - tok822_find.o
+a - tok822_node.o
+a - tok822_parse.o
+a - tok822_resolve.o
+a - tok822_rewrite.o
+a - tok822_tree.o
+a - trace.o
+a - verify.o
+a - verify_clnt.o
+a - verp_sender.o
+a - virtual8_maps.o
+a - xtext.o
+arm_v5t_le-ranlib libglobal.a
+cp libglobal.a ../../lib
+arm_v5t_le-ranlib ../../lib/libglobal.a
+for i in abounce.h been_here.h bounce.h bounce_log.h canon_addr.h cfg_parser.h cleanup_user.h clnt_stream.h config.h debug_peer.h debug_process.h defer.h deliver_completed.h deliver_flock.h deliver_pass.h deliver_request.h dict_ldap.h dict_mysql.h dict_pgsql.h dict_proxy.h domain_list.h dot_lockfile.h dot_lockfile_as.h ext_prop.h file_id.h flush_clnt.h header_opts.h header_token.h hold_message.h input_transp.h is_header.h lex_822.h log_adhoc.h mail_addr.h mail_addr_crunch.h mail_addr_find.h mail_addr_map.h mail_conf.h mail_copy.h mail_date.h mail_dict.h mail_error.h mail_flush.h mail_open_ok.h mail_params.h mail_proto.h mail_queue.h mail_run.h mail_scan_dir.h mail_stream.h mail_task.h mail_version.h maps.h mark_corrupt.h match_parent_style.h mbox_conf.h mbox_open.h mime_state.h mkmap.h mynetworks.h mypwd.h namadr_list.h off_cvt.h opened.h own_inet_addr.h pipe_command.h post_mail.h qmgr_user.h qmqp_proto.h quote_821_local.h quote_822_local.h quote_flags.h rec_streamlf.h rec_type.h recipient_list.h record.h resolve_clnt.h resolve_local.h rewrite_clnt.h sent.h smtp_stream.h split_addr.h string_list.h strip_addr.h sys_exits.h timed_ipc.h tok822.h trace.h verify.h verify_clnt.h verp_sender.h virtual8_maps.h xtext.h; \
+do \
+  cmp -s $i ../../include/$i 2>/dev/null || cp $i ../../include; \
+done
+cd ../../include; chmod 644 abounce.h been_here.h bounce.h bounce_log.h canon_addr.h cfg_parser.h cleanup_user.h clnt_stream.h config.h debug_peer.h debug_process.h defer.h deliver_completed.h deliver_flock.h deliver_pass.h deliver_request.h dict_ldap.h dict_mysql.h dict_pgsql.h dict_proxy.h domain_list.h dot_lockfile.h dot_lockfile_as.h ext_prop.h file_id.h flush_clnt.h header_opts.h header_token.h hold_message.h input_transp.h is_header.h lex_822.h log_adhoc.h mail_addr.h mail_addr_crunch.h mail_addr_find.h mail_addr_map.h mail_conf.h mail_copy.h mail_date.h mail_dict.h mail_error.h mail_flush.h mail_open_ok.h mail_params.h mail_proto.h mail_queue.h mail_run.h mail_scan_dir.h mail_stream.h mail_task.h mail_version.h maps.h mark_corrupt.h match_parent_style.h mbox_conf.h mbox_open.h mime_state.h mkmap.h mynetworks.h mypwd.h namadr_list.h off_cvt.h opened.h own_inet_addr.h pipe_command.h post_mail.h qmgr_user.h qmqp_proto.h quote_821_local.h quote_822_local.h quote_flags.h rec_streamlf.h rec_type.h recipient_list.h record.h resolve_clnt.h resolve_local.h rewrite_clnt.h sent.h smtp_stream.h split_addr.h string_list.h strip_addr.h sys_exits.h timed_ipc.h tok822.h trace.h verify.h verify_clnt.h verp_sender.h virtual8_maps.h xtext.h
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/global'
+[src/dns]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/dns'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c dns_lookup.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c dns_rr.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c dns_strerror.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c dns_strtype.c
+arm_v5t_le-ar rv libdns.a dns_lookup.o dns_rr.o dns_strerror.o dns_strtype.o
+a - dns_lookup.o
+a - dns_rr.o
+a - dns_strerror.o
+a - dns_strtype.o
+arm_v5t_le-ranlib libdns.a
+cp libdns.a ../../lib
+arm_v5t_le-ranlib ../../lib/libdns.a
+for i in dns.h; \
+do \
+  cmp -s $i ../../include/$i 2>/dev/null || cp $i ../../include; \
+done
+cd ../../include; chmod 644 dns.h
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/dns'
+[src/master]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/master'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c single_server.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c multi_server.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c trigger_server.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c master_proto.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mail_flow.c
+arm_v5t_le-ar rv libmaster.a single_server.o multi_server.o trigger_server.o master_proto.o mail_flow.o
+a - single_server.o
+a - multi_server.o
+a - trigger_server.o
+a - master_proto.o
+a - mail_flow.o
+arm_v5t_le-ranlib libmaster.a
+cp libmaster.a ../../lib/libmaster.a
+arm_v5t_le-ranlib ../../lib/libmaster.a
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c master.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c master_conf.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c master_ent.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c master_sig.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c master_avail.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c master_spawn.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c master_service.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c master_status.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c master_listen.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c master_vars.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c master_wakeup.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c master_flow.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o master master.o master_conf.o master_ent.o master_sig.o master_avail.o master_spawn.o master_service.o master_status.o master_listen.o master_vars.o master_wakeup.o master_flow.o ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp master ../../libexec
+for i in mail_server.h master_proto.h mail_flow.h; \
+do \
+  cmp -s $i ../../include/$i 2>/dev/null || cp $i ../../include; \
+done
+cd ../../include; chmod 644 mail_server.h master_proto.h mail_flow.h
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/master'
+[src/postfix]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/postfix'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c postfix.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o postfix postfix.o  ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp postfix ../../bin
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/postfix'
+[src/smtpstone]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/smtpstone'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtp-source.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o smtp-source smtp-source.o ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp smtp-source ../../bin/smtp-source
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtp-sink.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o smtp-sink smtp-sink.o ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp smtp-sink ../../bin/smtp-sink
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmqp-source.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o qmqp-source qmqp-source.o ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp qmqp-source ../../bin/qmqp-source
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/smtpstone'
+[src/sendmail]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/sendmail'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c sendmail.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o sendmail sendmail.o ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp sendmail ../../bin
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/sendmail'
+[src/error]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/error'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c error.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o error error.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp error ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/error'
+[src/pickup]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/pickup'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c pickup.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o pickup pickup.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp pickup ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/pickup'
+[src/cleanup]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/cleanup'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup_out.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup_envelope.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup_message.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup_extracted.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup_state.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup_rewrite.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup_map11.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup_map1n.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup_masquerade.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup_out_recipient.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup_init.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup_api.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c cleanup_addr.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o cleanup cleanup.o cleanup_out.o cleanup_envelope.o cleanup_message.o cleanup_extracted.o cleanup_state.o cleanup_rewrite.o cleanup_map11.o cleanup_map1n.o cleanup_masquerade.o cleanup_out_recipient.o cleanup_init.o cleanup_api.o cleanup_addr.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp cleanup ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/cleanup'
+[src/smtpd]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/smtpd'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtpd.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtpd_token.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtpd_check.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtpd_chat.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtpd_state.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtpd_peer.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtpd_sasl_proto.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtpd_sasl_glue.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtpd_proxy.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtpd_xforward.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o smtpd smtpd.o smtpd_token.o smtpd_check.o smtpd_chat.o smtpd_state.o smtpd_peer.o smtpd_sasl_proto.o smtpd_sasl_glue.o smtpd_proxy.o smtpd_xforward.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libdns.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp smtpd ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/smtpd'
+[src/local]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/local'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c alias.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c command.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c delivered.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c dotforward.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c file.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c forward.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c include.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c indirect.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c local.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mailbox.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c recipient.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c resolve.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c token.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c deliver_attr.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c maildir.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c biff_notify.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c unknown.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c local_expand.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o local alias.o command.o delivered.o dotforward.o file.o forward.o include.o indirect.o local.o mailbox.o recipient.o resolve.o token.o deliver_attr.o maildir.o biff_notify.o unknown.o local_expand.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp local ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/local'
+[src/lmtp]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/lmtp'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c lmtp.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c lmtp_connect.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c lmtp_proto.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c lmtp_chat.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c lmtp_session.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c lmtp_addr.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c lmtp_trouble.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c lmtp_state.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c lmtp_sasl_glue.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c lmtp_sasl_proto.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o lmtp lmtp.o lmtp_connect.o lmtp_proto.o lmtp_chat.o lmtp_session.o lmtp_addr.o lmtp_trouble.o lmtp_state.o lmtp_sasl_glue.o lmtp_sasl_proto.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libdns.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp lmtp ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/lmtp'
+[src/trivial-rewrite]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/trivial-rewrite'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c trivial-rewrite.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c rewrite.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c resolve.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c transport.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o trivial-rewrite trivial-rewrite.o rewrite.o resolve.o transport.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp trivial-rewrite ../../libexec/trivial-rewrite
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/trivial-rewrite'
+[src/qmgr]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/qmgr'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_active.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_transport.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_queue.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_entry.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_message.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_deliver.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_move.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_rcpt_list.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_job.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_peer.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_defer.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_enable.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_scan.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_bounce.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o qmgr qmgr.o qmgr_active.o qmgr_transport.o qmgr_queue.o qmgr_entry.o qmgr_message.o qmgr_deliver.o qmgr_move.o qmgr_rcpt_list.o qmgr_job.o qmgr_peer.o qmgr_defer.o qmgr_enable.o qmgr_scan.o qmgr_bounce.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp qmgr ../../libexec/qmgr
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/qmgr'
+[src/oqmgr]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/oqmgr'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_active.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_transport.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_queue.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_entry.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_message.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_deliver.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_move.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_rcpt_list.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_defer.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_enable.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_scan.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmgr_bounce.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o qmgr qmgr.o qmgr_active.o qmgr_transport.o qmgr_queue.o qmgr_entry.o qmgr_message.o qmgr_deliver.o qmgr_move.o qmgr_rcpt_list.o qmgr_defer.o qmgr_enable.o qmgr_scan.o qmgr_bounce.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp qmgr ../../libexec/oqmgr
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/oqmgr'
+[src/smtp]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/smtp'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtp.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtp_connect.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtp_proto.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtp_chat.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtp_session.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtp_addr.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtp_trouble.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtp_state.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtp_rcpt.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtp_sasl_proto.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c smtp_sasl_glue.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o smtp smtp.o smtp_connect.o smtp_proto.o smtp_chat.o smtp_session.o smtp_addr.o smtp_trouble.o smtp_state.o smtp_rcpt.o smtp_sasl_proto.o smtp_sasl_glue.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libdns.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp smtp ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/smtp'
+[src/bounce]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/bounce'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c bounce.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c bounce_append_service.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c bounce_notify_service.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c bounce_cleanup.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c bounce_notify_util.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c bounce_notify_verp.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c bounce_one_service.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c bounce_warn_service.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c bounce_trace_service.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o bounce bounce.o bounce_append_service.o bounce_notify_service.o bounce_cleanup.o bounce_notify_util.o bounce_notify_verp.o bounce_one_service.o bounce_warn_service.o bounce_trace_service.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp bounce ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/bounce'
+[src/pipe]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/pipe'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c pipe.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o pipe pipe.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp pipe ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/pipe'
+[src/showq]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/showq'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c showq.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o showq showq.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp showq ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/showq'
+[src/postalias]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/postalias'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c postalias.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o postalias postalias.o  ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp postalias ../../bin
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/postalias'
+[src/postcat]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/postcat'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c postcat.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o postcat postcat.o ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp postcat ../../bin
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/postcat'
+[src/postconf]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/postconf'
+awk -f extract.awk ../*/*.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c postconf.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o postconf postconf.o ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp postconf ../../bin
+rm -f ../../conf/main.cf.default
+(echo "# DO NOT EDIT THIS FILE. EDIT THE MAIN.CF FILE INSTEAD. THE"; \
+ echo "# TEXT HERE JUST SHOWS DEFAULT SETTINGS BUILT INTO POSTFIX."; \
+ echo "#"; \
+ ./postconf -d) |egrep -v '^(myhostname|mydomain|mynetworks) ' >../../conf/main.cf.default
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/postconf'
+[src/postdrop]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/postdrop'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c postdrop.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o postdrop postdrop.o ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp postdrop ../../bin
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/postdrop'
+[src/postkick]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/postkick'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c postkick.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o postkick postkick.o ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp postkick ../../bin
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/postkick'
+[src/postlock]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/postlock'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c postlock.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o postlock postlock.o ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp postlock ../../bin
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/postlock'
+[src/postlog]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/postlog'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c postlog.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o postlog postlog.o  ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp postlog ../../bin
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/postlog'
+[src/postmap]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/postmap'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c postmap.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o postmap postmap.o ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp postmap ../../bin
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/postmap'
+[src/postqueue]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/postqueue'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c postqueue.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o postqueue postqueue.o ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp postqueue ../../bin
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/postqueue'
+[src/postsuper]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/postsuper'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c postsuper.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o postsuper postsuper.o ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp postsuper ../../bin
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/postsuper'
+[src/qmqpd]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/qmqpd'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmqpd.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmqpd_state.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c qmqpd_peer.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o qmqpd qmqpd.o qmqpd_state.o qmqpd_peer.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libdns.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp qmqpd ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/qmqpd'
+[src/spawn]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/spawn'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c spawn.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o spawn spawn.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp spawn ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/spawn'
+[src/flush]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/flush'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c flush.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o flush flush.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp flush ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/flush'
+[src/verify]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/verify'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c verify.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o verify verify.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp verify ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/verify'
+[src/virtual]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/virtual'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c virtual.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c mailbox.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c recipient.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c deliver_attr.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c maildir.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c unknown.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o virtual virtual.o mailbox.o recipient.o deliver_attr.o maildir.o unknown.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp virtual ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/virtual'
+[src/proxymap]
+make: Entering directory `/var/tmp/BUILD/postfix-2.1.5/src/proxymap'
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -c proxymap.c
+arm_v5t_le-gcc  -DNO_PCRE -DHAS_DBM -DHAS_GDBM -DPATH_NDBM_H='<gdbm-ndbm.h>' -g -O -I. -I../../include -DLINUX2 -o proxymap proxymap.o ../../lib/libmaster.a ../../lib/libglobal.a ../../lib/libutil.a -ldb -lnsl -lresolv -lgdbm
+cp proxymap ../../libexec
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5/src/proxymap'
+make: Leaving directory `/var/tmp/BUILD/postfix-2.1.5'

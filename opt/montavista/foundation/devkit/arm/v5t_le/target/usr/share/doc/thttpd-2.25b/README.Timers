@@ -1,0 +1,15 @@
+You now have the option to sepcify 'mintimechange' in 
+the config file. 
+mintimechange is specified in seconds. It is the 
+minimum length of time the clock can change before 
+it is acknowledged as a time change by the system. This 
+also means that this is the maxium value the system can 
+wait between calls to tmr_run(), and not affect the 
+timer performance.
+Setting 'mintimechange=0' will disable
+checks the timer uses to see if the clock has been 
+changed while running. This means that if you change 
+the date or time while running thttpd, the timers
+may fail and thttpd will quit.
+By default mintimechange is set to OCCASIONAL_TIME*3.
+This is the alarm time, and should be the largest timer.

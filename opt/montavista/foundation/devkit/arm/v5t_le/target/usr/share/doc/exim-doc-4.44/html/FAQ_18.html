@@ -1,0 +1,35 @@
+<html>
+<head>
+<title>The Exim FAQ Section 18</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_17.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_19.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC328">20. MILLENNIUM</a></h2>
+<p>
+<a name="TOC329" href="FAQ.html#TOC329">Q2000:</a>&nbsp;&nbsp;Are there any Y2K issues with Exim?
+</p>
+<p>
+<font color="#00BB00">A2000:</font>&nbsp;&nbsp;The author of Exim believes that it is Y2K-compliant, as long as the
+underlying operating system and C library are. Exim does not parse dates
+or times at all. Internally, it makes some use of binary timestamps in
+Unix format (number of seconds since 1-Jan-1970) and uses C library
+services to convert these to printing forms (e.g. for logging). The
+printing forms all use 4-digit years. Some people have tried various
+tests. No problems have been reported, but details of what tests have
+been done are not available.
+</p>
+<p>
+Well, it's now November 2001, and no Y2K problems have been reported, so
+it looks like I was right. This entry is retained as historical
+nostalgia.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_17.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_19.html">Next</a>
+</body>
+</html>

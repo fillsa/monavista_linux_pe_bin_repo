@@ -1,0 +1,32 @@
+#! /bin/sh
+
+prefix="/usr"
+version="4.3.10"
+includedir="/usr/include/php"
+includes="-I$includedir -I$includedir/main -I$includedir/Zend"
+ldflags=" -L/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/../usr/lib"
+libs="-lcrypt   -lcrypt -lssl -lcrypto -lm  -lpthread -lcrypt -lcrypt "
+if test '@TSRM_DIR@' != ''; then
+    includes="$includes -I$includedir/TSRM"
+fi
+extension_dir='/usr/lib/extensions/no-debug-zts-20020429'
+
+case "$1" in
+--prefix)
+	echo $prefix;;
+--includes)
+	echo $includes;;
+--ldflags)
+	echo $ldflags;;
+--libs)
+	echo $libs;;
+--extension-dir)
+	echo $extension_dir;;
+--version)
+	echo $version;;
+*)
+	echo "Usage: $0 [--prefix|--includes|--ldflags|--libs|--extension-dir|--version]"
+	exit 1;;
+esac
+
+exit 0

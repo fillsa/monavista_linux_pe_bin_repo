@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 12</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_11.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_13.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX1003"></a>
+<h1>
+<a name="CHAP12" href="spec_toc.html#TOC132">
+12. Embedded Perl
+</a></h1>
+<p>
+Exim can be built to include an embedded Perl interpreter. When this is done,
+Perl subroutines can be called as part of the string expansion process. To make
+use of the Perl support, you need version 5.004 or later of Perl installed on
+your system. To include the embedded interpreter in the Exim binary, include
+the line
+<pre>
+&nbsp;&nbsp;EXIM_PERL = perl.o
+</pre>
+</p>
+<p>
+in your <i>Local/Makefile</i> and then build Exim in the normal way.
+</p>
+<p>
+<a name="IX1004"></a>
+Access to Perl subroutines is via a global configuration option called
+<tt>perl&#095;startup</tt> and an expansion string operator <tt>&#036;&#123;perl ...&#125;</tt>. If there is
+no <tt>perl&#095;startup</tt> option in the Exim configuration file then no Perl
+interpreter is started and there is almost no overhead for Exim (since none of
+the Perl library will be paged in unless used). If there is a <tt>perl&#095;startup</tt>
+option then the associated value is taken to be Perl code which is executed in
+a newly created Perl interpreter.
+</p>
+<p>
+The value of <tt>perl&#095;startup</tt> is not expanded in the Exim sense, so you do not
+need backslashes before any characters to escape special meanings. The option
+should usually be something like
+<pre>
+&nbsp;&nbsp;perl_startup = do '/etc/exim.pl'
+</pre>
+</p>
+<p>
+where <i>/etc/exim.pl</i> is Perl code which defines any subroutines you want to
+use from Exim. Exim can be configured either to start up a Perl interpreter as
+soon as it is entered, or to wait until the first time it is needed. Starting
+the interpreter at the beginning ensures that it is done while Exim still has
+its setuid privilege, but can impose an unnecessary overhead if Perl is not in
+fact used in a particular run. Also, note that this does not mean that Exim is
+necessarily running as root when Perl is called at a later time. By default,
+the interpreter is started only when it is needed, but this can be changed in
+two ways:
+</p>
+<ul>
+<li><a name="IX1005"></a>
+<p>
+Setting <tt>perl&#095;at&#095;start</tt> (a boolean option) in the configuration requests
+a startup when Exim is entered.
+</p>
+</li>
+<li><p>
+The command line option <i>-ps</i> also requests a startup when Exim is entered,
+overriding the setting of <tt>perl&#095;at&#095;start</tt>.
+</p>
+</li>
+</ul>
+<p>
+There is also a command line option <i>-pd</i> (for delay) which suppresses the
+initial startup, even if <tt>perl&#095;at&#095;start</tt> is set.
+</p>
+<p>
+When the configuration file includes a <tt>perl&#095;startup</tt> option you can make use
+of the string expansion item to call the Perl subroutines that are defined
+by the <tt>perl&#095;startup</tt> code. The operator is used in any of the following
+forms:
+<pre>
+&nbsp;&nbsp;${perl{foo}}
+&nbsp;&nbsp;${perl{foo}{argument}}
+&nbsp;&nbsp;${perl{foo}{argument1}{argument2} ... }
+</pre>
+</p>
+<p>
+which calls the subroutine <tt>foo</tt> with the given arguments. A maximum of eight
+arguments may be passed. Passing more than this results in an expansion failure
+with an error message of the form
+<pre>
+&nbsp;&nbsp;Too many arguments passed to Perl subroutine "foo" (max is 8)
+</pre>
+</p>
+<p>
+The return value of the Perl subroutine is evaluated in a scalar context before
+it is passed back to Exim to be inserted into the expanded string. If the
+return value is <i>undef</i>, the expansion fails in the same way as an explicit
+&#147;fail&#148; on an <tt>&#036;&#123;if ...&#125;</tt> or <tt>&#036;&#123;lookup...&#125;</tt> item.
+If the subroutine aborts by obeying Perl's <tt>die</tt> function, the expansion fails
+with the error message that was passed to <tt>die</tt>.
+</p>
+<p>
+Within any Perl code called from Exim, the function <i>Exim&#058;&#058;expand&#095;string</i>
+is available to call back into Exim's string expansion function. For example,
+the Perl code
+<pre>
+&nbsp;&nbsp;my $lp = Exim::expand_string('$local_part');
+</pre>
+</p>
+<p>
+makes the current Exim <tt>$local&#095;part</tt> available in the Perl variable <tt>$lp</tt>.
+Note those are single quotes and not double quotes to protect against
+<tt>$local&#095;part</tt> being interpolated as a Perl variable.
+</p>
+<p>
+If the string expansion is forced to fail by a &#147;fail&#148; item, the result of
+<i>Exim&#058;&#058;expand&#095;string</i> is <tt>undef</tt>. If there is a syntax error in the
+expansion string, the Perl call from the original expansion string fails with
+an appropriate error message, in the same way as if <tt>die</tt> were used.
+<a name="IX1006"></a>
+<a name="IX1007"></a>
+</p>
+<p>
+Two other Exim functions are available for use from within Perl code.
+<i>Exim&#058;&#058;debug&#095;write(&#060;<em>string</em>&#062;)</i> writes the string to the standard error
+stream if Exim's debugging is enabled. If you want a newline at the end, you
+must supply it. <i>Exim&#058;&#058;log&#095;write(&#060;<em>string</em>&#062;)</i> writes the string to Exim's
+main log, adding a leading timestamp. In this case, you should not supply a
+terminating newline.
+<hr>
+</p>
+<font size=2>
+<a href="spec_11.html">Previous</a>&nbsp;&nbsp;<a href="spec_13.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

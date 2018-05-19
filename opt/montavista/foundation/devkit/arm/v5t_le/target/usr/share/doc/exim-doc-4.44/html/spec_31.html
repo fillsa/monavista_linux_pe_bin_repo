@@ -1,0 +1,551 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 31</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_30.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_32.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2224"></a>
+<h1>
+<a name="CHAP31" href="spec_toc.html#TOC221">
+31. Address rewriting
+</a></h1>
+<p>
+There are some circumstances in which Exim automatically rewrites domains in
+addresses. The two most common are when an address is given without a domain
+(referred to as an &#147;unqualified address&#148;) or when an address contains an
+abbreviated domain that is expanded by DNS lookup.
+</p>
+<p>
+Unqualified envelope addresses are accepted only for locally submitted
+messages, or messages from hosts that match <tt>sender&#095;unqualified&#095;hosts</tt> or
+<tt>recipient&#095;unqualified&#095;hosts</tt>, respectively. Unqualified addresses in header
+lines are qualified if they are in locally submitted messages, or messages from
+hosts that are permitted to send unqualified envelope addresses. Otherwise,
+unqualified addresses in header lines are neither qualified nor rewritten.
+</p>
+<p>
+One situation in which Exim does <em>not</em> automatically rewrite a domain is
+when it is the name of a CNAME record in the DNS. The older RFCs suggest that
+such a domain should be rewritten using the &#147;canonical&#148; name, and some MTAs do
+this. The new RFCs do not contain this suggestion.
+</p>
+<h2>
+<a name="SECT31.1" href="spec_toc.html#TOC222">
+31.1. Explicitly configured address rewriting
+</a></h2>
+<p>
+This chapter describes the rewriting rules that can be used in the
+main rewrite section of the configuration file, and also in the generic
+<tt>headers&#095;rewrite</tt> option that can be set on any transport.
+</p>
+<p>
+Some people believe that configured address rewriting is a Mortal Sin.
+Others believe that life is not possible without it. Exim provides the
+facility; you do not have to use it.
+</p>
+<p>
+<font color=green>
+The main rewriting rules that appear in the &#147;rewrite&#148; section of the
+configuration file are applied to addresses in incoming messages, both envelope
+addresses and addresses in header lines. Each rule specifies the types of
+address to which it applies.
+</font>
+</p>
+<p>
+Rewriting of addresses in header lines applies only to those headers that
+were received with the message, and, in the case of transport rewriting, those
+that were added by a system filter. That is, it applies only to those headers
+that are common to all copies of the message. Header lines that are added by
+individual routers or transports (and which are therefore specific to
+individual recipient addresses) are not rewritten.
+</p>
+<p>
+In general, rewriting addresses from your own system or domain has some
+legitimacy. Rewriting other addresses should be done only with great care and
+in special circumstances. The author of Exim believes that rewriting should be
+used sparingly, and mainly for &#147;regularizing&#148; addresses in your own domains.
+Although it can sometimes be used as a routing tool, this is very strongly
+discouraged.
+</p>
+<p>
+There are two commonly encountered circumstances where rewriting is used, as
+illustrated by these examples:
+</p>
+<ul>
+<li><p>
+The company whose domain is <i>hitch.fict.example</i> has a number of hosts that
+exchange mail with each other behind a firewall, but there is only a single
+gateway to the outer world. The gateway rewrites <i>&#042;.hitch.fict.example</i> as
+<i>hitch.fict.example</i> when sending mail off-site.
+</p>
+</li>
+<li><p>
+A host rewrites the local parts of its own users so that, for example,
+<i>fp42&#064;hitch.fict.example</i> becomes <i>Ford.Prefect&#064;hitch.fict.example</i>.
+</p>
+</li>
+</ul>
+<a name="IX2225"></a>
+<a name="IX2226"></a>
+<font color=green><h2>
+<a name="SECT31.2" href="spec_toc.html#TOC223">
+31.2. When does rewriting happen?
+</a></h2>
+<p>
+Configured address rewriting can take place at several different stages of a
+message's processing. 
+</p>
+<p>
+At the start of an ACL for <font size=-1>MAIL</font>, the sender address may have been rewritten 
+by a special SMTP-time rewrite rule (see section <a href="spec_31.html#SECT31.9">31.9</a>), but no
+ordinary rewrite rules have yet been applied. If, however, the sender address
+is verified in the ACL, it is rewritten before verification, and remains
+rewritten thereafter. The subsequent value of <tt>$sender&#095;address</tt> is the
+rewritten address. This also applies if sender verification happens in a
+<font size=-1>RCPT</font> ACL. Otherwise, when the sender address is not verified, it is
+rewritten as soon as a message's header lines have been received.
+</p>
+<p>
+Similarly, at the start of an ACL for <font size=-1>RCPT</font>, the current recipient's address
+may have been rewritten by a special SMTP-time rewrite rule, but no ordinary
+rewrite rules have yet been applied to it. However, the behaviour is different
+from the sender address when a recipient is verified. The address is rewritten
+for the verification, but the rewriting is not remembered at this stage. The
+value of <tt>$local&#095;part</tt> and <tt>$domain</tt> after verification are always the same
+as they were before (that is, they contain the unrewritten &#150; except for 
+SMTP-time rewriting &#150; address).
+</p>
+<p>
+<a name="IX2227"></a>
+Once a message's header lines have been received, all the envelope recipient 
+addresses are permanently rewritten, and rewriting is also applied to the
+addresses in the header lines (if configured).
+Thus, all the rewriting is completed before the <font size=-1>DATA</font> ACL and
+<i>local&#095;scan()</i> functions are run.
+</p>
+<p>
+When an address is being routed, either for delivery or for verification,
+rewriting is applied immediately to child addresses that are generated by
+redirection, unless <tt>no&#095;rewrite</tt> is set on the router.
+</font>
+<a name="IX2228"></a>
+<a name="IX2229"></a>
+</p>
+<p>
+At transport time, additional rewriting of addresses in header lines can be
+specified by setting the generic <tt>headers&#095;rewrite</tt> option on a transport. This
+option contains rules that are identical in form to those in the rewrite
+section of the configuration file. In addition, the outgoing envelope sender
+can be rewritten by means of the <tt>return&#095;path</tt> transport option. However, it
+is not possible to rewrite envelope recipients at transport time.
+</p>
+<a name="IX2230"></a>
+<a name="IX2231"></a>
+<h2>
+<a name="SECT31.3" href="spec_toc.html#TOC224">
+31.3. Testing the rewriting rules that apply on input
+</a></h2>
+<p>
+Exim's input rewriting configuration appears in a part of the run time
+configuration file headed by &#147;begin rewrite&#148;. It can be tested by the <i>-brw</i>
+command line option. This takes an address (which can be a full RFC 2822
+address) as its argument. The output is a list of how the address would be
+transformed by the rewriting rules for each of the different places it might
+appear in an incoming message, that is, for each different header and for the
+envelope sender and recipient fields. For example,
+<pre>
+&nbsp;&nbsp;exim -brw ph10@exim.workshop.example
+</pre>
+</p>
+<p>
+might produce the output
+<pre>
+&nbsp;&nbsp;  sender: Philip.Hazel@exim.workshop.example
+&nbsp;&nbsp;    from: Philip.Hazel@exim.workshop.example
+&nbsp;&nbsp;      to: ph10@exim.workshop.example
+&nbsp;&nbsp;      cc: ph10@exim.workshop.example
+&nbsp;&nbsp;     bcc: ph10@exim.workshop.example
+&nbsp;&nbsp;reply-to: Philip.Hazel@exim.workshop.example
+&nbsp;&nbsp;env-from: Philip.Hazel@exim.workshop.example
+&nbsp;&nbsp;  env-to: ph10@exim.workshop.example
+</pre>
+</p>
+<p>
+which shows that rewriting has been set up for that address when used in any of
+the source fields, but not when it appears as a recipient address. At the
+present time, there is no equivalent way of testing rewriting rules that are
+set for a particular transport.
+</p>
+<a name="IX2232"></a>
+<h2>
+<a name="SECT31.4" href="spec_toc.html#TOC225">
+31.4. Rewriting rules
+</a></h2>
+<p>
+The rewrite section of the configuration file consists of lines of rewriting
+rules in the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#060;<em>source pattern</em>&#062;  &#060;<em>replacement</em>&#062;  &#060;<em>flags</em>&#062;</tt><br>
+</p>
+<p>
+Rewriting rules that are specified for the <tt>headers&#095;rewrite</tt> generic transport
+option are given as a colon-separated list. Each item in the list takes the
+same form as a line in the main rewriting configuration
+(except that any colons must be doubled, of course).
+</p>
+<p>
+The formats of source patterns and replacement strings are described below.
+Each is terminated by white space, unless enclosed in double quotes, in which
+case normal quoting conventions apply inside the quotes. The flags are single
+characters which may appear in any order. Spaces and tabs between them are
+ignored.
+</p>
+<p>
+For each address that could potentially be rewritten, the rules are scanned in
+order, and replacements for the address from earlier rules can themselves be
+replaced by later rules (but see the &#147;q&#148; and &#147;R&#148; flags).
+</p>
+<p>
+The order in which addresses are rewritten is undefined, may change between
+releases, and must not be relied on, with one exception: when a message is
+received, the envelope sender is always rewritten first, before any header
+lines are rewritten. For example, the replacement string for a rewrite of an
+address in <i>To:</i> must not assume that the message's address in <i>From:</i> has (or
+has not) already been rewritten. However, a rewrite of <i>From:</i> may assume that
+the envelope sender has already been rewritten.
+</p>
+<p>
+The variables <tt>$local&#095;part</tt> and <tt>$domain</tt> can be used in the replacement
+string to refer to the address that is being rewritten. Note that lookup-driven
+rewriting can be done by a rule of the form
+<pre>
+&nbsp;&nbsp;*@*   ${lookup ...
+</pre>
+</p>
+<p>
+where the lookup key uses <tt>$1</tt> and <tt>$2</tt> or <tt>$local&#095;part</tt> and <tt>$domain</tt> to
+refer to the address that is being rewritten.
+</p>
+<a name="IX2233"></a>
+<a name="IX2234"></a>
+<h2>
+<a name="SECT31.5" href="spec_toc.html#TOC226">
+31.5. Rewriting patterns
+</a></h2>
+<p>
+The source pattern in a rewriting rule is any item which may appear in an
+address list (see section <a href="spec_10.html#SECT10.18">10.18</a>). It is in fact processed as a
+single-item address list, which means that it is expanded before being tested
+against the address.
+</p>
+<p>
+Domains in patterns should be given in lower case. Local parts in patterns are 
+case-sensitive. If you want to do case-insensitive matching of local parts, you 
+can use a regular expression that starts with <tt>^(?i)</tt>.
+<a name="IX2235"></a>
+</p>
+<p>
+After matching, the numerical variables <tt>$1</tt>, <tt>$2</tt>, etc. may be set,
+depending on the type of match which occurred. These can be used in the
+replacement string to insert portions of the incoming address. <tt>$0</tt> always
+refers to the complete incoming address. When a regular expression is used, the
+numerical variables are set from its capturing subexpressions. For other types
+of pattern they are set as follows:
+</p>
+<ul>
+<li><p>
+If a local part or domain starts with an asterisk, the numerical variables
+refer to the character strings matched by asterisks, with <tt>$1</tt> associated with
+the first asterisk, and <tt>$2</tt> with the second, if present. For example, if the
+pattern
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>*queen&#064;*.fict.example</tt><br>
+</p>
+<p>
+is matched against the address <i>hearts-queen&#064;wonderland.fict.example</i> then
+<pre>
+&nbsp;&nbsp;$0 = hearts-queen@wonderland.fict.example
+&nbsp;&nbsp;$1 = hearts-
+&nbsp;&nbsp;$2 = wonderland
+</pre>
+</p>
+<p>
+Note that if the local part does not start with an asterisk, but the domain
+does, it is <tt>$1</tt> that contains the wild part of the domain.
+</p>
+</li>
+<li><p>
+If the domain part of the pattern is a partial lookup, the wild and fixed parts
+of the domain are placed in the next available numerical variables. Suppose,
+for example, that the address <i>foo&#064;bar.baz.example</i> is processed by a
+rewriting rule of the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>*&#064;partial-dbm;/some/dbm/file    &#060;<em>replacement string</em>&#062;</tt><br>
+</p>
+<p>
+and the key in the file that matches the domain is <tt>*.baz.example</tt>. Then
+<pre>
+&nbsp;&nbsp;$1 = foo
+&nbsp;&nbsp;$2 = bar
+&nbsp;&nbsp;$3 = baz.example
+</pre>
+</p>
+<p>
+If the address <i>foo&#064;baz.example</i> is looked up, this matches the same
+wildcard file entry, and in this case <tt>$2</tt> is set to the empty string, but
+<tt>$3</tt> is still set to <i>baz.example</i>. If a non-wild key is matched in a
+partial lookup, <tt>$2</tt> is again set to the empty string and <tt>$3</tt> is set to the
+whole domain. For non-partial domain lookups, no numerical variables are set.
+</p>
+</li>
+</ul>
+<a name="IX2236"></a>
+<h2>
+<a name="SECT31.6" href="spec_toc.html#TOC227">
+31.6. Rewriting replacements
+</a></h2>
+<p>
+If the replacement string for a rule is a single asterisk, addresses that
+match the pattern and the flags are <em>not</em> rewritten, and no subsequent
+rewriting rules are scanned. For example,
+<pre>
+&nbsp;&nbsp;hatta@lookingglass.fict.example  *  f
+</pre>
+</p>
+<p>
+specifies that <i>hatta&#064;lookingglass.fict.example</i> is never to be rewritten in
+<i>From:</i> headers.
+</p>
+<p>
+If the replacement string is not a single asterisk, it is expanded, and must
+yield a fully qualified address. Within the expansion, the variables
+<tt>$local&#095;part</tt> and <tt>$domain</tt> refer to the address that is being rewritten.
+Any letters they contain retain their original case &#150; they are not lower
+cased. The numerical variables are set up according to the type of pattern that
+matched the address, as described above. If the expansion is forced to fail by
+the presence of &#147;fail&#148; in a conditional or lookup item, rewriting by the
+current rule is abandoned, but subsequent rules may take effect. Any other
+expansion failure causes the entire rewriting operation to be abandoned, and an
+entry written to the panic log.
+</p>
+<h2>
+<a name="SECT31.7" href="spec_toc.html#TOC228">
+31.7. Rewriting flags
+</a></h2>
+<p>
+There are three different kinds of flag that may appear on rewriting rules:
+</p>
+<ul>
+<li><p>
+Flags that specify which headers and envelope addresses to rewrite: E, F, T, b,
+c, f, h, r, s, t.
+</p>
+</li>
+<li><p>
+A flag that specifies rewriting at SMTP time: S.
+</p>
+</li>
+<li><p>
+Flags that control the rewriting process: Q, q, R, w.
+</p>
+</li>
+</ul>
+<p>
+For rules that are part of the <tt>headers&#095;rewrite</tt> generic transport option,
+E, F, T, and S are not permitted.
+</p>
+<a name="IX2237"></a>
+<h2>
+<a name="SECT31.8" href="spec_toc.html#TOC229">
+31.8. Flags specifying which headers and envelope addresses to rewrite
+</a></h2>
+<p>
+If none of the following flag letters, nor the &#147;S&#148; flag (see section
+<a href="spec_31.html#SECT31.9">31.9</a>) are present, a main rewriting rule applies to all headers and
+to both the sender and recipient fields of the envelope, whereas a
+transport-time rewriting rule just applies to all headers. Otherwise, the
+rewriting rule is skipped unless the relevant addresses are being processed.
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>E       </tt>rewrite all envelope fields<br>
+<tt>&nbsp;&nbsp;</tt><tt>F       </tt>rewrite the envelope From field<br>
+<tt>&nbsp;&nbsp;</tt><tt>T       </tt>rewrite the envelope To field<br>
+<tt>&nbsp;&nbsp;</tt><tt>b       </tt>rewrite the <i>Bcc:</i> header<br>
+<tt>&nbsp;&nbsp;</tt><tt>c       </tt>rewrite the <i>Cc:</i> header<br>
+<tt>&nbsp;&nbsp;</tt><tt>f       </tt>rewrite the <i>From:</i> header<br>
+<tt>&nbsp;&nbsp;</tt><tt>h       </tt>rewrite all headers<br>
+<tt>&nbsp;&nbsp;</tt><tt>r       </tt>rewrite the <i>Reply-To:</i> header<br>
+<tt>&nbsp;&nbsp;</tt><tt>s       </tt>rewrite the <i>Sender:</i> header<br>
+<tt>&nbsp;&nbsp;</tt><tt>t       </tt>rewrite the <i>To:</i> header<br>
+</p>
+<p>
+You should be particularly careful about rewriting <i>Sender:</i> headers, and
+restrict this to special known cases in your own domains.
+</p>
+<a name="IX2238"></a>
+<a name="IX2239"></a>
+<a name="IX2240"></a>
+<h2>
+<a name="SECT31.9" href="spec_toc.html#TOC230">
+31.9. The SMTP-time rewriting flag
+</a></h2>
+<p>
+The rewrite flag &#147;S&#148; specifies a rewrite of incoming envelope addresses at SMTP
+time, as soon as an address is received in a <font size=-1>MAIL</font> or <font size=-1>RCPT</font> command, and
+before any other processing; even before syntax checking. The pattern is
+required to be a regular expression, and it is matched against the whole of the
+data for the command, including any surrounding angle brackets.
+</p>
+<p>
+This form of rewrite rule allows for the handling of addresses that are not
+compliant with RFCs 2821 and 2822 (for example, &#147;bang paths&#148; in batched SMTP
+input). Because the input is not required to be a syntactically valid address,
+the variables <tt>$local&#095;part</tt> and <tt>$domain</tt> are not available during the
+expansion of the replacement string. The result of rewriting replaces the
+original address in the <font size=-1>MAIL</font> or <font size=-1>RCPT</font> command.
+</p>
+<h2>
+<a name="SECT31.10" href="spec_toc.html#TOC231">
+31.10. Flags controlling the rewriting process
+</a></h2>
+<p>
+There are four flags which control the way the rewriting process works. These
+take effect only when a rule is invoked, that is, when the address is of the
+correct type (matches the flags) and matches the pattern:
+</p>
+<ul>
+<li><p>
+If the &#147;Q&#148; flag is set on a rule, the rewritten address is permitted to be an
+unqualified local part. It is qualified with <tt>qualify&#095;recipient</tt>. In the
+absence of &#147;Q&#148; the rewritten address must always include a domain.
+</p>
+</li>
+<li><p>
+If the &#147;q&#148; flag is set on a rule, no further rewriting rules are considered,
+even if no rewriting actually takes place because of a &#147;fail&#148; in the expansion.
+The &#147;q&#148; flag is not effective if the address is of the wrong type (does not
+match the flags) or does not match the pattern.
+</p>
+</li>
+<li><p>
+The &#147;R&#148; flag causes a successful rewriting rule to be re-applied to the new
+address, up to ten times. It can be combined with the &#147;q&#148; flag, to stop
+rewriting once it fails to match (after at least one successful rewrite).
+</p>
+</li>
+<li><a name="IX2241"></a>
+<p>
+When an address in a header is rewritten, the rewriting normally applies only
+to the working part of the address, with any comments and RFC 2822 &#147;phrase&#148;
+left unchanged. For example, rewriting might change
+<pre>
+&nbsp;&nbsp;From: Ford Prefect &#060;fp42@restaurant.hitch.fict.example&#062;
+</pre>
+</p>
+<p>
+into
+<pre>
+&nbsp;&nbsp;From: Ford Prefect &#060;prefectf@hitch.fict.example&#062;
+</pre>
+</p>
+<p>
+Sometimes there is a need to replace the whole address item, and this can be
+done by adding the flag letter &#147;w&#148; to a rule. If this is set on a rule that
+causes an address in a header line to be rewritten, the entire address is
+replaced, not just the working part. The replacement must be a complete RFC
+2822 address, including the angle brackets if necessary. If text outside angle
+brackets contains a character whose value is greater than 126 or less than 32
+(except for tab), the text is encoded according to RFC 2047.
+The character set is taken from <tt>headers&#095;charset</tt>, which defaults to
+ISO-8859-1.
+</p>
+<p>
+When the &#147;w&#148; flag is set on a rule that causes an envelope address to be
+rewritten, all but the working part of the replacement address is discarded.
+</p>
+</li>
+</ul>
+<h2>
+<a name="SECT31.11" href="spec_toc.html#TOC232">
+31.11. Rewriting examples
+</a></h2>
+<p>
+Here is an example of the two common rewriting paradigms:
+<pre>
+&nbsp;&nbsp;*@*.hitch.fict.example  $1@hitch.fict.example
+&nbsp;&nbsp;*@hitch.fict.example    ${lookup{$1}dbm{/etc/realnames}\
+&nbsp;&nbsp;                     {$value}fail}@hitch.fict.example bctfrF
+</pre>
+</p>
+<p>
+Note the use of &#147;fail&#148; in the lookup expansion in the second rule, forcing
+the string expansion to fail if the lookup does not succeed. In this context it
+has the effect of leaving the original address unchanged, but Exim goes on to
+consider subsequent rewriting rules, if any, because the &#147;q&#148; flag is not
+present in that rule. An alternative to &#147;fail&#148; would be to supply <tt>$1</tt>
+explicitly, which would cause the rewritten address to be the same as before,
+at the cost of a small bit of processing. Not supplying either of these is an
+error, since the rewritten address would then contain no local part.
+</p>
+<p>
+The first example above replaces the domain with a superior, more general
+domain. This may not be desirable for certain local parts. If the rule
+<pre>
+&nbsp;&nbsp;root@*.hitch.fict.example  *
+</pre>
+</p>
+<p>
+were inserted before the first rule, rewriting would be suppressed for the
+local part <i>root</i> at any domain ending in <i>hitch.fict.example</i>.
+</p>
+<p>
+Rewriting can be made conditional on a number of tests, by making use of
+<tt>${if</tt> in the expansion item. For example, to apply a rewriting rule only to
+messages that originate outside the local host:
+<pre>
+&nbsp;&nbsp;*@*.hitch.fict.example  "${if !eq {$sender_host_address}{}\
+&nbsp;&nbsp;                         {$1@hitch.fict.example}fail}"
+</pre>
+</p>
+<p>
+The replacement string is quoted in this example because it contains white
+space.
+<a name="IX2242"></a>
+<a name="IX2243"></a>
+</p>
+<p>
+Exim does not handle addresses in the form of &#147;bang paths&#148;. If it sees such an
+address it treats it as an unqualified local part which it qualifies with the
+local qualification domain (if the source of the message is local or if the
+remote host is permitted to send unqualified addresses). Rewriting can
+sometimes be used to handle simple bang paths with a fixed number of
+components. For example, the rule
+<pre>
+&nbsp;&nbsp;\N^([^!]+)!(.*)@your.domain.example$\N   $2@$1
+</pre>
+</p>
+<p>
+rewrites a two-component bang path <i>host.name!user</i> as the domain address
+<i>user&#064;host.name</i>. However, there is a security implication in using this as
+a global rewriting rule for envelope addresses. It can provide a backdoor
+method for using your system as a relay, because the incoming addresses appear
+to be local. If the bang path addresses are received via SMTP, it is safer to
+use the &#147;S&#148; flag to rewrite them as they are received, so that relay checking
+can be done on the rewritten addresses.
+<hr>
+</p>
+<font size=2>
+<a href="spec_30.html">Previous</a>&nbsp;&nbsp;<a href="spec_32.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

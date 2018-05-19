@@ -1,0 +1,111 @@
+\hypertarget{mtprng_8h}{
+\section{mtprng.h File Reference}
+\label{mtprng_8h}\index{mtprng.h@{mtprng.h}}
+}
+Mersenne Twister pseudo-random number generator, headers. 
+
+{\tt \#include \char`\"{}beecrypt.h\char`\"{}}\par
+\subsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \hyperlink{structmtprngParam}{mtprng\-Param}
+\end{CompactItemize}
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \hyperlink{mtprng_8h_a0}{N}\ 624
+\item 
+\#define \hyperlink{mtprng_8h_a1}{M}\ 397
+\item 
+\#define \hyperlink{mtprng_8h_a2}{K}\ 0x9908B0DFU
+\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{mtprng_8h_a4}{mtprng\-Setup} (\hyperlink{structmtprngParam}{mtprng\-Param} $\ast$mp)
+\item 
+int \hyperlink{mtprng_8h_a5}{mtprng\-Seed} (\hyperlink{structmtprngParam}{mtprng\-Param} $\ast$mp, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$data, size\_\-t size)
+\item 
+int \hyperlink{mtprng_8h_a6}{mtprng\-Next} (\hyperlink{structmtprngParam}{mtprng\-Param} $\ast$mp, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$data, size\_\-t size)
+\item 
+int \hyperlink{mtprng_8h_a7}{mtprng\-Cleanup} (\hyperlink{structmtprngParam}{mtprng\-Param} $\ast$mp)
+\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+const \hyperlink{structrandomGenerator}{random\-Generator} \hyperlink{mtprng_8h_a3}{mtprng}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Mersenne Twister pseudo-random number generator, headers. 
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{mtprng_8h-source}{mtprng.h}.
+
+\subsection{Define Documentation}
+\hypertarget{mtprng_8h_a2}{
+\index{mtprng.h@{mtprng.h}!K@{K}}
+\index{K@{K}!mtprng.h@{mtprng.h}}
+\subsubsection[K]{\setlength{\rightskip}{0pt plus 5cm}\#define K\ 0x9908B0DFU}}
+\label{mtprng_8h_a2}
+
+
+Definition at line 40 of file mtprng.h.\hypertarget{mtprng_8h_a1}{
+\index{mtprng.h@{mtprng.h}!M@{M}}
+\index{M@{M}!mtprng.h@{mtprng.h}}
+\subsubsection[M]{\setlength{\rightskip}{0pt plus 5cm}\#define M\ 397}}
+\label{mtprng_8h_a1}
+
+
+Definition at line 39 of file mtprng.h.\hypertarget{mtprng_8h_a0}{
+\index{mtprng.h@{mtprng.h}!N@{N}}
+\index{N@{N}!mtprng.h@{mtprng.h}}
+\subsubsection[N]{\setlength{\rightskip}{0pt plus 5cm}\#define N\ 624}}
+\label{mtprng_8h_a0}
+
+
+Definition at line 38 of file mtprng.h.
+
+\subsection{Function Documentation}
+\hypertarget{mtprng_8h_a7}{
+\index{mtprng.h@{mtprng.h}!mtprngCleanup@{mtprngCleanup}}
+\index{mtprngCleanup@{mtprngCleanup}!mtprng.h@{mtprng.h}}
+\subsubsection[mtprngCleanup]{\setlength{\rightskip}{0pt plus 5cm}int mtprng\-Cleanup (\hyperlink{structmtprngParam}{mtprng\-Param} $\ast$ {\em mp})}}
+\label{mtprng_8h_a7}
+
+
+\hypertarget{mtprng_8h_a6}{
+\index{mtprng.h@{mtprng.h}!mtprngNext@{mtprngNext}}
+\index{mtprngNext@{mtprngNext}!mtprng.h@{mtprng.h}}
+\subsubsection[mtprngNext]{\setlength{\rightskip}{0pt plus 5cm}int mtprng\-Next (\hyperlink{structmtprngParam}{mtprng\-Param} $\ast$ {\em mp}, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$ {\em data}, size\_\-t {\em size})}}
+\label{mtprng_8h_a6}
+
+
+\hypertarget{mtprng_8h_a5}{
+\index{mtprng.h@{mtprng.h}!mtprngSeed@{mtprngSeed}}
+\index{mtprngSeed@{mtprngSeed}!mtprng.h@{mtprng.h}}
+\subsubsection[mtprngSeed]{\setlength{\rightskip}{0pt plus 5cm}int mtprng\-Seed (\hyperlink{structmtprngParam}{mtprng\-Param} $\ast$ {\em mp}, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$ {\em data}, size\_\-t {\em size})}}
+\label{mtprng_8h_a5}
+
+
+\hypertarget{mtprng_8h_a4}{
+\index{mtprng.h@{mtprng.h}!mtprngSetup@{mtprngSetup}}
+\index{mtprngSetup@{mtprngSetup}!mtprng.h@{mtprng.h}}
+\subsubsection[mtprngSetup]{\setlength{\rightskip}{0pt plus 5cm}int mtprng\-Setup (\hyperlink{structmtprngParam}{mtprng\-Param} $\ast$ {\em mp})}}
+\label{mtprng_8h_a4}
+
+
+
+
+\subsection{Variable Documentation}
+\hypertarget{mtprng_8h_a3}{
+\index{mtprng.h@{mtprng.h}!mtprng@{mtprng}}
+\index{mtprng@{mtprng}!mtprng.h@{mtprng.h}}
+\subsubsection[mtprng]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structrandomGenerator}{random\-Generator} \hyperlink{mtprng_8h_a3}{mtprng}}}
+\label{mtprng_8h_a3}
+
+

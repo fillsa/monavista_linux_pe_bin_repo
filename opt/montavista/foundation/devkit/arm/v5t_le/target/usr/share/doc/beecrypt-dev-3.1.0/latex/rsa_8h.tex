@@ -1,0 +1,118 @@
+\hypertarget{rsa_8h}{
+\section{rsa.h File Reference}
+\label{rsa_8h}\index{rsa.h@{rsa.h}}
+}
+RSA algorithm. 
+
+{\tt \#include \char`\"{}rsakp.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{rsa_8h_a0}{rsapub} (const \hyperlink{structrsapk}{rsapk} $\ast$pk, const \hyperlink{structmpnumber}{mpnumber} $\ast$m, \hyperlink{structmpnumber}{mpnumber} $\ast$c)
+\begin{CompactList}\small\item\em This function performs a raw RSA public key operation. \item\end{CompactList}\item 
+int \hyperlink{rsa_8h_a1}{rsapri} (const \hyperlink{structrsakp}{rsakp} $\ast$kp, const \hyperlink{structmpnumber}{mpnumber} $\ast$c, \hyperlink{structmpnumber}{mpnumber} $\ast$m)
+\begin{CompactList}\small\item\em This function performs a raw RSA private key operation. \item\end{CompactList}\item 
+int \hyperlink{rsa_8h_a2}{rsapricrt} (const \hyperlink{structrsakp}{rsakp} $\ast$kp, const \hyperlink{structmpnumber}{mpnumber} $\ast$c, \hyperlink{structmpnumber}{mpnumber} $\ast$m)
+\begin{CompactList}\small\item\em This function performs a raw RSA private key operation, with application of the Chinese Remainder Theorem. \item\end{CompactList}\item 
+int \hyperlink{rsa_8h_a3}{rsavrfy} (const \hyperlink{structrsapk}{rsapk} $\ast$pk, const \hyperlink{structmpnumber}{mpnumber} $\ast$m, const \hyperlink{structmpnumber}{mpnumber} $\ast$c)
+\begin{CompactList}\small\item\em This function performs a raw RSA verification. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+RSA algorithm. 
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{rsa_8h-source}{rsa.h}.
+
+\subsection{Function Documentation}
+\hypertarget{rsa_8h_a1}{
+\index{rsa.h@{rsa.h}!rsapri@{rsapri}}
+\index{rsapri@{rsapri}!rsa.h@{rsa.h}}
+\subsubsection[rsapri]{\setlength{\rightskip}{0pt plus 5cm}int rsapri (const \hyperlink{structrsakp}{rsakp} $\ast$ {\em kp}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em c}, \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em m})}}
+\label{rsa_8h_a1}
+
+
+This function performs a raw RSA private key operation. 
+
+This function can be used for decryption and signing.
+
+It performs the operation: \begin{itemize}
+\item $m=c^{d}\ \textrm{mod}\ n$\end{itemize}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em kp}]The RSA keypair. \item[{\em c}]The ciphertext. \item[{\em m}]The message. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \item[{\em -1}]on failure. \end{description}
+\end{Desc}
+\hypertarget{rsa_8h_a2}{
+\index{rsa.h@{rsa.h}!rsapricrt@{rsapricrt}}
+\index{rsapricrt@{rsapricrt}!rsa.h@{rsa.h}}
+\subsubsection[rsapricrt]{\setlength{\rightskip}{0pt plus 5cm}int rsapricrt (const \hyperlink{structrsakp}{rsakp} $\ast$ {\em kp}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em c}, \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em m})}}
+\label{rsa_8h_a2}
+
+
+This function performs a raw RSA private key operation, with application of the Chinese Remainder Theorem. 
+
+It performs the operation: \begin{itemize}
+\item $j_1=c^{d_1}\ \textrm{mod}\ p$ \item $j_2=c^{d_2}\ \textrm{mod}\ q$ \item $h=c \cdot (j_1-j_2)\ \textrm{mod}\ p$ \item $m=j_2+hq$\end{itemize}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em kp}]The RSA keypair. \item[{\em c}]The ciphertext. \item[{\em m}]The message. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \item[{\em -1}]on failure. \end{description}
+\end{Desc}
+\hypertarget{rsa_8h_a0}{
+\index{rsa.h@{rsa.h}!rsapub@{rsapub}}
+\index{rsapub@{rsapub}!rsa.h@{rsa.h}}
+\subsubsection[rsapub]{\setlength{\rightskip}{0pt plus 5cm}int rsapub (const \hyperlink{structrsapk}{rsapk} $\ast$ {\em pk}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em m}, \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em c})}}
+\label{rsa_8h_a0}
+
+
+This function performs a raw RSA public key operation. 
+
+This function can be used for encryption and verifying.
+
+It performs the following operation: \begin{itemize}
+\item $c=m^{e}\ \textrm{mod}\ n$\end{itemize}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em pk}]The RSA public key. \item[{\em m}]The message. \item[{\em c}]The ciphertext. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \item[{\em -1}]on failure. \end{description}
+\end{Desc}
+\hypertarget{rsa_8h_a3}{
+\index{rsa.h@{rsa.h}!rsavrfy@{rsavrfy}}
+\index{rsavrfy@{rsavrfy}!rsa.h@{rsa.h}}
+\subsubsection[rsavrfy]{\setlength{\rightskip}{0pt plus 5cm}int rsavrfy (const \hyperlink{structrsapk}{rsapk} $\ast$ {\em pk}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em m}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em c})}}
+\label{rsa_8h_a3}
+
+
+This function performs a raw RSA verification. 
+
+It verifies if ciphertext {\em c\/} was encrypted from cleartext {\em m\/} with the private key matching the given public key {\em pk\/}.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em pk}]The public key. \item[{\em m}]The cleartext message. \item[{\em c}]The ciphertext message. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]on success. \item[{\em 0}]on failure. \end{description}
+\end{Desc}

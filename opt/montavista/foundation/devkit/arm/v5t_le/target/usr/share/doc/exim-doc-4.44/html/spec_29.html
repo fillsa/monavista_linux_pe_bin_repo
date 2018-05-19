@@ -1,0 +1,615 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 29</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_28.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_30.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2067"></a>
+<a name="IX2068"></a>
+<h1>
+<a name="CHAP29" href="spec_toc.html#TOC210">
+29. The pipe transport
+</a></h1>
+<p>
+The <b>pipe</b> transport is used to deliver messages via a pipe to a command
+running in another process. This can happen in one of two ways:
+</p>
+<ul>
+<li><p>
+A router routes an address to a transport in the normal way, and the transport
+is configured as a <b>pipe</b> transport. In this case, <tt>$local&#095;part</tt> contains
+the address (as usual), and the command which is run is specified by the
+<tt>command</tt> option on the transport. An example of this is the use of <b>pipe</b> as
+a pseudo-remote transport for passing messages to some other delivery mechanism
+(such as UUCP).
+</p>
+</li>
+<li><p>
+A router redirects an address directly to a pipe command (for example, from an
+alias or forward file). In this case, <tt>$local&#095;part</tt> contains the local part
+that was redirected, and <tt>$address&#095;pipe</tt> contains the text of the pipe
+command itself. The <tt>command</tt> option on the transport is ignored.
+</p>
+</li>
+</ul>
+<p>
+The <b>pipe</b> transport is a non-interactive delivery method. Exim can also 
+deliver messages over pipes using the LMTP interactive protocol. This is 
+implemented by the <b>lmtp</b> transport.
+</p>
+<p>
+In the case when <b>pipe</b> is run as a consequence of an entry in a local user's
+<i>.forward</i> file, the command runs under the uid and gid of that user. In
+other cases, the uid and gid have to be specified explicitly, either on the
+transport or on the router that handles the address. Current and &#147;home&#148;
+directories are also controllable. See chapter <a href="spec_23.html">23</a> for details of
+the local delivery environment.
+</p>
+<a name="IX2069"></a>
+<h2>
+<a name="SECT29.1" href="spec_toc.html#TOC211">
+29.1. Returned status and data
+</a></h2>
+<p>
+If the command exits with a non-zero return code, the delivery is deemed to
+have failed, unless either the <tt>ignore&#095;status</tt> option is set (in which case
+the return code is treated as zero), or the return code is one of those listed
+in the <tt>temp&#095;errors</tt> option, which are interpreted as meaning &#147;try again
+later&#148;. In this case, delivery is deferred. Details of a permanent failure are
+logged, but are not included in the bounce message, which merely contains
+&#147;local delivery failed&#148;.
+</p>
+<p>
+If the return code is greater than 128 and the command being run is a shell
+script, it normally means that the script was terminated by a signal whose
+value is the return code minus 128.
+</p>
+<p>
+If Exim is unable to run the command (that is, if <i>execve()</i> fails), the 
+return code is set to 127. This is the value that a shell returns if it is 
+asked to run a non-existent command. The wording for the log line suggests that 
+a non-existent command may be the problem.
+</p>
+<p>
+The <tt>return&#095;output</tt> option can affect the result of a pipe delivery. If it is
+set and the command produces any output on its standard output or standard
+error streams, the command is considered to have failed, even if it gave a zero
+return code or if <tt>ignore&#095;status</tt> is set. The output from the command is
+included as part of the bounce message. The <tt>return&#095;fail&#095;output</tt> option is
+similar, except that output is returned only when the command exits with a
+failure return code, that is, a value other than zero or a code that matches
+<tt>temp&#095;errors</tt>.
+</p>
+<a name="IX2070"></a>
+<h2>
+<a name="SECT29.2" href="spec_toc.html#TOC212">
+29.2. How the command is run
+</a></h2>
+<p>
+<a name="IX2071"></a>
+The command line is (by default) broken down into a command name and arguments
+by the <b>pipe</b> transport itself. The <tt>allow&#095;commands</tt> and <tt>restrict&#095;to&#095;path</tt>
+options can be used to restrict the commands that may be run.
+Unquoted arguments are delimited by white space. If an argument appears in
+double quotes, backslash is interpreted as an escape character in the usual
+way. If an argument appears in single quotes, no escaping is done.
+</p>
+<p>
+String expansion is applied to the command line except when it comes from a
+traditional <i>.forward</i> file (commands from a filter file are expanded). The
+expansion is applied to each argument in turn rather than to the whole line.
+For this reason, any string expansion item that contains white space must be
+quoted so as to be contained within a single argument. A setting such as
+<pre>
+&nbsp;&nbsp;command = /some/path ${if eq{$local_part}{postmaster}{xxx}{yyy}}
+</pre>
+</p>
+<p>
+will not work, because the expansion item gets split between several
+arguments. You have to write
+<pre>
+&nbsp;&nbsp;command = /some/path "${if eq{$local_part}{postmaster}{xxx}{yyy}}"
+</pre>
+</p>
+<p>
+to ensure that it is all in one argument. The expansion is done in this way,
+argument by argument, so that the number of arguments cannot be changed as a
+result of expansion, and quotes or backslashes in inserted variables do not
+interact with external quoting.
+<a name="IX2072"></a>
+<a name="IX2073"></a>
+</p>
+<p>
+Special handling takes place when an argument consists of precisely the text
+&#147;<tt>&#036;pipe&#095;addresses</tt>&#148;. This is not a general expansion variable; the only
+place this string is recognized is when it appears as an argument for a pipe or
+transport filter command. It causes each address that is being handled to be
+inserted in the argument list at that point <em>as a separate argument</em>. This
+avoids any problems with spaces or shell metacharacters, and is of use when a
+<b>pipe</b> transport is handling groups of addresses in a batch.
+</p>
+<p>
+After splitting up into arguments and expansion, the resulting command is run
+in a subprocess directly from the transport, <em>not</em> under a shell. The
+message that is being delivered is supplied on the standard input, and the
+standard output and standard error are both connected to a single pipe that is
+read by Exim. The <tt>max&#095;output</tt> option controls how much output the command may
+produce, and the <tt>return&#095;output</tt> and <tt>return&#095;fail&#095;output</tt> options control
+what is done with it.
+</p>
+<p>
+Not running the command under a shell (by default) lessens the security risks
+in cases when a command from a user's filter file is built out of data that was
+taken from an incoming message. If a shell is required, it can of course be
+explicitly specified as the command to be run. However, there are circumstances
+where existing commands (for example, in <i>.forward</i> files) expect to be run
+under a shell and cannot easily be modified. To allow for these cases, there is
+an option called <tt>use&#095;shell</tt>, which changes the way the <b>pipe</b> transport
+works. Instead of breaking up the command line as just described, it expands it
+as a single string and passes the result to <i>/bin/sh</i>. The
+<tt>restrict&#095;to&#095;path</tt> option and the <tt>$pipe&#095;addresses</tt> facility cannot be used
+with <tt>use&#095;shell</tt>, and the whole mechanism is inherently less secure.
+</p>
+<a name="IX2074"></a>
+<a name="IX2075"></a>
+<h2>
+<a name="SECT29.3" href="spec_toc.html#TOC213">
+29.3. Environment variables
+</a></h2>
+<p>
+The environment variables listed below are set up when the command is invoked.
+This list is a compromise for maximum compatibility with other MTAs. Note that
+the <tt>environment</tt> option can be used to add additional variables to this
+environment.
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>DOMAIN&nbsp;&nbsp;</tt></td><td>the domain of the address</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>HOME&nbsp;&nbsp;</tt></td><td>the home directory, if set</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>HOST&nbsp;&nbsp;</tt></td><td>the host name when called from a router (see below)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>LOCAL&#095;PART&nbsp;&nbsp;</tt></td><td>see below</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>LOCAL&#095;PART&#095;PREFIX&nbsp;&nbsp;</tt></td><td>see below</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>LOCAL&#095;PART&#095;SUFFIX&nbsp;&nbsp;</tt></td><td>see below</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>LOGNAME&nbsp;&nbsp;</tt></td><td>see below</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>MESSAGE&#095;ID&nbsp;&nbsp;</tt></td><td>the message's id</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>PATH&nbsp;&nbsp;</tt></td><td>as specified by the <tt>path</tt> option below</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>QUALIFY&#095;DOMAIN&nbsp;&nbsp;</tt></td><td>the sender qualification domain</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>RECIPIENT&nbsp;&nbsp;</tt></td><td>the complete recipient address</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>SENDER&nbsp;&nbsp;</tt></td><td>the sender of the message (empty if a bounce)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>SHELL&nbsp;&nbsp;</tt></td><td><tt>&#147;<tt>/bin/sh</tt>&#148;</tt></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>TZ&nbsp;&nbsp;</tt></td><td>the value of the <tt>timezone</tt> option, if set</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>USER&nbsp;&nbsp;</tt></td><td>see below</td></tr>
+</table>
+</p>
+<p>
+When a <b>pipe</b> transport is called directly from (for example) an <b>accept</b>
+router, <font size=-1>LOCAL&#095;PART</font> is set to the local part of the address. When it is
+called as a result of a forward or alias expansion, <font size=-1>LOCAL&#095;PART</font> is set to
+the local part of the address that was expanded. In both cases, any affixes are
+removed from the local part, and made available in <font size=-1>LOCAL&#095;PART&#095;PREFIX</font> and
+<font size=-1>LOCAL&#095;PART&#095;SUFFIX</font>, respectively. <font size=-1>LOGNAME</font> and <font size=-1>USER</font> are set to the
+same value as <font size=-1>LOCAL&#095;PART</font> for compatibility with other MTAs.
+<a name="IX2076"></a>
+</p>
+<p>
+<font size=-1>HOST</font> is set only when a <b>pipe</b> transport is called from a router that
+associates hosts with an address, typically when using <b>pipe</b> as a
+pseudo-remote transport. <font size=-1>HOST</font> is set to the first host name specified by
+the router.
+<a name="IX2077"></a>
+</p>
+<p>
+If the transport's generic <tt>home&#095;directory</tt> option is set, its value is used
+for the <font size=-1>HOME</font> environment variable. Otherwise, a home directory may be set
+by the router's <tt>transport&#095;home&#095;directory</tt> option, which defaults to the
+user's home directory if <tt>check&#095;local&#095;user</tt> is set.
+</p>
+<a name="IX2078"></a>
+<h2>
+<a name="SECT29.4" href="spec_toc.html#TOC214">
+29.4. Private options for pipe
+</a></h2>
+<hr><a name="IX2079"></a>
+<a name="IX2080"></a>
+<h3>allow_commands</h3>
+<i>Type:</i>&nbsp; string list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The string is expanded, and is then interpreted as a colon-separated list of
+permitted commands. If <tt>restrict&#095;to&#095;path</tt> is not set, the only commands
+permitted are those in the <tt>allow&#095;commands</tt> list. They need not be absolute
+paths; the <tt>path</tt> option is still used for relative paths. If
+<tt>restrict&#095;to&#095;path</tt> is set with <tt>allow&#095;commands</tt>, the command must either be
+in the <tt>allow&#095;commands</tt> list, or a name without any slashes that is found on
+the path. In other words, if neither <tt>allow&#095;commands</tt> nor <tt>restrict&#095;to&#095;path</tt>
+is set, there is no restriction on the command, but otherwise only commands
+that are permitted by one or the other are allowed. For example, if
+<pre>
+&nbsp;&nbsp;allow_commands = /usr/bin/vacation
+</pre>
+</p>
+<p>
+and <tt>restrict&#095;to&#095;path</tt> is not set, the only permitted command is
+<i>/usr/bin/vacation</i>. The <tt>allow&#095;commands</tt> option may not be set if
+<tt>use&#095;shell</tt> is set.
+<hr></p>
+<a name="IX2081"></a>
+<h3>batch_id</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+See the description of local delivery batching in chapter <a href="spec_25.html">25</a>.
+<hr></p>
+<a name="IX2082"></a>
+<h3>batch_max</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 1<br>
+<p>
+This limits the number of addresses that can be handled in a single delivery.
+See the description of local delivery batching in chapter <a href="spec_25.html">25</a>.
+<hr></p>
+<a name="IX2083"></a>
+<h3>check_string</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+As <b>pipe</b> writes the message, the start of each line is tested for matching
+<tt>check&#095;string</tt>, and if it does, the initial matching characters are replaced
+by the contents of <tt>escape&#095;string</tt>, provided both are set. The value of
+<tt>check&#095;string</tt> is a literal string, not a regular expression, and the case of
+any letters it contains is significant. When <tt>use&#095;bsmtp</tt> is set, the contents
+of <tt>check&#095;string</tt> and <tt>escape&#095;string</tt> are forced to values that implement the
+SMTP escaping protocol. Any settings made in the configuration file are
+ignored.
+<hr></p>
+<a name="IX2084"></a>
+<h3>command</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option need not be set when <b>pipe</b> is being used to deliver to pipes
+obtained directly from address redirections. In other cases, the option must be
+set, to provide a command to be run. It need not yield an absolute path (see
+the <tt>path</tt> option below). The command is split up into separate arguments by
+Exim, and each argument is separately expanded, as described in section
+<a href="spec_29.html#SECT29.2">29.2</a> above.
+<hr></p>
+<a name="IX2085"></a>
+<a name="IX2086"></a>
+<a name="IX2087"></a>
+<h3>environment</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option is used to add additional variables to the environment in which the
+command runs (see section <a href="spec_29.html#SECT29.3">29.3</a> for the default list). Its value is a
+string which is expanded, and then interpreted as a colon-separated list of
+environment settings of the form &#147;&#060;<em>name</em>&#062;=&#060;<em>value</em>&#062;&#148;.
+<hr></p>
+<a name="IX2088"></a>
+<h3>escape_string</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+See <tt>check&#095;string</tt> above.
+<hr></p>
+<a name="IX2089"></a>
+<a name="IX2090"></a>
+<a name="IX2091"></a>
+<a name="IX2092"></a>
+<h3>freeze_exec_fail</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+Failure to exec the command in a pipe transport is by default treated like
+any other failure while running the command. However, if <tt>freeze&#095;exec&#095;fail</tt>
+is set, failure to exec is treated specially, and causes the message to be
+frozen, whatever the setting of <tt>ignore&#095;status</tt>.
+<hr></p>
+<a name="IX2093"></a>
+<h3>ignore_status</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, the status returned by the subprocess that is set up to
+run the command is ignored, and Exim behaves as if zero had been returned.
+Otherwise, a non-zero status 
+or termination by signal
+causes an error return from the transport unless the status value is one of
+those listed in <tt>temp&#095;errors</tt>; these cause the delivery to be deferred and
+tried again later.
+<hr></p>
+<a name="IX2094"></a>
+<a name="IX2095"></a>
+<h3>log_defer_output</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set, and the status returned by the command is
+one of the codes listed in <tt>temp&#095;errors</tt> (that is, delivery was deferred),
+and any output was produced, the first line of it is written to the main log.
+<hr></p>
+<a name="IX2096"></a>
+<h3>log_fail_output</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set, and the command returns any output, and also ends with a
+return code that is neither zero nor one of the return codes listed in
+<tt>temp&#095;errors</tt> (that is, the delivery failed), the first line of output is
+written to the main log.
+<hr></p>
+<a name="IX2097"></a>
+<h3>log_output</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set and the command returns any output, the first line of
+output is written to the main log, whatever the return code.
+<hr></p>
+<a name="IX2098"></a>
+<h3>max_output</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 20K<br>
+<p>
+This specifies the maximum amount of output that the command may produce on its
+standard output and standard error file combined. If the limit is exceeded, the
+process running the command is killed. This is intended as a safety measure to
+catch runaway processes. The limit is applied independently of the settings of
+the options that control what is done with such output (for example,
+<tt>return&#095;output</tt>). Because of buffering effects, the amount of output may
+exceed the limit by a small amount before Exim notices.
+<hr></p>
+<a name="IX2099"></a>
+<h3>message_prefix</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; see below<br>
+<p>
+The string specified here is expanded and output at the start of every message.
+The default is unset if <tt>use&#095;bsmtp</tt> is set. Otherwise it is
+<pre>
+&nbsp;&nbsp;message_prefix = \
+&nbsp;&nbsp;  From ${if def:return_path{$return_path}{MAILER-DAEMON}}\
+&nbsp;&nbsp;  ${tod_bsdinbox}\n
+</pre>
+<a name="IX2100"></a>
+<a name="IX2101"></a>
+<a name="IX2102"></a>
+</p>
+<p>
+This is required by the commonly used <i>/usr/bin/vacation</i> program.
+However, it must <em>not</em> be present if delivery is to the Cyrus IMAP server,
+or to the <tt>tmail</tt> local delivery agent. The prefix can be suppressed by setting
+<pre>
+&nbsp;&nbsp;message_prefix =
+</pre>
+<hr></p>
+<a name="IX2103"></a>
+<h3>message_suffix</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; see below<br>
+<p>
+The string specified here is expanded and output at the end of every message.
+The default is unset if <tt>use&#095;bsmtp</tt> is set. Otherwise it is a single newline.
+The suffix can be suppressed by setting
+<pre>
+&nbsp;&nbsp;message_suffix =
+</pre>
+<hr></p>
+<a name="IX2104"></a>
+<h3>path</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; <tt>/usr/bin</tt><br>
+<p>
+This option specifies the string that is set up in the <font size=-1>PATH</font> environment
+variable of the subprocess. If the <tt>command</tt> option does not yield an absolute
+path name, the command is sought in the <font size=-1>PATH</font> directories, in the usual way.
+<b>Warning</b>: This does not apply to a command specified as a transport 
+filter.
+<hr></p>
+<a name="IX2105"></a>
+<a name="IX2106"></a>
+<h3>pipe_as_creator</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If the generic <tt>user</tt> option is not set and this option is true, the delivery
+process is run under the uid that was in force when Exim was originally called
+to accept the message. If the group id is not otherwise set (via the generic
+<tt>group</tt> option), the gid that was in force when Exim was originally called to
+accept the message is used.
+<hr></p>
+<a name="IX2107"></a>
+<h3>restrict_to_path</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+When this option is set, any command name not listed in <tt>allow&#095;commands</tt> must
+contain no slashes. The command is searched for only in the directories listed
+in the <tt>path</tt> option. This option is intended for use in the case when a pipe
+command has been generated from a user's <i>.forward</i> file. This is usually
+handled by a <b>pipe</b> transport called <tt>address&#095;pipe</tt>.
+<hr></p>
+<a name="IX2108"></a>
+<h3>return_fail_output</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, and the command produced any output and ended with a
+return code other than zero or one of the codes listed in <tt>temp&#095;errors</tt> (that
+is, the delivery failed), the output is returned in the bounce message.
+However, if the message has a null sender (that is, it is itself a bounce
+message), output from the command is discarded.
+<hr></p>
+<a name="IX2109"></a>
+<h3>return_output</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, and the command produced any output, the delivery is
+deemed to have failed whatever the return code from the command, and the output
+is returned in the bounce message. Otherwise, the output is just discarded.
+However, if the message has a null sender (that is, it is a bounce message),
+output from the command is always discarded, whatever the setting of this
+option.
+<hr></p>
+<a name="IX2110"></a>
+<a name="IX2111"></a>
+<h3>temp_errors</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; see below<br>
+<p>
+This option contains either a colon-separated list of numbers, or a single
+asterisk. If <tt>ignore&#095;status</tt> is false 
+<font color=green>
+and <tt>return&#095;output</tt> is not set,
+</font>
+and the command exits with a non-zero return code, the failure is treated as
+temporary and the delivery is deferred if the return code matches one of the
+numbers, or if the setting is a single asterisk. Otherwise, non-zero return
+codes are treated as permanent errors. The default setting contains the codes
+defined by <font size=-1>EX&#095;TEMPFAIL</font> and <font size=-1>EX&#095;CANTCREAT</font> in <i>sysexits.h</i>. If Exim is
+compiled on a system that does not define these macros, it assumes values of 75
+and 73, respectively.
+<hr></p>
+<a name="IX2112"></a>
+<h3>timeout</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 1h<br>
+<p>
+If the command fails to complete within this time, it is killed. This normally
+causes the delivery to fail. A zero time interval specifies no timeout. In
+order to ensure that any subprocesses created by the command are also killed,
+Exim makes the initial process a process group leader, and kills the whole
+process group on a timeout. However, this can be defeated if one of the
+processes starts a new process group.
+<hr></p>
+<a name="IX2113"></a>
+<h3>umask</h3>
+<i>Type:</i>&nbsp; octal integer<br><i>Default:</i>&nbsp; 022<br>
+<p>
+This specifies the umask setting for the subprocess that runs the command.
+<hr></p>
+<a name="IX2114"></a>
+<a name="IX2115"></a>
+<h3>use_bsmtp</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set true, the <b>pipe</b> transport writes messages in &#147;batch
+SMTP&#148; format, with the envelope sender and recipient(s) included as SMTP
+commands. If you want to include a leading <font size=-1>HELO</font> command with such messages,
+you can do so by setting the <tt>message&#095;prefix</tt> option. See section
+<a href="spec_43.html#SECT43.11">43.11</a> for details of batch SMTP.
+<hr></p>
+<a name="IX2116"></a>
+<a name="IX2117"></a>
+<a name="IX2118"></a>
+<h3>use_crlf</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+This option causes lines to be terminated with the two-character CRLF sequence
+(carriage return, linefeed) instead of just a linefeed character. In the case
+of batched SMTP, the byte sequence written to the pipe is then an exact image
+of what would be sent down a real SMTP connection.
+</p>
+<p>
+The contents of the <tt>message&#095;prefix</tt> and <tt>message&#095;suffix</tt> options are written
+verbatim, so must contain their own carriage return characters if these are
+needed. Since the default values for both <tt>message&#095;prefix</tt> and
+<tt>message&#095;suffix</tt> end with a single linefeed, their values
+must
+be changed to end with <tt>&#092;r&#092;n</tt> if <tt>use&#095;crlf</tt> is set.
+<hr></p>
+<a name="IX2119"></a>
+<h3>use_shell</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set, it causes the command to be passed to <i>/bin/sh</i>
+instead of being run directly from the transport, as described in section
+<a href="spec_29.html#SECT29.2">29.2</a>. This is less secure, but is needed in some situations
+where the command is expected to be run under a shell and cannot easily be
+modified. The <tt>allow&#095;commands</tt> and <tt>restrict&#095;to&#095;path</tt> options, and the
+&#147;<tt>&#036;pipe&#095;addresses</tt>&#148; facility are incompatible with <tt>use&#095;shell</tt>. The
+command is expanded as a single string, and handed to <i>/bin/sh</i> as data for
+its <i>-c</i> option.
+<hr><br>
+</p>
+<a name="IX2120"></a>
+<a name="IX2121"></a>
+<a name="IX2122"></a>
+<a name="IX2123"></a>
+<a name="IX2124"></a>
+<h2>
+<a name="SECT29.5" href="spec_toc.html#TOC215">
+29.5. Using an external local delivery agent
+</a></h2>
+<p>
+The <b>pipe</b> transport can be used to pass all messages that require local
+delivery to a separate local delivery agent such as <tt>procmail</tt>. When doing
+this, care must be taken to ensure that the pipe is run under an appropriate
+uid and gid. In some configurations one wants this to be a uid that is trusted
+by the delivery agent to supply the correct sender of the message. It may be
+necessary to recompile or reconfigure the delivery agent so that it trusts an
+appropriate user. The following is an example transport and router
+configuration for <tt>procmail</tt>:
+<pre>
+&nbsp;&nbsp;# transport
+&nbsp;&nbsp;procmail_pipe:
+&nbsp;&nbsp;  driver = pipe
+&nbsp;&nbsp;  command = /usr/local/bin/procmail -d $local_part
+&nbsp;&nbsp;  return_path_add
+&nbsp;&nbsp;  delivery_date_add
+&nbsp;&nbsp;  envelope_to_add
+&nbsp;&nbsp;  check_string = "From "
+&nbsp;&nbsp;  escape_string = "&#062;From "
+&nbsp;&nbsp;  user = $local_part
+&nbsp;&nbsp;  group = mail
+</pre>
+<pre>
+&nbsp;&nbsp;# router
+&nbsp;&nbsp;procmail:
+&nbsp;&nbsp;  driver = accept
+&nbsp;&nbsp;  check_local_user
+&nbsp;&nbsp;  transport = procmail_pipe
+</pre>
+</p>
+<p>
+In this example, the pipe is run as the local user, but with the group set to
+<i>mail</i>. An alternative is to run the pipe as a specific user such as <i>mail</i>
+or <i>exim</i>, but in this case you must arrange for <tt>procmail</tt> to trust that
+user to supply a correct sender address. If you do not specify either a <tt>group</tt>
+or a <tt>user</tt> option, the pipe command is run as the local user. The home
+directory is the user's home directory by default.
+</p>
+<p>
+Note that the command that the pipe transport runs does <em>not</em> begin with
+<pre>
+&nbsp;&nbsp;IFS=" "
+</pre>
+</p>
+<p>
+as shown in the <tt>procmail</tt> documentation, because Exim does not by default use
+a shell to run pipe commands.
+<a name="IX2125"></a>
+</p>
+<p>
+The next example shows a transport and a router for a system where local
+deliveries are handled by the Cyrus IMAP server.
+<pre>
+&nbsp;&nbsp;# transport
+&nbsp;&nbsp;local_delivery_cyrus:
+&nbsp;&nbsp;  driver = pipe
+&nbsp;&nbsp;  command = /usr/cyrus/bin/deliver \
+&nbsp;&nbsp;            -m ${substr_1:$local_part_suffix} -- $local_part
+&nbsp;&nbsp;  user = cyrus
+&nbsp;&nbsp;  group = mail
+&nbsp;&nbsp;  return_output
+&nbsp;&nbsp;  log_output
+&nbsp;&nbsp;  message_prefix =
+&nbsp;&nbsp;  message_suffix =
+</pre>
+<pre>
+&nbsp;&nbsp;# router
+&nbsp;&nbsp;local_user_cyrus:
+&nbsp;&nbsp;  driver = accept
+&nbsp;&nbsp;  check_local_user
+&nbsp;&nbsp;  local_part_suffix = .*
+&nbsp;&nbsp;  transport = local_delivery_cyrus
+</pre>
+</p>
+<p>
+Note the unsetting of <tt>message&#095;prefix</tt> and <tt>message&#095;suffix</tt>, and the use of
+<tt>return&#095;output</tt> to cause any text written by Cyrus to be returned to the
+sender.
+<hr>
+</p>
+<font size=2>
+<a href="spec_28.html">Previous</a>&nbsp;&nbsp;<a href="spec_30.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

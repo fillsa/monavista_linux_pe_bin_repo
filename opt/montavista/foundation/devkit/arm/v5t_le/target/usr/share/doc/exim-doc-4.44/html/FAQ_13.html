@@ -1,0 +1,33 @@
+<html>
+<head>
+<title>The Exim FAQ Section 13</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_12.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_14.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC299">13. PERL</a></h2>
+<p>
+<a name="TOC300" href="FAQ.html#TOC300">Q1301:</a>&nbsp;&nbsp;Exim built with Perl support exits with the error message <i>./exim: can't
+load library 'libperl.so'</i>.
+</p>
+<p>
+<font color="#00BB00">A1301:</font>&nbsp;&nbsp;If you are using BSDI, see <a href="FAQ_23.html#TOC374">Q9401</a>.
+</p>
+<p>
+<a name="TOC301" href="FAQ.html#TOC301">Q1302:</a>&nbsp;&nbsp;Exim built with Perl support exits with several error messages of the
+form <i>undefined reference to `PL_stack_sp'</i>.
+</p>
+<p>
+<font color="#00BB00">A1302:</font>&nbsp;&nbsp;This has been seen on FreeBSD systems that had two different versions of
+Perl installed, the older with an <i>a.out</i> library and the newer with an
+ELF library. Ensure that the older package is removed.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_12.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_14.html">Next</a>
+</body>
+</html>

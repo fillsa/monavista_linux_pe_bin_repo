@@ -1,0 +1,340 @@
+\hypertarget{aes__le_8h}{
+\section{aes\_\-le.h File Reference}
+\label{aes__le_8h}\index{aes_le.h@{aes\_\-le.h}}
+}
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \hyperlink{aes__le_8h_a0}{etfs}(i)
+\item 
+\#define \hyperlink{aes__le_8h_a1}{esft}(i)
+\item 
+\#define \hyperlink{aes__le_8h_a2}{elr}()
+\item 
+\#define \hyperlink{aes__le_8h_a3}{dtfs}(i)
+\item 
+\#define \hyperlink{aes__le_8h_a4}{dsft}(i)
+\item 
+\#define \hyperlink{aes__le_8h_a5}{dlr}()
+\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+const uint32\_\-t \hyperlink{aes__le_8h_a6}{\_\-ae0} \mbox{[}256\mbox{]}
+\item 
+const uint32\_\-t \hyperlink{aes__le_8h_a7}{\_\-ae1} \mbox{[}256\mbox{]}
+\item 
+const uint32\_\-t \hyperlink{aes__le_8h_a8}{\_\-ae2} \mbox{[}256\mbox{]}
+\item 
+const uint32\_\-t \hyperlink{aes__le_8h_a9}{\_\-ae3} \mbox{[}256\mbox{]}
+\item 
+const uint32\_\-t \hyperlink{aes__le_8h_a10}{\_\-ae4} \mbox{[}256\mbox{]}
+\item 
+const uint32\_\-t \hyperlink{aes__le_8h_a11}{\_\-ad0} \mbox{[}256\mbox{]}
+\item 
+const uint32\_\-t \hyperlink{aes__le_8h_a12}{\_\-ad1} \mbox{[}256\mbox{]}
+\item 
+const uint32\_\-t \hyperlink{aes__le_8h_a13}{\_\-ad2} \mbox{[}256\mbox{]}
+\item 
+const uint32\_\-t \hyperlink{aes__le_8h_a14}{\_\-ad3} \mbox{[}256\mbox{]}
+\item 
+const uint32\_\-t \hyperlink{aes__le_8h_a15}{\_\-ad4} \mbox{[}256\mbox{]}
+\item 
+const uint32\_\-t \hyperlink{aes__le_8h_a16}{\_\-arc} \mbox{[}$\,$\mbox{]}
+\end{CompactItemize}
+
+
+\subsection{Define Documentation}
+\hypertarget{aes__le_8h_a5}{
+\index{aes_le.h@{aes\_\-le.h}!dlr@{dlr}}
+\index{dlr@{dlr}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[dlr]{\setlength{\rightskip}{0pt plus 5cm}\#define dlr()}}
+\label{aes__le_8h_a5}
+
+
+{\bf Value:}
+
+\footnotesize\begin{verbatim}s0 = \
+        (_ad4[(t0      ) & 0xff] & 0x000000ff) ^ \
+        (_ad4[(t3 >>  8) & 0xff] & 0x0000ff00) ^ \
+        (_ad4[(t2 >> 16) & 0xff] & 0x00ff0000) ^ \
+        (_ad4[(t1 >> 24)       ] & 0xff000000) ^ \
+        rk[0]; \
+    s1 = \
+        (_ad4[(t1      ) & 0xff] & 0x000000ff) ^ \
+        (_ad4[(t0 >>  8) & 0xff] & 0x0000ff00) ^ \
+        (_ad4[(t3 >> 16) & 0xff] & 0x00ff0000) ^ \
+        (_ad4[(t2 >> 24)       ] & 0xff000000) ^ \
+        rk[1]; \
+    s2 = \
+        (_ad4[(t2      ) & 0xff] & 0x000000ff) ^ \
+        (_ad4[(t1 >>  8) & 0xff] & 0x0000ff00) ^ \
+        (_ad4[(t0 >> 16) & 0xff] & 0x00ff0000) ^ \
+        (_ad4[(t3 >> 24)       ] & 0xff000000) ^ \
+        rk[2]; \
+    s3 = \
+        (_ad4[(t3      ) & 0xff] & 0x000000ff) ^ \
+        (_ad4[(t2 >>  8) & 0xff] & 0x0000ff00) ^ \
+        (_ad4[(t1 >> 16) & 0xff] & 0x00ff0000) ^ \
+        (_ad4[(t0 >> 24)       ] & 0xff000000) ^ \
+        rk[3];
+\end{verbatim}\normalsize 
+Definition at line 858 of file aes\_\-le.h.\hypertarget{aes__le_8h_a4}{
+\index{aes_le.h@{aes\_\-le.h}!dsft@{dsft}}
+\index{dsft@{dsft}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[dsft]{\setlength{\rightskip}{0pt plus 5cm}\#define dsft(i)}}
+\label{aes__le_8h_a4}
+
+
+{\bf Value:}
+
+\footnotesize\begin{verbatim}s0 = \
+        _ad0[(t0      ) & 0xff] ^ \
+        _ad1[(t3 >>  8) & 0xff] ^ \
+        _ad2[(t2 >> 16) & 0xff] ^ \
+        _ad3[(t1 >> 24)       ] ^ \
+        rk[i+0]; \
+    s1 = \
+        _ad0[(t1      ) & 0xff] ^ \
+        _ad1[(t0 >>  8) & 0xff] ^ \
+        _ad2[(t3 >> 16) & 0xff] ^ \
+        _ad3[(t2 >> 24)       ] ^ \
+        rk[i+1]; \
+    s2 = \
+        _ad0[(t2      ) & 0xff] ^ \
+        _ad1[(t1 >>  8) & 0xff] ^ \
+        _ad2[(t0 >> 16) & 0xff] ^ \
+        _ad3[(t3 >> 24)       ] ^ \
+        rk[i+2]; \
+    s3 = \
+        _ad0[(t3      ) & 0xff] ^ \
+        _ad1[(t2 >>  8) & 0xff] ^ \
+        _ad2[(t1 >> 16) & 0xff] ^ \
+        _ad3[(t0 >> 24)       ] ^ \
+        rk[i+3];
+\end{verbatim}\normalsize 
+Definition at line 832 of file aes\_\-le.h.\hypertarget{aes__le_8h_a3}{
+\index{aes_le.h@{aes\_\-le.h}!dtfs@{dtfs}}
+\index{dtfs@{dtfs}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[dtfs]{\setlength{\rightskip}{0pt plus 5cm}\#define dtfs(i)}}
+\label{aes__le_8h_a3}
+
+
+{\bf Value:}
+
+\footnotesize\begin{verbatim}t0 = \
+        _ad0[(s0      ) & 0xff] ^ \
+        _ad1[(s3 >>  8) & 0xff] ^ \
+        _ad2[(s2 >> 16) & 0xff] ^ \
+        _ad3[(s1 >> 24)       ] ^ \
+        rk[i+0]; \
+    t1 = \
+        _ad0[(s1      ) & 0xff] ^ \
+        _ad1[(s0 >>  8) & 0xff] ^ \
+        _ad2[(s3 >> 16) & 0xff] ^ \
+        _ad3[(s2 >> 24)       ] ^ \
+        rk[i+1]; \
+    t2 = \
+        _ad0[(s2      ) & 0xff] ^ \
+        _ad1[(s1 >>  8) & 0xff] ^ \
+        _ad2[(s0 >> 16) & 0xff] ^ \
+        _ad3[(s3 >> 24)       ] ^ \
+        rk[i+2]; \
+    t3 = \
+        _ad0[(s3      ) & 0xff] ^ \
+        _ad1[(s2 >>  8) & 0xff] ^ \
+        _ad2[(s1 >> 16) & 0xff] ^ \
+        _ad3[(s0 >> 24)       ] ^ \
+        rk[i+3];
+\end{verbatim}\normalsize 
+Definition at line 806 of file aes\_\-le.h.\hypertarget{aes__le_8h_a2}{
+\index{aes_le.h@{aes\_\-le.h}!elr@{elr}}
+\index{elr@{elr}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[elr]{\setlength{\rightskip}{0pt plus 5cm}\#define elr()}}
+\label{aes__le_8h_a2}
+
+
+{\bf Value:}
+
+\footnotesize\begin{verbatim}s0 = \
+        (_ae4[(t0      ) & 0xff] & 0x000000ff) ^ \
+        (_ae4[(t1 >>  8) & 0xff] & 0x0000ff00) ^ \
+        (_ae4[(t2 >> 16) & 0xff] & 0x00ff0000) ^ \
+        (_ae4[(t3 >> 24)       ] & 0xff000000) ^ \
+        rk[0]; \
+    s1 = \
+        (_ae4[(t1      ) & 0xff] & 0x000000ff) ^ \
+        (_ae4[(t2 >>  8) & 0xff] & 0x0000ff00) ^ \
+        (_ae4[(t3 >> 16) & 0xff] & 0x00ff0000) ^ \
+        (_ae4[(t0 >> 24)       ] & 0xff000000) ^ \
+        rk[1]; \
+    s2 = \
+        (_ae4[(t2      ) & 0xff] & 0x000000ff) ^ \
+        (_ae4[(t3 >>  8) & 0xff] & 0x0000ff00) ^ \
+        (_ae4[(t0 >> 16) & 0xff] & 0x00ff0000) ^ \
+        (_ae4[(t1 >> 24)       ] & 0xff000000) ^ \
+        rk[2]; \
+    s3 = \
+        (_ae4[(t3      ) & 0xff] & 0x000000ff) ^ \
+        (_ae4[(t0 >>  8) & 0xff] & 0x0000ff00) ^ \
+        (_ae4[(t1 >> 16) & 0xff] & 0x00ff0000) ^ \
+        (_ae4[(t2 >> 24)       ] & 0xff000000) ^ \
+        rk[3];
+\end{verbatim}\normalsize 
+Definition at line 780 of file aes\_\-le.h.\hypertarget{aes__le_8h_a1}{
+\index{aes_le.h@{aes\_\-le.h}!esft@{esft}}
+\index{esft@{esft}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[esft]{\setlength{\rightskip}{0pt plus 5cm}\#define esft(i)}}
+\label{aes__le_8h_a1}
+
+
+{\bf Value:}
+
+\footnotesize\begin{verbatim}s0 = \
+        _ae0[(t0      ) & 0xff] ^ \
+        _ae1[(t1 >>  8) & 0xff] ^ \
+        _ae2[(t2 >> 16) & 0xff] ^ \
+        _ae3[(t3 >> 24)       ] ^ \
+        rk[i+0]; \
+    s1 = \
+        _ae0[(t1      ) & 0xff] ^ \
+        _ae1[(t2 >>  8) & 0xff] ^ \
+        _ae2[(t3 >> 16) & 0xff] ^ \
+        _ae3[(t0 >> 24)       ] ^ \
+        rk[i+1]; \
+    s2 = \
+        _ae0[(t2      ) & 0xff] ^ \
+        _ae1[(t3 >>  8) & 0xff] ^ \
+        _ae2[(t0 >> 16) & 0xff] ^ \
+        _ae3[(t1 >> 24)       ] ^ \
+        rk[i+2]; \
+    s3 = \
+        _ae0[(t3      ) & 0xff] ^ \
+        _ae1[(t0 >>  8) & 0xff] ^ \
+        _ae2[(t1 >> 16) & 0xff] ^ \
+        _ae3[(t2 >> 24)       ] ^ \
+        rk[i+3];
+\end{verbatim}\normalsize 
+Definition at line 754 of file aes\_\-le.h.\hypertarget{aes__le_8h_a0}{
+\index{aes_le.h@{aes\_\-le.h}!etfs@{etfs}}
+\index{etfs@{etfs}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[etfs]{\setlength{\rightskip}{0pt plus 5cm}\#define etfs(i)}}
+\label{aes__le_8h_a0}
+
+
+{\bf Value:}
+
+\footnotesize\begin{verbatim}t0 = \
+        _ae0[(s0      ) & 0xff] ^ \
+        _ae1[(s1 >>  8) & 0xff] ^ \
+        _ae2[(s2 >> 16) & 0xff] ^ \
+        _ae3[(s3 >> 24)       ] ^ \
+        rk[i+0]; \
+    t1 = \
+        _ae0[(s1      ) & 0xff] ^ \
+        _ae1[(s2 >>  8) & 0xff] ^ \
+        _ae2[(s3 >> 16) & 0xff] ^ \
+        _ae3[(s0 >> 24)       ] ^ \
+        rk[i+1]; \
+    t2 = \
+        _ae0[(s2      ) & 0xff] ^ \
+        _ae1[(s3 >>  8) & 0xff] ^ \
+        _ae2[(s0 >> 16) & 0xff] ^ \
+        _ae3[(s1 >> 24)       ] ^ \
+        rk[i+2]; \
+    t3 = \
+        _ae0[(s3      ) & 0xff] ^ \
+        _ae1[(s0 >>  8) & 0xff] ^ \
+        _ae2[(s1 >> 16) & 0xff] ^ \
+        _ae3[(s2 >> 24)       ] ^ \
+        rk[i+3];
+\end{verbatim}\normalsize 
+Definition at line 728 of file aes\_\-le.h.
+
+\subsection{Variable Documentation}
+\hypertarget{aes__le_8h_a11}{
+\index{aes_le.h@{aes\_\-le.h}!_ad0@{\_\-ad0}}
+\index{_ad0@{\_\-ad0}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[\_\-ad0]{\setlength{\rightskip}{0pt plus 5cm}const uint32\_\-t \hyperlink{aes__le_8h_a11}{\_\-ad0}\mbox{[}256\mbox{]}}}
+\label{aes__le_8h_a11}
+
+
+Definition at line 374 of file aes\_\-le.h.\hypertarget{aes__le_8h_a12}{
+\index{aes_le.h@{aes\_\-le.h}!_ad1@{\_\-ad1}}
+\index{_ad1@{\_\-ad1}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[\_\-ad1]{\setlength{\rightskip}{0pt plus 5cm}const uint32\_\-t \hyperlink{aes__le_8h_a12}{\_\-ad1}\mbox{[}256\mbox{]}}}
+\label{aes__le_8h_a12}
+
+
+Definition at line 445 of file aes\_\-le.h.\hypertarget{aes__le_8h_a13}{
+\index{aes_le.h@{aes\_\-le.h}!_ad2@{\_\-ad2}}
+\index{_ad2@{\_\-ad2}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[\_\-ad2]{\setlength{\rightskip}{0pt plus 5cm}const uint32\_\-t \hyperlink{aes__le_8h_a13}{\_\-ad2}\mbox{[}256\mbox{]}}}
+\label{aes__le_8h_a13}
+
+
+Definition at line 516 of file aes\_\-le.h.\hypertarget{aes__le_8h_a14}{
+\index{aes_le.h@{aes\_\-le.h}!_ad3@{\_\-ad3}}
+\index{_ad3@{\_\-ad3}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[\_\-ad3]{\setlength{\rightskip}{0pt plus 5cm}const uint32\_\-t \hyperlink{aes__le_8h_a14}{\_\-ad3}\mbox{[}256\mbox{]}}}
+\label{aes__le_8h_a14}
+
+
+Definition at line 587 of file aes\_\-le.h.\hypertarget{aes__le_8h_a15}{
+\index{aes_le.h@{aes\_\-le.h}!_ad4@{\_\-ad4}}
+\index{_ad4@{\_\-ad4}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[\_\-ad4]{\setlength{\rightskip}{0pt plus 5cm}const uint32\_\-t \hyperlink{aes__le_8h_a15}{\_\-ad4}\mbox{[}256\mbox{]}}}
+\label{aes__le_8h_a15}
+
+
+Definition at line 655 of file aes\_\-le.h.\hypertarget{aes__le_8h_a6}{
+\index{aes_le.h@{aes\_\-le.h}!_ae0@{\_\-ae0}}
+\index{_ae0@{\_\-ae0}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[\_\-ae0]{\setlength{\rightskip}{0pt plus 5cm}const uint32\_\-t \hyperlink{aes__le_8h_a6}{\_\-ae0}\mbox{[}256\mbox{]}}}
+\label{aes__le_8h_a6}
+
+
+Definition at line 23 of file aes\_\-le.h.\hypertarget{aes__le_8h_a7}{
+\index{aes_le.h@{aes\_\-le.h}!_ae1@{\_\-ae1}}
+\index{_ae1@{\_\-ae1}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[\_\-ae1]{\setlength{\rightskip}{0pt plus 5cm}const uint32\_\-t \hyperlink{aes__le_8h_a7}{\_\-ae1}\mbox{[}256\mbox{]}}}
+\label{aes__le_8h_a7}
+
+
+Definition at line 94 of file aes\_\-le.h.\hypertarget{aes__le_8h_a8}{
+\index{aes_le.h@{aes\_\-le.h}!_ae2@{\_\-ae2}}
+\index{_ae2@{\_\-ae2}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[\_\-ae2]{\setlength{\rightskip}{0pt plus 5cm}const uint32\_\-t \hyperlink{aes__le_8h_a8}{\_\-ae2}\mbox{[}256\mbox{]}}}
+\label{aes__le_8h_a8}
+
+
+Definition at line 165 of file aes\_\-le.h.\hypertarget{aes__le_8h_a9}{
+\index{aes_le.h@{aes\_\-le.h}!_ae3@{\_\-ae3}}
+\index{_ae3@{\_\-ae3}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[\_\-ae3]{\setlength{\rightskip}{0pt plus 5cm}const uint32\_\-t \hyperlink{aes__le_8h_a9}{\_\-ae3}\mbox{[}256\mbox{]}}}
+\label{aes__le_8h_a9}
+
+
+Definition at line 236 of file aes\_\-le.h.\hypertarget{aes__le_8h_a10}{
+\index{aes_le.h@{aes\_\-le.h}!_ae4@{\_\-ae4}}
+\index{_ae4@{\_\-ae4}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[\_\-ae4]{\setlength{\rightskip}{0pt plus 5cm}const uint32\_\-t \hyperlink{aes__le_8h_a10}{\_\-ae4}\mbox{[}256\mbox{]}}}
+\label{aes__le_8h_a10}
+
+
+Definition at line 304 of file aes\_\-le.h.\hypertarget{aes__le_8h_a16}{
+\index{aes_le.h@{aes\_\-le.h}!_arc@{\_\-arc}}
+\index{_arc@{\_\-arc}!aes_le.h@{aes\_\-le.h}}
+\subsubsection[\_\-arc]{\setlength{\rightskip}{0pt plus 5cm}const uint32\_\-t \hyperlink{aes__le_8h_a16}{\_\-arc}\mbox{[}$\,$\mbox{]}\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{aes__le_8h_a16}
+
+
+{\bf Initial value:}
+
+\footnotesize\begin{verbatim} {
+    0x00000001, 0x00000002, 0x00000004, 0x00000008,
+    0x00000010, 0x00000020, 0x00000040, 0x00000080,
+    0x0000001b, 0x00000036
+}
+\end{verbatim}\normalsize 
+Definition at line 722 of file aes\_\-le.h.

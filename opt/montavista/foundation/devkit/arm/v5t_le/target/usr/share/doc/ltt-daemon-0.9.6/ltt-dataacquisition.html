@@ -1,0 +1,162 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <title>Data acquisition</title>
+</head>
+<body BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#840084" ALINK="#0000FF">
+<TABLE WIDTH="100%" BORDER="0" BGCOLOR="#000000" CELLPADDING="1" CELLSPACING="0">
+<TR>
+<TH COLSPAN="4" ALIGN="center">
+<FONT COLOR="#FFFFFF" SIZE="5">Linux Trace Toolkit Reference Manual</FONT>
+</TH>
+</TR>
+<TR>
+<TD WIDTH="25%" BGCOLOR="#C00000" ALIGN="left">
+<A HREF="ltt-installation.html">
+<FONT COLOR="#FFFFFF" SIZE="3">
+<B>&#60;&#60;&#60; Previous Page</B>
+</FONT>
+</A>
+</TD>
+<TD WIDTH="25%" BGCOLOR="#0000C0" ALIGN="center">
+<A HREF="index.html">
+<FONT COLOR="#FFFFFF" SIZE="3">
+<B>Home</B>
+</FONT>
+</A>
+</TD>
+<TD WIDTH="25%" BGCOLOR="#00C000" ALIGN="center">
+<A HREF="index.html">
+<FONT COLOR="#FFFFFF" SIZE="3">
+<B>Up</B>
+</FONT>
+</A>
+</TD>
+<TD WIDTH="25%" BGCOLOR="#C00000" ALIGN="right">
+<A HREF="ltt-daemon-commandline.html">
+<FONT COLOR="#FFFFFF"SIZE="3">
+<B>Next Page &#62;&#62;&#62;</B>
+</FONT>
+</A>
+</TD>
+</TR>
+</TABLE>
+<br>
+<b><u><font size=6>3. Data acquisition</font></u></b><b><font size=+3></font></b>
+<p><i><font size=4>3.1 Probing the kernel</font></i>
+<br>
+<ul>
+<li>
+Reboot and use the kernel built in the previous section.  The rest of
+these instructions assume you are logged in as root on the machine
+with the patched kernel running.  (This is the target machine if
+you are using a host/target configuration.)</li>
+
+<br>&nbsp;
+
+<li>
+If it does not already exist, create a directory to mount the
+relay filesystem in.
+
+<ul>
+<pre>mkdir /mnt/relay
+</ul>
+
+<li>
+Mount the relay filesystem.
+
+<ul>
+<pre>mount -t relayfs nodev /mnt/relay
+</ul>
+
+<p>Having done this, you should see a new entry in /proc/mounts.
+</ul>
+
+<p><i><font size=4>3.2 Probing RTAI</font></i>
+<p>&nbsp;&nbsp;&nbsp;
+You can now install the other RTAI modules and trace your system.
+
+<p><i><font size=4>3.3 Recording the data</font></i>
+<p>&nbsp;&nbsp;&nbsp; A trace begins when the trace daemon tells the
+kernel to start recording events. To start recording, do:
+<ul>
+<li>
+Start the trace daemon</li>
+<ul>
+<pre>tracedaemon -ts<i>T</i>./out.trace ./out.proc</pre>
+</ul>
+
+<br>out.trace will contain the raw events and out.proc will contain
+data read from /proc that will enable the decoder to know the process'
+name and hierarchy. Replace <i>T</i> by the number of seconds you want the
+daemon to run. Using the given command line, the out.trace file will use,
+approximatively, 30 M per minute it runs for a heavy loaded system. On
+a normal workstation without X, the usage is less than 1 M per minute. It
+is possible to reduce the usage by choosing not to trace certain events. See
+the following section for the daemon's command-line options.
+<br>&nbsp;
+<li>
+If you didn't specify the -t option, then you must stop the trace daemon
+manually.  For normal trace mode, do this by sending it a TERM signal.
+using the <tt>kill</tt> command.</li>  First, use <tt>ps</tt> to find
+out the process ID of the tracedaemon.  Then use this PID with the
+<tt>kill</tt> command.
+<ul>
+<pre>kill [daemon pid]</pre>
+</ul>
+
+<br>&nbsp;
+<li>Since the daemon and the decoder are often used in the same way on multiple runs, it is
+desirable to write simple scripts to automate the passing of options. The last
+section, of this Help, documents some scripts already available.</li>
+</ul>
+
+<hr WIDTH="100%">
+<TABLE WIDTH="100%" BORDER="0" BGCOLOR="#000000" CELLPADDING="1" CELLSPACING="0">
+<TR>
+<TD WIDTH="25%" BGCOLOR="#C00000" ALIGN="left">
+<A HREF="ltt-installation.html">
+<FONT COLOR="#FFFFFF" SIZE="3">
+<B>&#60;&#60;&#60; Previous Page</B>
+</FONT>
+</A>
+</TD>
+<TD WIDTH="25%" BGCOLOR="#0000C0" ALIGN="center">
+<A HREF="index.html">
+<FONT COLOR="#FFFFFF" SIZE="3">
+<B>Home</B>
+</FONT>
+</A>
+</TD>
+<TD WIDTH="25%" BGCOLOR="#00C000" ALIGN="center">
+<A HREF="index.html">
+<FONT COLOR="#FFFFFF" SIZE="3">
+<B>Up</B>
+</FONT>
+</A>
+</TD>
+<TD WIDTH="25%" BGCOLOR="#C00000" ALIGN="right">
+<A HREF="ltt-daemon-commandline.html">
+<FONT COLOR="#FFFFFF" SIZE="3">
+<B>Next Page &#62;&#62;&#62;</B>
+</FONT>
+</A>
+</TD>
+</TR>
+<TR>
+<TD COLSPAN="2" ALIGN="left">
+<FONT COLOR="#FFFFFF" SIZE="3">
+<B>Linux trace toolkit</B>
+</FONT>
+</TD>
+<TD COLSPAN="2" ALIGN="right">
+<FONT COLOR="#FFFFFF" SIZE="3">
+<B>Data acquisition</B>
+</FONT>
+</TD>
+</TR>
+</TABLE>
+
+</body>
+</html>

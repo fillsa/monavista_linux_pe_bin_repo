@@ -1,0 +1,508 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 42</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_41.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_43.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<h1>
+<a name="CHAP42" href="spec_toc.html#TOC320">
+42. Some common configuration requirements
+</a></h1>
+<p>
+This chapter discusses some configuration requirements that seem to be fairly
+common. More examples and discussion can be found in the Exim book.
+</p>
+<a name="IX2494"></a>
+<h2>
+<a name="SECT42.1" href="spec_toc.html#TOC321">
+42.1. Sending mail to a smart host
+</a></h2>
+<p>
+If you want to send all mail for non-local domains to a &#147;smart host&#148;, you
+should replace the default <b>dnslookup</b> router with a router which does the
+routing explicitly:
+<pre>
+&nbsp;&nbsp;send_to_smart_host:
+&nbsp;&nbsp;  driver = manualroute
+&nbsp;&nbsp;  route_list = !+local_domains smart.host.name
+&nbsp;&nbsp;  transport = remote_smtp
+</pre>
+</p>
+<p>
+You can use the smart host's IP address instead of the name if you wish.
+</p>
+<a name="IX2495"></a>
+<h2>
+<a name="SECT42.2" href="spec_toc.html#TOC322">
+42.2. Using Exim to handle mailing lists
+</a></h2>
+<p>
+Exim can be used to run simple mailing lists, but for large and/or complicated
+requirements, the use of additional specialized mailing list software such as
+Majordomo or Mailman is recommended.
+</p>
+<p>
+The <b>redirect</b> router can be used to handle mailing lists where each list
+is maintained in a separate file, which can therefore be managed by an
+independent manager. The <tt>domains</tt> router option can be used to run these
+lists in a separate domain from normal mail. For example:
+<pre>
+&nbsp;&nbsp;lists:
+&nbsp;&nbsp;  driver = redirect
+&nbsp;&nbsp;  domains = lists.example
+&nbsp;&nbsp;  file = /usr/lists/$local_part
+&nbsp;&nbsp;  forbid_pipe
+&nbsp;&nbsp;  forbid_file
+&nbsp;&nbsp;  errors_to = $local_part-request@lists.example
+&nbsp;&nbsp;  no_more
+</pre>
+</p>
+<p>
+This router is skipped for domains other than <i>lists.example</i>. For addresses
+in that domain, it looks for a file that matches the local part. If there is no
+such file, the router declines, but because <tt>no&#095;more</tt> is set, no subsequent
+routers are tried, and so the whole delivery fails.
+</p>
+<p>
+The <tt>forbid&#095;pipe</tt> and <tt>forbid&#095;file</tt> options prevent a local part from being
+expanded into a file name or a pipe delivery, which is usually inappropriate in
+a mailing list.
+<a name="IX2496"></a>
+</p>
+<p>
+The <tt>errors&#095;to</tt> option specifies that any delivery errors caused by addresses
+taken from a mailing list are to be sent to the given address rather than the
+original sender of the message. However, before acting on this, Exim verifies
+the error address, and ignores it if verification fails.
+</p>
+<p>
+For example, using the configuration above, mail sent to
+<i>dicts&#064;lists.example</i> is passed on to those addresses contained in
+<i>/usr/lists/dicts</i>, with error reports directed to
+<i>dicts-request&#064;lists.example</i>, provided that this address can be verified.
+There could be a file called <i>/usr/lists/dicts-request</i> containing
+the address(es) of this particular list's manager(s), but other approaches,
+such as setting up an earlier router (possibly using the <tt>local&#095;part&#095;prefix</tt>
+or <tt>local&#095;part&#095;suffix</tt> options) to handle addresses of the form <tt>owner-xxx</tt>
+or <tt>xxx-request</tt>, are also possible.
+</p>
+<a name="IX2497"></a>
+<h2>
+<a name="SECT42.3" href="spec_toc.html#TOC323">
+42.3. Syntax errors in mailing lists
+</a></h2>
+<p>
+If an entry in redirection data contains a syntax error, Exim normally defers
+delivery of the original address. That means that a syntax error in a mailing
+list holds up all deliveries to the list. This may not be appropriate when a
+list is being maintained automatically from data supplied by users, and the
+addresses are not rigorously checked.
+</p>
+<p>
+If the <tt>skip&#095;syntax&#095;errors</tt> option is set, the <b>redirect</b> router just skips
+entries that fail to parse, noting the incident in the log. If in addition
+<tt>syntax&#095;errors&#095;to</tt> is set to a verifiable address, a message is sent to it
+whenever a broken address is skipped. It is usually appropriate to set
+<tt>syntax&#095;errors&#095;to</tt> to the same address as <tt>errors&#095;to</tt>.
+</p>
+<a name="IX2498"></a>
+<h2>
+<a name="SECT42.4" href="spec_toc.html#TOC324">
+42.4. Re-expansion of mailing lists
+</a></h2>
+<p>
+Exim remembers every individual address to which a message has been delivered,
+in order to avoid duplication, but it normally stores only the original
+recipient addresses with a message. If all the deliveries to a mailing list
+cannot be done at the first attempt, the mailing list is re-expanded when the
+delivery is next tried. This means that alterations to the list are taken into
+account at each delivery attempt, so addresses that have been added to
+the list since the message arrived will therefore receive a copy of the
+message, even though it pre-dates their subscription.
+</p>
+<p>
+If this behaviour is felt to be undesirable, the <tt>one&#095;time</tt> option can be set
+on the <b>redirect</b> router. If this is done, any addresses generated by the
+router that fail to deliver at the first attempt are added to the message as
+&#147;top level&#148; addresses, and the parent address that generated them is marked
+&#147;delivered&#148;. Thus, expansion of the mailing list does not happen again at the
+subsequent delivery attempts. The disadvantage of this is that if any of the
+failing addresses are incorrect, correcting them in the file has no effect on
+pre-existing messages.
+</p>
+<p>
+The original top-level address is remembered with each of the generated
+addresses, and is output in any log messages. However, any intermediate parent
+addresses are not recorded. This makes a difference to the log only if the
+<tt>all&#095;parents</tt> selector is set, but for mailing lists there is normally only
+one level of expansion anyway.
+</p>
+<a name="IX2499"></a>
+<h2>
+<a name="SECT42.5" href="spec_toc.html#TOC325">
+42.5. Closed mailing lists
+</a></h2>
+<p>
+The examples so far have assumed open mailing lists, to which anybody may
+send mail. It is also possible to set up closed lists, where mail is accepted
+from specified senders only. This is done by making use of the generic
+<tt>senders</tt> option to restrict the router that handles the list.
+</p>
+<p>
+The following example uses the same file as a list of recipients and as a list
+of permitted senders. It requires three routers:
+<pre>
+&nbsp;&nbsp;lists_request:
+&nbsp;&nbsp;  driver = redirect
+&nbsp;&nbsp;  domains = lists.example
+&nbsp;&nbsp;  local_part_suffix = -request
+&nbsp;&nbsp;  file = /usr/lists/$local_part$local_part_suffix
+&nbsp;&nbsp;  no_more
+&nbsp;&nbsp;
+&nbsp;&nbsp;lists_post:
+&nbsp;&nbsp;  driver = redirect
+&nbsp;&nbsp;  domains = lists.example
+&nbsp;&nbsp;  senders = ${if exists {/usr/lists/$local_part}\
+&nbsp;&nbsp;             {lsearch;/usr/lists/$local_part}{*}}
+&nbsp;&nbsp;  file = /usr/lists/$local_part
+&nbsp;&nbsp;  forbid_pipe
+&nbsp;&nbsp;  forbid_file
+&nbsp;&nbsp;  errors_to = $local_part-request@lists.example
+&nbsp;&nbsp;  no_more
+&nbsp;&nbsp;
+&nbsp;&nbsp;lists_closed:
+&nbsp;&nbsp;  driver = redirect
+&nbsp;&nbsp;  domains = lists.example
+&nbsp;&nbsp;  allow_fail 
+&nbsp;&nbsp;  data = :fail: $local_part@lists.example is a closed mailing list
+</pre>
+</p>
+<p>
+All three routers have the same <tt>domains</tt> setting, so for any other domains,
+they are all skipped. The first router runs only if the local part ends in
+<tt>&#045;request</tt>. It handles messages to the list manager(s) by means of an open
+mailing list.
+</p>
+<p>
+The second router runs only if the <tt>senders</tt> precondition is satisfied. It
+checks for the existence of a list that corresponds to the local part, and then
+checks that the sender is on the list by means of a linear search. It is
+necessary to check for the existence of the file before trying to search it,
+because otherwise Exim thinks there is a configuration error. If the file does
+not exist, the expansion of <tt>senders</tt> is *, which matches all senders. This
+means that the router runs, but because there is no list, declines, and
+<tt>no&#095;more</tt> ensures that no further routers are run. The address fails with an
+&#147;unrouteable address&#148; error.
+</p>
+<p>
+The third router runs only if the second router is skipped, which happens when
+a mailing list exists, but the sender is not on it. This router forcibly fails
+the address, giving a suitable error message.
+</p>
+<a name="IX2500"></a>
+<a name="IX2501"></a>
+<h2>
+<a name="SECT42.6" href="spec_toc.html#TOC326">
+42.6. Virtual domains
+</a></h2>
+<p>
+The phrase <i>virtual domain</i> is unfortunately used with two rather different
+meanings:
+</p>
+<ul>
+<li><p>
+A domain for which there are no real mailboxes; all valid local parts are
+aliases for other email addresses. Common examples are organizational
+top-level domains and &#147;vanity&#148; domains.
+</p>
+</li>
+<li><p>
+One of a number of independent domains that are all handled by the same host,
+with mailboxes on that host, but where the mailbox owners do not necessarily
+have login accounts on that host.
+</p>
+</li>
+</ul>
+<p>
+The first usage is probably more common, and does seem more &#147;virtual&#148; than the
+second. This kind of domain can be handled in Exim with a straightforward
+aliasing router. One approach is to create a separate alias file for each
+virtual domain. Exim can test for the existence of the alias file to determine
+whether the domain exists. The <b>dsearch</b> lookup type is useful here, leading
+to a router of this form:
+<pre>
+&nbsp;&nbsp;virtual:
+&nbsp;&nbsp;  driver = redirect
+&nbsp;&nbsp;  domains = dsearch;/etc/mail/virtual
+&nbsp;&nbsp;  data = ${lookup{$local_part}lsearch{/etc/mail/virtual/$domain}}
+&nbsp;&nbsp;  no_more
+</pre>
+</p>
+<p>
+The <tt>domains</tt> option specifies that the router is to be skipped, unless there
+is a file in the <i>/etc/mail/virtual</i> directory whose name is the same as the
+domain that is being processed. When the router runs, it looks up the local
+part in the file to find a new address (or list of addresses). The <tt>no&#095;more</tt>
+setting ensures that if the lookup fails (leading to <tt>data</tt> being an empty
+string), Exim gives up on the address without trying any subsequent routers.
+</p>
+<p>
+This one router can handle all the virtual domains because the alias file names
+follow a fixed pattern. Permissions can be arranged so that appropriate people
+can edit the different alias files. A successful aliasing operation results in
+a new envelope recipient address, which is then routed from scratch.
+</p>
+<p>
+The other kind of &#147;virtual&#148; domain can also be handled in a straightforward
+way. One approach is to create a file for each domain containing a list of
+valid local parts, and use it in a router like this:
+<pre>
+&nbsp;&nbsp;my_domains:
+&nbsp;&nbsp;  driver = accept
+&nbsp;&nbsp;  domains = dsearch;/etc/mail/domains
+&nbsp;&nbsp;  local_parts = lsearch;/etc/mail/domains/$domain
+&nbsp;&nbsp;  transport = my_mailboxes
+</pre>
+</p>
+<p>
+The address is accepted if there is a file for the domain, and the local part
+can be found in the file. The <tt>domains</tt> option is used to check for the file's
+existence because <tt>domains</tt> is tested before the <tt>local&#095;parts</tt> option (see
+section <a href="spec_3.html#SECT3.11">3.11</a>). You can't use <tt>require&#095;files</tt>, because that option
+is tested after <tt>local&#095;parts</tt>. The transport is as follows:
+<pre>
+&nbsp;&nbsp;my_mailboxes:
+&nbsp;&nbsp;  driver = appendfile
+&nbsp;&nbsp;  file = /var/mail/$domain/$local_part
+&nbsp;&nbsp;  user = mail
+</pre>
+</p>
+<p>
+This uses a directory of mailboxes for each domain. The <tt>user</tt> setting is
+required, to specify which uid is to be used for writing to the mailboxes.
+</p>
+<p>
+The configuration shown here is just one example of how you might support this
+requirement. There are many other ways this kind of configuration can be set
+up, for example, by using a database instead of separate files to hold all the
+information about the domains.
+</p>
+<a name="IX2502"></a>
+<a name="IX2503"></a>
+<a name="IX2504"></a>
+<a name="IX2505"></a>
+<h2>
+<a name="SECT42.7" href="spec_toc.html#TOC327">
+42.7. Multiple user mailboxes
+</a></h2>
+<p>
+Heavy email users often want to operate with multiple mailboxes, into which
+incoming mail is automatically sorted. A popular way of handling this is to
+allow users to use multiple sender addresses, so that replies can easily be
+identified. Users are permitted to add prefixes or suffixes to their local
+parts for this purpose. The wildcard facility of the generic router options
+<tt>local&#095;part&#095;prefix</tt> and <tt>local&#095;part&#095;suffix</tt> can be used for this. For
+example, consider this router:
+<pre>
+&nbsp;&nbsp;userforward:
+&nbsp;&nbsp;  driver = redirect
+&nbsp;&nbsp;  check_local_user
+&nbsp;&nbsp;  file = $home/.forward
+&nbsp;&nbsp;  local_part_suffix = -*
+&nbsp;&nbsp;  local_part_suffix_optional
+&nbsp;&nbsp;  allow_filter
+</pre>
+</p>
+<p>
+It runs a user's <i>.forward</i> file for all local parts of the form
+<tt>*username-**</tt>. Within the filter file the user can distinguish different
+cases by testing the variable <tt>$local&#095;part&#095;suffix</tt>. For example:
+<pre>
+&nbsp;&nbsp;if $local_part_suffix contains -special then
+&nbsp;&nbsp;  save /home/$local_part/Mail/special
+&nbsp;&nbsp;endif
+</pre>
+</p>
+<p>
+If the filter file does not exist, or does not deal with such addresses, they
+fall through to subsequent routers, and, assuming no subsequent use of the
+<tt>local&#095;part&#095;suffix</tt> option is made, they presumably fail. Thus, users have
+control over which suffixes are valid.
+</p>
+<p>
+Alternatively, a suffix can be used to trigger the use of a different
+<i>.forward</i> file &#150; which is the way a similar facility is implemented in
+another MTA:
+<pre>
+&nbsp;&nbsp;userforward:
+&nbsp;&nbsp;  driver = redirect
+&nbsp;&nbsp;  check_local_user
+&nbsp;&nbsp;  file = $home/.forward$local_part_suffix
+&nbsp;&nbsp;  local_part_suffix = -*
+&nbsp;&nbsp;  local_part_suffix_optional
+&nbsp;&nbsp;  allow_filter
+</pre>
+</p>
+<p>
+If there is no suffix, <i>.forward</i> is used; if the suffix is <i>-special</i>, for
+example, <i>.forward-special</i> is used. Once again, if the appropriate file
+does not exist, or does not deal with the address, it is passed on to
+subsequent routers, which could, if required, look for an unqualified
+<i>.forward</i> file to use as a default.
+</p>
+<a name="IX2506"></a>
+<h2>
+<a name="SECT42.8" href="spec_toc.html#TOC328">
+42.8. Simplified vacation processing
+</a></h2>
+<p>
+The traditional way of running the <i>vacation</i> program is for a user to set up
+a pipe command in a <i>.forward</i> file
+(see section <a href="spec_22.html#SECT22.6">22.6</a> for syntax details).
+This is prone to error by inexperienced users. There are two features of Exim
+that can be used to make this process simpler for users:
+</p>
+<ul>
+<li><p>
+A local part prefix such as &#147;vacation-&#148; can be specified on a router which
+can cause the message to be delivered directly to the <i>vacation</i> program, or
+alternatively can use Exim's <b>autoreply</b> transport. The contents of a user's
+<i>.forward</i> file are then much simpler. For example:
+<pre>
+&nbsp;&nbsp;spqr, vacation-spqr
+</pre>
+</p>
+</li>
+<li><p>
+The <tt>require&#095;files</tt> generic router option can be used to trigger a
+vacation delivery by checking for the existence of a certain file in the
+user's home directory. The <tt>unseen</tt> generic option should also be used, to
+ensure that the original delivery also proceeds. In this case, all the user has
+to do is to create a file called, say, <i>.vacation</i>, containing a vacation
+message.
+</p>
+</li>
+</ul>
+<p>
+Another advantage of both these methods is that they both work even when the
+use of arbitrary pipes by users is locked out.
+</p>
+<a name="IX2507"></a>
+<h2>
+<a name="SECT42.9" href="spec_toc.html#TOC329">
+42.9. Taking copies of mail
+</a></h2>
+<p>
+Some installations have policies that require archive copies of all messages to
+be made. A single copy of each message can easily be taken by an appropriate
+command in a system filter, which could, for example, use a different file for
+each day's messages.
+</p>
+<p>
+There is also a shadow transport mechanism that can be used to take copies of
+messages that are successfully delivered by local transports, one copy per
+delivery. This could be used, <em>inter alia</em>, to implement automatic
+notification of delivery by sites that insist on doing such things.
+</p>
+<a name="IX2508"></a>
+<h2>
+<a name="SECT42.10" href="spec_toc.html#TOC330">
+42.10. Intermittently connected hosts
+</a></h2>
+<p>
+It has become quite common (because it is cheaper) for hosts to connect to the
+Internet periodically rather than remain connected all the time. The normal
+arrangement is that mail for such hosts accumulates on a system that is
+permanently connected.
+</p>
+<p>
+Exim was designed for use on permanently connected hosts, and so it is not
+particularly well-suited to use in an intermittently connected environment.
+Nevertheless there are some features that can be used.
+</p>
+<h2>
+<a name="SECT42.11" href="spec_toc.html#TOC331">
+42.11. Exim on the upstream server host
+</a></h2>
+<p>
+It is tempting to arrange for incoming mail for the intermittently connected
+host to remain on Exim's queue until the client connects. However, this
+approach does not scale very well. Two different kinds of waiting message are
+being mixed up in the same queue &#150; those that cannot be delivered because of
+some temporary problem, and those that are waiting for their destination host
+to connect. This makes it hard to manage the queue, as well as wasting
+resources, because each queue runner scans the entire queue.
+</p>
+<p>
+A better approach is to separate off those messages that are waiting for an
+intermittently connected host. This can be done by delivering these messages
+into local files in batch SMTP, &#147;mailstore&#148;, or other envelope-preserving
+format, from where they are transmitted by other software when their
+destination connects. This makes it easy to collect all the mail for one host
+in a single directory, and to apply local timeout rules on a per-message basis
+if required.
+</p>
+<p>
+On a very small scale, leaving the mail on Exim's queue can be made to work. If
+you are doing this, you should configure Exim with a long retry period for the
+intermittent host. For example:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>cheshire.wonderland.fict.example    *   F,5d,24h</tt><br>
+</p>
+<p>
+This stops a lot of failed delivery attempts from occurring, but Exim remembers
+which messages it has queued up for that host. Once the intermittent host comes
+online, forcing delivery of one message (either by using the <i>-M</i> or <i>-R</i>
+options, or by using the <font size=-1>ETRN</font> SMTP command (see section <a href="spec_43.html#SECT43.9">43.9</a>)
+causes all the queued up messages to be delivered, often down a single SMTP
+connection. While the host remains connected, any new messages get delivered
+immediately.
+</p>
+<p>
+If the connecting hosts do not have fixed IP addresses, that is, if a host is
+issued with a different IP address each time it connects, Exim's retry
+mechanisms on the holding host get confused, because the IP address is normally
+used as part of the key string for holding retry information. This can be
+avoided by unsetting <tt>retry_include_ip_address</tt> on the <b>smtp</b> transport.
+Since this has disadvantages for permanently connected hosts, it is best to
+arrange a separate transport for the intermittently connected ones.
+</p>
+<h2>
+<a name="SECT42.12" href="spec_toc.html#TOC332">
+42.12. Exim on the intermittently connected client host
+</a></h2>
+<p>
+The value of <tt>smtp&#095;accept&#095;queue&#095;per&#095;connection</tt> should probably be
+increased, or even set to zero (that is, disabled) on the intermittently
+connected host, so that all incoming messages down a single connection get
+delivered immediately.
+<a name="IX2509"></a>
+<a name="IX2510"></a>
+<a name="IX2511"></a>
+</p>
+<p>
+Mail waiting to be sent from an intermittently connected host will probably
+not have been routed, because without a connection DNS lookups are not
+possible. This means that if a normal queue run is done at connection time,
+each message is likely to be sent in a separate SMTP session. This can be
+avoided by starting the queue run with a command line option beginning with
+<i>-qq</i> instead of <i>-q</i>. In this case, the queue is scanned twice. In the first
+pass, routing is done but no deliveries take place. The second pass is a normal
+queue run; since all the messages have been previously routed, those destined
+for the same host are likely to get sent as multiple deliveries in a single
+SMTP connection.
+<hr>
+</p>
+<font size=2>
+<a href="spec_41.html">Previous</a>&nbsp;&nbsp;<a href="spec_43.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

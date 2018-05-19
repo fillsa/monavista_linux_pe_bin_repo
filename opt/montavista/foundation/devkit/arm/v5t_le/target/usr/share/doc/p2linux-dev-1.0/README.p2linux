@@ -1,0 +1,34 @@
+The accompanying GNU gzipped tar archive contains the following components:
+   o  source code for an introductory level Linux-based simulator
+      for a Wind River pSOS+ (R) environment.
+   o  source code for a pSOS+ (R) application which functions as a validation
+      test for the above
+   o  source code for a pSOS+ (R) demo program for the simulator
+   o  makefiles for the validation test (Makefile) and the demo (Makedemo)
+   o  executables for the validation test (validate) and the demo (demo)
+      for an intel-based PC Linux platform
+
+NOTE: pSOS and pSOS+ are registered trademarks of Wind River Systems, Inc.
+
+The command 'tar tvzf p2linux.tgz' will produce a listing of the contents
+without actually extracting them.  'tar xzf p2linux.tgz' will create a
+'p2pthreads' subdirectory in the current working directory and will extract all
+archived files into the 'p2pthreads' subdirectory.
+
+To compile pSOS+ (R) sources, a header file called 'psos.h' is required.
+This file is not supplied with the archive as it is the exclusive property of
+Wind River Systems, Inc..  It is assumed that anyone with an interest in this
+simulator probably already has a copy of this header.  A header file named
+'not_quite_p_os.h' will supply the requisite definitions for purposes of
+recompiling the 'c' sources in the package.
+
+The supplied makefiles may be used as examples for creating executables from
+your own pSOS+ (R) source code.  Note the compiler flags used.  These specify
+linking with the pthreads library and the use of thread-safe REENTRANT
+versions of C library functions where those are available. 
+
+Note that this code is still largely experimental and is supplied on an
+'as-is' basis with no guarantee of suitability or functionality for any
+specific purpose or application.  With that in mind, please feel free to
+experiment!
+

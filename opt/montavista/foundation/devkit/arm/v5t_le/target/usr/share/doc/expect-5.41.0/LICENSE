@@ -1,0 +1,82 @@
+This package was debianized by David Engel <david@debiang.org>
+from sources obtained from http://expect.nist.gov/
+It is now maintained by Mike Markley <mike@markley.org>.
+
+Copyright:
+
+#5. Do we need to pay or ask for permission to distribute Expect?
+
+From: libes (Don Libes)
+To: Mohammad Reza Jahanbin <mrj@CIS.Prime.COM>
+Subject: Copyright Question.
+Date: Tue, 26 Jan 93 23:46:24 EST
+
+Mohammad Reza Jahanbin writes:
+>Before anything let me thank you on behalf of ComputeVision R&D for
+>putting so much effort into Expect. Part of CV has been using Expect
+>for the past two years or so to build variety of tools including an
+>automated testbed for a product.
+>
+>CV is currently considering shipping the automated testbed to some of its
+>retailers, to enable them to perform their own tests before distributing
+>the product.
+>
+>The Question is, are we allowed to ship Expect? Do we need to ask
+>anyone for permission? Do we need to say or write anything in the
+>documentation? Do we need to pay for it?
+>
+>I have not been able to find any copyright (or indeed copyleft) notices
+>in the usual Expect distribution. Would you be able to clarify our position.
+
+Sorry to delay in responding.  I sent your request to my management
+and they had to discuss it (if they didn't, there would be no reason
+to pay them).  While they continue to discuss it, I can tell you
+informally the gist of what they will eventually say:
+
+You are allowed to do just about anything with Expect.  You can even
+sell it.  You need not ask our permission.  You need not pay for it.
+(It is my understanding that your tax dollars, in effect, already have
+paid for it.)
+
+You should not claim that you wrote it (since this would be a lie), nor
+should you attempt to copyright it (this would be fruitless as it is a
+work of the US government and therefore not subject to copyright).
+
+NIST would appreciate any credit you can give for this work.  One line
+may suffice (as far as I'm concerned) although there should be
+something to the effect that this software was produced for research
+purposes.  No warantee, guarantee, or liability is implied.
+
+My management is always interested in feedback on our work.  If you
+would like to send letters of praise describing how Expect has helped
+your business, we would be delighted.  Letters (on letterhead please)
+are strong evidence used by policy makers when deciding where every
+dollar goes.  If you want to send these letters to NIST directly, you
+may send them to the following individuals:
+
+Arati Prabahkar, Director
+NIST
+Admin Bldg, Rm A-1134
+Gaithersburg, MD 20899
+
+Ric Jackson, Manufacturing Engineering Laboratory
+NIST
+Bldg 220, Rm B-322
+Gaithersburg, MD 20899
+
+Howard Bloom, Manufacturing Systems Integration Division
+NIST
+Bldg 220, Rm A-127
+Gaithersburg, MD 20899
+
+Steve Ray, Manufacturing Collaboration Technologies Group
+NIST
+Bldg 220, Rm A-127
+Gaithersburg, MD 20899
+
+In case you're wondering about the uninformative titles, Arati Prabahkar is the
+director of all of NIST (about 3000 people) and Steve Ray (way down there
+at the bottom) is my immediate supervisor (and of 10 other very lucky people).
+
+I hope this has answered your questions.  Let me know if you have
+further questions.

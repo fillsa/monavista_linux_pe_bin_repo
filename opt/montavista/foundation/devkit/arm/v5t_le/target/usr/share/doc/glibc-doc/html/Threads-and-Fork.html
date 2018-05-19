@@ -1,0 +1,133 @@
+<html lang="en">
+<head>
+<title>Threads and Fork - The GNU C Library</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU C Library">
+<meta name="generator" content="makeinfo 4.7">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="POSIX-Threads.html#POSIX-Threads" title="POSIX Threads">
+<link rel="prev" href="Threads-and-Signal-Handling.html#Threads-and-Signal-Handling" title="Threads and Signal Handling">
+<link rel="next" href="Streams-and-Fork.html#Streams-and-Fork" title="Streams and Fork">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc { font-variant:small-caps }
+  span.roman { font-family: serif; font-weight: normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Threads-and-Fork"></a>Next:&nbsp;<a rel="next" accesskey="n" href="Streams-and-Fork.html#Streams-and-Fork">Streams and Fork</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Threads-and-Signal-Handling.html#Threads-and-Signal-Handling">Threads and Signal Handling</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="POSIX-Threads.html#POSIX-Threads">POSIX Threads</a>
+<hr><br>
+</div>
+
+<h3 class="section">34.10 Threads and Fork</h3>
+
+<p>It's not intuitively obvious what should happen when a multi-threaded POSIX
+process calls <code>fork</code>. Not only are the semantics tricky, but you may
+need to write code that does the right thing at fork time even if that code
+doesn't use the <code>fork</code> function. Moreover, you need to be aware of
+interaction between <code>fork</code> and some library features like
+<code>pthread_once</code> and stdio streams.
+
+   <p>When <code>fork</code> is called by one of the threads of a process, it creates a new
+process which is copy of the  calling process. Effectively, in addition to
+copying certain system objects, the function takes a snapshot of the memory
+areas of the parent process, and creates identical areas in the child. 
+To make matters more complicated, with threads it's possible for two or more
+threads to concurrently call fork to create two or more child processes.
+
+   <p>The child process has a copy of the address space of the parent, but it does
+not inherit any of its threads. Execution of the child process is carried out
+by a new thread which returns from <code>fork</code> function with a return value of
+zero; it is the only thread in the child process.  Because threads are not
+inherited across fork, issues arise. At the time of the call to <code>fork</code>,
+threads in the parent process other than the one calling <code>fork</code> may have
+been executing critical regions of code.  As a result, the child process may
+get a copy of objects that are not in a well-defined state.  This potential
+problem affects all components of the program.
+
+   <p>Any program component which will continue being used in a child process must
+correctly handle its state during <code>fork</code>. For this purpose, the POSIX
+interface provides the special function <code>pthread_atfork</code> for installing
+pointers to handler functions which are called from within <code>fork</code>.
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_atfork</b> (<var>void </var>(<var>*prepare</var>)(<var>void</var>)<var>, void </var>(<var>*parent</var>)(<var>void</var>)<var>, void </var>(<var>*child</var>)(<var>void</var>))<var><a name="index-pthread_005fatfork-3759"></a></var><br>
+<blockquote>
+<p><code>pthread_atfork</code> registers handler functions to be called just
+before and just after a new process is created with <code>fork</code>. The
+<var>prepare</var> handler will be called from the parent process, just
+before the new process is created. The <var>parent</var> handler will be
+called from the parent process, just before <code>fork</code> returns. The
+<var>child</var> handler will be called from the child process, just before
+<code>fork</code> returns.
+
+        <p><code>pthread_atfork</code> returns 0 on success and a non-zero error code on
+error.
+
+        <p>One or more of the three handlers <var>prepare</var>, <var>parent</var> and
+<var>child</var> can be given as <code>NULL</code>, meaning that no handler needs
+to be called at the corresponding point.
+
+        <p><code>pthread_atfork</code> can be called several times to install several
+sets of handlers. At <code>fork</code> time, the <var>prepare</var> handlers are
+called in LIFO order (last added with <code>pthread_atfork</code>, first
+called before <code>fork</code>), while the <var>parent</var> and <var>child</var>
+handlers are called in FIFO order (first added, first called).
+
+        <p>If there is insufficient memory available to register the handlers,
+<code>pthread_atfork</code> fails and returns <code>ENOMEM</code>.  Otherwise it
+returns 0.
+
+        <p>The functions <code>fork</code> and <code>pthread_atfork</code> must not be regarded as
+reentrant from the context of the handlers.  That is to say, if a
+<code>pthread_atfork</code> handler invoked from within <code>fork</code> calls
+<code>pthread_atfork</code> or <code>fork</code>, the behavior is undefined.
+
+        <p>Registering a triplet of handlers is an atomic operation with respect to fork. 
+If new handlers are registered at about the same time as a fork occurs, either
+all three handlers will be called, or none of them will be called.
+
+        <p>The handlers are inherited by the child process, and there is no
+way to remove them, short of using <code>exec</code> to load a new
+pocess image.
+
+        </blockquote></div>
+
+   <p>To understand the purpose of <code>pthread_atfork</code>, recall that
+<code>fork</code> duplicates the whole memory space, including mutexes in
+their current locking state, but only the calling thread: other threads
+are not running in the child process.  The mutexes are not usable after
+the <code>fork</code> and must be initialized with <code>pthread_mutex_init</code>
+in the child process.  This is a limitation of the current
+implementation and might or might not be present in future versions.
+
+   <p>To avoid this, install handlers with <code>pthread_atfork</code> as follows: have the
+<var>prepare</var> handler lock the mutexes (in locking order), and the
+<var>parent</var> handler unlock the mutexes. The <var>child</var> handler should reset
+the mutexes using <code>pthread_mutex_init</code>, as well as any other
+synchronization objects such as condition variables.
+
+   <p>Locking the global mutexes before the fork ensures that all other threads are
+locked out of the critical regions of code protected by those mutexes.  Thus
+when <code>fork</code> takes a snapshot of the parent's address space, that snapshot
+will copy valid, stable data.  Resetting the synchronization objects in the
+child process will ensure they are properly cleansed of any artifacts from the
+threading subsystem of the parent process. For example, a mutex may inherit
+a wait queue of threads waiting for the lock; this wait queue makes no sense
+in the child process. Initializing the mutex takes care of this.
+
+   </body></html>
+

@@ -1,0 +1,208 @@
+<html lang="en">
+<head>
+<title>Miscellaneous Thread Functions - The GNU C Library</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU C Library">
+<meta name="generator" content="makeinfo 4.7">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="POSIX-Threads.html#POSIX-Threads" title="POSIX Threads">
+<link rel="prev" href="Streams-and-Fork.html#Streams-and-Fork" title="Streams and Fork">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc { font-variant:small-caps }
+  span.roman { font-family: serif; font-weight: normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Miscellaneous-Thread-Functions"></a>Previous:&nbsp;<a rel="previous" accesskey="p" href="Streams-and-Fork.html#Streams-and-Fork">Streams and Fork</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="POSIX-Threads.html#POSIX-Threads">POSIX Threads</a>
+<hr><br>
+</div>
+
+<h3 class="section">34.12 Miscellaneous Thread Functions</h3>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: pthread_t <b>pthread_self</b> (<var>void</var>)<var><a name="index-pthread_005fself-3760"></a></var><br>
+<blockquote><p><code>pthread_self</code> returns the thread identifier for the calling thread. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_equal</b> (<var>pthread_t thread1, pthread_t thread2</var>)<var><a name="index-pthread_005fequal-3761"></a></var><br>
+<blockquote><p><code>pthread_equal</code> determines if two thread identifiers refer to the same
+thread.
+
+        <p>A non-zero value is returned if <var>thread1</var> and <var>thread2</var> refer to
+the same thread. Otherwise, 0 is returned. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_detach</b> (<var>pthread_t th</var>)<var><a name="index-pthread_005fdetach-3762"></a></var><br>
+<blockquote><p><code>pthread_detach</code> puts the thread <var>th</var> in the detached
+state. This guarantees that the memory resources consumed by <var>th</var>
+will be freed immediately when <var>th</var> terminates. However, this
+prevents other threads from synchronizing on the termination of <var>th</var>
+using <code>pthread_join</code>.
+
+        <p>A thread can be created initially in the detached state, using the
+<code>detachstate</code> attribute to <code>pthread_create</code>. In contrast,
+<code>pthread_detach</code> applies to threads created in the joinable state,
+and which need to be put in the detached state later.
+
+        <p>After <code>pthread_detach</code> completes, subsequent attempts to perform
+<code>pthread_join</code> on <var>th</var> will fail. If another thread is already
+joining the thread <var>th</var> at the time <code>pthread_detach</code> is called,
+<code>pthread_detach</code> does nothing and leaves <var>th</var> in the joinable
+state.
+
+        <p>On success, 0 is returned. On error, one of the following codes is
+returned:
+          <dl>
+<dt><code>ESRCH</code><dd>No thread could be found corresponding to that specified by <var>th</var>
+<br><dt><code>EINVAL</code><dd>The thread <var>th</var> is already in the detached state
+</dl>
+        </p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- GNU -->
+<div class="defun">
+&mdash; Function: void <b>pthread_kill_other_threads_np</b> (<var>void</var>)<var><a name="index-pthread_005fkill_005fother_005fthreads_005fnp-3763"></a></var><br>
+<blockquote><p><code>pthread_kill_other_threads_np</code> is a non-portable LinuxThreads extension. 
+It causes all threads in the program to terminate immediately, except
+the calling thread which proceeds normally. It is intended to be
+called just before a thread calls one of the <code>exec</code> functions,
+e.g. <code>execve</code>.
+
+        <p>Termination of the other threads is not performed through
+<code>pthread_cancel</code> and completely bypasses the cancellation
+mechanism. Hence, the current settings for cancellation state and
+cancellation type are ignored, and the cleanup handlers are not
+executed in the terminated threads.
+
+        <p>According to POSIX 1003.1c, a successful <code>exec*</code> in one of the
+threads should automatically terminate all other threads in the program. 
+This behavior is not yet implemented in LinuxThreads.  Calling
+<code>pthread_kill_other_threads_np</code> before <code>exec*</code> achieves much
+of the same behavior, except that if <code>exec*</code> ultimately fails, then
+all other threads are already killed. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_once</b> (<var>pthread_once_t *once_control, void </var>(<var>*init_routine</var>) (<var>void</var>))<var><a name="index-pthread_005fonce-3764"></a></var><br>
+<blockquote>
+<p>The purpose of <code>pthread_once</code> is to ensure that a piece of
+initialization code is executed at most once. The <var>once_control</var>
+argument points to a static or extern variable statically initialized
+to <code>PTHREAD_ONCE_INIT</code>.
+
+        <p>The first time <code>pthread_once</code> is called with a given
+<var>once_control</var> argument, it calls <var>init_routine</var> with no
+argument and changes the value of the <var>once_control</var> variable to
+record that initialization has been performed. Subsequent calls to
+<code>pthread_once</code> with the same <code>once_control</code> argument do
+nothing.
+
+        <p>If a thread is cancelled while executing <var>init_routine</var>
+the state of the <var>once_control</var> variable is reset so that
+a future call to <code>pthread_once</code> will call the routine again.
+
+        <p>If the process forks while one or more threads are executing
+<code>pthread_once</code> initialization routines, the states of their respective
+<var>once_control</var> variables will appear to be reset in the child process so
+that if the child calls <code>pthread_once</code>, the routines will be executed.
+
+        <p><code>pthread_once</code> always returns 0. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_setschedparam</b> (<var>pthread_t target_thread, int policy, const struct sched_param *param</var>)<var><a name="index-pthread_005fsetschedparam-3765"></a></var><br>
+<blockquote>
+<p><code>pthread_setschedparam</code> sets the scheduling parameters for the
+thread <var>target_thread</var> as indicated by <var>policy</var> and
+<var>param</var>. <var>policy</var> can be either <code>SCHED_OTHER</code> (regular,
+non-realtime scheduling), <code>SCHED_RR</code> (realtime, round-robin) or
+<code>SCHED_FIFO</code> (realtime, first-in first-out). <var>param</var> specifies
+the scheduling priority for the two realtime policies.  See
+<code>sched_setpolicy</code> for more information on scheduling policies.
+
+        <p>The realtime scheduling policies <code>SCHED_RR</code> and <code>SCHED_FIFO</code>
+are available only to processes with superuser privileges.
+
+        <p>On success, <code>pthread_setschedparam</code> returns 0.  On error it returns
+one of the following codes:
+          <dl>
+<dt><code>EINVAL</code><dd><var>policy</var> is not one of <code>SCHED_OTHER</code>, <code>SCHED_RR</code>,
+<code>SCHED_FIFO</code>, or the priority value specified by <var>param</var> is not
+valid for the specified policy
+
+          <br><dt><code>EPERM</code><dd>Realtime scheduling was requested but the calling process does not have
+sufficient privileges.
+
+          <br><dt><code>ESRCH</code><dd>The <var>target_thread</var> is invalid or has already terminated
+
+          <br><dt><code>EFAULT</code><dd><var>param</var> points outside the process memory space
+</dl>
+        </p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_getschedparam</b> (<var>pthread_t target_thread, int *policy, struct sched_param *param</var>)<var><a name="index-pthread_005fgetschedparam-3766"></a></var><br>
+<blockquote>
+<p><code>pthread_getschedparam</code> retrieves the scheduling policy and
+scheduling parameters for the thread <var>target_thread</var> and stores them
+in the locations pointed to by <var>policy</var> and <var>param</var>,
+respectively.
+
+        <p><code>pthread_getschedparam</code> returns 0 on success, or one of the
+following error codes on failure:
+          <dl>
+<dt><code>ESRCH</code><dd>The <var>target_thread</var> is invalid or has already terminated.
+
+          <br><dt><code>EFAULT</code><dd><var>policy</var> or <var>param</var> point outside the process memory space.
+
+        </dl>
+        </p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_setconcurrency</b> (<var>int level</var>)<var><a name="index-pthread_005fsetconcurrency-3767"></a></var><br>
+<blockquote><p><code>pthread_setconcurrency</code> is unused in LinuxThreads due to the lack
+of a mapping of user threads to kernel threads.  It exists for source
+compatibility.  It does store the value <var>level</var> so that it can be
+returned by a subsequent call to <code>pthread_getconcurrency</code>.  It takes
+no other action however. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_getconcurrency</b> ()<var><a name="index-pthread_005fgetconcurrency-3768"></a></var><br>
+<blockquote><p><code>pthread_getconcurrency</code> is unused in LinuxThreads due to the lack
+of a mapping of user threads to kernel threads.  It exists for source
+compatibility.  However, it will return the value that was set by the
+last call to <code>pthread_setconcurrency</code>. 
+</p></blockquote></div>
+
+<!-- This node must have no pointers. -->
+</body></html>
+

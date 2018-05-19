@@ -1,0 +1,507 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 24</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_23.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_25.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX1842"></a>
+<a name="IX1843"></a>
+<a name="IX1844"></a>
+<h1>
+<a name="CHAP24" href="spec_toc.html#TOC195">
+24. Generic options for transports
+</a></h1>
+<p>
+The following generic options apply to all transports:
+<hr></p>
+<a name="IX1845"></a>
+<a name="IX1846"></a>
+<a name="IX1847"></a>
+<a name="IX1848"></a>
+<h3>body_only</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set, the message's headers are not transported. It is
+mutually exclusive with <tt>headers&#095;only</tt>. If it is used with the <b>appendfile</b> or
+<b>pipe</b> transports, the settings of <tt>message&#095;prefix</tt> and <tt>message&#095;suffix</tt>
+should be checked, because this option does not automatically suppress them.
+<hr></p>
+<a name="IX1849"></a>
+<a name="IX1850"></a>
+<h3>current_directory</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This specifies the current directory that is to be set while running the
+transport, overriding any value that may have been set by the router.
+If the expansion fails for any reason, including forced failure, an error is
+logged, and delivery is deferred.
+<hr></p>
+<a name="IX1851"></a>
+<h3>disable_logging</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set true, nothing is logged for any 
+<font color=green>
+deliveries by the transport or for any 
+</font>
+transport errors. You should not set this option unless you really, really know
+what you are doing.
+<hr></p>
+<a name="IX1852"></a>
+<a name="IX1853"></a>
+<h3>debug_print</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If this option is set and debugging is enabled (see the <i>-d</i> command line
+option), the string is expanded and included in the debugging output when the
+transport is run. 
+If expansion of the string fails, the error message is written to the debugging 
+output, and Exim carries on processing.
+This facility is provided to help with checking out the values of variables and
+so on when debugging driver configurations. For example, if a <tt>headers&#095;add</tt>
+option is not working properly, <tt>debug&#095;print</tt> could be used to output the
+variables it references. A newline is added to the text if it does not end with
+one.
+<hr></p>
+<a name="IX1854"></a>
+<a name="IX1855"></a>
+<h3>delivery_date_add</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, a <i>Delivery-date:</i> header is added to the message. This
+gives the actual time the delivery was made. As this is not a standard header,
+Exim has a configuration option (<tt>delivery&#095;date&#095;remove</tt>) which requests its
+removal from incoming messages, so that delivered messages can safely be resent
+to other recipients.
+<hr></p>
+<a name="IX1856"></a>
+<h3>driver</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This specifies which of the available transport drivers is to be used.
+There is no default, and this option must be set for every transport.
+<hr></p>
+<a name="IX1857"></a>
+<a name="IX1858"></a>
+<h3>envelope_to_add</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, an <i>Envelope-to:</i> header is added to the message. This
+gives the original address(es) in the incoming envelope that caused this
+delivery to happen. More than one address may be present if the transport is
+configured to handle several addresses at once, or if more than one original
+address was redirected to the same final address. As this is not a standard
+header, Exim has a configuration option (<tt>envelope&#095;to&#095;remove</tt>) which requests
+its removal from incoming messages, so that delivered messages can safely be
+resent to other recipients.
+<hr></p>
+<a name="IX1859"></a>
+<a name="IX1860"></a>
+<h3>group</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; Exim group<br>
+<p>
+This option specifies a gid for running the transport process, overriding any
+value that the router supplies, and also overriding any value associated with
+<tt>user</tt> (see below).
+<hr></p>
+<a name="IX1861"></a>
+<a name="IX1862"></a>
+<a name="IX1863"></a>
+<h3>headers_add</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option specifies a string of text which is expanded and added to the
+header portion of a message as it is transported. If the result of the
+expansion is an empty string, or if the expansion is forced to fail, no action
+is taken. Other expansion failures are treated as errors and cause the delivery
+to be deferred. The expanded string should be in the form of one or more RFC
+2822 header lines, separated by newlines (coded as &#147;&#092;n&#148;), for example:
+<pre>
+&nbsp;&nbsp;headers_add = X-added: this is a header added at $tod_log\n\
+&nbsp;&nbsp;              X-added: this is another
+</pre>
+</p>
+<p>
+Exim does not check the syntax of these added header lines. They are added at
+the end of the existing header lines. If you include a blank line within the
+string, you can subvert this facility into adding text at the start of the
+message's body. This is not recommended. Additional header lines can also be
+specified by routers. See chapter <a href="spec_15.html">15</a> and section
+<a href="spec_44.html#SECT44.15">44.15</a>.
+<hr></p>
+<a name="IX1864"></a>
+<a name="IX1865"></a>
+<a name="IX1866"></a>
+<a name="IX1867"></a>
+<h3>headers_only</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set, the message's body is not transported. It is mutually
+exclusive with <tt>body&#095;only</tt>. If it is used with the <b>appendfile</b> or <b>pipe</b>
+transports, the settings of <tt>message&#095;prefix</tt> and <tt>message_suffix</tt> should be
+checked, since this option does not automatically suppress them.
+<hr></p>
+<a name="IX1868"></a>
+<a name="IX1869"></a>
+<a name="IX1870"></a>
+<h3>headers_remove</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option is expanded; the result must consist of a colon-separated list of
+header names, not including the terminating colon, for example:
+<pre>
+&nbsp;&nbsp;headers_remove = return-receipt-to:acknowledge-to
+</pre>
+</p>
+<p>
+Any existing headers matching those names are not included in any message that
+is transmitted by the transport. 
+If the result of the expansion is an empty string, or if the expansion is
+forced to fail, no action is taken. Other expansion failures are treated as
+errors and cause the delivery to be deferred.
+</p>
+<p>
+If there are multiple instances of a header, they are all removed. However,
+added headers may have these names. Thus it is possible to replace a header by
+specifying it in <tt>headers&#095;remove</tt> and supplying the replacement in
+<tt>headers&#095;add</tt>. Headers to be removed can also be specified by routers. See
+chapter <a href="spec_15.html">15</a> and section <a href="spec_44.html#SECT44.15">44.15</a>.
+<hr></p>
+<a name="IX1871"></a>
+<a name="IX1872"></a>
+<a name="IX1873"></a>
+<h3>headers_rewrite</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option allows addresses in header lines to be rewritten at transport time,
+that is, as the message is being copied to its destination. The contents of the
+option are a colon-separated list of rewriting rules. Each rule is in exactly
+the same form as one of the general rewriting rules that are applied when a
+message is received. These are described in chapter <a href="spec_31.html">31</a>. For example,
+<pre>
+&nbsp;&nbsp;headers_rewrite = a@b c@d f : \
+&nbsp;&nbsp;                  x@y w@z
+</pre>
+</p>
+<p>
+changes <tt>a&#064;b</tt> into <tt>c&#064;d</tt> in <i>From:</i> header lines, and <tt>x&#064;y</tt> into <tt>w&#064;z</tt> in
+all address-bearing header lines. The rules are applied to the header lines
+just before they are written out at transport time, so they affect only those
+copies of the message that pass through the transport. However, only the
+message's original header lines, and any that were added by a system filter,
+are rewritten. If a router or transport adds header lines, they are
+not affected by this option. These rewriting rules are <em>not</em> applied to the
+envelope. You can change the return path using <tt>return&#095;path</tt>, but you cannot
+change envelope recipients at this time.
+<hr></p>
+<a name="IX1874"></a>
+<a name="IX1875"></a>
+<h3>home_directory</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option specifies a home directory setting for the transport, overriding
+any value that may be set by the router. The home directory is placed in
+<tt>$home</tt> while expanding the transport's private options. It is also used as
+the current directory if no current directory is set by the
+<tt>current_directory</tt> option on the transport or the
+<tt>transport_current_directory</tt> option on the router.
+If the expansion fails for any reason, including forced failure, an error is
+logged, and delivery is deferred.
+<a name="IX1876"></a>
+<a name="IX1877"></a>
+<a name="IX1878"></a>
+<hr></p>
+<a name="IX1879"></a>
+<h3>initgroups</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true and the uid for the delivery process is provided by the
+transport, the <i>initgroups()</i> function is called when running the transport
+to ensure that any additional groups associated with the uid are set up.
+<hr></p>
+<a name="IX1880"></a>
+<a name="IX1881"></a>
+<a name="IX1882"></a>
+<a name="IX1883"></a>
+<h3>message_size_limit</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; 0<br>
+<p>
+This option controls the size of messages passed through the transport. It is
+expanded before use; the result of the expansion must be a sequence of digits,
+optionally followed by K or M.
+If the expansion fails for any reason, including forced failure, or if the 
+result is not of the required form, delivery is deferred.
+If the value is greater than zero and the size of a message exceeds this
+limit, the address is failed. If there is any chance that the resulting bounce
+message could be routed to the same transport, you should ensure that
+<tt>return&#095;size&#095;limit</tt> is less than the transport's <tt>message&#095;size&#095;limit</tt>, as
+otherwise the bounce message will fail to get delivered.
+<hr></p>
+<a name="IX1884"></a>
+<a name="IX1885"></a>
+<a name="IX1886"></a>
+<a name="IX1887"></a>
+<a name="IX1888"></a>
+<h3>rcpt_include_affixes</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+When this option is false (the default), and an address that has had any
+affixes (prefixes or suffixes) removed from the local part is delivered by any
+form of SMTP or LMTP, the affixes are not included. For example, if a router
+that contains
+<pre>
+&nbsp;&nbsp;local_part_prefix = *-
+</pre>
+</p>
+<p>
+routes the address <i>abc-xyz&#064;some.domain</i> to an SMTP transport, the envelope
+is delivered with
+<pre>
+&nbsp;&nbsp;RCPT TO:&#060;xyz@some.domain&#062;
+</pre>
+</p>
+<p>
+If <tt>rcpt&#095;include&#095;affixes</tt> is set true, the whole local part is included in
+the <font size=-1>RCPT</font> command. This option applies to BSMTP deliveries by the
+<b>appendfile</b> and <b>pipe</b> transports as well as to the <b>lmtp</b> and <b>smtp</b>
+transports.
+<hr></p>
+<a name="IX1889"></a>
+<a name="IX1890"></a>
+<h3>retry_use_local_part</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; see below<br>
+<p>
+When a delivery suffers a temporary failure, a retry record is created
+in Exim's hints database. For remote deliveries, the key for the retry record
+is based on the name and/or IP address of the failing remote host. For local
+deliveries, the key is normally the entire address, including both the local
+part and the domain. This is suitable for most common cases of local delivery
+temporary failure &#150; for example, exceeding a mailbox quota should delay only
+deliveries to that mailbox, not to the whole domain.
+</p>
+<p>
+However, in some special cases you may want to treat a temporary local delivery
+as a failure associated with the domain, and not with a particular local part.
+(For example, if you are storing all mail for some domain in files.) You can do
+this by setting <tt>retry&#095;use&#095;local&#095;part</tt> false.
+</p>
+<p>
+For all the local transports, its default value is true. For remote transports,
+the default value is false for tidiness, but changing the value has no effect
+on a remote transport in the current implementation.
+<hr></p>
+<a name="IX1891"></a>
+<a name="IX1892"></a>
+<a name="IX1893"></a>
+<a name="IX1894"></a>
+<h3>return_path</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If this option is set, the string is expanded at transport time and replaces
+the existing return path (envelope sender) value in the copy of the message
+that is being delivered. An empty return path is permitted. This feature is
+designed for remote deliveries, where the value of this option is used in the
+SMTP <font size=-1>MAIL</font> command. If you set <tt>return&#095;path</tt> for a local transport, the
+only effect is to change the address that is placed in the <i>Return-path:</i>
+header line, if one is added to the message (see the next option).
+</p>
+<p>
+The expansion can refer to the existing value via <tt>$return&#095;path</tt>. This is
+either the message's envelope sender, or an address set by the
+<tt>errors&#095;to</tt> option on a router. If the expansion is forced to fail, no
+replacement occurs; if it fails for another reason, delivery is deferred. This
+option can be used to support VERP (Variable Envelope Return Paths) &#150; see
+chapter <a href="spec_43.html">43</a>.
+</p>
+<p>
+<b>Note</b>: If a delivery error is detected locally, 
+<font color=green>
+including the case when a remote server rejects a message at SMTP time,
+the bounce message is not sent to the value of this option, but to the
+previously set errors address (which defaults to the incoming sender address).
+</font>
+<hr></p>
+<a name="IX1895"></a>
+<a name="IX1896"></a>
+<h3>return_path_add</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, a <i>Return-path:</i> header is added to the message.
+Although the return path is normally available in the prefix line of BSD
+mailboxes, this is commonly not displayed by MUAs, and so the user does not
+have easy access to it.
+</p>
+<p>
+RFC 2821 states that the <i>Return-path:</i> header is added to a message &#147;when the
+delivery SMTP server makes the final delivery&#148;. This implies that this header
+should not be present in incoming messages. Exim has a configuration option,
+<tt>return&#095;path&#095;remove</tt>, which requests removal of this header from incoming
+messages, so that delivered messages can safely be resent to other recipients.
+<hr></p>
+<a name="IX1897"></a>
+<h3>shadow_condition</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+See <tt>shadow&#095;transport</tt> below.
+<hr></p>
+<a name="IX1898"></a>
+<a name="IX1899"></a>
+<a name="IX1900"></a>
+<h3>shadow_transport</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+A local transport may set the <tt>shadow&#095;transport</tt> option to the name of another
+local transport. Shadow remote transports are not supported.
+</p>
+<p>
+Whenever a delivery to the main transport succeeds, and either
+<tt>shadow&#095;condition</tt> is unset, or its expansion does not result in the empty
+string or one of the strings &#147;0&#148; or &#147;no&#148; or &#147;false&#148;, the message is also passed
+to the shadow transport, with the same delivery address or addresses.
+If expansion fails, no action is taken except that non-forced expansion 
+failures cause a log line to be written.
+</p>
+<p>
+The result of the shadow transport is discarded and does not affect the
+subsequent processing of the message. Only a single level of shadowing is
+provided; the <tt>shadow&#095;transport</tt> option is ignored on any transport when it is
+running as a shadow. Options concerned with output from pipes are also ignored.
+</p>
+<p>
+The log line for the successful delivery has an item added on the end, of the
+form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>ST=&#060;<em>shadow transport name</em>&#062;</tt><br>
+</p>
+<p>
+If the shadow transport did not succeed, the error message is put in
+parentheses afterwards.
+</p>
+<p>
+Shadow transports can be used for a number of different purposes, including
+keeping more detailed log information than Exim normally provides, and
+implementing automatic acknowledgement policies based on message headers that
+some sites insist on.
+<hr></p>
+<a name="IX1901"></a>
+<a name="IX1902"></a>
+<a name="IX1903"></a>
+<h3>transport_filter</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option sets up a filtering (in the Unix shell sense) process for messages
+at transport time. It should not be confused with mail filtering as set up by
+individual users or via a system filter.
+</p>
+<p>
+When the message is about to be written out, the command specified by
+<tt>transport&#095;filter</tt> is started up in a separate process, and the entire
+message, including the header lines, is passed to it on its standard input
+(this in fact is done from a third process, to avoid deadlock).
+The command must be specified as an absolute path.
+</p>
+<p>
+The message is passed to the filter before any SMTP-specific processing, such
+as turning &#147;&#092;n&#148; into &#147;&#092;r&#092;n&#148; and escaping lines beginning with a dot, and
+also before any processing implied by the settings of <tt>check&#095;string</tt> and
+<tt>escape&#095;string</tt> in the <b>appendfile</b> or <b>pipe</b> transports.
+</p>
+<p>
+The filter's standard output is read and written to the message's destination.
+The filter can perform any transformations it likes, but of course should take
+care not to break RFC 2822 syntax. A demonstration Perl script is provided in
+<i>util/transport-filter.pl</i>; this makes a few arbitrary modifications just to
+show the possibilities. Exim does not check the result, except to test for a
+final newline when SMTP is in use. All messages transmitted over SMTP must end
+with a newline, so Exim supplies one if it is missing.
+<a name="IX1904"></a>
+</p>
+<p>
+A problem might arise if the filter increases the size of a message that is
+being sent down an SMTP connection. If the receiving SMTP server has indicated
+support for the <font size=-1>SIZE</font> parameter, Exim will have sent the size of the message
+at the start of the SMTP session. If what is actually sent is substantially
+more, the server might reject the message. This can be worked round by setting
+the <tt>size&#095;addition</tt> option on the <b>smtp</b> transport, either to allow for
+additions to the message, or to disable the use of <font size=-1>SIZE</font> altogether.
+</p>
+<p>
+The value of the option is the command string for starting up the filter, which
+is run directly from Exim, not under a shell. The string is parsed by Exim in
+the same way as a command string for the <b>pipe</b> transport: Exim breaks it up
+into arguments and then expands each argument separately. The special argument
+<tt>$pipe&#095;addresses</tt> is replaced by a number of arguments, one for each address
+that applies to this delivery. (This isn't an ideal name for this feature here,
+but as it was already implemented for the <b>pipe</b> transport, it seemed sensible
+not to change it.)
+<a name="IX1905"></a>
+<a name="IX1906"></a>
+</p>
+<p>
+The expansion variables <tt>$host</tt> and <tt>$host&#095;address</tt> are available when the
+transport is a remote one. They contain the name and IP address of the host to
+which the message is being sent. For example:
+<pre>
+&nbsp;&nbsp;transport_filter = /some/directory/transport-filter.pl \
+&nbsp;&nbsp;  $host $host_address $sender_address $pipe_addresses
+</pre>
+</p>
+<p>
+The filter process is run under the same uid and gid as the normal delivery.
+For remote deliveries this is the Exim uid/gid by default.
+</p>
+<p>
+If a transport filter is set on an autoreply transport, the original message is
+passed through the filter as it is being copied into the newly generated
+message, which happens if the <tt>return&#095;message</tt> option is set.
+<hr></p>
+<a name="IX1907"></a>
+<a name="IX1908"></a>
+<h3>transport_filter_timeout</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 5m<br>
+<p>
+When Exim is reading the output of a transport filter, it a applies a timeout 
+that can be set by this option. Exceeding the timeout is treated as a 
+temporary delivery failure.
+<hr></p>
+<a name="IX1909"></a>
+<a name="IX1910"></a>
+<a name="IX1911"></a>
+<h3>user</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; Exim user<br>
+<p>
+This option specifies the user under whose uid the delivery process is to be
+run, overriding any uid that may have been set by the router. If the user is
+given as a name, the uid is looked up from the password data, and the
+associated group is taken as the value of the gid to be used if the <tt>group</tt>
+option is not set.
+</p>
+<p>
+<font color=green>
+For deliveries that use local transports, a user and group are normally
+specified explicitly or implicitly (for example, as a result of
+<tt>check&#095;local&#095;user</tt>) by the router or transport.
+</font>
+<a name="IX1912"></a>
+</p>
+<p>
+For remote transports, you should leave this option unset unless you really are
+sure you know what you are doing. When a remote transport is running, it needs
+to be able to access Exim's hints databases, because each host may have its own
+retry data.
+<hr><br>
+<hr>
+</p>
+<font size=2>
+<a href="spec_23.html">Previous</a>&nbsp;&nbsp;<a href="spec_25.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

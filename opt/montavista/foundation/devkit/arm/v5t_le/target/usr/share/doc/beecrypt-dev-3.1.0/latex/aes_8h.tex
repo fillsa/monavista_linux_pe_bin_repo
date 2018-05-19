@@ -1,0 +1,140 @@
+\hypertarget{aes_8h}{
+\section{aes.h File Reference}
+\label{aes_8h}\index{aes.h@{aes.h}}
+}
+AES block cipher, as specified by NIST FIPS 197. 
+
+{\tt \#include \char`\"{}beecrypt.h\char`\"{}}\par
+{\tt \#include \char`\"{}aesopt.h\char`\"{}}\par
+\subsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \hyperlink{structaesParam}{aes\-Param}
+\begin{CompactList}\small\item\em Holds all the parameters necessary for the AES cipher. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{aes_8h_a1}{aes\-Setup} (\hyperlink{structaesParam}{aes\-Param} $\ast$ap, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$key, size\_\-t keybits, \hyperlink{beecrypt_8h_a73}{cipher\-Operation} op)
+\begin{CompactList}\small\item\em This function performs the cipher's key expansion. \item\end{CompactList}\item 
+int \hyperlink{aes_8h_a2}{aes\-Set\-IV} (\hyperlink{structaesParam}{aes\-Param} $\ast$ap, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$iv)
+\begin{CompactList}\small\item\em This function sets the Initialization Vector. \item\end{CompactList}\item 
+int \hyperlink{aes_8h_a3}{aes\-Encrypt} (\hyperlink{structaesParam}{aes\-Param} $\ast$ap, uint32\_\-t $\ast$dst, const uint32\_\-t $\ast$src)
+\begin{CompactList}\small\item\em This function performs the raw AES encryption; it encrypts one block of 128 bits. \item\end{CompactList}\item 
+int \hyperlink{aes_8h_a4}{aes\-Decrypt} (\hyperlink{structaesParam}{aes\-Param} $\ast$ap, uint32\_\-t $\ast$dst, const uint32\_\-t $\ast$src)
+\begin{CompactList}\small\item\em This function performs the raw AES decryption; it decrypts one block of 128 bits. \item\end{CompactList}\item 
+uint32\_\-t $\ast$ \hyperlink{aes_8h_a5}{aes\-Feedback} (\hyperlink{structaesParam}{aes\-Param} $\ast$ap)
+\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+const \hyperlink{structblockCipher}{block\-Cipher} \hyperlink{aes_8h_a0}{aes}
+\begin{CompactList}\small\item\em Holds the full API description of the AES algorithm. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+AES block cipher, as specified by NIST FIPS 197. 
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{aes_8h-source}{aes.h}.
+
+\subsection{Function Documentation}
+\hypertarget{aes_8h_a4}{
+\index{aes.h@{aes.h}!aesDecrypt@{aesDecrypt}}
+\index{aesDecrypt@{aesDecrypt}!aes.h@{aes.h}}
+\subsubsection[aesDecrypt]{\setlength{\rightskip}{0pt plus 5cm}aes\-Decrypt (\hyperlink{structaesParam}{aes\-Param} $\ast$ {\em ap}, uint32\_\-t $\ast$ {\em dst}, const uint32\_\-t $\ast$ {\em src})}}
+\label{aes_8h_a4}
+
+
+This function performs the raw AES decryption; it decrypts one block of 128 bits. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ap}]The cipher's parameter block. \item[{\em dst}]The cleartext; should be aligned on 32-bit boundary. \item[{\em src}]The ciphertext; should be aligned on 32-bit boundary. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}
+\hypertarget{aes_8h_a3}{
+\index{aes.h@{aes.h}!aesEncrypt@{aesEncrypt}}
+\index{aesEncrypt@{aesEncrypt}!aes.h@{aes.h}}
+\subsubsection[aesEncrypt]{\setlength{\rightskip}{0pt plus 5cm}aes\-Encrypt (\hyperlink{structaesParam}{aes\-Param} $\ast$ {\em ap}, uint32\_\-t $\ast$ {\em dst}, const uint32\_\-t $\ast$ {\em src})}}
+\label{aes_8h_a3}
+
+
+This function performs the raw AES encryption; it encrypts one block of 128 bits. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ap}]The cipher's parameter block. \item[{\em dst}]The ciphertext; should be aligned on 32-bit boundary. \item[{\em src}]The cleartext; should be aligned on 32-bit boundary. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}
+\hypertarget{aes_8h_a5}{
+\index{aes.h@{aes.h}!aesFeedback@{aesFeedback}}
+\index{aesFeedback@{aesFeedback}!aes.h@{aes.h}}
+\subsubsection[aesFeedback]{\setlength{\rightskip}{0pt plus 5cm}uint32\_\-t$\ast$ aes\-Feedback (\hyperlink{structaesParam}{aes\-Param} $\ast$ {\em ap})}}
+\label{aes_8h_a5}
+
+
+\hypertarget{aes_8h_a2}{
+\index{aes.h@{aes.h}!aesSetIV@{aesSetIV}}
+\index{aesSetIV@{aesSetIV}!aes.h@{aes.h}}
+\subsubsection[aesSetIV]{\setlength{\rightskip}{0pt plus 5cm}int aes\-Set\-IV (\hyperlink{structaesParam}{aes\-Param} $\ast$ {\em ap}, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$ {\em iv})}}
+\label{aes_8h_a2}
+
+
+This function sets the Initialization Vector. 
+
+\begin{Desc}
+\item[Note:]This function is only useful in block chaining or feedback modes. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ap}]The cipher's parameter block. \item[{\em iv}]The initialization vector; may be null. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}
+\hypertarget{aes_8h_a1}{
+\index{aes.h@{aes.h}!aesSetup@{aesSetup}}
+\index{aesSetup@{aesSetup}!aes.h@{aes.h}}
+\subsubsection[aesSetup]{\setlength{\rightskip}{0pt plus 5cm}int aes\-Setup (\hyperlink{structaesParam}{aes\-Param} $\ast$ {\em ap}, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$ {\em key}, size\_\-t {\em keybits}, \hyperlink{beecrypt_8h_a73}{cipher\-Operation} {\em op})}}
+\label{aes_8h_a1}
+
+
+This function performs the cipher's key expansion. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ap}]The cipher's parameter block. \item[{\em key}]The key value. \item[{\em keybits}]The number of bits in the key; legal values are: 128, 192 and 256. \item[{\em op}]ENCRYPT or DECRYPT. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \item[{\em -1}]on failure. \end{description}
+\end{Desc}
+
+
+\subsection{Variable Documentation}
+\hypertarget{aes_8h_a0}{
+\index{aes.h@{aes.h}!aes@{aes}}
+\index{aes@{aes}!aes.h@{aes.h}}
+\subsubsection[aes]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{aes_8h_a0}{aes}}}
+\label{aes_8h_a0}
+
+
+Holds the full API description of the AES algorithm. 
+

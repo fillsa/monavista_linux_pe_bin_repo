@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 50</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_49.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2838"></a>
+<a name="IX2839"></a>
+<a name="IX2840"></a>
+<h1>
+<a name="CHAP50" href="spec_toc.html#TOC420">
+50. Adding new drivers or lookup types
+</a></h1>
+<p>
+The following actions have to be taken in order to add a new router, transport,
+authenticator, or lookup type to Exim:
+</p>
+<ol>
+<li TYPE="1"><p>
+Choose a name for the driver or lookup type that does not conflict with any
+existing name; I will use &#147;newdriver&#148; in what follows.
+</p>
+</li>
+<li TYPE="1"><p>
+Add to <i>src/EDITME</i> the line
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#060;<em>type</em>&#062;&#095;NEWDRIVER=yes</tt><br>
+</p>
+<p>
+where &#060;<em>type</em>&#062; is <font size=-1>ROUTER</font>, <font size=-1>TRANSPORT</font>, <font size=-1>AUTH</font>, or <font size=-1>LOOKUP</font>. If the
+code is not to be included in the binary by default, comment this line out. You
+should also add any relevant comments about the driver or lookup type.
+</p>
+</li>
+<li TYPE="1"><p>
+Add to <i>src/config.h.defaults</i> the line
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#035;define &#060;<em>type</em>&#062;&#095;NEWDRIVER</tt><br>
+</p>
+</li>
+<li TYPE="1"><p>
+Edit <i>src/drtables.c</i>, adding conditional code to pull in the private header
+and create a table entry as is done for all the other drivers and lookup types.
+</p>
+</li>
+<li TYPE="1"><p>
+Edit <i>Makefile</i> in the appropriate sub-directory (<i>src/routers</i>,
+<i>src/transports</i>, <i>src/auths</i>, or <i>src/lookups</i>); add a line for the new
+driver or lookup type and add it to the definition of OBJ.
+</p>
+</li>
+<li TYPE="1"><p>
+Create <i>newdriver.h</i> and <i>newdriver.c</i> in the appropriate sub-directory of
+<i>src</i>.
+</p>
+</li>
+<li TYPE="1"><p>
+Edit <i>scripts/MakeLinks</i> and add commands to link the <i>.h</i> and <i>.c</i> files
+as for other drivers and lookups.
+</p>
+</li>
+</ol>
+<p>
+Then all you need to do is write the code! A good way to start is to make a
+proforma by copying an existing module of the same type, globally changing all
+occurrences of the name, and cutting out most of the code. Note that any
+options you create must be listed in alphabetical order, because the tables are
+searched using a binary chop procedure.
+</p>
+<p>
+There is a <i>README</i> file in each of the sub-directories of <i>src</i> describing
+the interface that is expected.
+<hr>
+</p>
+<font size=2>
+<a href="spec_49.html">Previous</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

@@ -1,0 +1,3512 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 14</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_13.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_15.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX1016"></a>
+<a name="IX1017"></a>
+<h1>
+<a name="CHAP14" href="spec_toc.html#TOC141">
+14. Main configuration
+</a></h1>
+<p>
+The first part of the run time configuration file contains three types of item:
+</p>
+<ul>
+<li><p>
+Macro definitions: These lines start with an upper case letter. See section
+<a href="spec_6.html#SECT6.4">6.4</a> for details of macro processing.
+</p>
+</li>
+<li><p>
+Named list definitions: These lines start with one of the words &#147;domainlist&#148;,
+&#147;hostlist&#148;, &#147;addresslist&#148;, or &#147;localpartlist&#148;. Their use is described in
+section <a href="spec_10.html#SECT10.5">10.5</a>.
+</p>
+</li>
+<li><p>
+Main configuration settings: Each setting occupies one line of the file
+(with possible continuations). If any setting is preceded by the word
+&#147;hide&#148;, the <i>-bP</i> command line option displays its value to admin users only.
+See section <a href="spec_6.html#SECT6.6">6.6</a> for a description of the syntax of these option settings.
+</p>
+</li>
+</ul>
+<p>
+This chapter specifies all the main configuration options, along with their
+types and default values. For ease of finding a particular option, they appear
+in alphabetical order in section <a href="spec_14.html#SECT14.23">14.23</a> below. However, because there are
+now so many options, they are first listed briefly in functional groups, as an
+aid to finding the name of the option you are looking for.
+Some options are listed in more than one group.
+</p>
+<h2>
+<a name="SECT14.1" href="spec_toc.html#TOC142">
+14.1. Miscellaneous
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>bi&#095;command</tt>&nbsp;&nbsp;</td><td>to run for <i>-bi</i> command line option</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>keep&#095;malformed</tt>&nbsp;&nbsp;</td><td>for broken files &#150; should not happen</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>localhost&#095;number</tt>&nbsp;&nbsp;</td><td>for unique message ids in clusters</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>message&#095;body&#095;visible</tt>&nbsp;&nbsp;</td><td>how much to show in <tt>$message&#095;body</tt></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>print&#095;topbitchars</tt>&nbsp;&nbsp;</td><td>top-bit characters are printing</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>timezone</tt>&nbsp;&nbsp;</td><td>force time zone</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.2" href="spec_toc.html#TOC143">
+14.2. Exim parameters
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>exim&#095;group</tt>&nbsp;&nbsp;</td><td>override compiled-in value</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>exim&#095;path</tt>&nbsp;&nbsp;</td><td>override compiled-in value</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>exim&#095;user</tt>&nbsp;&nbsp;</td><td>override compiled-in value</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>primary&#095;hostname</tt>&nbsp;&nbsp;</td><td>default from <i>uname()</i></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>split&#095;spool&#095;directory</tt>&nbsp;&nbsp;</td><td>use multiple directories</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>spool&#095;directory</tt>&nbsp;&nbsp;</td><td>override compiled-in value</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.3" href="spec_toc.html#TOC144">
+14.3. Privilege controls
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>admin&#095;groups</tt>&nbsp;&nbsp;</td><td>groups that are Exim admin users</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>deliver&#095;drop&#095;privilege</tt>&nbsp;&nbsp;</td><td>drop root for delivery processes</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>local&#095;from&#095;check</tt>&nbsp;&nbsp;</td><td>insert <i>Sender:</i> if necessary</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>local&#095;from&#095;prefix</tt>&nbsp;&nbsp;</td><td>for testing <i>From:</i> for local sender</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>local&#095;from&#095;suffix</tt>&nbsp;&nbsp;</td><td>for testing <i>From:</i> for local sender</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>local&#095;sender&#095;retain</tt>&nbsp;&nbsp;</td><td>keep <i>Sender:</i> from untrusted user</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>never&#095;users</tt>&nbsp;&nbsp;</td><td>do not run deliveries as these</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>prod&#095;requires&#095;admin</tt>&nbsp;&nbsp;</td><td>forced delivery requires admin user</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>queue&#095;list&#095;requires&#095;admin</tt>&nbsp;&nbsp;</td><td>queue listing requires admin user</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>trusted&#095;groups</tt>&nbsp;&nbsp;</td><td>groups that are trusted</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>trusted&#095;users</tt>&nbsp;&nbsp;</td><td>users that are trusted</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.4" href="spec_toc.html#TOC145">
+14.4. Logging
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>log&#095;file&#095;path</tt>&nbsp;&nbsp;</td><td>override compiled-in value</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>log&#095;selector</tt>&nbsp;&nbsp;</td><td>set/unset optional logging</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>log&#095;timezone</tt>&nbsp;&nbsp;</td><td>add timezone to log lines</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>message&#095;logs</tt>&nbsp;&nbsp;</td><td>create per-message logs</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>preserve&#095;message&#095;logs</tt>&nbsp;&nbsp;</td><td>in another directory after message completion</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>process&#095;log&#095;path</tt>&nbsp;&nbsp;</td><td>for SIGUSR1 and <i>exiwhat</i></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>syslog&#095;duplication</tt>&nbsp;&nbsp;</td><td>controls duplicate log lines on syslog </td></tr>
+<tr><td>&nbsp;&nbsp;<tt>syslog&#095;facility</tt>&nbsp;&nbsp;</td><td>set syslog &#147;facility&#148; field</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>syslog&#095;processname</tt>&nbsp;&nbsp;</td><td>set syslog &#147;ident&#148; field</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>syslog&#095;timestamp</tt>&nbsp;&nbsp;</td><td>timestamp syslog lines</td></tr>
+<font color=green><tr><td>&nbsp;&nbsp;<tt>write&#095;rejectlog</tt>&nbsp;&nbsp;</td><td>control use of message log</td></tr>
+</font></table>
+</p>
+<h2>
+<a name="SECT14.5" href="spec_toc.html#TOC146">
+14.5. Frozen messages
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>auto&#095;thaw</tt>&nbsp;&nbsp;</td><td>sets time for retrying frozen messages</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>freeze&#095;tell</tt>&nbsp;&nbsp;</td><td>send message when freezing</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>move&#095;frozen&#095;messages</tt>&nbsp;&nbsp;</td><td>to another directory</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>timeout&#095;frozen&#095;after</tt>&nbsp;&nbsp;</td><td>keep frozen messages only so long</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.6" href="spec_toc.html#TOC147">
+14.6. Data lookups
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>ldap&#095;default&#095;servers</tt>&nbsp;&nbsp;</td><td>used if no server in query</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>ldap&#095;version</tt>&nbsp;&nbsp;</td><td>set protocol version</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>lookup&#095;open&#095;max</tt>&nbsp;&nbsp;</td><td>lookup files held open</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>mysql&#095;servers</tt>&nbsp;&nbsp;</td><td>as it says</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>oracle&#095;servers</tt>&nbsp;&nbsp;</td><td>as it says</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>pgsql&#095;servers</tt>&nbsp;&nbsp;</td><td>as it says</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.7" href="spec_toc.html#TOC148">
+14.7. Message ids
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>message&#095;id&#095;header&#095;domain</tt>&nbsp;&nbsp;</td><td>used to build <i>Message-ID:</i> header</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>message&#095;id&#095;header&#095;text</tt>&nbsp;&nbsp;</td><td>ditto</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.8" href="spec_toc.html#TOC149">
+14.8. Embedded Perl Startup
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>perl&#095;at&#095;start</tt>&nbsp;&nbsp;</td><td>always start the interpreter</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>perl&#095;startup</tt>&nbsp;&nbsp;</td><td>code to obey when starting Perl</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.9" href="spec_toc.html#TOC150">
+14.9. Daemon
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>daemon&#095;smtp&#095;ports</tt>&nbsp;&nbsp;</td><td>default ports</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>extra&#095;local&#095;interfaces</tt>&nbsp;&nbsp;</td><td>not necessarily listened on</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>local&#095;interfaces</tt>&nbsp;&nbsp;</td><td>on which to listen, with optional ports</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>pid&#095;file&#095;path</tt>&nbsp;&nbsp;</td><td>override compiled-in value</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>queue&#095;run&#095;max</tt>&nbsp;&nbsp;</td><td>maximum number of simultaneous queue runners</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.10" href="spec_toc.html#TOC151">
+14.10. Resource control
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>check&#095;log&#095;inodes</tt>&nbsp;&nbsp;</td><td>before accepting a message</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>check&#095;log&#095;space</tt>&nbsp;&nbsp;</td><td>before accepting a message</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>check&#095;spool&#095;inodes</tt>&nbsp;&nbsp;</td><td>before accepting a message</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>check&#095;spool&#095;space</tt>&nbsp;&nbsp;</td><td>before accepting a message</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>deliver&#095;queue&#095;load&#095;max</tt>&nbsp;&nbsp;</td><td>no queue deliveries if load high</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>queue&#095;only&#095;load</tt>&nbsp;&nbsp;</td><td>queue incoming if load high</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>queue&#095;run&#095;max</tt>&nbsp;&nbsp;</td><td>maximum number of simultaneous queue runners</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>remote&#095;max&#095;parallel</tt>&nbsp;&nbsp;</td><td>parallel SMTP delivery per message</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;max</tt>&nbsp;&nbsp;</td><td>simultaneous incoming connections</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;max&#095;nommail</tt>&nbsp;&nbsp;</td><td>non-mail commands</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;max&#095;nonmail&#095;hosts</tt>&nbsp;&nbsp;</td><td>hosts to which the limit applies</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;max&#095;per&#095;connection</tt>&nbsp;&nbsp;</td><td>messages per connection</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;max&#095;per&#095;host</tt>&nbsp;&nbsp;</td><td>connections from one host</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;queue</tt>&nbsp;&nbsp;</td><td>queue mail if more connections</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;queue&#095;per&#095;connection</tt>&nbsp;&nbsp;</td><td>queue if more messages per connection</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;reserve</tt>&nbsp;&nbsp;</td><td>only reserve hosts if more connections</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;check&#095;spool&#095;space</tt>&nbsp;&nbsp;</td><td>from <font size=-1>SIZE</font> on <font size=-1>MAIL</font> command</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;connect&#095;backlog</tt>&nbsp;&nbsp;</td><td>passed to TCP/IP stack</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;load&#095;reserve</tt>&nbsp;&nbsp;</td><td>SMTP from reserved hosts if load high</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;reserve&#095;hosts</tt>&nbsp;&nbsp;</td><td>these are the reserve hosts</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.11" href="spec_toc.html#TOC152">
+14.11. Policy controls
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>acl&#095;not&#095;smtp</tt>&nbsp;&nbsp;</td><td>set ACL for non-SMTP messages</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>acl&#095;smtp&#095;auth</tt>&nbsp;&nbsp;</td><td>set ACL for <font size=-1>AUTH</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>acl&#095;smtp&#095;connect</tt>&nbsp;&nbsp;</td><td>set ACL for connection</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>acl&#095;smtp&#095;data</tt>&nbsp;&nbsp;</td><td>set ACL for <font size=-1>DATA</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>acl&#095;smtp&#095;etrn</tt>&nbsp;&nbsp;</td><td>set ACL for <font size=-1>ETRN</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>acl&#095;smtp&#095;expn</tt>&nbsp;&nbsp;</td><td>set ACL for <font size=-1>EXPN</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>acl&#095;smtp&#095;helo</tt>&nbsp;&nbsp;</td><td>set ACL for <font size=-1>EHLO</font> or <font size=-1>HELO</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>acl&#095;smtp&#095;mail</tt>&nbsp;&nbsp;</td><td>set ACL for <font size=-1>MAIL</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>acl&#095;smtp&#095;mailauth</tt>&nbsp;&nbsp;</td><td>set ACL for <font size=-1>AUTH</font> on <font size=-1>MAIL</font> command</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>acl&#095;smtp&#095;rcpt</tt>&nbsp;&nbsp;</td><td>set ACL for <font size=-1>RCPT</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>acl&#095;smtp&#095;starttls</tt>&nbsp;&nbsp;</td><td>set ACL for <font size=-1>STARTTLS</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>acl&#095;smtp&#095;vrfy</tt>&nbsp;&nbsp;</td><td>set ACL for <font size=-1>VRFY</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>header&#095;maxsize</tt>&nbsp;&nbsp;</td><td>total size of message header</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>header&#095;line&#095;maxsize</tt>&nbsp;&nbsp;</td><td>individual header line limit</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>helo&#095;accept&#095;junk&#095;hosts</tt>&nbsp;&nbsp;</td><td>allow syntactic junk from these hosts</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>helo&#095;allow&#095;chars</tt>&nbsp;&nbsp;</td><td>allow illegal chars in <font size=-1>HELO</font> names</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>helo&#095;lookup&#095;domains</tt>&nbsp;&nbsp;</td><td>lookup hostname for these <font size=-1>HELO</font> names</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>helo&#095;try&#095;verify&#095;hosts</tt>&nbsp;&nbsp;</td><td><font size=-1>HELO</font> soft-checked for these hosts</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>helo&#095;verify&#095;hosts</tt>&nbsp;&nbsp;</td><td><font size=-1>HELO</font> hard-checked for these hosts</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>host&#095;lookup</tt>&nbsp;&nbsp;</td><td>host name looked up for these hosts</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>host&#095;lookup&#095;order</tt>&nbsp;&nbsp;</td><td>order of DNS and local name lookups</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>host&#095;reject&#095;connection</tt>&nbsp;&nbsp;</td><td>reject connection from these hosts</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>hosts&#095;treat&#095;as&#095;local</tt>&nbsp;&nbsp;</td><td>useful in some cluster configurations</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>local&#095;scan&#095;timeout</tt>&nbsp;&nbsp;</td><td>timeout for <i>local&#095;scan()</i></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>message&#095;size&#095;limit</tt>&nbsp;&nbsp;</td><td>for all messages</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>percent&#095;hack&#095;domains</tt>&nbsp;&nbsp;</td><td>recognize %-hack for these domains</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.12" href="spec_toc.html#TOC153">
+14.12. Callout cache
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>callout&#095;domain&#095;negative&#095;expire</tt>&nbsp;&nbsp;</td><td>timeout for negative domain cache item</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>callout&#095;domain&#095;positive&#095;expire</tt>&nbsp;&nbsp;</td><td>timeout for positive domain cache item</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>callout&#095;negative&#095;expire</tt>&nbsp;&nbsp;</td><td>timeout for negative address cache item</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>callout&#095;positive&#095;expire</tt>&nbsp;&nbsp;</td><td>timeout for positive address cache item</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>callout&#095;random&#095;local&#095;part</tt>&nbsp;&nbsp;</td><td>string to use for &#147;random&#148; testing</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.13" href="spec_toc.html#TOC154">
+14.13. TLS
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>tls&#095;advertise&#095;hosts</tt>&nbsp;&nbsp;</td><td>advertise TLS to these hosts</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>tls&#095;certificate</tt>&nbsp;&nbsp;</td><td>location of server certificate</td></tr>
+<font color=green><tr><td>&nbsp;&nbsp;<tt>tls&#095;crl</tt>&nbsp;&nbsp;</td><td>certificate revocation list</td></tr>
+</font><tr><td>&nbsp;&nbsp;<tt>tls&#095;dhparam</tt>&nbsp;&nbsp;</td><td>DH parameters for server</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>tls&#095;privatekey</tt>&nbsp;&nbsp;</td><td>location of server private key</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>tls&#095;remember&#095;esmtp</tt>&nbsp;&nbsp;</td><td>don't reset after starting TLS</td></tr>
+<font color=green><tr><td>&nbsp;&nbsp;<tt>tls&#095;require&#095;ciphers</tt>&nbsp;&nbsp;</td><td>specify acceptable cipers</td></tr>
+</font><tr><td>&nbsp;&nbsp;<tt>tls&#095;try&#095;verify&#095;hosts</tt>&nbsp;&nbsp;</td><td>try to verify client certificate</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>tls&#095;verify&#095;certificates</tt>&nbsp;&nbsp;</td><td>expected client certificates</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>tls&#095;verify&#095;hosts</tt>&nbsp;&nbsp;</td><td>insist on client certificate verify</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.14" href="spec_toc.html#TOC155">
+14.14. Local user handling 
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>finduser&#095;retries</tt>&nbsp;&nbsp;</td><td>useful in NIS environments</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>gecos&#095;name</tt>&nbsp;&nbsp;</td><td>used when creating <i>Sender:</i></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>gecos&#095;pattern</tt>&nbsp;&nbsp;</td><td>ditto</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>max&#095;username&#095;length</tt>&nbsp;&nbsp;</td><td>for systems that truncate</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>unknown&#095;login</tt>&nbsp;&nbsp;</td><td>used when no login name found</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>unknown&#095;username</tt>&nbsp;&nbsp;</td><td>ditto</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>uucp&#095;from&#095;pattern</tt>&nbsp;&nbsp;</td><td>for recognizing &#147;From &#148; lines</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>uucp&#095;from&#095;sender</tt>&nbsp;&nbsp;</td><td>ditto</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.15" href="spec_toc.html#TOC156">
+14.15. All incoming messages (SMTP and non-SMTP)
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>header&#095;maxsize</tt>&nbsp;&nbsp;</td><td>total size of message header</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>header&#095;line&#095;maxsize</tt>&nbsp;&nbsp;</td><td>individual header line limit</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>message&#095;size&#095;limit</tt>&nbsp;&nbsp;</td><td>applies to all messages</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>percent&#095;hack&#095;domains</tt>&nbsp;&nbsp;</td><td>recognize %-hack for these domains</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>received&#095;header&#095;text</tt>&nbsp;&nbsp;</td><td>expanded to make <i>Received:</i></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>received&#095;headers&#095;max</tt>&nbsp;&nbsp;</td><td>for mail loop detection</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>recipients&#095;max</tt>&nbsp;&nbsp;</td><td>limit per message</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>recipients&#095;max&#095;reject</tt>&nbsp;&nbsp;</td><td>permanently reject excess</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.16" href="spec_toc.html#TOC157">
+14.16. Non-SMTP incoming messages
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>receive&#095;timeout</tt>&nbsp;&nbsp;</td><td>for non-SMTP messages</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.17" href="spec_toc.html#TOC158">
+14.17. Incoming SMTP messages
+</a></h2>
+<p>
+See also the <i>Policy controls</i> section above.
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>host&#095;lookup</tt>&nbsp;&nbsp;</td><td>host name looked up for these hosts</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>host&#095;lookup&#095;order</tt>&nbsp;&nbsp;</td><td>order of DNS and local name lookups</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>recipient&#095;unqualified&#095;hosts</tt>&nbsp;&nbsp;</td><td>may send unqualified recipients</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>rfc1413&#095;hosts</tt>&nbsp;&nbsp;</td><td>make ident calls to these hosts</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>rfc1413&#095;query&#095;timeout</tt>&nbsp;&nbsp;</td><td>zero disables ident calls</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>sender&#095;unqualified&#095;hosts</tt>&nbsp;&nbsp;</td><td>may send unqualified senders</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;keepalive</tt>&nbsp;&nbsp;</td><td>some TCP/IP magic</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;max</tt>&nbsp;&nbsp;</td><td>simultaneous incoming connections</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;max&#095;nommail</tt>&nbsp;&nbsp;</td><td>non-mail commands</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;max&#095;nonmail&#095;hosts</tt>&nbsp;&nbsp;</td><td>hosts to which the limit applies</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;max&#095;per&#095;connection</tt>&nbsp;&nbsp;</td><td>messages per connection</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;max&#095;per&#095;host</tt>&nbsp;&nbsp;</td><td>connections from one host</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;queue</tt>&nbsp;&nbsp;</td><td>queue mail if more connections</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;queue&#095;per&#095;connection</tt>&nbsp;&nbsp;</td><td>queue if more messages per connection</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;accept&#095;reserve</tt>&nbsp;&nbsp;</td><td>only reserve hosts if more connections</td></tr>
+<font color=green><tr><td>&nbsp;&nbsp;<tt>smtp&#095;active&#095;hostname</tt>&nbsp;&nbsp;</td><td>host name to use in messages</td></tr>
+</font><tr><td>&nbsp;&nbsp;<tt>smtp&#095;banner</tt>&nbsp;&nbsp;</td><td>text for welcome banner</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;check&#095;spool&#095;space</tt>&nbsp;&nbsp;</td><td>from <font size=-1>SIZE</font> on <font size=-1>MAIL</font> command</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;connect&#095;backlog</tt>&nbsp;&nbsp;</td><td>passed to TCP/IP stack</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;enforce&#095;sync</tt>&nbsp;&nbsp;</td><td>of SMTP command/responses</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;etrn&#095;command</tt>&nbsp;&nbsp;</td><td>what to run for <font size=-1>ETRN</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;etrn&#095;serialize</tt>&nbsp;&nbsp;</td><td>only one at once</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;load&#095;reserve</tt>&nbsp;&nbsp;</td><td>only reserve hosts if this load</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;max&#095;unknown&#095;commands</tt>&nbsp;&nbsp;</td><td>before dropping connection</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;ratelimit&#095;hosts</tt>&nbsp;&nbsp;</td><td>apply ratelimiting to these hosts</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;ratelimit&#095;mail</tt>&nbsp;&nbsp;</td><td>ratelimit for <font size=-1>MAIL</font> commands</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;ratelimit&#095;rcpt</tt>&nbsp;&nbsp;</td><td>ratelimit for <font size=-1>RCPT</font> commands</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;receive&#095;timeout</tt>&nbsp;&nbsp;</td><td>per command or data line</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;reserve&#095;hosts</tt>&nbsp;&nbsp;</td><td>these are the reserve hosts</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>smtp&#095;return&#095;error&#095;details</tt>&nbsp;&nbsp;</td><td>give detail on rejections</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.18" href="spec_toc.html#TOC159">
+14.18. SMTP extensions
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>accept&#095;8bitmime</tt>&nbsp;&nbsp;</td><td>advertise <font size=-1>8BITMIME</font></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>auth&#095;advertise&#095;hosts</tt>&nbsp;&nbsp;</td><td>advertise <font size=-1>AUTH</font> to these hosts</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>ignore&#095;fromline&#095;hosts</tt>&nbsp;&nbsp;</td><td>allow &#147;From &#148; from these hosts</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>ignore&#095;fromline&#095;local</tt>&nbsp;&nbsp;</td><td>allow &#147;From &#148; from local SMTP</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>pipelining&#095;advertise&#095;hosts</tt>&nbsp;&nbsp;</td><td>advertise pipelining to these hosts</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>tls&#095;advertise&#095;hosts</tt>&nbsp;&nbsp;</td><td>advertise TLS to these hosts</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.19" href="spec_toc.html#TOC160">
+14.19. Processing messages
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>allow&#095;domain&#095;literals</tt>&nbsp;&nbsp;</td><td>recognize domain literal syntax</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>allow&#095;mx&#095;to&#095;ip</tt>&nbsp;&nbsp;</td><td>allow MX to point to IP address</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>allow&#095;utf8&#095;domains</tt>&nbsp;&nbsp;</td><td>in addresses</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>delivery&#095;date&#095;remove</tt>&nbsp;&nbsp;</td><td>from incoming messages</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>envelope&#095;to&#095;remote</tt>&nbsp;&nbsp;</td><td>from incoming messages</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>extract&#095;addresses&#095;remove&#095;arguments</tt>&nbsp;&nbsp;</td><td>affects <i>-t</i> processing</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>headers&#095;charset</tt>&nbsp;&nbsp;</td><td>default for translations</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>qualify&#095;domain</tt>&nbsp;&nbsp;</td><td>default for senders</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>qualify&#095;recipient</tt>&nbsp;&nbsp;</td><td>default for recipients</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>return&#095;path&#095;remove</tt>&nbsp;&nbsp;</td><td>from incoming messages</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>strip&#095;excess&#095;angle&#095;brackets</tt>&nbsp;&nbsp;</td><td>in addresses</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>strip&#095;trailing&#095;dot</tt>&nbsp;&nbsp;</td><td>at end of addresses</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>untrusted&#095;set&#095;sender</tt>&nbsp;&nbsp;</td><td>untrusted can set envelope sender</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.20" href="spec_toc.html#TOC161">
+14.20. System filter
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>system&#095;filter</tt>&nbsp;&nbsp;</td><td>locate system filter</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>system&#095;filter&#095;directory&#095;transport</tt>&nbsp;&nbsp;</td><td>transport for delivery to a directory</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>system&#095;filter&#095;file&#095;transport</tt>&nbsp;&nbsp;</td><td>transport for delivery to a file</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>system&#095;filter&#095;group</tt>&nbsp;&nbsp;</td><td>group for filter running</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>system&#095;filter&#095;pipe&#095;transport</tt>&nbsp;&nbsp;</td><td>transport for delivery to a pipe</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>system&#095;filter&#095;reply&#095;transport</tt>&nbsp;&nbsp;</td><td>transport for autoreply delivery</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>system&#095;filter&#095;user</tt>&nbsp;&nbsp;</td><td>user for filter running</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.21" href="spec_toc.html#TOC162">
+14.21. Routing and delivery
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>dns&#095;again&#095;means&#095;nonexist</tt>&nbsp;&nbsp;</td><td>for broken domains</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>dns&#095;check&#095;names&#095;pattern</tt>&nbsp;&nbsp;</td><td>pre-DNS syntax check</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>dns&#095;ipv4&#095;lookup</tt>&nbsp;&nbsp;</td><td>only v4 lookup for these domains</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>dns&#095;retrans</tt>&nbsp;&nbsp;</td><td>parameter for resolver</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>dns&#095;retry</tt>&nbsp;&nbsp;</td><td>parameter for resolver</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>hold&#095;domains</tt>&nbsp;&nbsp;</td><td>hold delivery for these domains</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>local&#095;interfaces</tt>&nbsp;&nbsp;</td><td>for routing checks</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>queue&#095;domains</tt>&nbsp;&nbsp;</td><td>no immediate delivery for these</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>queue&#095;only</tt>&nbsp;&nbsp;</td><td>no immediate delivery at all</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>queue&#095;only&#095;file</tt>&nbsp;&nbsp;</td><td>no immediate deliveryif file exists</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>queue&#095;only&#095;load</tt>&nbsp;&nbsp;</td><td>no immediate delivery if load is high</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>queue&#095;only&#095;override</tt>&nbsp;&nbsp;</td><td>allow command line to override</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>queue&#095;run&#095;in&#095;order</tt>&nbsp;&nbsp;</td><td>order of arrival</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>queue&#095;run&#095;max</tt>&nbsp;&nbsp;</td><td>of simultaneous queue runners</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>queue&#095;smtp&#095;domains</tt>&nbsp;&nbsp;</td><td>no immediate SMTP delivery for these</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>remote&#095;max&#095;parallel</tt>&nbsp;&nbsp;</td><td>parallel SMTP delivery (per message, not overall)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>remote&#095;sort&#095;domains</tt>&nbsp;&nbsp;</td><td>order of remote deliveries</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>retry&#095;data&#095;expire</tt>&nbsp;&nbsp;</td><td>timeout for retry data</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>retry&#095;interval&#095;max</tt>&nbsp;&nbsp;</td><td>safety net for retry rules</td></tr>
+</table>
+</p>
+<h2>
+<a name="SECT14.22" href="spec_toc.html#TOC163">
+14.22. Bounce and warning messages
+</a></h2>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>bounce&#095;message&#095;file</tt>&nbsp;&nbsp;</td><td>content of bounce</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>bounce&#095;message&#095;text</tt>&nbsp;&nbsp;</td><td>content of bounce</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>bounce&#095;return&#095;body</tt>&nbsp;&nbsp;</td><td>include body if returning message</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>bounce&#095;return&#095;message</tt>&nbsp;&nbsp;</td><td>include original message in bounce</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>bounce&#095;return&#095;size&#095;limit</tt>&nbsp;&nbsp;</td><td>limit on returned message</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>bounce&#095;sender&#095;authentication</tt>&nbsp;&nbsp;</td><td>send authenticated sender with bounce</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>errors&#095;copy</tt>&nbsp;&nbsp;</td><td>copy bounce messages</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>errors&#095;reply&#095;to</tt>&nbsp;&nbsp;</td><td><i>Reply-to:</i> in bounces</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>delay&#095;warning</tt>&nbsp;&nbsp;</td><td>time schedule</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>delay&#095;warning&#095;condition</tt>&nbsp;&nbsp;</td><td>condition for warning messages</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>ignore&#095;bounce&#095;errors&#095;after</tt>&nbsp;&nbsp;</td><td>discard undeliverable bounces</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>warn&#095;message&#095;file</tt>&nbsp;&nbsp;</td><td>content of warning message</td></tr>
+</table>
+</p>
+<a name="IX1018"></a>
+<a name="IX1019"></a>
+<h2>
+<a name="SECT14.23" href="spec_toc.html#TOC164">
+14.23. Alphabetical list of main options
+</a></h2>
+<hr><a name="IX1020"></a>
+<h3>accept_8bitmime</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+This option causes Exim to send <font size=-1>8BITMIME</font> in its response to an SMTP
+<font size=-1>EHLO</font> command, and to accept the <font size=-1>BODY=</font> parameter on <font size=-1>MAIL</font> commands.
+However, though Exim is 8-bit clean, it is not a protocol converter, and it
+takes no steps to do anything special with messages received by this route.
+Consequently, this option is turned off by default.
+<a name="IX1021"></a>
+<a name="IX1022"></a>
+<hr></p>
+<a name="IX1023"></a>
+<h3>acl_not_smtp</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines the ACL that is run when a non-SMTP message is on the point 
+of being accepted. See chapter <a href="spec_38.html">38</a> for further details.
+<a name="IX1024"></a>
+<hr></p>
+<a name="IX1025"></a>
+<h3>acl_smtp_connect</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines the ACL that is run when an SMTP connection is received.
+See chapter <a href="spec_38.html">38</a> for further details.
+<a name="IX1026"></a>
+<a name="IX1027"></a>
+<hr></p>
+<a name="IX1028"></a>
+<h3>acl_smtp_auth</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines the ACL that is run when an SMTP <font size=-1>AUTH</font> command is
+received. See chapter <a href="spec_38.html">38</a> for further details.
+<a name="IX1029"></a>
+<hr></p>
+<a name="IX1030"></a>
+<h3>acl_smtp_data</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines the ACL that is run after an SMTP <font size=-1>DATA</font> command has been
+processed and the message itself has been received, but before the final
+acknowledgement is sent. See chapter <a href="spec_38.html">38</a> for further details.
+<a name="IX1031"></a>
+<hr></p>
+<a name="IX1032"></a>
+<h3>acl_smtp_etrn</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines the ACL that is run when an SMTP <font size=-1>ETRN</font> command is
+received. See chapter <a href="spec_38.html">38</a> for further details.
+<a name="IX1033"></a>
+<hr></p>
+<a name="IX1034"></a>
+<h3>acl_smtp_expn</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines the ACL that is run when an SMTP <font size=-1>EXPN</font> command is
+received. See chapter <a href="spec_38.html">38</a> for further details.
+<a name="IX1035"></a>
+<a name="IX1036"></a>
+<hr></p>
+<a name="IX1037"></a>
+<h3>acl_smtp_helo</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines the ACL that is run when an SMTP <font size=-1>EHLO</font> or <font size=-1>HELO</font>
+command is received. See chapter <a href="spec_38.html">38</a> for further details.
+<a name="IX1038"></a>
+<hr></p>
+<a name="IX1039"></a>
+<h3>acl_smtp_mail</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines the ACL that is run when an SMTP <font size=-1>MAIL</font> command is
+received. See chapter <a href="spec_38.html">38</a> for further details.
+<a name="IX1040"></a>
+<hr></p>
+<a name="IX1041"></a>
+<h3>acl_smtp_mailauth</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines the ACL that is run when there is an <font size=-1>AUTH</font> parameter on 
+a <font size=-1>MAIL</font> command. See chapter <a href="spec_38.html">38</a> for details of ACLs, and chapter
+<a href="spec_33.html">33</a> for details of authentication.
+<a name="IX1042"></a>
+<hr></p>
+<a name="IX1043"></a>
+<h3>acl_smtp_rcpt</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines the ACL that is run when an SMTP <font size=-1>RCPT</font> command is
+received. See chapter <a href="spec_38.html">38</a> for further details.
+<a name="IX1044"></a>
+<hr></p>
+<a name="IX1045"></a>
+<h3>acl_smtp_starttls</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines the ACL that is run when an SMTP <font size=-1>STARTTLS</font> command is
+received. See chapter <a href="spec_38.html">38</a> for further details.
+<a name="IX1046"></a>
+<hr></p>
+<a name="IX1047"></a>
+<h3>acl_smtp_vrfy</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines the ACL that is run when an SMTP <font size=-1>VRFY</font> command is
+received. See chapter <a href="spec_38.html">38</a> for further details.
+<hr></p>
+<a name="IX1048"></a>
+<a name="IX1049"></a>
+<h3>admin_groups</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If the current group or any of the supplementary groups of the caller is in
+this colon-separated list, the caller has admin privileges. If all your system
+programmers are in a specific group, for example, you can give them all Exim
+admin privileges by putting that group in <tt>admin&#095;groups</tt>. However, this does
+not permit them to read Exim's spool files (whose group owner is the Exim gid).
+To permit this, you have to add individuals to the Exim group.
+<hr></p>
+<a name="IX1050"></a>
+<a name="IX1051"></a>
+<h3>allow_domain_literals</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set, the RFC 2822 domain literal format is permitted in
+email addresses. The option is not set by default, because the domain literal
+format is not normally required these days, and few people know about it. It
+has, however, been exploited by mail abusers.
+</p>
+<p>
+Unfortunately, it seems that some DNS black list maintainers are using this 
+format to report black listing to postmasters. If you want to accept messages 
+addressed to your hosts by IP address, you need to set 
+<tt>allow&#095;domain&#095;literals</tt> true, and also to add <tt>&#064;[]</tt> to the list of local 
+domains (defined in the named domain list <tt>local&#095;domains</tt> in the default 
+configuration). This &#147;magic string&#148; matches the domain literal form of all the 
+local host's IP addresses.
+<hr></p>
+<a name="IX1052"></a>
+<a name="IX1053"></a>
+<h3>allow_mx_to_ip</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+It appears that more and more DNS zone administrators are breaking the rules
+and putting domain names that look like IP addresses on the right hand side of
+MX records. Exim follows the rules and rejects this, giving an error message
+that explains the mis-configuration. However, some other MTAs support this
+practice, so to avoid &#147;Why can&#148;t Exim do this?' complaints, <tt>allow&#095;mx&#095;to&#095;ip</tt>
+exists, in order to enable this heinous activity. It is not recommended, except
+when you have no other choice.
+<a name="IX1054"></a>
+<a name="IX1055"></a>
+<hr></p>
+<a name="IX1056"></a>
+<h3>allow_utf8_domains</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+Lots of discussion is going on about internationalized domain names. One
+camp is strongly in favour of just using UTF-8 characters, and it seems
+that at least two other MTAs permit this. This option allows Exim users to 
+experiment if they wish.
+</p>
+<p>
+If it is set true, Exim's domain parsing function allows valid
+UTF-8 multicharacters to appear in domain name components, in addition to
+letters, digits, and hyphens. However, just setting this option is not
+enough; if you want to look up these domain names in the DNS, you must also
+adjust the value of <tt>dns&#095;check&#095;names&#095;pattern</tt> to match the extended form. A
+suitable setting is:
+<pre>
+&nbsp;&nbsp;dns_check_names_pattern = (?i)^(?&#062;(?(1)\.|())[a-z0-9\xc0-\xff]\
+&nbsp;&nbsp;  (?&#062;[-a-z0-9\x80-\xff]*[a-z0-9\x80-\xbf])?)+$
+</pre>
+</p>
+<p>
+Alternatively, you can just disable this feature by setting
+<pre>
+&nbsp;&nbsp;dns_check_names_pattern =
+</pre>
+</p>
+<p>
+That is, set the option to an empty string so that no check is done.
+<hr></p>
+<a name="IX1057"></a>
+<a name="IX1058"></a>
+<a name="IX1059"></a>
+<h3>auth_advertise_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; *<br>
+<p>
+If any server authentication mechanisms are configured, Exim advertises them in
+response to an <font size=-1>EHLO</font> command only if the calling host matches this list.
+Otherwise, Exim does not advertise <font size=-1>AUTH</font>.
+Exim does not accept <font size=-1>AUTH</font> commands from clients to which it has not 
+advertised the availability of <font size=-1>AUTH</font>. The advertising of individual 
+authentication mechanisms can be controlled by the use of the
+<tt>server&#095;advertise&#095;condition</tt> generic authenticator option on the individual 
+authenticators. See chapter <a href="spec_33.html">33</a> for further details.
+</p>
+<p>
+Certain mail clients (for example, Netscape) require the user to provide a name
+and password for authentication if <font size=-1>AUTH</font> is advertised, even though it may
+not be needed (the host may accept messages from hosts on its local LAN without
+authentication, for example). The <tt>auth&#095;advertise&#095;hosts</tt> option can be used
+to make these clients more friendly by excluding them from the set of hosts to
+which Exim advertises <font size=-1>AUTH</font>.
+<a name="IX1060"></a>
+</p>
+<p>
+If you want to advertise the availability of <font size=-1>AUTH</font> only when the connection
+is encrypted using TLS, you can make use of the fact that the value of this
+option is expanded, with a setting like this:
+<pre>
+&nbsp;&nbsp;auth_advertise_hosts = ${if eq{$tls_cipher}{}{}{*}}
+</pre>
+</p>
+<p>
+If <tt>$tls&#095;cipher</tt> is empty, the session is not encrypted, and the result of 
+the expansion is empty, thus matching no hosts. Otherwise, the result of the 
+expansion is *, which matches all hosts.
+<hr></p>
+<a name="IX1061"></a>
+<a name="IX1062"></a>
+<a name="IX1063"></a>
+<h3>auto_thaw</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 0s<br>
+<p>
+If this option is set to a time greater than zero, a queue runner will try a
+new delivery attempt on any frozen message if this much time has passed since
+it was frozen. This may result in the message being re-frozen if nothing has
+changed since the last attempt. It is a way of saying &#147;keep on trying, even
+though there are big problems&#148;. See also <tt>timeout&#095;frozen&#095;after</tt> and
+<tt>ignore&#095;bounce&#095;errors&#095;after</tt>.
+<hr></p>
+<a name="IX1064"></a>
+<a name="IX1065"></a>
+<h3>bi_command</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option supplies the name of a command that is run when Exim is called with
+the <i>-bi</i> option (see chapter <a href="spec_5.html">5</a>). The string value is just the
+command name, it is not a complete command line. If an argument is required, it
+must come from the <i>-oA</i> command line option.
+<hr></p>
+<a name="IX1066"></a>
+<a name="IX1067"></a>
+<a name="IX1068"></a>
+<h3>bounce_message_file</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines a template file containing paragraphs of text to be used
+for constructing bounce messages.  Details of the file's contents are given in
+chapter <a href="spec_41.html">41</a>. See also <tt>warn&#095;message&#095;file</tt>.
+<hr></p>
+<a name="IX1069"></a>
+<h3>bounce_message_text</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+When this option is set, its contents are included in the default bounce
+message immediately after &#147;This message was created automatically by mail
+delivery software.&#148; It is not used if <tt>bounce&#095;message&#095;file</tt> is set.
+<a name="IX1070"></a>
+<hr></p>
+<a name="IX1071"></a>
+<h3>bounce_return_body</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+This option controls whether the body of an incoming message is included in a 
+bounce message when <tt>bounce&#095;return&#095;message</tt> is true. If it is not set, only 
+the message header is included.
+<a name="IX1072"></a>
+<hr></p>
+<a name="IX1073"></a>
+<h3>bounce_return_message</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+If this option is set false, the original message is not included in bounce
+messages generated by Exim. See also <tt>bounce&#095;return&#095;size&#095;limit</tt>.
+<hr></p>
+<a name="IX1074"></a>
+<a name="IX1075"></a>
+<a name="IX1076"></a>
+<a name="IX1077"></a>
+<h3>bounce_return_size_limit</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 100K<br>
+<p>
+This option sets a limit in bytes on the size of messages that are returned to
+senders as part of bounce messages when <tt>bounce&#095;return&#095;message</tt> is true. The
+limit should be less than the value of the global <tt>message&#095;size&#095;limit</tt> and of
+any <tt>message&#095;size&#095;limit</tt> settings on transports, to allow for the bounce text
+that Exim generates. If this option is set to zero there is no limit.
+</p>
+<p>
+When the body of any message that is to be included in a bounce message is
+greater than the limit, it is truncated, and a comment pointing this out is
+added at the top. The actual cutoff may be greater than the value given, owing
+to the use of buffering for transferring the message in chunks (typically 8K in
+size). The idea is to save bandwidth on those undeliverable 15-megabyte
+messages.
+<a name="IX1078"></a>
+<a name="IX1079"></a>
+<a name="IX1080"></a>
+<hr></p>
+<a name="IX1081"></a>
+<h3>bounce_sender_authentication</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option provides an authenticated sender address that is sent with any
+bounce messages generated by Exim that are sent over an authenticated SMTP
+connection. A typical setting might be:
+<pre>
+&nbsp;&nbsp;bounce_sender_authentication = mailer-daemon@my.domain.example
+</pre>
+</p>
+<p>
+which would cause bounce messages to be sent using the SMTP command:
+<pre>
+&nbsp;&nbsp;MAIL FROM:&#060;&#062; AUTH=mailer-daemon@my.domain.example
+</pre>
+</p>
+<p>
+The value of <tt>bounce&#095;sender&#095;authentication</tt> must always be a complete email
+address.
+<a name="IX1082"></a>
+<a name="IX1083"></a>
+<hr></p>
+<a name="IX1084"></a>
+<h3>callout_domain_negative_expire</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 3h<br>
+<p>
+This option specifies the expiry time for negative callout cache data for a
+domain. See section <a href="spec_38.html#SECT38.21">38.21</a> for details of callout verification, and
+section <a href="spec_38.html#SECT38.23">38.23</a> for details of the caching.
+<hr></p>
+<a name="IX1085"></a>
+<h3>callout_domain_positive_expire</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 7d<br>
+<p>
+This option specifies the expiry time for positive callout cache data for a
+domain. See section <a href="spec_38.html#SECT38.21">38.21</a> for details of callout verification, and
+section <a href="spec_38.html#SECT38.23">38.23</a> for details of the caching.
+<hr></p>
+<a name="IX1086"></a>
+<h3>callout_negative_expire</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 2h<br>
+<p>
+This option specifies the expiry time for negative callout cache data for an
+address. See section <a href="spec_38.html#SECT38.21">38.21</a> for details of callout verification, and
+section <a href="spec_38.html#SECT38.23">38.23</a> for details of the caching.
+<hr></p>
+<a name="IX1087"></a>
+<h3>callout_positive_expire</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 24h<br>
+<p>
+This option specifies the expiry time for positive callout cache data for an
+address. See section <a href="spec_38.html#SECT38.21">38.21</a> for details of callout verification, and
+section <a href="spec_38.html#SECT38.23">38.23</a> for details of the caching.
+<hr></p>
+<a name="IX1088"></a>
+<h3>callout_random_local_part</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; see below<br>
+<p>
+This option defines the &#147;random&#148; local part that can be used as part of callout 
+verification. The default value is
+<pre>
+&nbsp;&nbsp;$primary_host_name-$tod_epoch-testing
+</pre>
+</p>
+<p>
+See section 38.22 for details of how this value is used.
+<hr></p>
+<a name="IX1089"></a>
+<h3>check_log_inodes</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 0<br>
+<p>
+See <tt>check&#095;spool&#095;space</tt> below.
+<hr></p>
+<a name="IX1090"></a>
+<h3>check_log_space</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 0<br>
+<p>
+See <tt>check&#095;spool&#095;space</tt> below.
+<hr></p>
+<a name="IX1091"></a>
+<h3>check_spool_inodes</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 0<br>
+<p>
+See <tt>check&#095;spool&#095;space</tt> below.
+<hr></p>
+<a name="IX1092"></a>
+<a name="IX1093"></a>
+<a name="IX1094"></a>
+<a name="IX1095"></a>
+<h3>check_spool_space</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 0<br>
+<p>
+The four <tt>check&#095;...</tt> options allow for checking of disk resources before a
+message is accepted. <tt>check&#095;spool&#095;space</tt> and <tt>check&#095;spool&#095;inodes</tt> check the
+spool partition if either value is greater than zero, for example:
+<pre>
+&nbsp;&nbsp;check_spool_space = 10M
+&nbsp;&nbsp;check_spool_inodes = 100
+</pre>
+</p>
+<p>
+The spool partition is the one which contains the directory defined by
+<font size=-1>SPOOL&#095;DIRECTORY</font> in <i>Local/Makefile</i>. It is used for holding messages in
+transit.
+</p>
+<p>
+<tt>check&#095;log&#095;space</tt> and <tt>check&#095;log&#095;inodes</tt>  check the partition in which log
+files are written if either is greater than zero. These should be set only if
+<tt>log&#095;file&#095;path</tt> and <tt>spool&#095;directory</tt> refer to different partitions.
+</p>
+<p>
+If there is less space or fewer inodes than requested, Exim refuses to accept
+incoming mail. In the case of SMTP input this is done by giving a 452 temporary
+error response to the <font size=-1>MAIL</font> command. If ESMTP is in use and there was a
+<font size=-1>SIZE</font> parameter on the <font size=-1>MAIL</font> command, its value is added to the
+<tt>check&#095;spool&#095;space</tt> value, and the check is performed even if
+<tt>check&#095;spool&#095;space</tt> is zero, unless <tt>no&#095;smtp&#095;check&#095;spool&#095;space</tt> is set.
+</p>
+<p>
+The values for <tt>check&#095;spool&#095;space</tt> and <tt>check&#095;log&#095;space</tt> are held as a
+number of kilobytes. If a non-multiple of 1024 is specified, it is rounded up.
+</p>
+<p>
+For non-SMTP input and for batched SMTP input, the test is done at start-up; on
+failure a message is written to stderr and Exim exits with a non-zero code, as
+it obviously cannot send an error message of any kind.
+<a name="IX1096"></a>
+<a name="IX1097"></a>
+<hr></p>
+<a name="IX1098"></a>
+<h3>daemon_smtp_ports</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; <tt>smtp</tt><br>
+<p>
+This option specifies one or more default SMTP ports on which the Exim daemon
+listens. See chapter <a href="spec_13.html">13</a> for details of how it is used. For 
+backward compatibility, <tt>daemon&#095;smtp&#095;port</tt> (singular) is a synonym.
+<hr></p>
+<a name="IX1099"></a>
+<a name="IX1100"></a>
+<a name="IX1101"></a>
+<h3>delay_warning</h3>
+<i>Type:</i>&nbsp; time list<br><i>Default:</i>&nbsp; 24h<br>
+<p>
+When a message is delayed, Exim sends a warning message to the sender at
+intervals specified by this option. If it is set to a zero, no warnings are
+sent. The data is a colon-separated list of times after which to send warning
+messages. Up to 10 times may be given. If a message has been on the queue for
+longer than the last time, the last interval between the times is used to
+compute subsequent warning times. For example, with
+<pre>
+&nbsp;&nbsp;delay_warning = 4h:8h:24h
+</pre>
+</p>
+<p>
+the first message is sent after 4 hours, the second after 8 hours, and
+the third one after 24 hours. After that, messages are sent every 16 hours, 
+because that is the interval between the last two times on the list. If you set 
+just one time, it specifies the repeat interval. For example, with:
+<pre>
+&nbsp;&nbsp;delay_warning = 6h
+</pre>
+</p>
+<p>
+messages are repeated every six hours. To stop warnings after a given time, set
+a very large time at the end of the list. For example:
+<pre>
+&nbsp;&nbsp;delay_warning = 2h:12h:99d
+</pre>
+<hr></p>
+<a name="IX1102"></a>
+<h3>delay_warning_condition</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; see below<br>
+<p>
+The string is expanded at the time a warning message might be sent. If all the
+deferred addresses have the same domain, it is set in <tt>$domain</tt> during the
+expansion. Otherwise <tt>$domain</tt> is empty. If the result of the expansion is a
+forced failure, an empty string, or a string matching any of &#147;0&#148;, &#147;no&#148; or
+&#147;false&#148; (the comparison being done caselessly) then the warning message is not
+sent. The default is
+<pre>
+&nbsp;&nbsp;delay_warning_condition = \
+&nbsp;&nbsp;  ${if match{$h_precedence:}{(?i)bulk|list|junk}{no}{yes}}
+</pre>
+</p>
+<p>
+which suppresses the sending of warnings about messages that have &#147;bulk&#148;,
+&#147;list&#148; or &#147;junk&#148; in a <i>Precedence:</i> header.
+<a name="IX1103"></a>
+<a name="IX1104"></a>
+<hr></p>
+<a name="IX1105"></a>
+<h3>deliver_drop_privilege</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set true, Exim drops its root privilege at the start of a
+delivery process, and runs as the Exim user throughout. This severely restricts
+the kinds of local delivery that are possible, but is viable in certain types
+of configuration. There is a discussion about the use of root privilege in
+chapter <a href="spec_48.html">48</a>.
+<a name="IX1106"></a>
+<a name="IX1107"></a>
+<hr></p>
+<a name="IX1108"></a>
+<h3>deliver_queue_load_max</h3>
+<i>Type:</i>&nbsp; fixed-point<br><i>Default:</i>&nbsp; unset<br>
+<p>
+When this option is set, a queue run is abandoned if the system load average
+becomes greater than the value of the option. The option has no effect on
+ancient operating systems on which Exim cannot determine the load average.
+See also <tt>queue&#095;only&#095;load</tt> and <tt>smtp&#095;load&#095;reserve</tt>.
+<hr></p>
+<a name="IX1109"></a>
+<a name="IX1110"></a>
+<h3>delivery_date_remove</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+Exim's transports have an option for adding a <i>Delivery-date:</i> header to a
+message when it is delivered &#150; in exactly the same way as <i>Return-path:</i> is
+handled. <i>Delivery-date:</i> records the actual time of delivery. Such headers
+should not be present in incoming messages, and this option causes them to be
+removed at the time the message is received, to avoid any problems that might
+occur when a delivered message is subsequently sent on to some other recipient.
+<a name="IX1111"></a>
+<hr></p>
+<a name="IX1112"></a>
+<h3>dns_again_means_nonexist</h3>
+<i>Type:</i>&nbsp; domain list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+DNS lookups give a &#147;try again&#148; response for the DNS errors &#147;non-authoritative
+host not found&#148; and &#147;<font size=-1>SERVERFAIL</font>&#148;. This can cause Exim to keep trying to
+deliver a message, or to give repeated temporary errors to incoming mail.
+Sometimes the effect is caused by a badly set up name server and may persist
+for a long time. If a domain which exhibits this problem matches anything in
+<tt>dns_again_means_nonexist</tt>, it is treated as if it did not exist. This
+option should be used with care.
+<font color=green>
+You can make it apply to reverse lookups by a setting such as this:
+<pre>
+&nbsp;&nbsp;dns_again_means_nonexist = *.in-addr.arpa
+</pre>
+</p>
+</font><a name="IX1113"></a>
+<hr><a name="IX1114"></a>
+<h3>dns_check_names_pattern</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; see below<br>
+<p>
+When this option is set to a non-empty string, it causes Exim to check domain
+names for illegal characters before handing them to the DNS resolver, because
+some resolvers give temporary errors for malformed names. If a domain name
+contains any illegal characters, a &#147;not found&#148; result is forced, and the
+resolver is not called. The check is done by matching the domain name against a
+regular expression, which is the value of this option. The default pattern is
+<pre>
+&nbsp;&nbsp;dns_check_names_pattern = \
+&nbsp;&nbsp;  (?i)^(?&#062;(?(1)\.|())[^\W_](?&#062;[a-z0-9-]*[^\W_])?)+$
+</pre>
+</p>
+<p>
+which permits only letters, digits, and hyphens in components, but they may not
+start or end with a hyphen.
+If you set <tt>allow&#095;utf8&#095;domains</tt>, you must modify this pattern, or set the 
+option to an empty string.
+<hr></p>
+<a name="IX1115"></a>
+<a name="IX1116"></a>
+<a name="IX1117"></a>
+<h3>dns_ipv4_lookup</h3>
+<i>Type:</i>&nbsp; domain list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+When Exim is compiled with IPv6 support, it looks for IPv6 address records
+(AAAA and, if configured, A6) as well as IPv4 address records when trying to
+find IP addresses for hosts, unless the host's domain matches this list.
+</p>
+<p>
+This is a fudge to help with name servers that give big delays or otherwise do
+not work for the new IPv6 record types. If Exim is handed an IPv6 address
+record as a result of an MX lookup, it always recognizes it, and may as a
+result make an outgoing IPv6 connection. All this option does is to make Exim
+look only for IPv4-style A records when it needs to find an IP address for a
+host name. In due course, when the world's name servers have all been upgraded,
+there should be no need for this option.
+<hr></p>
+<a name="IX1118"></a>
+<a name="IX1119"></a>
+<h3>dns_retrans</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 0s<br>
+<p>
+The options <tt>dns&#095;retrans</tt> and <tt>dns&#095;retry</tt> can be used to set the
+retransmission and retry parameters for DNS lookups. Values of zero (the
+defaults) leave the system default settings unchanged. The first value is the
+time between retries, and the second is the number of retries. It isn't
+totally clear exactly how these settings affect the total time a DNS lookup may
+take. I haven't found any documentation about timeouts on DNS lookups; these
+parameter values are available in the external resolver interface structure,
+but nowhere does it seem to describe how they are used or what you might want
+to set in them.
+<hr></p>
+<a name="IX1120"></a>
+<h3>dns_retry</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 0<br>
+<p>
+See <tt>dns&#095;retrans</tt> above.
+<hr></p>
+<a name="IX1121"></a>
+<h3>drop_cr</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+This is an obsolete option that is now a no-op. It used to affect the way Exim 
+handled CR and LF characters in incoming messages. What happens now is 
+described in section <a href="spec_44.html#SECT44.1">44.1</a>.
+<hr></p>
+<a name="IX1122"></a>
+<a name="IX1123"></a>
+<h3>envelope_to_remove</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+Exim's transports have an option for adding an <i>Envelope-to:</i> header to a
+message when it is delivered &#150; in exactly the same way as <i>Return-path:</i> is
+handled. <i>Envelope-to:</i> records the original recipient address from the
+messages's envelope that caused the delivery to happen. Such headers should not
+be present in incoming messages, and this option causes them to be removed at
+the time the message is received, to avoid any problems that might occur when a
+delivered message is subsequently sent on to some other recipient.
+<hr></p>
+<a name="IX1124"></a>
+<a name="IX1125"></a>
+<a name="IX1126"></a>
+<h3>errors_copy</h3>
+<i>Type:</i>&nbsp; string list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+Setting this option causes Exim to send bcc copies of bounce messages that it
+generates to other addresses. <b>Note</b>: this does not apply to bounce messages
+coming from elsewhere. The value of the option is a colon-separated list of
+items. Each item consists of a pattern, terminated by white space, followed by
+a comma-separated list of email addresses. If a pattern contains spaces, it
+must be enclosed in double quotes.
+</p>
+<p>
+Each pattern is processed in the same way as a single item in an address list
+(see section <a href="spec_10.html#SECT10.18">10.18</a>). When a pattern matches the recipient of the
+bounce message, the message is copied to the addresses on the list. The items
+are scanned in order, and once a matching one is found, no further items are
+examined. For example:
+<pre>
+&nbsp;&nbsp;errors_copy = spqr@mydomain   postmaster@mydomain.example :\
+&nbsp;&nbsp;              rqps@mydomain   hostmaster@mydomain.example,\
+&nbsp;&nbsp;                              postmaster@mydomain.example
+</pre>
+</p>
+<p>
+<a name="IX1127"></a>
+The address list is expanded before use. The expansion variables
+<tt>$local&#095;part</tt> and <tt>$domain</tt> are set from the original recipient of the error
+message, and if there was any wildcard matching in the pattern, the expansion
+variables <tt>$0</tt>, <tt>$1</tt>, etc. are set in the normal way.
+<hr></p>
+<a name="IX1128"></a>
+<a name="IX1129"></a>
+<h3>errors_reply_to</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+Exim's bounce and delivery warning messages contain the header line
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>From: Mail Delivery System &#060;Mailer-Daemon&#064;&#060;<em>qualify-domain</em>&#062;&#062;</tt><br>
+</p>
+<p>
+where &#060;<em>qualify-domain</em>&#062; is the value of the <tt>qualify&#095;domain</tt> option. 
+Experience shows that people reply to bounce messages. If the
+<tt>errors&#095;reply&#095;to</tt> option is set, a <i>Reply-To:</i> header is added to bounce and
+warning messages. For example:
+<pre>
+&nbsp;&nbsp;errors_reply_to = postmaster@my.domain.example
+</pre>
+</p>
+<p>
+The value of the option is not expanded. It must specify a valid RFC 2822
+address.
+<hr></p>
+<a name="IX1130"></a>
+<a name="IX1131"></a>
+<a name="IX1132"></a>
+<h3>exim_group</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; compile-time configured<br>
+<p>
+This option changes the gid under which Exim runs when it gives up root
+privilege. The default value is compiled into the binary. The value of this
+option is used only when <tt>exim&#095;user</tt> is also set. Unless it consists entirely
+of digits, the string is looked up using <i>getgrnam()</i>, and failure causes a
+configuration error. See chapter <a href="spec_48.html">48</a> for a discussion of security
+issues.
+<hr></p>
+<a name="IX1133"></a>
+<a name="IX1134"></a>
+<h3>exim_path</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; see below<br>
+<p>
+This option specifies the path name of the Exim binary, which is used when Exim
+needs to re-exec itself. The default is set up to point to the file <i>exim</i> in
+the directory configured at compile time by the <font size=-1>BIN&#095;DIRECTORY</font> setting. It
+is necessary to change <tt>exim&#095;path</tt> if, exceptionally, Exim is run from some
+other place.
+<b>Warning</b>: Do not use a macro to define the value of this option, because 
+you will break those Exim utilities that scan the configuration file to find 
+where the binary is. (They then use the <i>-bP</i> option to extract option 
+settings such as the value of <tt>spool&#095;directory</tt>.)
+<hr></p>
+<a name="IX1135"></a>
+<a name="IX1136"></a>
+<a name="IX1137"></a>
+<h3>exim_user</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; compile-time configured<br>
+<p>
+This option changes the uid under which Exim runs when it gives up root
+privilege. The default value is compiled into the binary. Ownership of the run
+time configuration file and the use of the <i>-C</i> and <i>-D</i> command line options
+is checked against the values in the binary, not what is set here.
+</p>
+<p>
+Unless it consists entirely of digits, the string is looked up using
+<i>getpwnam()</i>, and failure causes a configuration error. If <tt>exim&#095;group</tt> is
+not also supplied, the gid is taken from the result of <i>getpwnam()</i> if it is
+used. See chapter <a href="spec_48.html">48</a> for a discussion of security issues.
+<hr></p>
+<a name="IX1138"></a>
+<a name="IX1139"></a>
+<h3>extra_local_interfaces</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines network interfaces that are to be considered local when 
+routing, but which are not used for listening by the daemon. See section 
+<a href="spec_13.html#SECT13.6">13.6</a> for details.
+<hr></p>
+<a name="IX1140"></a>
+<a name="IX1141"></a>
+<a name="IX1142"></a>
+<a name="IX1143"></a>
+<h3>extract_addresses_remove_arguments</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+According to some Sendmail documentation (Sun, IRIX, HP-UX), if any addresses
+are present on the command line when the <i>-t</i> option is used to build an
+envelope from a message's <i>To:</i>, <i>Cc:</i> and <i>Bcc:</i> headers, the command line
+addresses are removed from the recipients list. This is also how Smail behaves.
+However, other Sendmail documentation (the O'Reilly book) states that command
+line addresses are added to those obtained from the header lines. When
+<tt>extract&#095;addresses&#095;remove&#095;arguments</tt> is true (the default), Exim subtracts
+argument headers. If it is set false, Exim adds rather than removes argument
+addresses.
+<hr></p>
+<a name="IX1144"></a>
+<a name="IX1145"></a>
+<h3>finduser_retries</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 0<br>
+<p>
+On systems running NIS or other schemes in which user and group information is
+distributed from a remote system, there can be times when <i>getpwnam()</i> and
+related functions fail, even when given valid data, because things time out.
+Unfortunately these failures cannot be distinguished from genuine &#147;not found&#148;
+errors. If <tt>finduser&#095;retries</tt> is set greater than zero, Exim will try that
+many extra times to find a user or a group, waiting for one second between
+retries.
+<hr></p>
+<a name="IX1146"></a>
+<a name="IX1147"></a>
+<h3>freeze_tell</h3>
+<i>Type:</i>&nbsp; string list, comma separated<br><i>Default:</i>&nbsp; unset<br>
+<p>
+On encountering certain errors, or when configured to do so in a system filter,
+or in an ACL,
+Exim freezes a message. This means that no further delivery attempts take place
+until an administrator (or the <tt>auto&#095;thaw</tt> feature) thaws the message. If
+<tt>freeze&#095;tell</tt> is set, Exim generates a warning message whenever it freezes
+something, unless the message it is freezing is a 
+locally-generated
+bounce message. (Without this exception there is the possibility of looping.)
+The warning message is sent to the addresses supplied as the comma-separated
+value of this option. If several of the message's addresses cause freezing,
+only a single message is sent. 
+If the freezing was automatic, the reason(s) for freezing can be found in the
+message log. If you configure freezing in a filter or ACL, you must arrange for 
+any logging that you require.
+<hr></p>
+<a name="IX1148"></a>
+<a name="IX1149"></a>
+<a name="IX1150"></a>
+<h3>gecos_name</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+Some operating systems, notably HP-UX, use the &#147;gecos&#148; field in the system
+password file to hold other information in addition to users' real names. Exim
+looks up this field for use when it is creating <i>Sender:</i> or <i>From:</i> headers.
+If either <tt>gecos&#095;pattern</tt> or <tt>gecos&#095;name</tt> are unset, the contents of the
+field are used unchanged, except that, if an ampersand is encountered, it is
+replaced by the user's login name with the first character forced to
+upper case, since this is a convention that is observed on many systems.
+</p>
+<p>
+<a name="IX1151"></a>
+When these options are set, <tt>gecos&#095;pattern</tt> is treated as a regular expression
+that is to be applied to the field (again with &#038; replaced by the login name),
+and if it matches, <tt>gecos&#095;name</tt> is expanded and used as the user's name.
+Numeric variables such as <tt>$1</tt>, <tt>$2</tt>, etc. can be used in the expansion to
+pick up sub-fields that were matched by the pattern. In HP-UX, where the user's
+name terminates at the first comma, the following can be used:
+<pre>
+&nbsp;&nbsp;gecos_pattern = ([^,]*)
+&nbsp;&nbsp;gecos_name = $1
+</pre>
+<hr></p>
+<a name="IX1152"></a>
+<h3>gecos_pattern</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+See <tt>gecos&#095;name</tt> above.
+<hr></p>
+<a name="IX1153"></a>
+<h3>headers_charset</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; see below<br>
+<p>
+This option sets a default character set for translating from encoded MIME
+&#147;words&#148; in header lines, when referenced by an <tt>$h&#095;xxx</tt> expansion item. The
+default is the value of <font size=-1>HEADERS&#095;CHARSET</font> in <i>Local/Makefile</i>. The
+ultimate default is ISO-8859-1. For more details see the description of header
+insertions in section <a href="spec_11.html#SECT11.4">11.4</a>.
+<hr></p>
+<a name="IX1154"></a>
+<a name="IX1155"></a>
+<a name="IX1156"></a>
+<h3>header_maxsize</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; see below<br>
+<p>
+This option controls the overall maximum size of a message's header
+section. The default is the value of <font size=-1>HEADER&#095;MAXSIZE</font> in
+<i>Local/Makefile</i>; the default for that is 1M. Messages with larger header 
+sections are rejected.
+<hr></p>
+<a name="IX1157"></a>
+<a name="IX1158"></a>
+<a name="IX1159"></a>
+<h3>header_line_maxsize</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 0<br>
+<p>
+This option limits the length of any individual header line in a message, after
+all the continuations have been joined together. Messages with individual
+header lines that are longer than the limit are rejected. The default value of
+zero means &#147;no limit&#148;.
+<hr></p>
+<a name="IX1160"></a>
+<a name="IX1161"></a>
+<a name="IX1162"></a>
+<h3>helo_accept_junk_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+Exim checks the syntax of <font size=-1>HELO</font> and <font size=-1>EHLO</font> commands for incoming SMTP
+mail, and gives an error response for invalid data. Unfortunately, there are
+some SMTP clients that send syntactic junk. They can be accommodated by setting
+this option. Note that this is a syntax check only. See <tt>helo&#095;verify&#095;hosts</tt>
+if you want to do semantic checking.
+See also <tt>helo&#095;allow&#095;chars</tt> for a way of extending the permitted character 
+set.
+<hr></p>
+<a name="IX1163"></a>
+<a name="IX1164"></a>
+<a name="IX1165"></a>
+<a name="IX1166"></a>
+<h3>helo_allow_chars</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option can be set to a string of rogue characters that are permitted in
+all <font size=-1>EHLO</font> and <font size=-1>HELO</font> names in addition to the standard letters, digits,
+hyphens, and dots. If you really must allow underscores, you can set
+<pre>
+&nbsp;&nbsp;helo_allow_chars = _
+</pre>
+</p>
+<p>
+Note that the value is one string, not a list.
+<hr></p>
+<a name="IX1167"></a>
+<a name="IX1168"></a>
+<a name="IX1169"></a>
+<h3>helo_lookup_domains</h3>
+<i>Type:</i>&nbsp; domain list, expanded<br><i>Default:</i>&nbsp; <tt>&#064;:&#064;[]</tt><br>
+<p>
+If the domain given by a client in a <font size=-1>HELO</font> or <font size=-1>EHLO</font> command matches this
+list, a reverse lookup is done in order to establish the host's true name. The
+default forces a lookup if the client host gives the server's name or any of
+its IP addresses (in brackets), something that broken clients have been seen to
+do.
+<hr></p>
+<a name="IX1170"></a>
+<a name="IX1171"></a>
+<a name="IX1172"></a>
+<h3>helo_try_verify_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The RFCs mandate that a server must not reject a message because it doesn't
+like the <font size=-1>HELO</font> or <font size=-1>EHLO</font> command. By default, Exim just checks the syntax
+of these commands (see <tt>helo_accept_junk_hosts</tt> and <tt>helo&#095;allow&#095;chars</tt>
+above). However, some sites like to be stricter. If the calling host matches
+<tt>helo&#095;try&#095;verify&#095;hosts</tt>, Exim checks that the host name given in the <font size=-1>HELO</font>
+or <font size=-1>EHLO</font> command either:
+</p>
+<ul>
+<li><p>
+is an IP literal matching the calling address of the host (the RFCs
+specifically allow this), or
+</p>
+</li>
+<li><a name="IX1173"></a>
+<a name="IX1174"></a>
+<p>
+matches the host name that Exim obtains by doing a reverse lookup of the
+calling host address, or
+</p>
+</li>
+<li><p>
+when looked up using <i>gethostbyname()</i> (or <i>getipnodebyname()</i> when
+available) yields the calling host address.
+</p>
+</li>
+</ul>
+<p>
+However, the <font size=-1>EHLO</font> or <font size=-1>HELO</font> command is not rejected if any of the checks 
+fail. Processing continues, but the result of the check is remembered, and can
+be detected later in an ACL by the <tt>verify = helo</tt> condition. If you want
+verification failure to cause rejection of <font size=-1>EHLO</font> or <font size=-1>HELO</font>, use
+<tt>helo&#095;verify&#095;hosts</tt> instead.
+<hr></p>
+<a name="IX1175"></a>
+<a name="IX1176"></a>
+<a name="IX1177"></a>
+<h3>helo_verify_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+For hosts that match this option, Exim checks the host name given in the
+<font size=-1>HELO</font> or <font size=-1>EHLO</font> in the same way as for <tt>helo&#095;try&#095;verify&#095;hosts</tt>. If the
+check fails, the <font size=-1>HELO</font> or <font size=-1>EHLO</font> command is rejected with a 550 error, and
+entries are written to the main and reject logs. If a <font size=-1>MAIL</font> command is
+received before <font size=-1>EHLO</font> or <font size=-1>HELO</font>, it is rejected with a 
+503 
+error.
+<hr></p>
+<a name="IX1178"></a>
+<a name="IX1179"></a>
+<a name="IX1180"></a>
+<h3>hold_domains</h3>
+<i>Type:</i>&nbsp; domain list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option allows mail for particular domains to be held on the queue
+manually. The option is overridden if a message delivery is forced with the
+<i>-M</i>, <i>-qf</i>, <i>-Rf</i> or <i>-Sf</i> options, and also while testing or verifying
+addresses using <i>-bt</i> or <i>-bv</i>. Otherwise, if a domain matches an item in
+<tt>hold&#095;domains</tt>, no routing or delivery for that address is done, and it is
+deferred every time the message is looked at.
+</p>
+<p>
+This option is intended as a temporary operational measure for delaying the
+delivery of mail while some problem is being sorted out, or some new
+configuration tested. If you just want to delay the processing of some
+domains until a queue run occurs, you should use <tt>queue&#095;domains</tt> or
+<tt>queue&#095;smtp&#095;domains</tt>, not <tt>hold&#095;domains</tt>.
+</p>
+<p>
+A setting of <tt>hold&#095;domains</tt> does not override Exim's code for removing
+messages from the queue if they have been there longer than the longest retry
+time in any retry rule. If you want to hold messages for longer than the normal
+retry times, insert a dummy retry rule with a long retry time.
+<hr></p>
+<a name="IX1181"></a>
+<a name="IX1182"></a>
+<h3>host_lookup</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+Exim does not look up the name of a calling host from its IP address unless it
+is required to compare against some host list, or the host matches
+<tt>helo&#095;try&#095;verify&#095;hosts</tt> or <tt>helo&#095;verify&#095;hosts</tt>, or the host matches this
+option (which normally contains IP addresses rather than host names). The
+default configuration file contains
+<pre>
+&nbsp;&nbsp;host_lookup = *
+</pre>
+</p>
+<p>
+which causes a lookup to happen for all hosts. If the expense of these lookups
+is felt to be too great, the setting can be changed or removed.
+</p>
+<p>
+After a successful reverse lookup, Exim does a forward lookup on the name it
+has obtained, to verify that it yields the IP address that it started with. If
+this check fails, Exim behaves as if the name lookup failed.
+</p>
+<p>
+After any kind of failure, the host name (in <tt>$sender&#095;host&#095;name</tt>) remains
+unset, and <tt>$host&#095;lookup&#095;failed</tt> is set to the string &#147;1&#148;. See also
+<tt>dns&#095;again&#095;means&#095;nonexist</tt>, <tt>helo_lookup_domains</tt>, and <tt>verify =
+reverse&#095;host&#095;lookup</tt> in ACLs.
+<hr></p>
+<a name="IX1183"></a>
+<h3>host_lookup_order</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; <tt>bydns:byaddr</tt><br>
+<p>
+This option specifies the order of different lookup methods when Exim is trying
+to find a host name from an IP address. The default is to do a DNS lookup 
+first, and then to try a local lookup (using <i>gethostbyaddr()</i> or equivalent)
+if that fails. You can change the order of these lookups, or omit one entirely,
+if you want.
+</p>
+<p>
+<b>Warning</b>: the &#147;byaddr&#148; method does not always yield aliases when there are
+multiple PTR records in the DNS and the IP address is not listed in 
+<i>/etc/hosts</i>. Different operating systems give different results in this
+case. That is why the default tries a DNS lookup first.
+<hr></p>
+<a name="IX1184"></a>
+<a name="IX1185"></a>
+<h3>host_reject_connection</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If this option is set, incoming SMTP calls from the hosts listed are rejected
+as soon as the connection is made. 
+This option is obsolete, and retained only for backward compatibility, because
+nowadays the ACL specified by <tt>acl&#095;smtp&#095;connect</tt> can also reject incoming
+connections immediately.
+</p>
+<p>
+The ability to give an immediate rejection (either by this option or using an
+ACL) is provided for use in unusual cases. Many hosts will just try again,
+sometimes without much delay. Normally, it is better to use an ACL to reject
+incoming messages at a later stage, such as after <font size=-1>RCPT</font> commands. See
+chapter <a href="spec_38.html">38</a>.
+<hr></p>
+<a name="IX1186"></a>
+<a name="IX1187"></a>
+<a name="IX1188"></a>
+<h3>hosts_treat_as_local</h3>
+<i>Type:</i>&nbsp; domain list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If this option is set, any host names that match the domain list are treated as
+if they were the local host when Exim is scanning host lists obtained from MX
+records
+or other sources. Note that the value of this option is a domain list, not a
+host list, because it is always used to check host names, not IP addresses.
+</p>
+<p>
+This option also applies when Exim is matching the special items
+<tt>&#064;mx&#095;any</tt>, <tt>&#064;mx&#095;primary</tt>, and <tt>&#064;mx&#095;secondary</tt> in a domain list (see
+section <a href="spec_10.html#SECT10.8">10.8</a>), and when checking the <tt>hosts</tt> option in the <b>smtp</b>
+transport for the local host (see the <tt>allow&#095;localhost</tt> option in that
+transport).
+See also <tt>local&#095;interfaces</tt>, <tt>extra&#095;local&#095;interfaces</tt>, and chapter 
+<a href="spec_13.html">13</a>, which contains a discussion about local network interfaces 
+and recognising the local host.
+<hr></p>
+<a name="IX1189"></a>
+<a name="IX1190"></a>
+<a name="IX1191"></a>
+<h3>ignore_bounce_errors_after</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 10w<br>
+<p>
+This option affects the processing of bounce messages that cannot be delivered, 
+that is, those that suffer a permanent delivery failure. (Bounce messages that 
+suffer temporary delivery failures are of course retried in the usual way.)
+</p>
+<p>
+After a permanent delivery failure, bounce messages are frozen,
+because there is no sender to whom they can be returned. When a frozen bounce
+message has been on the queue for more than the given time, it is unfrozen at
+the next queue run, and a further delivery is attempted. If delivery fails
+again, the bounce message is discarded. This makes it possible to keep failed
+bounce messages around for a shorter time than the normal maximum retry time
+for frozen messages. For example,
+<pre>
+&nbsp;&nbsp;ignore_bounce_errors_after = 12h
+</pre>
+</p>
+<p>
+retries failed bounce message deliveries after 12 hours, discarding any further
+failures. If the value of this option is set to a zero time period, bounce
+failures are discarded immediately. Setting a very long time (as in the default
+value) has the effect of disabling this option. For ways of automatically
+dealing with other kinds of frozen message, see <tt>auto&#095;thaw</tt> and
+<tt>timeout&#095;frozen&#095;after</tt>.
+<hr></p>
+<a name="IX1192"></a>
+<a name="IX1193"></a>
+<a name="IX1194"></a>
+<h3>ignore_fromline_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+Some broken SMTP clients insist on sending a UUCP-like &#147;From&#148; line before the
+headers of a message. By default this is treated as the start of the message's
+body, which means that any following headers are not recognized as such. Exim
+can be made to ignore it by setting <tt>ignore&#095;fromline&#095;hosts</tt> to match those
+hosts that insist on sending it. If the sender is actually a local process
+rather than a remote host, and is using <i>-bs</i> to inject the messages,
+<tt>ignore_fromline_local</tt> must be set to achieve this effect.
+<hr></p>
+<a name="IX1195"></a>
+<h3>ignore_fromline_local</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+See <tt>ignore&#095;fromline&#095;hosts</tt> above.
+<hr></p>
+<a name="IX1196"></a>
+<h3>keep_malformed</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 4d<br>
+<p>
+This option specifies the length of time to keep messages whose spool files
+have been corrupted in some way. This should, of course, never happen. At the
+next attempt to deliver such a message, it gets removed. The incident is
+logged.
+<hr></p>
+<a name="IX1197"></a>
+<a name="IX1198"></a>
+<h3>ldap_default_servers</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option provides a list of LDAP servers which are tried in turn when an
+LDAP query does not contain a server. See section <a href="spec_9.html#SECT9.11">9.11</a> for details
+of LDAP queries. This option is available only when Exim has been built with
+LDAP support.
+<hr></p>
+<a name="IX1199"></a>
+<a name="IX1200"></a>
+<h3>ldap_version</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option can be used to force Exim to set a specific protocol version for
+LDAP. If it option is unset, it is shown by the <i>-bP</i> command line option as
+-1. When this is the case, the default is 3 if <font size=-1>LDAP&#095;VERSION3</font> is defined in
+the LDAP headers; otherwise it is 2. This option is available only when Exim
+has been built with LDAP support.
+<hr></p>
+<a name="IX1201"></a>
+<a name="IX1202"></a>
+<a name="IX1203"></a>
+<h3>local_from_check</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+When a message is submitted locally (that is, not over a TCP/IP connection) by
+an untrusted user, Exim removes any existing <i>Sender:</i> header line, and checks
+that the <i>From:</i> header line matches the login of the calling user. You can
+use <tt>local&#095;from&#095;prefix</tt> and <tt>local&#095;from&#095;suffix</tt> to permit affixes on the
+local part. If the <i>From:</i> header line does not match, Exim adds a <i>Sender:</i>
+header with an address constructed from the calling user's login and the
+default qualify domain.
+</p>
+<p>
+If <tt>local&#095;from&#095;check</tt> is set false, the <i>From:</i> header check is disabled,
+and no <i>Sender:</i> header is ever added. If, in addition, you want to retain
+<i>Sender:</i> header lines supplied by untrusted users, you must also set
+<tt>local&#095;sender&#095;retain</tt> to be true.
+<a name="IX1204"></a>
+</p>
+<p>
+These options affect only the header lines in the message. The envelope sender
+is still forced to be the login id at the qualify domain unless
+<tt>untrusted&#095;set&#095;sender</tt> permits the user to supply an envelope sender.
+Section <a href="spec_44.html#SECT44.14">44.14</a> has more details about <i>Sender:</i> processing.
+<hr></p>
+<a name="IX1205"></a>
+<h3>local_from_prefix</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+When Exim checks the <i>From:</i> header line of locally submitted messages for
+matching the login id (see <tt>local&#095;from&#095;check</tt> above), it can be configured to
+ignore certain prefixes and suffixes in the local part of the address. This is
+done by setting <tt>local&#095;from&#095;prefix</tt> and/or <tt>local&#095;from&#095;suffix</tt> to
+appropriate lists, in the same form as the <tt>local&#095;part&#095;prefix</tt> and
+<tt>local&#095;part&#095;suffix</tt> router options (see chapter <a href="spec_15.html">15</a>). For
+example, if
+<pre>
+&nbsp;&nbsp;local_from_prefix = *-
+</pre>
+</p>
+<p>
+is set, a <i>From:</i> line containing
+<pre>
+&nbsp;&nbsp;From: anything-user@your.domain.example
+</pre>
+</p>
+<p>
+will not cause a <i>Sender:</i> header to be added if <i>user&#064;your.domain.example</i>
+matches the actual sender address that is constructed from the login name and
+qualify domain.
+<hr></p>
+<a name="IX1206"></a>
+<h3>local_from_suffix</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+See <tt>local&#095;from&#095;prefix</tt> above.
+<hr></p>
+<a name="IX1207"></a>
+<h3>local_interfaces</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; see below<br>
+<p>
+This option controls which network interfaces are used by the daemon for 
+listening; they are also used to identify the local host when routing. Chapter 
+<a href="spec_13.html">13</a> contains a full description of this option and the related 
+options <tt>extra&#095;local&#095;interfaces</tt> and <tt>hosts&#095;treat&#095;as&#095;local</tt>. The default 
+value for <tt>local&#095;interfaces</tt> is
+<pre>
+&nbsp;&nbsp;local_interfaces = 0.0.0.0
+</pre>
+</p>
+<p>
+when Exim is built without IPv6 support; otherwise it is
+<pre>
+&nbsp;&nbsp;local_interfaces = &#060;; ::0 ; 0.0.0.0
+</pre>
+<hr></p>
+<a name="IX1208"></a>
+<a name="IX1209"></a>
+<a name="IX1210"></a>
+<h3>local_scan_timeout</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 5m<br>
+<p>
+This timeout applies to the <i>local&#095;scan()</i> function (see chapter
+<a href="spec_39.html">39</a>). Zero means &#147;no timeout&#148;. If the timeout is exceeded, the
+incoming message is rejected with a temporary error if it is an SMTP message.
+For a non-SMTP message, the message is dropped and Exim ends with a non-zero
+code. The incident is logged on the main and reject logs.
+<hr></p>
+<a name="IX1211"></a>
+<a name="IX1212"></a>
+<h3>local_sender_retain</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+When a message is submitted locally (that is, not over a TCP/IP connection) by
+an untrusted user, Exim removes any existing <i>Sender:</i> header line. If you
+do not want this to happen, you must set <tt>local&#095;sender&#095;retain</tt>, and you must
+also set <tt>local&#095;from&#095;check</tt> to be false (Exim will complain if you do not).
+Section <a href="spec_44.html#SECT44.14">44.14</a> has more details about <i>Sender:</i> processing.
+<hr></p>
+<a name="IX1213"></a>
+<a name="IX1214"></a>
+<a name="IX1215"></a>
+<h3>localhost_number</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+Exim's message ids are normally unique only within the local host. If
+uniqueness among a set of hosts is required, each host must set a different
+value for the <tt>localhost&#095;number</tt> option. The string is expanded immediately
+after reading the configuration file (so that a number can be computed from the
+host name, for example) and the result of the expansion must be a number in the
+range 0&#150;16 (or 0&#150;10 on operating systems with case-insensitive file systems).
+This is available in subsequent string expansions via the variable
+<tt>$localhost&#095;number</tt>. When <tt>localhost&#095;number is set</tt>, the final two
+characters of the message id, instead of just being a fractional part of the
+time, are computed from the time and the local host number as described in
+section <a href="spec_3.html#SECT3.4">3.4</a>.
+<hr></p>
+<a name="IX1216"></a>
+<a name="IX1217"></a>
+<h3>log_file_path</h3>
+<i>Type:</i>&nbsp; string list, expanded<br><i>Default:</i>&nbsp; set at compile time<br>
+<p>
+This option sets the path which is used to determine the names of Exim's log
+files, or indicates that logging is to be to syslog, or both. It is expanded
+when Exim is entered, so it can, for example, contain a reference to the host
+name. If no specific path is set for the log files at compile or run time, they
+are written in a sub-directory called <i>log</i> in Exim's spool directory.
+Chapter <a href="spec_45.html">45</a> contains further details about Exim's logging, and section
+<a href="spec_45.html#SECT45.1">45.1</a> describes how the contents of <tt>log&#095;file&#095;path</tt> are used. If
+this string is fixed at your installation (contains no expansion variables) it
+is recommended that you do not set this option in the configuration file, but
+instead supply the path using <font size=-1>LOG&#095;FILE&#095;PATH</font> in <i>Local/Makefile</i> so that
+it is available to Exim for logging errors detected early on &#150; in particular,
+failure to read the configuration file.
+<hr></p>
+<a name="IX1218"></a>
+<a name="IX1219"></a>
+<h3>log_selector</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option can be used to reduce or increase the number of things that Exim
+writes to its log files. Its argument is made up of names preceded by plus or
+minus characters. For example:
+<pre>
+&nbsp;&nbsp;log_selector = +arguments -retry_defer
+</pre>
+</p>
+<p>
+A list of possible names and what they control is given in the chapter on
+logging, in section <a href="spec_45.html#SECT45.15">45.15</a>.
+<hr></p>
+<a name="IX1220"></a>
+<a name="IX1221"></a>
+<h3>log_timezone</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+By default, the timestamps on log lines are in local time without the
+timezone. This means that if your timezone changes twice a year, the timestamps
+in log lines are ambiguous for an hour when the clocks go back. One way of
+avoiding this problem is to set the timezone to UTC. An alternative is to set
+<tt>log&#095;timezone</tt> true. This turns on the addition of the timezone offset to
+timestamps in log lines. Turning on this option can add quite a lot to the size
+of log files because each line is extended by 6 characters. Note that the
+<tt>$tod&#095;log</tt> variable contains the log timestamp without the zone, but there is
+another variable called <tt>$tod&#095;zone</tt> that contains just the timezone offset.
+<hr></p>
+<a name="IX1222"></a>
+<a name="IX1223"></a>
+<a name="IX1224"></a>
+<a name="IX1225"></a>
+<a name="IX1226"></a>
+<a name="IX1227"></a>
+<h3>lookup_open_max</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 25<br>
+<p>
+This option limits the number of simultaneously open files for single-key
+lookups that use regular files (that is, <b>lsearch</b>, <b>dbm</b>, and <b>cdb</b>). Exim
+normally keeps these files open during routing, because often the same file is
+required several times. If the limit is reached, Exim closes the least recently
+used file. Note that if you are using the <i>ndbm</i> library, it actually opens
+two files for each logical DBM database, though it still counts as one for the
+purposes of <tt>lookup&#095;open&#095;max</tt>. If you are getting &#147;too many open files&#148;
+errors with NDBM, you need to reduce the value of <tt>lookup&#095;open&#095;max</tt>.
+<hr></p>
+<a name="IX1228"></a>
+<a name="IX1229"></a>
+<a name="IX1230"></a>
+<a name="IX1231"></a>
+<h3>max_username_length</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 0<br>
+<p>
+Some operating systems are broken in that they truncate long arguments to
+<i>getpwnam()</i> to eight characters, instead of returning &#147;no such user&#148;. If
+this option is set greater than zero, any attempt to call <i>getpwnam()</i> with
+an argument that is longer behaves as if <i>getpwnam()</i> failed.
+<hr></p>
+<a name="IX1232"></a>
+<a name="IX1233"></a>
+<a name="IX1234"></a>
+<h3>message_body_visible</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 500<br>
+<p>
+This option specifies how much of a message's body is to be included in the
+<tt>$message&#095;body</tt> and <tt>$message&#095;body&#095;end</tt> expansion variables.
+<hr></p>
+<a name="IX1235"></a>
+<a name="IX1236"></a>
+<h3>message_id_header_domain</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If this option is set, the string is expanded and used as the right hand side
+(domain) of the <i>Message-ID:</i> header that Exim creates if a
+locally-originated incoming message does not have one. &#147;Locally-originated&#148;
+means &#147;not received over TCP/IP.&#148;
+Otherwise, the primary host name is used.
+Only letters, digits, dot and hyphen are accepted; any other characters are
+replaced by hyphens. If the expansion is forced to fail, or if the result is an
+empty string, the option is ignored.
+<hr></p>
+<a name="IX1237"></a>
+<h3>message_id_header_text</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If this variable is set, the string is expanded and used to augment the text of
+the <i>Message-id:</i> header that Exim creates if a
+locally-originated
+incoming message does not have one. The text of this header is required by RFC
+2822 to take the form of an address. By default, Exim uses its internal message
+id as the local part, and the primary host name as the domain. If this option
+is set, it is expanded, and provided the expansion is not forced to fail, and
+does not yield an empty string, the result is inserted into the header
+immediately before the &#064;, separated from the internal message id by a dot. Any
+characters that are illegal in an address are automatically converted into
+hyphens. This means that variables such as <tt>$tod&#095;log</tt> can be used, because
+the spaces and colons will become hyphens.
+<hr></p>
+<a name="IX1238"></a>
+<a name="IX1239"></a>
+<a name="IX1240"></a>
+<h3>message_logs</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+If this option is turned off, per-message log files are not created in the
+<i>msglog</i> spool sub-directory. This reduces the amount of disk I/O required by
+Exim, by reducing the number of files involved in handling a message from a
+minimum of four (header spool file, body spool file, delivery journal, and
+per-message log) to three. The other major I/O activity is Exim's main log,
+which is not affected by this option.
+<hr></p>
+<a name="IX1241"></a>
+<a name="IX1242"></a>
+<a name="IX1243"></a>
+<a name="IX1244"></a>
+<h3>message_size_limit</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; 50M<br>
+<p>
+This option limits the maximum size of message that Exim will process. The
+value is expanded for each incoming 
+connection so, for example, it can be made to depend on the IP address of the
+remote host for messages arriving via TCP/IP. <b>Note</b>: This limit cannot be
+made to depend on a message's sender or any other properties of an individual
+message, because it has to be advertised in the server's response to <font size=-1>EHLO</font>.
+String expansion failure causes a temporary error. A value of zero means no
+limit, but its use is not recommended. See also <tt>bounce&#095;return&#095;size&#095;limit</tt>.
+</p>
+<p>
+Incoming SMTP messages are failed with a 552 error if the limit is
+exceeded; locally-generated messages either get a stderr message or a delivery
+failure message to the sender, depending on the <i>-oe</i> setting. Rejection of an
+oversized message is logged in both the main and the reject logs. See also the
+generic transport option <tt>message&#095;size&#095;limit</tt>, which limits the size of
+message that an individual transport can process.
+<hr></p>
+<a name="IX1245"></a>
+<a name="IX1246"></a>
+<h3>move_frozen_messages</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+This option, which is available only if Exim has been built with the setting
+<pre>
+&nbsp;&nbsp;SUPPORT_MOVE_FROZEN_MESSAGES=yes
+</pre>
+</p>
+<p>
+in <i>Local/Makefile</i>, causes frozen messages and their message logs to be
+moved from the <i>input</i> and <i>msglog</i> directories on the spool to <i>Finput</i>
+and <i>Fmsglog</i>, respectively. There is currently no support in Exim or the
+standard utilities for handling such moved messages, and they do not show up in
+lists generated by <i>-bp</i> or by the Exim monitor.
+<hr></p>
+<a name="IX1247"></a>
+<a name="IX1248"></a>
+<h3>mysql_servers</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option provides a list of MySQL servers and associated connection data, to
+be used in conjunction with <b>mysql</b> lookups (see section <a href="spec_9.html#SECT9.17">9.17</a>). The
+option is available only if Exim has been built with MySQL support.
+<hr></p>
+<a name="IX1249"></a>
+<h3>never_users</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; unset<br>
+<p>
+Local message deliveries are normally run in processes that are setuid to the
+recipient, and remote deliveries are normally run under Exim's own uid and gid.
+It is usually desirable to prevent any deliveries from running as root, as a
+safety precaution.
+</p>
+<p>
+When Exim is built, an option called <font size=-1>FIXED&#095;NEVER&#095;USERS</font> can be set to a 
+list of users that must not be used for local deliveries. This list is fixed in 
+the binary and cannot be overridden by the configuration file. By default, it 
+contains just the single user name &#147;root&#148;. The <tt>never&#095;users</tt> runtime option 
+can be used to add more users to the fixed list.
+</p>
+<p>
+If a message is to be delivered as one of the users on the fixed list or the
+<tt>never&#095;users</tt> list, an error occurs, and delivery is deferred. A common
+example is
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>never&#095;users = root:daemon:bin</tt><br>
+</p>
+<p>
+Including root is redundant if it is also on the fixed list, but it does no
+harm.
+This option overrides the <tt>pipe&#095;as&#095;creator</tt> option of the <b>pipe</b> transport
+driver.
+<hr></p>
+<a name="IX1250"></a>
+<a name="IX1251"></a>
+<h3>oracle_servers</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option provides a list of Oracle servers and associated connection data,
+to be used in conjunction with <b>oracle</b> lookups (see section <a href="spec_9.html#SECT9.17">9.17</a>). The
+option is available only if Exim has been built with Oracle support.
+<hr></p>
+<a name="IX1252"></a>
+<a name="IX1253"></a>
+<a name="IX1254"></a>
+<a name="IX1255"></a>
+<h3>percent_hack_domains</h3>
+<i>Type:</i>&nbsp; domain list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The &#147;percent hack&#148; is the convention whereby a local part containing a percent
+sign is re-interpreted as a new email address, with the percent replaced by &#064;.
+This is sometimes called &#147;source routing&#148;, though that term is also applied to
+RFC 2822 addresses that begin with an &#064; character. If this option is set, Exim
+implements the percent facility for those domains listed, but no others. This
+happens before an incoming SMTP address is tested against an ACL.
+</p>
+<p>
+<b>Warning</b>: The &#147;percent hack&#148; has often been abused by people who are
+trying to get round relaying restrictions. For this reason, it is best avoided
+if at all possible. Unfortunately, a number of less security-conscious MTAs
+implement it unconditionally. If you are running Exim on a gateway host, and
+routing mail through to internal MTAs without processing the local parts, it is
+a good idea to reject recipient addresses with percent characters in their
+local parts. Exim's default configuration does this.
+<hr></p>
+<a name="IX1256"></a>
+<h3>perl_at_start</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+This option is available only when Exim is built with an embedded Perl
+interpreter. See chapter <a href="spec_12.html">12</a> for details of its use.
+<hr></p>
+<a name="IX1257"></a>
+<h3>perl_startup</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option is available only when Exim is built with an embedded Perl
+interpreter. See chapter <a href="spec_12.html">12</a> for details of its use.
+<hr></p>
+<a name="IX1258"></a>
+<a name="IX1259"></a>
+<h3>pgsql_servers</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option provides a list of PostgreSQL servers and associated connection
+data, to be used in conjunction with <b>pgsql</b> lookups (see section <a href="spec_9.html#SECT9.17">9.17</a>).
+The option is available only if Exim has been built with PostgreSQL support.
+<hr></p>
+<a name="IX1260"></a>
+<a name="IX1261"></a>
+<a name="IX1262"></a>
+<h3>pid_file_path</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; set at compile time<br>
+<p>
+This option sets the name of the file to which the Exim daemon writes its
+process id. The string is expanded, so it can contain, for example, references
+to the host name:
+<pre>
+&nbsp;&nbsp;pid_file_path = /var/log/$primary_hostname/exim.pid
+</pre>
+</p>
+<p>
+If no path is set, the pid is written to the file <i>exim-daemon.pid</i> in Exim's
+spool directory.
+The value set by the option can be overridden by the <i>-oP</i> command line 
+option. A pid file is not written if a &#147;non-standard&#148; daemon is run by means of 
+the <i>-oX</i> option, unless a path is explicitly supplied by <i>-oP</i>.
+<hr></p>
+<a name="IX1263"></a>
+<a name="IX1264"></a>
+<h3>pipelining_advertise_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; *<br>
+<p>
+This option can be used to suppress the advertisement of the SMTP
+<font size=-1>PIPELINING</font> extension to specific hosts. When <font size=-1>PIPELINING</font> is not
+advertised and <tt>smtp&#095;enforce&#095;sync</tt> is true, an Exim server enforces strict
+synchronization for each SMTP command and response.
+<font color=green>
+When <font size=-1>PIPELINING</font> is advertised, Exim assumes that clients will use it; &#147;out
+of order&#148; commands that are &#147;expected&#148; do not count as protocol errors (see 
+<tt>smtp&#095;max&#095;synprot&#095;errors</tt>).
+</font>
+<hr></p>
+<a name="IX1265"></a>
+<a name="IX1266"></a>
+<h3>preserve_message_logs</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set, message log files are not deleted when messages are
+completed. Instead, they are moved to a sub-directory of the spool directory
+called <i>msglog.OLD</i>, where they remain available for statistical or debugging
+purposes. This is a dangerous option to set on systems with any appreciable
+volume of mail. Use with care!
+<hr></p>
+<a name="IX1267"></a>
+<a name="IX1268"></a>
+<a name="IX1269"></a>
+<a name="IX1270"></a>
+<h3>primary_hostname</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; see below<br>
+<p>
+<font color=green>
+This specifies the name of the current host. It is used in the default <font size=-1>EHLO</font>
+or <font size=-1>HELO</font> command for outgoing SMTP messages (changeable via the <tt>helo&#095;data</tt>
+option in the <b>smtp</b> transport),
+</font>
+and as the default for <tt>qualify&#095;domain</tt>. If it is not set, Exim calls
+<i>uname()</i> to find it. If this fails, Exim panics and dies. If the name
+returned by <i>uname()</i> contains only one component, Exim passes it to
+<i>gethostbyname()</i> (or <i>getipnodebyname()</i> when available) in order to
+obtain the fully qualified version.
+</p>
+<p>
+<font color=green>
+The value of <tt>$primary&#095;hostname</tt> is also used by default in some SMTP
+response messages from an Exim server. This can be changed dynamically by
+setting <tt>smtp&#095;active&#095;hostname</tt>.
+</font>
+<hr></p>
+<a name="IX1271"></a>
+<a name="IX1272"></a>
+<a name="IX1273"></a>
+<h3>print_topbitchars</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+By default, Exim considers only those characters whose codes lie in the range
+32&#150;126 to be printing characters. In a number of circumstances (for example,
+when writing log entries) non-printing characters are converted into escape
+sequences, primarily to avoid messing up the layout. If <tt>print&#095;topbitchars</tt> is
+set, code values of 128 and above are also considered to be printing
+characters.
+<hr></p>
+<a name="IX1274"></a>
+<a name="IX1275"></a>
+<a name="IX1276"></a>
+<a name="IX1277"></a>
+<h3>process_log_path</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option sets the name of the file to which an Exim process writes its
+&#147;process log&#148; when sent a USR1 signal. This is used by the <i>exiwhat</i> utility
+script. If this option is unset, the file called <i>exim-process.info</i> in
+Exim's spool directory is used. The ability to specify the name explicitly can
+be useful in environments where two different Exims are running, using
+different spool directories.
+<hr></p>
+<a name="IX1278"></a>
+<a name="IX1279"></a>
+<a name="IX1280"></a>
+<a name="IX1281"></a>
+<h3>prod_requires_admin</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+The <i>-M</i>, <i>-R</i>, and <i>-q</i> command-line options require the caller to be an
+admin user unless <tt>prod&#095;requires&#095;admin</tt> is set false. See also
+<tt>queue&#095;list&#095;requires&#095;admin</tt>.
+<hr></p>
+<a name="IX1282"></a>
+<a name="IX1283"></a>
+<a name="IX1284"></a>
+<h3>qualify_domain</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; see below<br>
+<p>
+This option specifies the domain name that is added to any sender addresses
+that do not have a domain qualification. It also applies to recipient addresses
+if <tt>qualify&#095;recipient</tt> is not set. Such addresses are accepted by default only
+for locally-generated messages. Messages from external sources must always
+contain fully qualified addresses, unless the sending host matches
+<tt>sender&#095;unqualified&#095;hosts</tt> or <tt>recipient&#095;unqualified&#095;hosts</tt> (as
+appropriate), in which case incoming addresses are qualified with
+<tt>qualify&#095;domain</tt> or <tt>qualify&#095;recipient</tt> as necessary. Internally, Exim always
+works with fully qualified addresses.
+If <tt>qualify&#095;domain</tt> is not set, it defaults to the <tt>primary&#095;hostname</tt> value.
+<hr></p>
+<a name="IX1285"></a>
+<h3>qualify_recipient</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; see below<br>
+<p>
+This specifies the domain name that is added to any recipient addresses that do
+not have a domain qualification. Such addresses are accepted by default only
+for locally-generated messages. Messages from external sources must always
+contain fully qualified recipient addresses, unless the sending host matches
+<tt>recipient&#095;unqualified&#095;hosts</tt>,
+in which case incoming recipient addresses are qualified with
+<tt>qualify&#095;recipient</tt>.
+If <tt>qualify&#095;recipient</tt> is not set, it defaults to the <tt>qualify&#095;domain</tt> value.
+<hr></p>
+<a name="IX1286"></a>
+<a name="IX1287"></a>
+<a name="IX1288"></a>
+<a name="IX1289"></a>
+<h3>queue_domains</h3>
+<i>Type:</i>&nbsp; domain list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option lists domains for which immediate delivery is not required.
+A delivery process is started whenever a message is received, but only those
+domains that do not match are processed. All other deliveries wait until the
+next queue run. See also <tt>hold&#095;domains</tt> and <tt>queue&#095;smtp&#095;domains</tt>.
+<hr></p>
+<a name="IX1290"></a>
+<a name="IX1291"></a>
+<h3>queue_list_requires_admin</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+The <i>-bp</i> command-line option, which lists the messages that are on the queue,
+requires the caller to be an admin user unless <tt>queue_list_requires_admin</tt>
+is set false. See also <tt>prod&#095;requires&#095;admin</tt>.
+<hr></p>
+<a name="IX1292"></a>
+<a name="IX1293"></a>
+<a name="IX1294"></a>
+<h3>queue_only</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If <tt>queue&#095;only</tt> is set, a delivery process is not automatically started
+whenever a message is received. Instead, the message waits on the queue for the
+next queue run. Even if <tt>queue&#095;only</tt> is false, incoming messages may not get
+delivered immediately when certain conditions (such as heavy load) occur.
+</p>
+<p>
+The <i>-odq</i> command line has the same effect as <tt>queue&#095;only</tt>. The <i>-odb</i> and
+<i>-odi</i> command line options override <tt>queue&#095;only</tt> unless
+<tt>queue&#095;only&#095;override</tt> is set false. See also <tt>queue&#095;only&#095;file</tt>,
+<tt>queue&#095;only&#095;load</tt>, and <tt>smtp&#095;accept&#095;queue</tt>.
+<hr></p>
+<a name="IX1295"></a>
+<a name="IX1296"></a>
+<a name="IX1297"></a>
+<h3>queue_only_file</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option can be set to a colon-separated list of absolute path names, each
+one optionally preceded by &#147;smtp&#148;. When Exim is receiving a message,
+it tests for the existence of each listed path using a call to <i>stat()</i>. For
+each path that exists, the corresponding queuing option is set.
+For paths with no prefix, <tt>queue&#095;only</tt> is set; for paths prefixed by &#147;smtp&#148;,
+<tt>queue&#095;smtp&#095;domains</tt> is set to match all domains. So, for example,
+<pre>
+&nbsp;&nbsp;queue_only_file = smtp/some/file
+</pre>
+</p>
+<p>
+causes Exim to behave as if <tt>queue&#095;smtp&#095;domains</tt> were set to &#147;*&#148; whenever
+<i>/some/file</i> exists.
+<hr></p>
+<a name="IX1298"></a>
+<a name="IX1299"></a>
+<a name="IX1300"></a>
+<a name="IX1301"></a>
+<h3>queue_only_load</h3>
+<i>Type:</i>&nbsp; fixed-point<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If the system load average is higher than this value, incoming messages from
+all sources are queued, and no automatic deliveries are started. If this
+happens during local or remote SMTP input, all subsequent messages on the same
+connection are queued. Deliveries will subsequently be performed by queue
+runner processes. This option has no effect on ancient operating systems on
+which Exim cannot determine the load average. See also
+<tt>deliver&#095;queue&#095;load&#095;max</tt> and <tt>smtp&#095;load&#095;reserve</tt>.
+<hr></p>
+<a name="IX1302"></a>
+<a name="IX1303"></a>
+<h3>queue_only_override</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+When this option is true, the <tt>-od<i>x</i>-</tt> command line options override the
+setting of <tt>queue&#095;only</tt> or <tt>queue&#095;only&#095;file</tt> in the configuration file. If
+<tt>queue&#095;only&#095;override</tt> is set false, the <tt>-od<i>x</i>-</tt> options cannot be used to
+override; they are accepted, but ignored.
+<hr></p>
+<a name="IX1304"></a>
+<a name="IX1305"></a>
+<h3>queue_run_in_order</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set, queue runs happen in order of message arrival instead of
+in an arbitrary order. For this to happen, a complete list of the entire queue
+must be set up before the deliveries start. When the queue is all in a single
+directory (the default), this happens anyway, but if <tt>split&#095;spool&#095;directory</tt>
+is set it does not &#150; for delivery in random order, the sub-directories are
+processed one at a time (in random order), to avoid setting up one huge list.
+Thus, setting <tt>queue&#095;run&#095;in&#095;order</tt> with <tt>split&#095;spool&#095;directory</tt> may
+degrade performance when the queue is large. In most situations,
+<tt>queue&#095;run&#095;in&#095;order</tt> should not be set.
+<hr></p>
+<a name="IX1306"></a>
+<a name="IX1307"></a>
+<h3>queue_run_max</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 5<br>
+<p>
+This controls the maximum number of queue runner processes that an Exim daemon
+can run simultaneously. This does not mean that it starts them all at once,
+but rather that if the maximum number are still running when the time comes to
+start another one, it refrains from starting another one. This can happen with
+very large queues and/or very sluggish deliveries. This option does not,
+however, interlock with other processes, so additional queue runners can be
+started by other means, or by killing and restarting the daemon.
+<hr></p>
+<a name="IX1308"></a>
+<a name="IX1309"></a>
+<a name="IX1310"></a>
+<h3>queue_smtp_domains</h3>
+<i>Type:</i>&nbsp; domain list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+When this option is set, a delivery process is started whenever a message is
+received, routing is performed, and local deliveries take place.
+However, if any SMTP deliveries are required for domains that match
+<tt>queue&#095;smtp&#095;domains</tt>, they are not immediately delivered, but instead the
+message waits on the queue for the next queue run. Since routing of the message
+has taken place, Exim knows to which remote hosts it must be delivered, and so
+when the queue run happens, multiple messages for the same host are delivered
+over a single SMTP connection. The <i>-odqs</i> command line option causes all SMTP
+deliveries to be queued in this way, and is equivalent to setting
+<tt>queue&#095;smtp&#095;domains</tt> to &#147;*&#148;. See also <tt>hold&#095;domains</tt> and <tt>queue&#095;domains</tt>.
+<hr></p>
+<a name="IX1311"></a>
+<a name="IX1312"></a>
+<h3>receive_timeout</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 0s<br>
+<p>
+This option sets the timeout for accepting a non-SMTP message, that is, the
+maximum time that Exim waits when reading a message on the standard input. If
+the value is zero, it will wait for ever. This setting is overridden by the
+<i>-or</i> command line option. The timeout for incoming SMTP messages is
+controlled by <tt>smtp&#095;receive&#095;timeout</tt>.
+<a name="IX1313"></a>
+<a name="IX1314"></a>
+<hr></p>
+<a name="IX1315"></a>
+<h3>received_header_text</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; see below<br>
+<p>
+This string defines the contents of the <i>Received:</i> message header that is
+added to each message, except for the timestamp, which is automatically added
+on at the end (preceded by a semicolon). The string is expanded each time it is
+used. If the expansion yields an empty string, no <i>Received:</i> header line is
+added to the message. Otherwise, the string should start with the text
+&#147;Received:&#148; and conform to the RFC 2822 specification for <i>Received:</i> header
+lines. The default setting is:
+<pre>
+&nbsp;&nbsp;received_header_text = Received: \
+&nbsp;&nbsp;    ${if def:sender_rcvhost {from $sender_rcvhost\n\t}\
+&nbsp;&nbsp;    {${if def:sender_ident {from $sender_ident }}\
+&nbsp;&nbsp;    ${if def:sender_helo_name {(helo=$sender_helo_name)\n\t}}}}\
+&nbsp;&nbsp;    by $primary_hostname \
+&nbsp;&nbsp;    ${if def:received_protocol {with $received_protocol}} \
+&nbsp;&nbsp;    ${if def:tls_cipher {($tls_cipher)\n\t}}\
+&nbsp;&nbsp;    (Exim $version_number)\n\t\
+&nbsp;&nbsp;    id $message_id\
+&nbsp;&nbsp;    ${if def:received_for {\n\tfor $received_for}}
+</pre>
+</p>
+<p>
+Note the use of quotes, to allow the sequences <tt>&#092;n</tt> and <tt>&#092;t</tt> to be used
+for newlines and tabs, respectively. The reference to the TLS cipher is omitted
+when Exim is built without TLS support. The use of conditional expansions
+ensures that this works for both locally generated messages and messages
+received from remote hosts, giving header lines such as the following:
+<pre>
+&nbsp;&nbsp;Received: from scrooge.carol.example ([192.168.12.25] ident=root)
+&nbsp;&nbsp;        by marley.carol.example with esmtp (Exim 4.00)
+&nbsp;&nbsp;        id 16IOWa-00019l-00
+&nbsp;&nbsp;        for chas@dickens.example; Tue, 25 Dec 2001 14:43:44 +0000
+&nbsp;&nbsp;Received: by scrooge.carol.example with local (Exim 4.00)
+&nbsp;&nbsp;        id 16IOWW-000083-00; Tue, 25 Dec 2001 14:43:41 +0000
+</pre>
+</p>
+<p>
+<font color=green>
+Until the body of the message has been received, the timestamp is the time when 
+the message started to be received. Once the body has arrived, and all policy 
+checks have taken place, the timestamp is updated to the time at which the 
+message was accepted.
+</font>
+<hr></p>
+<a name="IX1316"></a>
+<a name="IX1317"></a>
+<a name="IX1318"></a>
+<a name="IX1319"></a>
+<h3>received_headers_max</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 30<br>
+<p>
+When a message is to be delivered, the number of <i>Received:</i> headers is
+counted, and if it is greater than this parameter, a mail loop is assumed to
+have occurred, the delivery is abandoned, and an error message is generated.
+This applies to both local and remote deliveries.
+<hr></p>
+<a name="IX1320"></a>
+<a name="IX1321"></a>
+<a name="IX1322"></a>
+<h3>recipient_unqualified_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option lists those hosts from which Exim is prepared to accept unqualified
+recipient addresses in message envelopes. The addresses are made fully
+qualified by the addition of the <tt>qualify&#095;recipient</tt> value. This option also
+affects message header lines. Exim does not reject unqualified recipient
+addresses in headers, but it qualifies them only if the message came from a
+host that matches <tt>recipient&#095;unqualified&#095;hosts</tt>,
+<font color=green>
+or if the message was submitted locally (not using TCP/IP), and the <i>-bnq</i>
+option was not set.
+</font>
+<hr></p>
+<a name="IX1323"></a>
+<a name="IX1324"></a>
+<a name="IX1325"></a>
+<h3>recipients_max</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 0<br>
+<p>
+<a name="IX1326"></a>
+If this option is set greater than zero, it specifies the maximum number of
+original recipients for any message. Additional recipients that are generated
+by aliasing or forwarding do not count. SMTP messages get a 452 response for
+all recipients over the limit; earlier recipients are delivered as normal.
+Non-SMTP messages with too many recipients are failed, and no deliveries are
+done.
+Note that the RFCs specify that an SMTP server should accept at least 100
+<font size=-1>RCPT</font> commands in a single message.
+<hr></p>
+<a name="IX1327"></a>
+<h3>recipients_max_reject</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set true, Exim rejects SMTP messages containing too many
+recipients by giving 552 errors to the surplus <font size=-1>RCPT</font> commands, and a 554
+error to the eventual <font size=-1>DATA</font> command. Otherwise (the default) it gives a 452
+error to the surplus <font size=-1>RCPT</font> commands and accepts the message on behalf of the
+initial set of recipients. The remote server should then re-send the message
+for the remaining recipients at a later time.
+<hr></p>
+<a name="IX1328"></a>
+<a name="IX1329"></a>
+<h3>remote_max_parallel</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 2<br>
+<p>
+This option controls parallel delivery of one message to a number of remote
+hosts. If the value is less than 2, parallel delivery is disabled, and Exim
+does all the remote deliveries for a message one by one. Otherwise, if a single
+message has to be delivered to more than one remote host, or if several copies
+have to be sent to the same remote host, up to <tt>remote&#095;max&#095;parallel</tt>
+deliveries are done simultaneously. If more than <tt>remote&#095;max&#095;parallel</tt>
+deliveries are required, the maximum number of processes are started, and as
+each one finishes, another is begun. The order of starting processes is the
+same as if sequential delivery were being done, and can be controlled by the
+<tt>remote&#095;sort&#095;domains</tt> option. If parallel delivery takes place while running
+with debugging turned on, the debugging output from each delivery process is
+tagged with its process id.
+</p>
+<p>
+<a name="IX1330"></a>
+<a name="IX1331"></a>
+This option controls only the maximum number of parallel deliveries for one
+message in one Exim delivery process. Because Exim has no central queue
+manager, there is no way of controlling the total number of simultaneous
+deliveries if the configuration allows a delivery attempt as soon as a message
+is received.
+If you want to control the total number of deliveries on the system, you
+need to set the <tt>queue&#095;only</tt> option. This ensures that all incoming messages
+are added to the queue without starting a delivery process. Then set up an Exim
+daemon to start queue runner processes at appropriate intervals (probably
+fairly often, for example, every minute), and limit the total number of queue
+runners by setting the <tt>queue_run_max</tt> parameter. Because each queue runner
+delivers only one message at a time, the maximum number of deliveries that can
+then take place at once is <tt>queue&#095;run&#095;max</tt> multiplied by
+<tt>remote&#095;max&#095;parallel</tt>.
+</p>
+<p>
+If it is purely remote deliveries you want to control, use <tt>queue&#095;smtp</tt>
+instead of <tt>queue&#095;only</tt>. This has the added benefit of doing the SMTP routing
+before queuing, so that several messages for the same host will eventually get
+delivered down the same connection.
+<hr></p>
+<a name="IX1332"></a>
+<a name="IX1333"></a>
+<a name="IX1334"></a>
+<h3>remote_sort_domains</h3>
+<i>Type:</i>&nbsp; domain list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+When there are a number of remote deliveries for a message, they are sorted by
+domain into the order given by this list. For example,
+<pre>
+&nbsp;&nbsp;remote_sort_domains = *.cam.ac.uk:*.uk
+</pre>
+</p>
+<p>
+would attempt to deliver to all addresses in the <i>cam.ac.uk</i> domain first, then
+to those in the <tt>uk</tt> domain, then to any others.
+<hr></p>
+<a name="IX1335"></a>
+<a name="IX1336"></a>
+<h3>retry_data_expire</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 7d<br>
+<p>
+This option sets a &#147;use before&#148; time on retry information in Exim's hints
+database. Any older retry data is ignored. This means that, for example, once a
+host has not been tried for 7 days, Exim behaves as if it has no knowledge of
+past failures.
+<hr></p>
+<a name="IX1337"></a>
+<a name="IX1338"></a>
+<a name="IX1339"></a>
+<h3>retry_interval_max</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 24h<br>
+<p>
+Chapter <a href="spec_32.html">32</a> describes Exim's mechanisms for controlling the intervals
+between delivery attempts for messages that cannot be delivered straight away.
+This option sets an overall limit to the length of time between retries.
+<hr></p>
+<a name="IX1340"></a>
+<a name="IX1341"></a>
+<h3>return_path_remove</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+RFC 2821, section 4.4, states that an SMTP server must insert a <i>Return-path:</i>
+header line into a message when it makes a &#147;final delivery&#148;. The <i>Return-path:</i>
+header preserves the sender address as received in the <font size=-1>MAIL</font> command. This
+description implies that this header should not be present in an incoming
+message. If <tt>return&#095;path&#095;remove</tt> is true, any existing <i>Return-path:</i>
+headers are removed from messages at the time they are received. Exim's
+transports have options for adding <i>Return-path:</i> headers at the time of
+delivery. They are normally used only for final local deliveries.
+<hr></p>
+<a name="IX1342"></a>
+<h3>return_size_limit</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 100K<br>
+<p>
+This option is an obsolete synonym for <tt>bounce&#095;return&#095;size&#095;limit</tt>.
+<hr></p>
+<a name="IX1343"></a>
+<a name="IX1344"></a>
+<a name="IX1345"></a>
+<h3>rfc1413_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; *<br>
+<p>
+RFC 1413 identification calls are made to any client host which matches an item
+in the list.
+<hr></p>
+<a name="IX1346"></a>
+<a name="IX1347"></a>
+<a name="IX1348"></a>
+<h3>rfc1413_query_timeout</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 30s<br>
+<p>
+This sets the timeout on RFC 1413 identification calls. If it is set to zero,
+no RFC 1413 calls are ever made.
+<hr></p>
+<a name="IX1349"></a>
+<a name="IX1350"></a>
+<a name="IX1351"></a>
+<h3>sender_unqualified_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option lists those hosts from which Exim is prepared to accept unqualified
+sender addresses. The addresses are made fully qualified by the addition of
+<tt>qualify&#095;domain</tt>. This option also affects message header lines. Exim does not
+reject unqualified addresses in headers that contain sender addresses, but it
+qualifies them only if the message came from a host that matches
+<tt>sender&#095;unqualified&#095;hosts</tt>,
+<font color=green>
+or if the message was submitted locally (not using TCP/IP), and the <i>-bnq</i>
+option was not set.
+</font>
+<hr></p>
+<a name="IX1352"></a>
+<a name="IX1353"></a>
+<h3>smtp_accept_keepalive</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+This option controls the setting of the <font size=-1>SO&#095;KEEPALIVE</font> option on incoming
+TCP/IP socket connections. When set, it causes the kernel to probe idle
+connections periodically, by sending packets with &#147;old&#148; sequence numbers. The
+other end of the connection should send an acknowledgement if the connection is
+still okay or a reset if the connection has been aborted. The reason for doing
+this is that it has the beneficial effect of freeing up certain types of
+connection that can get stuck when the remote host is disconnected without
+tidying up the TCP/IP call properly. The keepalive mechanism takes several
+hours to detect unreachable hosts.
+<hr></p>
+<a name="IX1354"></a>
+<a name="IX1355"></a>
+<a name="IX1356"></a>
+<a name="IX1357"></a>
+<h3>smtp_accept_max</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 20<br>
+<p>
+This option specifies the maximum number of simultaneous incoming SMTP calls
+that Exim will accept. It applies only to the listening daemon; there is no
+control (in Exim) when incoming SMTP is being handled by <i>inetd</i>. If the value
+is set to zero, no limit is applied. However, it is required to be non-zero if
+either <tt>smtp&#095;accept&#095;max&#095;per&#095;host</tt> or <tt>smtp&#095;accept&#095;queue</tt> is set. See also
+<tt>smtp&#095;accept&#095;reserve</tt>.
+<hr></p>
+<a name="IX1358"></a>
+<a name="IX1359"></a>
+<a name="IX1360"></a>
+<h3>smtp_accept_max_nonmail</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 10<br>
+<p>
+Exim counts the number of &#147;non-mail&#148; commands in an SMTP session, and drops the
+connection if there are too many. This option defines &#147;too many&#148;. The check
+catches some denial-of-service attacks, repeated failing <font size=-1>AUTH</font>s, or a mad
+client looping sending <font size=-1>EHLO</font>, for example. The check is applied only if the 
+client host matches <tt>smtp&#095;accept&#095;max&#095;nonmail&#095;hosts</tt>.
+</p>
+<p>
+When a new message is expected, one occurrence of <font size=-1>RSET</font> is not counted. This
+allows a client to send one <font size=-1>RSET</font> between messages (this is not necessary,
+but some clients do it). Exim also allows one uncounted occurence of <font size=-1>HELO</font>
+or <font size=-1>EHLO</font>, and one occurrence of <font size=-1>STARTTLS</font> between messages. After
+starting up a TLS session, another <font size=-1>EHLO</font> is expected, and so it too is not
+counted. The first occurrence of <font size=-1>AUTH</font> in a connection, or immediately
+following <font size=-1>STARTTLS</font> is not counted. Otherwise, all commands other than
+<font size=-1>MAIL</font>, <font size=-1>RCPT</font>, <font size=-1>DATA</font>, and <font size=-1>QUIT</font> are counted.
+<hr></p>
+<a name="IX1361"></a>
+<h3>smtp_accept_max_nonmail_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; *<br>
+<p>
+You can control which hosts are subject to the <tt>smtp&#095;accept&#095;max&#095;nonmail</tt>
+check by setting this option. The default value makes it apply to all hosts. By
+changing the value, you can exclude any badly-behaved hosts that you have to
+live with.
+<hr></p>
+<a name="IX1362"></a>
+<a name="IX1363"></a>
+<a name="IX1364"></a>
+<h3>smtp_accept_max_per_connection</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 1000<br>
+<p>
+The value of this option limits the number of <font size=-1>MAIL</font> commands that Exim is
+prepared to accept over a single SMTP connection, whether or not each command
+results in the transfer of a message. After the limit is reached, a 421
+response is given to subsequent <font size=-1>MAIL</font> commands. This limit is a safety
+precaution against a client that goes mad (incidents of this type have been
+seen).
+<hr></p>
+<a name="IX1365"></a>
+<a name="IX1366"></a>
+<a name="IX1367"></a>
+<h3>smtp_accept_max_per_host</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option restricts the number of simultaneous IP connections from a single
+host (strictly, from a single IP address) to the Exim daemon. The option is
+expanded, to enable different limits to be applied to different hosts by
+reference to <tt>$sender&#095;host&#095;address</tt>. Once the limit is reached, additional
+connection attempts from the same host are rejected with error code 421. The
+default value of zero imposes no limit. If this option is set, it is required
+that <tt>smtp&#095;accept&#095;max</tt> be non-zero.
+</p>
+<p>
+<b>Warning</b>: When setting this option you should not use any expansion
+constructions that take an appreciable amount of time. The expansion and test
+happen in the main daemon loop, in order to reject additional connections
+without forking additional processes (otherwise a denial-of-service attack
+could cause a vast number or processes to be created). While the daemon is
+doing this processing, it cannot accept any other incoming connections.
+<hr></p>
+<a name="IX1368"></a>
+<a name="IX1369"></a>
+<a name="IX1370"></a>
+<a name="IX1371"></a>
+<h3>smtp_accept_queue</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 0<br>
+<p>
+If the number of simultaneous incoming SMTP calls handled via the listening
+daemon exceeds this value, messages received by SMTP are just placed on the
+queue; no delivery processes are started automatically. A value of zero implies
+no limit, and clearly any non-zero value is useful only if it is less than the
+<tt>smtp&#095;accept&#095;max</tt> value (unless that is zero). See also <tt>queue&#095;only</tt>,
+<tt>queue&#095;only&#095;load</tt>, <tt>queue&#095;smtp&#095;domains</tt>, and the various <i>-od</i> command
+line options.
+<hr></p>
+<a name="IX1372"></a>
+<a name="IX1373"></a>
+<a name="IX1374"></a>
+<h3>smtp_accept_queue_per_connection</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 10<br>
+<p>
+This option limits the number of delivery processes that Exim starts
+automatically when receiving messages via SMTP, whether via the daemon or by
+the use of <i>-bs</i> or <i>-bS</i>. If the value of the option is greater than zero,
+and the number of messages received in a single SMTP session exceeds this
+number, subsequent messages are placed on the queue, but no delivery processes
+are started. This helps to limit the number of Exim processes when a server
+restarts after downtime and there is a lot of mail waiting for it on other
+systems. On large systems, the default should probably be increased, and on
+dial-in client systems it should probably be set to zero (that is, disabled).
+<hr></p>
+<a name="IX1375"></a>
+<a name="IX1376"></a>
+<a name="IX1377"></a>
+<h3>smtp_accept_reserve</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 0<br>
+<p>
+When <tt>smtp&#095;accept&#095;max</tt> is set greater than zero, this option specifies a
+number of SMTP connections that are reserved for connections from the hosts
+that are specified in <tt>smtp&#095;reserve&#095;hosts</tt>. The value set in
+<tt>smtp&#095;accept&#095;max</tt> includes this reserve pool. The specified hosts are not
+restricted to this number of connections; the option specifies a minimum number
+of connection slots for them, not a maximum. It is a guarantee that that group
+of hosts can always get at least <tt>smtp&#095;accept&#095;reserve</tt> connections.
+</p>
+<p>
+For example, if <tt>smtp&#095;accept&#095;max</tt> is set to 50 and <tt>smtp&#095;accept&#095;reserve</tt> is
+set to 5, once there are 45 active connections (from any hosts), new
+connections are accepted only from hosts listed in <tt>smtp&#095;reserve&#095;hosts</tt>.
+See also <tt>smtp&#095;accept&#095;max&#095;per&#095;host</tt>.
+<font color=green><hr></p>
+<a name="IX1378"></a>
+<a name="IX1379"></a>
+<a name="IX1380"></a>
+<h3>smtp_active_hostname</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option is provided for multi-homed servers that want to masquerade as
+several different hosts. At the start of an SMTP connection, its value is
+expanded and used instead of the value of <tt>$primary&#095;hostname</tt> in SMTP
+responses. For example, it is used as domain name in the response to an
+incoming <font size=-1>HELO</font> or <font size=-1>EHLO</font> command. If this option is unset, or if its
+expansion is forced to fail, or if the expansion results in an empty string,
+the value of <tt>$primary&#095;hostname</tt> is used. Other expansion failures cause a
+message to be written to the main and panic logs, and the SMTP command receives
+a temporary error. Typically, the value of <tt>smtp&#095;active&#095;hostname</tt> depends on
+the incoming interface address. For example:
+<pre>
+&nbsp;&nbsp;smtp_active_hostname = ${if eq{$interface_address}{10.0.0.1}\
+&nbsp;&nbsp;  {cox.mydomain}{box.mydomain}}
+</pre>
+</p>
+<p>
+If you set <tt>smtp&#095;active&#095;hostname</tt>, you probably also want to set
+<tt>smtp&#095;banner</tt>, since its default value references <tt>$primary&#095;hostname</tt>.
+</font>
+<hr></p>
+<a name="IX1381"></a>
+<a name="IX1382"></a>
+<a name="IX1383"></a>
+<a name="IX1384"></a>
+<a name="IX1385"></a>
+<h3>smtp_banner</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; see below<br>
+<p>
+This string, which is expanded every time it is used, is output as the initial
+positive response to an SMTP connection. The default setting is:
+<pre>
+&nbsp;&nbsp;smtp_banner = $primary_hostname ESMTP Exim $version_number \
+&nbsp;&nbsp;  $tod_full
+</pre>
+</p>
+<p>
+Failure to expand the string causes a panic error. If you want to create a
+multiline response to the initial SMTP connection, use &#147;&#092;n&#148; in the string at
+appropriate points, but not at the end. Note that the 220 code is not included
+in this string. Exim adds it automatically (several times in the case of a
+multiline response).
+<hr></p>
+<a name="IX1386"></a>
+<a name="IX1387"></a>
+<a name="IX1388"></a>
+<a name="IX1389"></a>
+<h3>smtp_check_spool_space</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+When this option is set, if an incoming SMTP session encounters the <font size=-1>SIZE</font>
+option on a <font size=-1>MAIL</font> command, it checks that there is enough space in the
+spool directory's partition to accept a message of that size, while still
+leaving free the amount specified by <tt>check&#095;spool&#095;space</tt> (even if that value
+is zero). If there isn't enough space, a temporary error code is returned.
+<hr></p>
+<a name="IX1390"></a>
+<a name="IX1391"></a>
+<a name="IX1392"></a>
+<a name="IX1393"></a>
+<h3>smtp_connect_backlog</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 20<br>
+<p>
+This option specifies a maximum number of waiting SMTP connections. Exim passes
+this value to the TCP/IP system when it sets up its listener. Once this number
+of connections are waiting for the daemon's attention, subsequent connection
+attempts are refused at the TCP/IP level. At least, that is what the manuals
+say; in some circumstances such connection attempts have been observed to time
+out instead. For large systems it is probably a good idea to increase the
+value (to 50, say). It also gives some protection against denial-of-service
+attacks by SYN flooding.
+<hr></p>
+<a name="IX1394"></a>
+<a name="IX1395"></a>
+<a name="IX1396"></a>
+<h3>smtp_enforce_sync</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+The SMTP protocol specification requires the client to wait for a response from
+the server at certain points in the dialogue. Without <font size=-1>PIPELINING</font> these
+synchronization points are after every command; with <font size=-1>PIPELINING</font> they are
+fewer, but they still exist. Some spamming sites send out a complete set of
+SMTP commands without waiting for any response. Exim protects against this by
+rejecting a message if the client has sent further input when it should not
+have. The error response &#147;554 SMTP synchronization error&#148; is sent, and the
+connection is dropped. Testing for this error cannot be perfect because of
+transmission delays (unexpected input may be on its way but not yet received
+when Exim checks). However, it does detect many instances. The check can be
+disabled by setting <tt>smtp&#095;enforce&#095;sync</tt> false.
+<font color=green>
+See also <tt>pipelining&#095;advertise&#095;hosts</tt>.
+</font>
+<hr></p>
+<a name="IX1397"></a>
+<a name="IX1398"></a>
+<h3>smtp_etrn_command</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If this option is set, the given command is run whenever an SMTP <font size=-1>ETRN</font>
+command is received from a host that is permitted to issue such commands (see
+chapter <a href="spec_38.html">38</a>). The string is split up into separate arguments which are
+independently expanded. The expansion variable <tt>$domain</tt> is set to the
+argument of the <font size=-1>ETRN</font> command, and no syntax checking is done on it. For
+example:
+<pre>
+&nbsp;&nbsp;smtp_etrn_command = /etc/etrn_command $domain $sender_host_address
+</pre>
+</p>
+<p>
+A new process is created to run the command, but Exim does not wait for it to
+complete. Consequently, its status cannot be checked. If the command cannot be
+run, a line is written to the panic log, but the <font size=-1>ETRN</font> caller still receives
+a 250 success response. Exim is normally running under its own uid when
+receiving SMTP, so it is not possible for it to change the uid before running
+the command.
+<hr></p>
+<a name="IX1399"></a>
+<a name="IX1400"></a>
+<h3>smtp_etrn_serialize</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+When this option is set, it prevents the simultaneous execution of more than
+one identical command as a result of <font size=-1>ETRN</font> in an SMTP connection. See
+section <a href="spec_43.html#SECT43.9">43.9</a> for details.
+<hr></p>
+<a name="IX1401"></a>
+<a name="IX1402"></a>
+<h3>smtp_load_reserve</h3>
+<i>Type:</i>&nbsp; fixed-point<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If the system load average ever gets higher than this, incoming SMTP calls are
+accepted only from those hosts that match an entry in <tt>smtp&#095;reserve&#095;hosts</tt>.
+If <tt>smtp&#095;reserve&#095;hosts</tt> is not set, no incoming SMTP calls are accepted when
+the load is over the limit. The option has no effect on ancient operating
+systems on which Exim cannot determine the load average. See also
+<tt>deliver&#095;queue&#095;load&#095;max</tt> and <tt>queue&#095;only&#095;load</tt>.
+<hr></p>
+<a name="IX1403"></a>
+<a name="IX1404"></a>
+<a name="IX1405"></a>
+<h3>smtp_max_synprot_errors</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 3<br>
+<p>
+Exim rejects SMTP commands that contain syntax or protocol errors. In 
+particular, a syntactically invalid email address, as in this command:
+<pre>
+&nbsp;&nbsp;RCPT TO:&#060;abc xyz@a.b.c&#062;
+</pre>
+</p>
+<p>
+causes immediate rejection of the command, before any other tests are done.
+(The ACL cannot be run if there is no valid address to set up for it.) An
+example of a protocol error is receiving <font size=-1>RCPT</font> before <font size=-1>MAIL</font>. If there are
+too many syntax or protocol errors in one SMTP session, the connection is
+dropped. The limit is set by this option.
+<font color=green><a name="IX1406"></a>
+</p>
+<p>
+When the <font size=-1>PIPELINING</font> extension to SMTP is in use, some protocol errors are 
+&#147;expected&#148;, for instance, a <font size=-1>RCPT</font> command after a rejected <font size=-1>MAIL</font> command. 
+Exim assumes that <font size=-1>PIPELINING</font> will be used if it advertises it (see 
+<tt>pipelining&#095;advertise&#095;hosts</tt>), and in this situation, &#147;expected&#148; errors do 
+not count towards the limit.
+</font>
+<hr></p>
+<a name="IX1407"></a>
+<a name="IX1408"></a>
+<a name="IX1409"></a>
+<h3>smtp_max_unknown_commands</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 3<br>
+<p>
+If there are too many unrecognized commands in an incoming SMTP session, an 
+Exim server drops the connection. This is a defence against some kinds of abuse 
+that subvert web 
+<font color=green>
+clients 
+</font>
+into making connections to SMTP ports; in these circumstances, a number of
+non-SMTP command lines are sent first.
+<hr></p>
+<a name="IX1410"></a>
+<a name="IX1411"></a>
+<a name="IX1412"></a>
+<a name="IX1413"></a>
+<h3>smtp_ratelimit_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+Some sites find it helpful to be able to limit the rate at which certain hosts
+can send them messages, and the rate at which an individual message can specify
+recipients. When a host matches <tt>smtp&#095;ratelimit&#095;hosts</tt>, the values of
+<tt>smtp&#095;ratelimit&#095;mail</tt> and <tt>smtp&#095;ratelimit&#095;rcpt</tt> are used to control the
+rate of acceptance of <font size=-1>MAIL</font> and <font size=-1>RCPT</font> commands in a single SMTP session,
+respectively. Each option, if set, must contain a set of four comma-separated
+values:
+</p>
+<ul>
+<li><p>
+A threshold, before which there is no rate limiting.
+</p>
+</li>
+<li><p>
+An initial time delay. Unlike other times in Exim, numbers with decimal
+fractional parts are allowed here.
+</p>
+</li>
+<li><p>
+A factor by which to increase the delay each time.
+</p>
+</li>
+<li><p>
+A maximum value for the delay. This should normally be less than 5 minutes,
+because after that time, the client is liable to timeout the SMTP command.
+</p>
+</li>
+</ul>
+<p>
+For example, these settings have been used successfully at the site which
+first suggested this feature, for controlling mail from their customers:
+<pre>
+&nbsp;&nbsp;smtp_ratelimit_mail = 2,0.5s,1.05,4m
+&nbsp;&nbsp;smtp_ratelimit_rcpt = 4,0.25s,1.015,4m
+</pre>
+</p>
+<p>
+The first setting specifies delays that are applied to <font size=-1>MAIL</font> commands after
+two have been received over a single connection. The initial delay is 0.5
+seconds, increasing by a factor of 1.05 each time. The second setting applies
+delays to <font size=-1>RCPT</font> commands when more than four occur in a single message.
+</p>
+<p>
+It is also possible to configure delays explicitly in ACLs. See section 
+<a href="spec_38.html#SECT38.11">38.11</a> for details.
+<hr></p>
+<a name="IX1414"></a>
+<h3>smtp_ratelimit_mail</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+See <tt>smtp&#095;ratelimit&#095;hosts</tt> above.
+<hr></p>
+<a name="IX1415"></a>
+<h3>smtp_ratelimit_rcpt</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+See <tt>smtp&#095;ratelimit&#095;hosts</tt> above.
+<hr></p>
+<a name="IX1416"></a>
+<a name="IX1417"></a>
+<a name="IX1418"></a>
+<h3>smtp_receive_timeout</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 5m<br>
+<p>
+This sets a timeout value for SMTP reception. It applies to all forms of SMTP
+input, including batch SMTP. If a line of input (either an SMTP command or a
+data line) is not received within this time, the SMTP connection is dropped and
+the message is abandoned. 
+A line is written to the log containing one of the following messages:
+<pre>
+&nbsp;&nbsp;SMTP command timeout on connection from...
+&nbsp;&nbsp;SMTP data timeout on connection from...
+</pre>
+</p>
+<p>
+The former means that Exim was expecting to read an SMTP command; the latter 
+means that it was in the <font size=-1>DATA</font> phase, reading the contents of a message.
+<a name="IX1419"></a>
+</p>
+<p>
+The value set by this option can be overridden by the
+<i>-os</i> command-line option. A setting of zero time disables the timeout, but
+this should never be used for SMTP over TCP/IP. (It can be useful in some cases
+of local input using <i>-bs</i> or <i>-bS</i>.) For non-SMTP input, the reception
+timeout is controlled by <tt>receive&#095;timeout</tt> and <i>-or</i>.
+<hr></p>
+<a name="IX1420"></a>
+<h3>smtp_reserve_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines hosts for which SMTP connections are reserved; see
+<tt>smtp&#095;accept&#095;reserve</tt> and <tt>smtp&#095;load&#095;reserve</tt> above.
+<hr></p>
+<a name="IX1421"></a>
+<a name="IX1422"></a>
+<a name="IX1423"></a>
+<h3>smtp_return_error_details</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+In the default state, Exim uses bland messages such as
+&#147;Administrative prohibition&#148; when it rejects SMTP commands for policy
+reasons. Many sysadmins like this because it gives away little information
+to spammers. However, some other syadmins who are applying strict checking
+policies want to give out much fuller information about failures. Setting
+<tt>smtp&#095;return&#095;error&#095;details</tt> true causes Exim to be more forthcoming. For
+example, instead of &#147;Administrative prohibition&#148;, it might give:
+<pre>
+&nbsp;&nbsp;550-Rejected after DATA: '&#062;' missing at end of address:
+&nbsp;&nbsp;550 failing address in "From" header is: &#060;user@dom.ain
+</pre>
+<hr></p>
+<a name="IX1424"></a>
+<a name="IX1425"></a>
+<a name="IX1426"></a>
+<a name="IX1427"></a>
+<h3>split_spool_directory</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set, it causes Exim to split its input directory into 62
+subdirectories, each with a single alphanumeric character as its name. The
+sixth character of the message id is used to allocate messages to
+subdirectories; this is the least significant base-62 digit of the time of
+arrival of the message.
+</p>
+<p>
+Splitting up the spool in this way may provide better performance on systems
+where there are long mail queues, by reducing the number of files in any one
+directory. The msglog directory is also split up in a similar way to the input
+directory; however, if <tt>preserve&#095;message&#095;logs</tt> is set, all old msglog files
+are still placed in the single directory <i>msglog.OLD</i>.
+</p>
+<p>
+It is not necessary to take any special action for existing messages when
+changing <tt>split&#095;spool&#095;directory</tt>. Exim notices messages that are in the
+&#147;wrong&#148; place, and continues to process them. If the option is turned off after
+a period of being on, the subdirectories will eventually empty and be
+automatically deleted.
+</p>
+<p>
+When <tt>split&#095;spool&#095;directory</tt> is set, the behaviour of queue runner processes
+changes. Instead of creating a list of all messages in the queue, and then
+trying to deliver each one in turn, it constructs a list of those in one
+sub-directory and tries to deliver them, before moving on to the next
+sub-directory. The sub-directories are processed in a random order. This
+spreads out the scanning of the input directories, and uses less memory. It is
+particularly beneficial when there are lots of messages on the queue. However,
+if <tt>queue&#095;run&#095;in&#095;order</tt> is set, none of this new processing happens. The
+entire queue has to be scanned and sorted before any deliveries can start.
+<hr></p>
+<a name="IX1428"></a>
+<a name="IX1429"></a>
+<h3>spool_directory</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; set at compile time<br>
+<p>
+This defines the directory in which Exim keeps its spool, that is, the messages
+it is waiting to deliver. The default value is taken from the compile-time
+configuration setting, if there is one. If not, this option must be set. The
+string is expanded, so it can contain, for example, a reference to
+<tt>$primary&#095;hostname</tt>.
+</p>
+<p>
+If the spool directory name is fixed on your installation, it is recommended
+that you set it at build time rather than from this option, particularly if the
+log files are being written to the spool directory (see <tt>log&#095;file&#095;path</tt>).
+Otherwise log files cannot be used for errors that are detected early on, such
+as failures in the configuration file.
+</p>
+<p>
+By using this option to override the compiled-in path, it is possible to run
+tests of Exim without using the standard spool.
+<hr></p>
+<a name="IX1430"></a>
+<a name="IX1431"></a>
+<h3>strip_excess_angle_brackets</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set, redundant pairs of angle brackets round &#147;route-addr&#148;
+items in addresses are stripped. For example, <i>&#060;&#060;xxx&#064;a.b.c.d&#062;&#062;</i> is treated
+as <i>&#060;xxx&#064;a.b.c.d&#062;</i>. If this is in the envelope and the message is passed on
+to another MTA, the excess angle brackets are not passed on. If this option is
+not set, multiple pairs of angle brackets cause a syntax error.
+<hr></p>
+<a name="IX1432"></a>
+<a name="IX1433"></a>
+<a name="IX1434"></a>
+<h3>strip_trailing_dot</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set, a trailing dot at the end of a domain in an address is
+ignored. If this is in the envelope and the message is passed on to another
+MTA, the dot is not passed on. If this option is not set, a dot at the end of a
+domain causes a syntax error.
+<font color=green>
+However, addresses in header lines are checked only when an ACL requests header 
+syntax checking.
+</font>
+<hr></p>
+<a name="IX1435"></a>
+<a name="IX1436"></a>
+<h3>syslog_duplication</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+When Exim is logging to syslog, it writes the log lines for its three
+separate logs at different syslog priorities so that they can in principle
+be separated on the logging hosts. Some installations do not require this
+separation, and in those cases, the duplication of certain log lines is a
+nuisance. If <tt>syslog&#095;duplication</tt> is set false, only one copy of any
+particular log line is written to syslog. For lines that normally go to
+both the main log and the reject log, the reject log version (possibly
+containing message header lines) is written, at <font size=-1>LOG&#095;NOTICE</font> priority.
+Lines that normally go to both the main and the panic log are written at
+the <font size=-1>LOG&#095;ALERT</font> priority.
+<hr></p>
+<a name="IX1437"></a>
+<a name="IX1438"></a>
+<h3>syslog_facility</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option sets the syslog &#147;facility&#148; name, used when Exim is logging to 
+syslog. The value must be one of the strings &#147;mail&#148;, &#147;user&#148;, &#147;news&#148;, &#147;uucp&#148;,
+&#147;daemon&#148;, or &#147;local<i>x</i>&#148; where <i>x</i> is a digit between 0 and 7. If this 
+option is unset, &#147;mail&#148; is used. See chapter <a href="spec_45.html">45</a> for details of Exim's
+logging.
+<hr></p>
+<a name="IX1439"></a>
+<a name="IX1440"></a>
+<h3>syslog_processname</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; <tt>exim</tt><br>
+<p>
+This option sets the syslog &#147;ident&#148; name, used when Exim is logging to syslog.
+The value must be no longer than 32 characters. See chapter <a href="spec_45.html">45</a> for
+details of Exim's logging.
+<hr></p>
+<a name="IX1441"></a>
+<a name="IX1442"></a>
+<h3>syslog_timestamp</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+If <tt>syslog&#095;timestamp</tt> is set false, the timestamps on Exim's log lines are
+omitted when these lines are sent to syslog. See chapter <a href="spec_45.html">45</a> for
+details of Exim's logging.
+<hr></p>
+<a name="IX1443"></a>
+<a name="IX1444"></a>
+<a name="IX1445"></a>
+<a name="IX1446"></a>
+<h3>system_filter</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option specifies an Exim filter file that is applied to all messages at
+the start of each delivery attempt, before any routing is done. System filters
+must be Exim filters; they cannot be Sieve filters. If the system filter
+generates any deliveries to files or pipes, or any new mail messages, the
+appropriate <tt>system&#095;filter&#095;...&#095;transport</tt> option(s) must be set, to define
+which transports are to be used. Details of this facility are given in chapter
+<a href="spec_40.html">40</a>.
+<hr></p>
+<a name="IX1447"></a>
+<h3>system_filter_directory_transport</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This sets the name of the transport driver that is to be used when the
+<tt>save</tt> command in a system message filter specifies a path ending in &#147;/&#148;,
+implying delivery of each message into a separate file in some directory.
+During the delivery, the variable <tt>$address&#095;file</tt> contains the path name.
+<hr></p>
+<a name="IX1448"></a>
+<a name="IX1449"></a>
+<h3>system_filter_file_transport</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This sets the name of the transport driver that is to be used when the <tt>save</tt>
+command in a system message filter specifies a path not ending in &#147;/&#148;. During
+the delivery, the variable <tt>$address&#095;file</tt> contains the path name.
+<a name="IX1450"></a>
+<hr></p>
+<a name="IX1451"></a>
+<h3>system_filter_group</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option is used only when <tt>system&#095;filter&#095;user</tt> is also set. It sets the
+gid under which the system filter is run, overriding any gid that is associated
+with the user. The value may be numerical or symbolic.
+<hr></p>
+<a name="IX1452"></a>
+<a name="IX1453"></a>
+<h3>system_filter_pipe_transport</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset 7<br>
+<p>
+This specifies the transport driver that is to be used when a <tt>pipe</tt> command is
+used in a system filter. During the delivery, the variable <tt>$address&#095;pipe</tt>
+contains the pipe command.
+<hr></p>
+<a name="IX1454"></a>
+<a name="IX1455"></a>
+<h3>system_filter_reply_transport</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This specifies the transport driver that is to be used when a <tt>mail</tt> command is
+used in a system filter.
+<a name="IX1456"></a>
+<hr></p>
+<a name="IX1457"></a>
+<h3>system_filter_user</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If this option is not set, the system filter is run in the main Exim delivery
+process, as root. When the option is set, the system filter runs in a separate
+process, as the given user. Unless the string consists entirely of digits, it
+is looked up in the password data. Failure to find the named user causes a
+configuration error. The gid is either taken from the password data, or
+specified by <tt>system&#095;filter&#095;group</tt>. When the uid is specified numerically,
+<tt>system&#095;filter&#095;group</tt> is required to be set.
+</p>
+<p>
+If the system filter generates any pipe, file, or reply deliveries, the uid
+under which the filter is run is used when transporting them, unless a
+transport option overrides.
+Normally you should set <tt>system&#095;filter&#095;user</tt> if your system filter generates
+these kinds of delivery.
+<hr></p>
+<a name="IX1458"></a>
+<a name="IX1459"></a>
+<a name="IX1460"></a>
+<a name="IX1461"></a>
+<h3>tcp_nodelay</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+If this option is set false, it stops the Exim daemon setting the
+<font size=-1>TCP&#095;NODELAY</font> option on its listening sockets. Setting <font size=-1>TCP&#095;NODELAY</font>
+turns off the &#147;Nagle algorithm&#148;, which is a way of improving network
+performance in interactive (character-by-character) situations. Turning it off
+should improve Exim's performance a bit, so that is what happens by default.
+However, it appears that some broken clients cannot cope, and time out. Hence
+this option. It affects only those sockets that are set up for listening by the
+daemon. Sockets created by the smtp transport for delivering mail always set
+<font size=-1>TCP&#095;NODELAY</font>.
+<hr></p>
+<a name="IX1462"></a>
+<a name="IX1463"></a>
+<a name="IX1464"></a>
+<h3>timeout_frozen_after</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 0s<br>
+<p>
+If <tt>timeout&#095;frozen&#095;after</tt> is set to a time greater than zero, a frozen
+message of any kind that has been on the queue for longer than the given
+time is automatically cancelled at the next queue run. If it is a bounce
+message, it is just discarded; otherwise, a bounce is sent to the sender, in a
+similar manner to cancellation by the <i>-Mg</i> command line option. If you want
+to timeout frozen bounce messages earlier than other kinds of frozen message,
+see <tt>ignore&#095;bounce&#095;errors&#095;after</tt>.
+<hr></p>
+<a name="IX1465"></a>
+<a name="IX1466"></a>
+<h3>timezone</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The value of <tt>timezone</tt> is used to set the environment variable <font size=-1>TZ</font> while
+running Exim (if it is different on entry). This ensures that all timestamps
+created by Exim are in the required timezone. If you want all your timestamps
+to be in UTC (aka GMT) you should set
+<pre>
+&nbsp;&nbsp;timezone = UTC
+</pre>
+</p>
+<p>
+The default value is taken from <font size=-1>TIMEZONE&#095;DEFAULT</font> in <i>Local/Makefile</i>,
+or, if that is not set, from the value of the TZ environment variable when Exim
+is built. If <tt>timezone</tt> is set to the empty string, either at build or run
+time, any existing <font size=-1>TZ</font> variable is removed from the environment when Exim
+runs. This is appropriate behaviour for obtaining wall-clock time on some, but
+unfortunately not all, operating systems.
+<hr></p>
+<a name="IX1467"></a>
+<a name="IX1468"></a>
+<a name="IX1469"></a>
+<a name="IX1470"></a>
+<h3>tls_advertise_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+When Exim is built with support for TLS encrypted connections, the availability
+of the <font size=-1>STARTTLS</font> command to set up an encrypted session is advertised in
+response to <font size=-1>EHLO</font> only to those client hosts that match this option. See
+chapter <a href="spec_37.html">37</a> for details of Exim's support for TLS.
+<hr></p>
+<a name="IX1471"></a>
+<a name="IX1472"></a>
+<a name="IX1473"></a>
+<h3>tls_certificate</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The value of this option is expanded, and must then be the absolute path to a
+file which contains the server's certificates. The server's private key is also
+assumed to be in this file if <tt>tls&#095;privatekey</tt> is unset. See chapter <a href="spec_37.html">37</a>
+for further details.
+</p>
+<p>
+<b>Note</b>: The certificates defined by this option are used only when Exim is 
+receiving incoming messages as a server. If you want to supply certificates for
+use when sending messages as a client, you must set the <tt>tls&#095;certificate</tt>
+option in the relevant <b>smtp</b> transport.
+<font color=green><hr></p>
+<a name="IX1474"></a>
+<a name="IX1475"></a>
+<a name="IX1476"></a>
+<h3>tls_crl</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option specifies a certificate revocation list. The expanded value must
+be the name of a file that contains a CRL in PEM format.
+</font>
+<hr></p>
+<a name="IX1477"></a>
+<a name="IX1478"></a>
+<h3>tls_dhparam</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The value of this option is expanded, and must then be the absolute path to
+a file which contains the server's DH parameter values.
+This is used only for OpenSSL. When Exim is linked with GnuTLS, this option is 
+ignored. See section <a href="spec_37.html#SECT37.1">37.1</a> for further details.
+<hr></p>
+<a name="IX1479"></a>
+<a name="IX1480"></a>
+<h3>tls_privatekey</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The value of this option is expanded, and must then be the absolute path to
+a file which contains the server's private key.
+If this option is unset, the private key is assumed to be in the same file as 
+the server's certificates. See chapter <a href="spec_37.html">37</a> for further details.
+<hr></p>
+<a name="IX1481"></a>
+<a name="IX1482"></a>
+<a name="IX1483"></a>
+<h3>tls_remember_esmtp</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set true, Exim violates the RFCs by remembering that it is in
+&#147;esmtp&#148; state after successfully negotiating a TLS session. This provides
+support for broken clients that fail to send a new <font size=-1>EHLO</font> after starting a
+TLS session.
+<font color=green><hr></p>
+<a name="IX1484"></a>
+<a name="IX1485"></a>
+<a name="IX1486"></a>
+<h3>tls_require_ciphers</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option controls which ciphers can be used for incoming TLS connections.
+(The <b>smtp</b> transport has an option of the same name for controlling outgoing 
+connections.) This option is expanded for each connection, so can be varied for
+different clients if required. The value of this option must be a list of
+permitted cipher suites. The OpenSSL and GnuTLS libraries handle cipher control
+in somewhat different ways. Details are given in section <a href="spec_37.html#SECT37.2">37.2</a>.
+</font>
+<hr></p>
+<a name="IX1487"></a>
+<a name="IX1488"></a>
+<a name="IX1489"></a>
+<h3>tls_try_verify_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+See <tt>tls&#095;verify&#095;hosts</tt> below.
+<hr></p>
+<a name="IX1490"></a>
+<a name="IX1491"></a>
+<a name="IX1492"></a>
+<h3>tls_verify_certificates</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The value of this option is expanded, and must then be the absolute path to
+a file containing permitted certificates for clients that
+match <tt>tls&#095;verify&#095;hosts</tt> or <tt>tls&#095;try&#095;verify&#095;hosts</tt>. Alternatively, if you
+are using OpenSSL, you can set <tt>tls&#095;verify&#095;certificates</tt> to the name of a
+directory containing certificate files. This does not work with GnuTLS; the
+option must be set to the name of a single file if you are using GnuTLS.
+<hr></p>
+<a name="IX1493"></a>
+<a name="IX1494"></a>
+<a name="IX1495"></a>
+<h3>tls_verify_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option, along with <tt>tls&#095;try&#095;verify&#095;hosts</tt>, controls the checking of
+certificates from clients. 
+The expected certificates are defined by <tt>tls&#095;verify&#095;certificates</tt>, which 
+must be set. A configuration error occurs if either <tt>tls&#095;verify&#095;hosts</tt> or 
+<tt>tls&#095;try&#095;verify&#095;hosts</tt> is set and <tt>tls&#095;verify&#095;certificates</tt> is not set.
+</p>
+<p>
+Any client that matches <tt>tls&#095;verify&#095;hosts</tt> is constrained by
+<tt>tls&#095;verify&#095;certificates</tt>. The client must present one of the listed
+certificates. If it does not, the connection is aborted.
+</p>
+<p>
+A weaker form of checking is provided by <tt>tls&#095;try&#095;verify&#095;hosts</tt>. If a client
+matches this option (but not <tt>tls&#095;verify&#095;hosts</tt>), Exim requests a
+certificate and checks it against <tt>tls&#095;verify&#095;certificates</tt>, but does not
+abort the connection if there is no certificate or if it does not match. This
+state can be detected in an ACL, which makes it possible to implement policies
+such as &#147;accept for relay only if a verified certificate has been received, but
+accept for local delivery if encrypted, even without a verified certificate&#148;.
+</p>
+<p>
+Client hosts that match neither of these lists are not asked to present
+certificates.
+<hr></p>
+<a name="IX1496"></a>
+<a name="IX1497"></a>
+<a name="IX1498"></a>
+<h3>trusted_groups</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If this option is set, any process that is running in one of the listed groups,
+or which has one of them as a supplementary group, is trusted. 
+The groups can be specified numerically or by name.
+See section <a href="spec_5.html#SECT5.2">5.2</a> for details of what trusted callers are
+permitted to do. If neither <tt>trusted&#095;groups</tt> nor <tt>trusted&#095;users</tt> is set, only
+root and the Exim user are trusted.
+<hr></p>
+<a name="IX1499"></a>
+<a name="IX1500"></a>
+<a name="IX1501"></a>
+<h3>trusted_users</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If this option is set, any process that is running as one of the listed users
+is trusted. 
+The users can be specified numerically or by name.
+See section <a href="spec_5.html#SECT5.2">5.2</a> for details of what trusted callers are
+permitted to do. If neither <tt>trusted&#095;groups</tt> nor <tt>trusted&#095;users</tt> is set, only
+root and the Exim user are trusted.
+<a name="IX1502"></a>
+<hr></p>
+<a name="IX1503"></a>
+<h3>unknown_login</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This is a specialized feature for use in unusual configurations. By default, if
+the uid of the caller of Exim cannot be looked up using <i>getpwuid()</i>, Exim
+gives up. The <tt>unknown&#095;login</tt> option can be used to set a login name to be
+used in this circumstance. It is expanded, so values like <tt>user&#036;caller&#095;uid</tt>
+can be set. When <tt>unknown&#095;login</tt> is used, the value of <tt>unknown&#095;username</tt> is
+used for the user's real name (gecos field), unless this has been set by the
+<i>-F</i> option.
+<hr></p>
+<a name="IX1504"></a>
+<h3>unknown_username</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+See <tt>unknown&#095;login</tt>.
+<hr></p>
+<a name="IX1505"></a>
+<a name="IX1506"></a>
+<a name="IX1507"></a>
+<a name="IX1508"></a>
+<a name="IX1509"></a>
+<a name="IX1510"></a>
+<h3>untrusted_set_sender</h3>
+<i>Type:</i>&nbsp; address list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+When an untrusted user submits a message to Exim using the standard input, Exim
+normally creates an envelope sender address from the user's login and the
+default qualification domain. Data from the <i>-f</i> option (for setting envelope
+senders on non-SMTP messages) or the SMTP <font size=-1>MAIL</font> command (if <i>-bs</i> or <i>-bS</i>
+is used) is ignored.
+</p>
+<p>
+However, untrusted users are permitted to set an empty envelope sender address,
+to declare that a message should never generate any bounces. For example:
+<pre>
+&nbsp;&nbsp;exim -f '&#060;&#062;' user@domain.example
+</pre>
+</p>
+<p>
+The <tt>untrusted&#095;set&#095;sender</tt> option allows you to permit untrusted users to set
+other envelope sender addresses in a controlled way. When it is set, untrusted
+users are allowed to set envelope sender addresses that match any of the
+patterns in the list. Like all address lists, the string is expanded. The
+identity of the user is in <tt>$sender&#095;ident</tt>, so you can, for example, restrict
+users to setting senders that start with their login ids 
+followed by a hyphen
+by a setting like this:
+<pre>
+&nbsp;&nbsp;untrusted_set_sender = ^$sender_ident-
+</pre>
+</p>
+<p>
+If you want to allow untrusted users to set envelope sender addresses without
+restriction, you can use
+<pre>
+&nbsp;&nbsp;untrusted_set_sender = *
+</pre>
+</p>
+<p>
+The <tt>untrusted&#095;set&#095;sender</tt> option applies to all forms of local input, but
+only to the setting of the envelope sender. It does not permit untrusted users
+to use the other options which trusted user can use to override message
+parameters. Furthermore, it does not stop Exim from removing an existing
+<i>Sender:</i> header in the message, or from adding a <i>Sender:</i> header if
+necessary. See <tt>local_sender_retain</tt> and <tt>local&#095;from&#095;check</tt> for ways of
+overriding these actions. The handling of the <i>Sender:</i> header is also
+described in section <a href="spec_44.html#SECT44.14">44.14</a>.
+</p>
+<p>
+The log line for a message's arrival shows the envelope sender following &#147;&#060;=&#148;.
+For local messages, the user's login always follows, after &#147;U=&#148;. In <i>-bp</i>
+displays, and in the Exim monitor, if an untrusted user sets an envelope sender
+address, the user's login is shown in parentheses after the sender address.
+<hr></p>
+<a name="IX1511"></a>
+<a name="IX1512"></a>
+<a name="IX1513"></a>
+<h3>uucp_from_pattern</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; see below<br>
+<p>
+Some applications that pass messages to an MTA via a command line interface use
+an initial line starting with &#147;From&#148; to pass the envelope sender. In
+particular, this is used by UUCP software. Exim recognizes such a line by means
+of a regular expression that is set in <tt>uucp&#095;from&#095;pattern</tt>. When the pattern
+matches, the sender address is constructed by expanding the contents of
+<tt>uucp&#095;from&#095;sender</tt>, provided that the caller of Exim is a trusted user. The
+default pattern recognizes lines in the following two forms:
+<pre>
+&nbsp;&nbsp;   From ph10 Fri Jan  5 12:35 GMT 1996
+&nbsp;&nbsp;   From ph10 Fri, 7 Jan 97 14:00:00 GMT
+</pre>
+</p>
+<p>
+The pattern can be seen by running
+<pre>
+&nbsp;&nbsp;exim -bP uucp_from_pattern
+</pre>
+</p>
+<p>
+It checks only up to the hours and minutes, and allows for a 2-digit or 4-digit
+year in the second case. The first word after &#147;From&#148; is matched in the regular
+expression by a parenthesized subpattern. The default value for
+<tt>uucp&#095;from&#095;sender</tt> is &#147;$1&#148;, which therefore just uses this first word (&#147;ph10&#148;
+in the example above) as the message's sender. See also
+<tt>ignore&#095;fromline&#095;hosts</tt>.
+<hr></p>
+<a name="IX1514"></a>
+<h3>uucp_from_sender</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; <tt>&#036;1</tt><br>
+<p>
+See <tt>uucp&#095;from&#095;pattern</tt> above.
+<hr></p>
+<a name="IX1515"></a>
+<a name="IX1516"></a>
+<a name="IX1517"></a>
+<h3>warn_message_file</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option defines a template file containing paragraphs of text to be used
+for constructing the warning message which is sent by Exim when a message has
+been on the queue for a specified amount of time, as specified by
+<tt>delay&#095;warning</tt>. Details of the file's contents are given in chapter
+<a href="spec_41.html">41</a>. See also <tt>bounce&#095;message&#095;file</tt>.
+<font color=green><hr></p>
+<a name="IX1518"></a>
+<a name="IX1519"></a>
+<h3>write_rejectlog</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+If this option is set false, Exim no longer writes anything to the reject log.
+See chapter <a href="spec_45.html">45</a> for details of what Exim writes to its logs.
+</font>
+<hr><br>
+<hr>
+</p>
+<font size=2>
+<a href="spec_13.html">Previous</a>&nbsp;&nbsp;<a href="spec_15.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

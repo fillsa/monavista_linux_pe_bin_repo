@@ -1,0 +1,105 @@
+\hypertarget{dsa_8h}{
+\section{dsa.h File Reference}
+\label{dsa_8h}\index{dsa.h@{dsa.h}}
+}
+Digital Signature Algorithm, as specified by NIST FIPS 186. 
+
+{\tt \#include \char`\"{}dlkp.h\char`\"{}}\par
+\subsection*{Typedefs}
+\begin{CompactItemize}
+\item 
+typedef \hyperlink{structdldp__p}{dldp\_\-p} \hyperlink{dsa_8h_a0}{dsaparam}
+\item 
+typedef \hyperlink{structdlpk__p}{dlpk\_\-p} \hyperlink{dsa_8h_a1}{dsapub}
+\item 
+typedef \hyperlink{structdlkp__p}{dlkp\_\-p} \hyperlink{dsa_8h_a2}{dsakp}
+\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{dsa_8h_a3}{dsasign} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$p, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$q, const \hyperlink{structmpnumber}{mpnumber} $\ast$g, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$hm, const \hyperlink{structmpnumber}{mpnumber} $\ast$x, \hyperlink{structmpnumber}{mpnumber} $\ast$r, \hyperlink{structmpnumber}{mpnumber} $\ast$s)
+\begin{CompactList}\small\item\em This function performs a raw DSA signature. \item\end{CompactList}\item 
+int \hyperlink{dsa_8h_a4}{dsavrfy} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$p, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$q, const \hyperlink{structmpnumber}{mpnumber} $\ast$g, const \hyperlink{structmpnumber}{mpnumber} $\ast$hm, const \hyperlink{structmpnumber}{mpnumber} $\ast$y, const \hyperlink{structmpnumber}{mpnumber} $\ast$r, const \hyperlink{structmpnumber}{mpnumber} $\ast$s)
+\begin{CompactList}\small\item\em This function performs a raw DSA verification. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Digital Signature Algorithm, as specified by NIST FIPS 186. 
+
+FIPS 186 specifies the DSA algorithm as having a large prime $p$, a cofactor $q$ and a generator $g$ of a subgroup of $\mathds{Z}^{*}_p$ with order $q$. The private and public key values are $x$ and $y$ respectively.
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{dsa_8h-source}{dsa.h}.
+
+\subsection{Typedef Documentation}
+\hypertarget{dsa_8h_a2}{
+\index{dsa.h@{dsa.h}!dsakp@{dsakp}}
+\index{dsakp@{dsakp}!dsa.h@{dsa.h}}
+\subsubsection[dsakp]{\setlength{\rightskip}{0pt plus 5cm}typedef \hyperlink{structdlkp__p}{dlkp\_\-p} \hyperlink{structdlkp__p}{dsakp}}}
+\label{dsa_8h_a2}
+
+
+Definition at line 39 of file dsa.h.\hypertarget{dsa_8h_a0}{
+\index{dsa.h@{dsa.h}!dsaparam@{dsaparam}}
+\index{dsaparam@{dsaparam}!dsa.h@{dsa.h}}
+\subsubsection[dsaparam]{\setlength{\rightskip}{0pt plus 5cm}typedef \hyperlink{structdldp__p}{dldp\_\-p} \hyperlink{structdldp__p}{dsaparam}}}
+\label{dsa_8h_a0}
+
+
+Definition at line 37 of file dsa.h.\hypertarget{dsa_8h_a1}{
+\index{dsa.h@{dsa.h}!dsapub@{dsapub}}
+\index{dsapub@{dsapub}!dsa.h@{dsa.h}}
+\subsubsection[dsapub]{\setlength{\rightskip}{0pt plus 5cm}typedef \hyperlink{structdlpk__p}{dlpk\_\-p} \hyperlink{structdlpk__p}{dsapub}}}
+\label{dsa_8h_a1}
+
+
+Definition at line 38 of file dsa.h.
+
+\subsection{Function Documentation}
+\hypertarget{dsa_8h_a3}{
+\index{dsa.h@{dsa.h}!dsasign@{dsasign}}
+\index{dsasign@{dsasign}!dsa.h@{dsa.h}}
+\subsubsection[dsasign]{\setlength{\rightskip}{0pt plus 5cm}int dsasign (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$ {\em p}, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$ {\em q}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em g}, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$ {\em rgc}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em hm}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em x}, \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em r}, \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em s})}}
+\label{dsa_8h_a3}
+
+
+This function performs a raw DSA signature. 
+
+Signing equations:
+
+\begin{itemize}
+\item $r=(g^{k}\ \textrm{mod}\ p)\ \textrm{mod}\ q$ \item $s=k^{-1}(h(m)+xr)\ \textrm{mod}\ q$\end{itemize}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em p}]The prime. \item[{\em q}]The cofactor. \item[{\em g}]The generator. \item[{\em rgc}]The pseudo-random generator context. \item[{\em hm}]The hash to be signed. \item[{\em x}]The private key value. \item[{\em r}]The signature's {\em r\/} value. \item[{\em s}]The signature's {\em s\/} value. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \item[{\em -1}]on failure. \end{description}
+\end{Desc}
+\hypertarget{dsa_8h_a4}{
+\index{dsa.h@{dsa.h}!dsavrfy@{dsavrfy}}
+\index{dsavrfy@{dsavrfy}!dsa.h@{dsa.h}}
+\subsubsection[dsavrfy]{\setlength{\rightskip}{0pt plus 5cm}int dsavrfy (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$ {\em p}, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$ {\em q}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em g}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em hm}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em y}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em r}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em s})}}
+\label{dsa_8h_a4}
+
+
+This function performs a raw DSA verification. 
+
+Verifying equations: \begin{itemize}
+\item Check $0<r<q$ and $0<s<q$ \item $w=s^{-1}\ \textrm{mod}\ q$ \item $u_1=w \cdot h(m)\ \textrm{mod}\ q$ \item $u_2=rw\ \textrm{mod}\ q$ \item $v=(g^{u_1}y^{u_2}\ \textrm{mod}\ p)\ \textrm{mod}\ q$ \item Check $v=r$\end{itemize}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em p}]The prime. \item[{\em q}]The cofactor. \item[{\em g}]The generator. \item[{\em hm}]The digest to be verified. \item[{\em y}]The public key value. \item[{\em r}]The signature's {\em r\/} value. \item[{\em s}]The signature's {\em s\/} value. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]on success. \item[{\em 0}]on failure. \end{description}
+\end{Desc}

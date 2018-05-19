@@ -1,0 +1,78 @@
+#!/bin/sh
+
+# Copyright (C) 1998 Daniel Podlejski <underley@zakopane.top.pl>
+#               1999 Piotr Roszatycki <dexter@debian.org>
+# 
+#     This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; version 2 dated June, 1991.
+# 
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+# 
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+#    02111-1307, USA.
+
+help () {
+cat << EOT
+systune 0.5 - Kernel tuning utility
+Usage: $0 [-c|--config <configfile>]
+
+Parameters:
+  -c|--config <configfile>    - alternative config file, 
+                                default is /etc/systune.conf
+  -h|--help                   - this help text
+  -v|--verbose		      - verbose mode
+  
+EOT
+}
+
+
+CONF=/etc/systune.conf
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+	--config|-c)
+	    CONF=$2
+	    shift
+	    shift
+	    ;;
+	--help|-h)
+	    help
+	    exit 0
+	    ;;
+	--verbose|-v)
+	    VERBOSE="yes"
+	    shift
+	    ;;
+    esac
+done
+
+if [ -f $CONF ]; then
+    # '\n' is an only separator
+    IFS="$(echo)"
+    cat $CONF | sed 's/[ 	]*#.*$//' | while read sysctl; do
+			#space+tab
+	if [ "${sysctl#/proc/sys/}" != "$sysctl" ]; then
+	    sysctlname=$(echo $sysctl | cut -d: -f1)
+	    sysctlcontent=$(echo $sysctl | cut -d\: -f2-)
+
+	    # don't check if file exists when verbose mode
+	    if [ -n "$VERBOSE" ]; then
+		test -n "$sysctlname" && test -n "$sysctlcontent" && \
+		    echo "$sysctlcontent" > $sysctlname
+	    else 
+		test -w "$sysctlname" && test -n "$sysctlcontent" && \
+		    (echo "$sysctlcontent" > $sysctlname) 2> /dev/null
+	    fi
+
+	fi
+	
+    done
+fi
+
+exit 0

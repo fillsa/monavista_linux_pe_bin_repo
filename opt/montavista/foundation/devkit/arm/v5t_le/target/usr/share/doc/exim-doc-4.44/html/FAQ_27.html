@@ -1,0 +1,271 @@
+<html>
+<head>
+<title>The Exim FAQ Section 27</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_26.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_28.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC397">98. CONFIGURATION COOKBOOK</a></h2>
+<p>
+<a name="TOC398" href="FAQ.html#TOC398">Q9801:</a>&nbsp;&nbsp;How do I configure Exim as part of TPC (<a href="http://www.tpc.int">http://www.tpc.int</a>)?
+</p>
+<p>
+<font color="#00BB00">A9801:</font>&nbsp;&nbsp;Suppose you want to accept faxes destined for 1(801)539-*. These are
+addressed to the domain <i>9.3.5.1.0.8.1.tpc.int</i>. Set up a transport to
+handle the delivery:
+</p>
+<pre>
+   tpc:
+     driver = pipe
+     command = /usr/local/tpc/tpcmailer.pl $local_part@$domain \
+       $sender_address
+     pipe_as_creator</pre>
+<p>
+<i>/usr/local/tpc/tpcmailer.pl</i> is the mail processing script that can
+be obtained from the TPC distribution. Create a router to route mail
+for the TPC domain to that transport. This must be placed before your
+other routers:
+</p>
+<pre>
+   tpc_router:
+     driver = accept
+     transport = tpc
+     domains = *.9.3.5.1.0.8.1.tpc.int</pre>
+<p>
+Of course, there are other things to do as well before your system is
+a functioning TPC server.
+</p>
+<p>
+<a name="TOC399" href="FAQ.html#TOC399">Q9802:</a>&nbsp;&nbsp;How do I configure Exim so that it sends mail to the outside world only
+from a restricted list of our local users?
+</p>
+<p>
+<font color="#00BB00">A9802:</font>&nbsp;&nbsp;You will need to have a convenient way of checking the list. If it is
+only a handful of users, you could just list them inline. Otherwise, you
+need to put them in a file or database. Let's suppose you've just got a
+list in a file. Put this as your first router:
+</p>
+<pre>
+   check_outgoing:
+     driver = redirect
+     domains = ! +local_domains
+     senders = ! : ! lsearch;/etc/permitted/senders
+     allow_fail
+     data = :fail: you are not allowed to send outside</pre>
+<p>
+The senders should be listed as complete addresses, with both a local
+part and a domain. For a large list, use a DBM or cdb file instead, or
+a database. The first item in the <tt>senders</tt> list is empty, to match the
+empty sender. This is necessary because bounce messages have null
+senders.
+</p>
+<p>
+<a name="TOC400" href="FAQ.html#TOC400">Q9803:</a>&nbsp;&nbsp;A site for which I provide secondary MX is down for some time. Is there
+a way to run the queue for that destination separately from the main
+queue?
+</p>
+<p>
+<font color="#00BB00">A9803:</font>&nbsp;&nbsp;No, because Exim does not have the concept of ``the queue for that
+destination''. It simply has a single pool of messages awaiting delivery
+(and some of them may have several destinations). The best approach to
+this is to arrange for all messages for the site to be saved somewhere
+other than the main spool, either on a separate dedicated MTA, or in
+BSMTP files.
+</p>
+<p>
+<a name="TOC401" href="FAQ.html#TOC401">Q9804:</a>&nbsp;&nbsp;We want to be able to temporarily lock out a user by disabling the
+password and moving the home directory to another place. How can we
+arrange to reject mail for users in this state?
+</p>
+<p>
+<font color="#00BB00">A9804:</font>&nbsp;&nbsp;Change the home directory pointer in the passwd file to something
+distinctive. For example, we use <i>/home/CANCELLED</i> for cancelled users.
+Then you can pick up such users with this router, which is placed
+immediately after <b>system_aliases</b>:
+</p>
+<pre>
+   cancelled_users:
+     driver = redirect
+     check_local_user
+     condition = ${if eq {$home}{/home/CANCELLED}{yes}{no}}
+     allow_fail
+     data = :fail: this account is cancelled</pre>
+<p>
+<a name="TOC402" href="FAQ.html#TOC402">Q9805:</a>&nbsp;&nbsp;How can I configure Exim so that all mails addressed to
+<i>something@username.domain.net</i> get delivered to
+<i>/var/spool/mail/username</i>?
+</p>
+<p>
+<font color="#00BB00">A9805:</font>&nbsp;&nbsp;Assuming that you have set up <i>username</i> as a normal user, with
+conventional routing for <i>username@domain.net</i> to that mailbox, all
+you need to do is set up a redirection, using a router like this:
+</p>
+<pre>
+   user_in_domain:
+     driver = redirect
+     data = ${if match{$domain}{\N^(.*)\.domain\.net$\N}\
+            {$1}fail}@domain.net</pre>
+<p>
+If you set <tt>envelope_to</tt> in the <b>appendfile</b> transport, the original
+envelope address is preserved in the message in an <i>Envelope-to:</i>
+header line.
+</p>
+<p>
+<a name="TOC403" href="FAQ.html#TOC403">Q9806:</a>&nbsp;&nbsp;How do I get exim not to add a <i>Sender:</i> header to locally originated
+mail?
+</p>
+<p>
+<font color="#00BB00">A9806:</font>&nbsp;&nbsp;It adds it only if the <i>From:</i> header doesn't correspond to the user
+sending the message. You can suppress this by setting
+<tt>no_local_from_check</tt>. If your real question is <i>How do I submit mail
+from UUCP without it adding <i>Sender:</i>?</i>, see <a href="FAQ_15.html#TOC315">Q1503</a>.
+</p>
+<p>
+<a name="TOC404" href="FAQ.html#TOC404">Q9807:</a>&nbsp;&nbsp;Is there any way to have messages sent to a specific local address
+delayed by - say - 24 hours?
+</p>
+<p>
+<font color="#00BB00">A9807:</font>&nbsp;&nbsp;Set up a router like this:
+</p>
+<pre>
+   delay:
+     driver = redirect
+     domains = the.domain
+     local_parts = thelocalpart
+     condition = ${if &#60; {$message_age}{86400}{yes}{no}}
+     allow_defer
+     data = :defer: message not old enough
+     no_verify</pre>
+<p>
+Of course, this will also have the effect of setting a retry time for
+the address. You may want to set a special retry rule for it. Note the
+use of <tt>no_verify</tt> to ensure that this router is not used when Exim is
+verifying addresses.
+</p>
+<p>
+<a name="TOC405" href="FAQ.html#TOC405">Q9808:</a>&nbsp;&nbsp;I have a mailing list exploder on one host, and three other hosts where
+I want to do the actual deliveries from. How can I get Exim to split
+a message into groups of recipients between the three hosts?
+</p>
+<p>
+<font color="#00BB00">A9808:</font>&nbsp;&nbsp;Set up a router that routes all remote addresses to a specific
+transport, with a list of your three hosts. For example:
+</p>
+<pre>
+   send_to_three:
+     driver = manualroute
+     transport = to_three_smtp
+     route_list = !+local_domains  hostA:hostB:hostC</pre>
+<p>
+The transport looks like this:
+</p>
+<pre>
+   to_three_smtp:
+     driver = smtp
+     hosts_randomize</pre>
+<p>
+By setting <tt>hosts_randomize</tt>, you request that the host list be sorted
+randomly each time the transport is called, in order to spread the load.
+The number of times the transport is called for each message depends on
+the setting of the global option <tt>remote_max_parallel</tt>. If it is set to
+1, the transport is called only once for each message, so only one host
+is used, but different messages use different hosts because of the
+randomizing.
+</p>
+<p>
+The <tt>max_rcpt</tt> option (default 100) controls the number of addresses
+sent in each copy of the message - several copies are sent over the
+same connection if necessary.
+</p>
+<p>
+If you want individual messages to be split between the three hosts, you
+must set the global option <tt>remote_max_parallel</tt> to 3. This allows Exim
+to run 3 separate instances of the transport at once. It will pass
+one-third of all the addresses to each instance. Because the host list
+is randomized, not round-robinned, there is no guarantee that a single
+message will use all three hosts, but on average it should.
+</p>
+<p>
+<a name="TOC406" href="FAQ.html#TOC406">Q9809:</a>&nbsp;&nbsp;Can I configure Exim so that my gateway host sends a copy of each
+incoming message to each of two internal hosts?
+</p>
+<p>
+<font color="#00BB00">A9809:</font>&nbsp;&nbsp;The easiest way to do this is to make use of the <tt>unseen</tt> router option,
+and set up two separate routers. You need to be able to identify
+incoming messages somehow. Typically this can be done by testing the
+domain of the recipient address, in which case the configuration should
+contain something like this:
+</p>
+<pre>
+   r1:
+     driver = manualroute
+     domains = ! *.your.domain.example
+     route_data = * host1.your.domain.example
+     transport = remote_smtp
+     unseen</pre>
+<pre>
+   r2:
+     driver = manualroute
+     domains = ! *.your.domain.example
+     route_data = * host2.your.domain.example
+     transport = remote_smtp</pre>
+<p>
+The <tt>unseen</tt> setting on <b>r1</b> means that after it has accepted an
+address, the address is also passed on to <b>r2</b>, and so two deliveries
+occur.
+</p>
+<p>
+<a name="TOC407" href="FAQ.html#TOC407">Q9810:</a>&nbsp;&nbsp;How can I implement &#147;SMTP-after-POP&#148; with Exim?
+</p>
+<p>
+<font color="#00BB00">A9810:</font>&nbsp;&nbsp;See <a href="FAQ_7.html#TOC236">Q0706</a>.
+</p>
+<p>
+<a name="TOC408" href="FAQ.html#TOC408">Q9811:</a>&nbsp;&nbsp;I would like to &#147;tap off&#148; a proportion of real mail traffic from my
+live mail server to use in tests of a new server. I want to preserve the
+envelope contents, but to suppress any error notifications to the
+original sender.
+</p>
+<p>
+<font color="#00BB00">A9811:</font>&nbsp;&nbsp;See <a href="C046.txt">C046</a>.
+</p>
+<p>
+<a name="TOC409" href="FAQ.html#TOC409">Q9812:</a>&nbsp;&nbsp;How can I lookup data from a single file using both single IP addresses
+and IP address blocks as keys? I want to set <tt>smtp_accept_max_per_host</tt>
+by this means, and also include a default.
+</p>
+<p>
+<font color="#00BB00">A9812:</font>&nbsp;&nbsp;You cannot do this in a single lookup, because you need separate lookups
+for individual addresses and address blocks. However, these lookups can
+be nested in a single expansion string. For example, suppose you are
+using an lsearch file with entries like this:
+</p>
+<pre>
+   192.168.34.35:    4
+   192.168.34.0/24:  2
+   *:                1</pre>
+<p>
+You can use this setting:
+</p>
+<pre>
+   smtp_accept_max_per_host = \
+     ${lookup{$sender_host_address}lsearch{/path/to/file}\
+     {$value}\
+     {\
+     ${lookup{${mask:$sender_host_address/24}}lsearch*{/path/to/file}}\
+     }}</pre>
+<p>
+Note that the first lookup does <i>not</i> have an asterisk on the search
+type. If you have blocks of different sizes (/24, /26, etc) you have to
+configure it to do a separate lookup for each size, with just the final
+one using a default.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_26.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_28.html">Next</a>
+</body>
+</html>

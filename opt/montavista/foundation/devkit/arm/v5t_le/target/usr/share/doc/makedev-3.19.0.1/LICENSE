@@ -1,0 +1,25 @@
+This package was debianized by Bdale Garbee <bdale@gag.com> on
+Sat, 23 Aug 2003 10:44:18 -0600.
+
+It was downloaded from 
+	http://ftp.redhat.com/pub/redhat/linux/rawhide/SRPMS/SRPMS/
+
+Upstream Author: Nalin Dahyabhai <nalin@redhat.com>
+
+Copyright:
+
+    Copyright 2000,2001 Red Hat, Inc.
+    
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+   
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+

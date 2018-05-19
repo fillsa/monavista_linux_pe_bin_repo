@@ -1,0 +1,467 @@
+#!/usr/bin/perl -w
+#
+# addftpuser: a utility to create an anonymous FTP account
+#
+# Copyright (C) 1995 Peter Tobias <tobias@et-inf.fho-emden.de>
+# ... changed some parts Heiko Schlittermann <heiko@lotte.sax.de>
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+
+# only use the following line while programming (BTW, it doesn't work :)
+use strict;
+use Debconf::Client::ConfModule ':all';
+
+# The rmftpuser functionality, by Josip Rodin `99.
+if ( $0 =~ m/rmftpuser$/i ) {
+  die "You must be root to run this script.\n" if ($> != 0);
+
+  my $postinst = 0;
+  if ($ARGV[0] eq "--configure") { # called from postinst
+    $postinst = 1;
+  } else {
+    print "Are you sure you want to remove the anonymous FTP user? [Y/n] ";
+    if (<STDIN> =~ /^n/i) {
+      print "Exiting.\n";
+      exit(0);
+    }
+  }
+
+  my $itshomedir = (getpwnam("ftp"))[7];
+  if (!defined($itshomedir)) {
+    exit(0) if ($postinst);
+    die "It doesn't exist, silly!\n";
+  }
+  
+  system ("userdel", "ftp") == 0 or die "Removal failed!\n";
+  print STDERR "The anonymous FTP user has been successfully removed.\n";
+
+  print "Do you want to remove the anonymous FTP directory, too? [Y/n] "
+    if ($postinst == 0);
+    
+  if ($postinst || <STDIN> =~ /^n/i) {
+    print STDERR "Its home directory, $itshomedir, has been left intact.\n";
+    exit(0);
+  }
+
+  system ("rm", "-rf", $itshomedir) == 0 or die "Removal failed!\n";
+  print "The anonymous FTP directory has also been removed.\n";
+
+  exit(0);
+}
+
+my $version = '$Revision: 1.7 $';
+
+my $default_home = "/home/ftp";      # the default FTP home directory
+my $default_dir_mode = 0755;         # the default directory permissions
+my $group = "staff";                 # the default group for the FTP hierarchy
+my $pathmsg = "/etc/wu-ftpd/pathmsg";   # the pathmsg file
+my $welcomemsg = "/etc/wu-ftpd/welcome.msg"; # the welcome.msg file
+my $ftpusers = "/etc/ftpusers";	     # the ftpusers file
+my @default_bins = qw(/bin/ls /bin/gzip /bin/tar);
+my @optbins;
+if ( -e "/usr/bin/zip" ) {
+	@optbins = qw(/usr/bin/zip);
+} else {
+	@optbins = ();
+}
+
+my $updatebin = 0;
+my $configure = 0;
+my $want_incoming = 0;
+my $nocreatehome = "";
+
+my ($aout, @dirs, $done, $elf, @ftpfiles, $have_passwd_entry, $home);
+
+# strip directory from the filename
+$0 =~ s#.*/##;
+
+# cleanup $version
+$version =~ s/\S+: (\S+) \$/$1/;
+
+# set OUTPUT_AUTOFLUSH
+$| = 1;
+
+# don't change the permissions
+umask(000);
+
+if (scalar(@ARGV) == 0) {
+	print STDERR "Running this program directly is now deprecated. Instead, please\n";
+	print STDERR "run \`dpkg-reconfigure wu-ftpd'\n";
+	exit(1);
+}
+
+while (defined($ARGV[0]) && $ARGV[0] =~ m/^-/) {
+  $_ = shift(@ARGV);
+  if (/--help$/) {
+    &usage;
+  } elsif (/--version$/) {
+    print "$0 $version\n";
+    exit(0);
+  } elsif (/--check-binaries$/) {
+    &checkbin;
+  } elsif (/--configure$/) {
+    $configure = 1;
+  } elsif (/--update-binaries$/) {
+    $updatebin = 1;
+  } elsif (/--group$/) {
+    $group = shift(@ARGV);
+    die "$0: Option group requires an argument\n" unless ($group);
+  } else {
+    print "$0: Unknown option: $_\n";
+    print "$0: Try `$0 --help' for more information.\n";
+    exit(10);
+  }
+}
+
+if (@ARGV) {
+  print "$0: Unknown argument: @ARGV\n";
+  print "$0: Try `$0 --help' for more information.\n";
+  exit(10);
+}
+
+# only root may set up an anonymous FTP account
+die "You must be root to run this script.\n" if ($> != 0);
+
+# check if the user "ftp" already exists
+setpwent;
+if ((getpwnam("ftp"))[0]) {
+   $have_passwd_entry = 1;
+}
+endpwent;
+
+exit(0) if ($configure && get("wu-ftpd/anonymous") eq "false");
+
+$home = get("wu-ftpd/homedir");
+if (not $have_passwd_entry) {
+  	$nocreatehome = " --no-create-home" if (-d $home);
+
+ 	if (getgrnam('ftp')) { 
+		$_ = "adduser --system --home $home$nocreatehome --ingroup ftp ftp"; 
+	} else { 
+		$_ = "adduser --system --home $home$nocreatehome --group ftp"; 
+	}
+
+	system($_ . " >&2") and die("$0: failed system command ``$_''\n");
+}
+
+$want_incoming = 1 if (get("wu-ftpd/create-incoming") eq "true");
+
+# don't let the user interrupt us
+&ignore_signals;
+
+# create the FTP home directory and its subdirectories
+@dirs = split(/\//, $home);
+shift(@dirs);    # remove the first element (it's empty because of the
+                 # leading slash in $home)
+pop(@dirs);      # remove the last element (we will create it later)
+$done = "";
+
+while(@dirs) {
+   my $element = shift(@dirs);
+   unless(-d "$done/$element") {
+     mkdir("$done/$element", $default_dir_mode);
+   }
+   $done = "$done/$element";
+}
+
+# if the directory exist fix the permissions otherwise create it
+chmod(0555, "$home") || mkdir("$home", 0555) ||
+	die "$0: can't mkdir $home: $!\n";
+chmod(0111, "$home/bin") || mkdir("$home/bin", 0111) ||
+	die "$0: can't mkdir $home/bin: $!\n";
+chmod(0111, "$home/lib") || mkdir("$home/lib", 0111) ||
+	die "$0: can't mkdir $home/lib: $!\n";
+chmod(0111, "$home/dev") || mkdir("$home/dev", 0111) ||
+	die "$0: can't mkdir $home/dev: $!\n";
+chmod(0111, "$home/etc") || mkdir("$home/etc", 0111) ||
+	die "$0: can't mkdir $home/etc: $!\n";
+chmod(0555, "$home/pub") || mkdir("$home/pub", 0555) ||
+	warn "$0: warning: can't mkdir $home/pub: $!\n";
+chown(0, 0, "$home", "$home/bin", "$home/lib", "$home/etc", "$home/pub", "$home/dev");
+
+if ($want_incoming and not $updatebin) {
+  chmod(0753, "$home/pub/incoming") || mkdir("$home/pub/incoming", 0753) ||
+	warn "$0: warning: can't mkdir $home/pub/incoming: $!\n";
+  chown(0, 0, "$home/pub/incoming");
+} elsif (not $want_incoming and -d "$home/pub/incoming") {
+  system("mv $home/pub/incoming $home/pub/incoming.disabled");
+  chmod(0000, "$home/pub/incoming.disabled");
+  print STDERR "The $home/pub/incoming directory has been disabled. You are advised to\ncheck $home/pub/incoming.disabled before removing it.\n\n";
+}
+
+my %bins;
+my @homebins = <$home/bin/*>;
+
+if (@homebins) {
+	foreach (@homebins) {
+		my ($src, $dst);
+		$dst = $_; /^.*\/(.*)/; $src = "`which $dst`";
+		-r $src and $bins{$src} = $dst;
+	}
+}
+
+foreach (@default_bins,@optbins) {
+	unless (exists $bins{$_}) {
+		my ($src, $dst);
+  		$src = $_; s/^.*\///; $dst = "$home/bin/$_";
+		$bins{$src} = $dst;
+	}
+}
+
+# copy the wanted binaries
+foreach (keys %bins) {
+	my ($src, $dst) = ($_, $bins{$_});
+	&copy_move($src, $dst) || die "$0: Failed to copy $src to $dst: $?\n";
+}
+
+# library check
+opendir(FTPBIN, "$home/bin");
+  @ftpfiles = readdir(FTPBIN);
+closedir(FTPBIN);
+
+foreach ((getlibs(<$home/bin/*>))) {
+	my ($src, $dst);
+	$src = $_; s/^.*\///; $dst = "$home/lib/$_";
+	&copy_move($src, $dst) || die "$0: Failed to copy $src to $dst: $?\n";
+}
+
+# copy the pathmsg file (if available)
+system("cp $pathmsg $home/etc/pathmsg") unless (-f "$home/etc/pathmsg");
+
+# copy the welcome.msg file (if available)
+system("cp $welcomemsg $home/welcome.msg") unless (-f "$home/welcome.msg");
+
+setpwent;
+my (undef, undef, $uid, $gid) = getpwnam("ftp");
+endpwent;
+
+# create the passwd file for the new anonymous FTP hierarchy
+if ( ! -f "$home/etc/passwd") {
+  open(FPASSWD,">$home/etc/passwd");
+    print FPASSWD "root:*:0:0:root::\n";
+    print FPASSWD "ftp:*:$uid:$gid:Anonymous FTP::\n";
+  close(FPASSWD);
+}
+
+# create the group file for the new anonymous FTP hierarchy
+if ( ! -f "$home/etc/group") {
+  open(FGROUP,">$home/etc/group");
+    print FGROUP "root\:\:0:\n";
+    print FGROUP "$group\:\:$gid:\n";
+  close(FGROUP);
+}
+
+# create a /dev/null for the new anonymous FTP hierarchy
+if ( ! -e "$home/dev/null") {
+  system("mknod $home/dev/null c 1 3");
+}
+
+# fix a few permissions
+chmod 0444, <$home/etc/*>;
+chmod 0111, <$home/bin/*>;
+chmod 0555, <$home/lib/*>;
+chmod 0555, <$home/lib/ld-linux*>;
+chmod 0666, "$home/dev/null";
+
+# check ftpusers
+if (get("wu-ftpd/ftpusers") eq "true") {
+	open (FFTPUSERS, "<$ftpusers");
+	my @ftpusers = <FFTPUSERS>;
+	my $tmpfile = `tempfile`;
+	chomp $tmpfile;
+
+	open (FTMPFILE, ">$tmpfile");
+	for (@ftpusers) {
+		/^(ftp|anonymous)$/	&& do { print FTMPFILE '#',$_; next; };
+	
+		print FTMPFILE;
+	}	
+	close FFTPUSERS;
+	close FTMPFILE;
+
+	my @cmd = ("mv", $tmpfile, $ftpusers);
+	system(@cmd) and die "can't overwrite $ftpusers";
+}
+
+print STDERR "The anonymous FTP user has been successfully set up.\n";
+# restore the default signal action. Not really necessary ...
+&restore_signals;
+
+exit 0;
+
+############################################################################
+
+sub usage {
+  print STDOUT <<EOF;
+Usage: $0 [OPTION]
+
+--group group         use this group for the anonymous FTP account
+--check-binaries      check whether the binaries and libraries of the
+                      FTP hierarchy should be updated or not (an exit
+                      status of 0 means no update required)
+--update-binaries     update binaries and libraries of the FTP hierarchy
+--help                display this help and exit
+--version             output version information and exit
+EOF
+  exit(0);
+}
+
+sub ignore_signals {
+  $SIG{'HUP'} = 'IGNORE';
+  $SIG{'INT'} = 'IGNORE';
+  $SIG{'QUIT'} = 'IGNORE';
+  $SIG{'TERM'} = 'IGNORE';
+}
+
+sub restore_signals {
+  $SIG{'HUP'} = 'DEFAULT';
+  $SIG{'INT'} = 'DEFAULT';
+  $SIG{'QUIT'} = 'DEFAULT';
+  $SIG{'TERM'} = 'DEFAULT';
+}
+
+sub findlib {
+    my $v = shift;
+    my @ld;
+    open(LD, "/etc/ld.so.conf");
+        chomp(@ld=<LD>);
+    close(LD);
+    unshift(@ld, ("/lib", "/usr/lib"));
+
+    while(@ld) {
+        $_ = shift(@ld);
+        return("$_/libc.so.$v") if (-f "$_/libc.so.$v");
+    }
+    return(0);
+}
+
+sub filetype {
+    # ($n_aout, $n_elf) = &filetype($base_directory, @filenames_without_path);
+    my($dir, @files) = @_;
+    my($n_aout, $n_elf, $string);
+    while(@files) {
+        $_ = shift(@files);
+        next if ($_ eq "." or $_ eq "..");
+        open(CH, "$dir/$_");
+        read(CH, $string, 4);
+        if ($string =~ m/\177ELF/) {
+           ++$n_elf;
+        } elsif ($string =~ m/..\144./) {
+           ++$n_aout;
+        }
+        close(CH);
+        undef($string);
+    }
+    return($n_aout, $n_elf);
+}
+
+sub getlibs {
+	my $file;
+	my %libs;
+	foreach $file (@_) {
+		foreach (`ldd $file`) { chomp;
+			my $lib;
+			/\s=>\s/ or next;
+			($lib) = /.*=>\s(.*?)\s/;
+			$libs{$lib} = 1;
+		}
+	}
+	# Hack: although it does not show up with ldd,
+	# libnss_files.so is required for file owner/groups to
+	# displayed for anonymous FTP.
+	#
+	# Commented out, since there's no easy way to find out what version
+	# of the library we need.
+	#  -- Chris Butler <chrisb@sandy.force9.co.uk>
+	#
+	# my $nnsv;
+	# for($nssv=1;$nssv<10;$nssv++) {
+	# 	if ( -f "/lib/libnss_files.so.$nssv") {
+	#		$libs{"/lib/libnss_files.so.$nssv"} = 1;
+	#	}
+	# }
+	return sort keys %libs;
+}
+
+sub checkbin {
+    # exit with error level 1 if the file formats of /bin/<something>
+    # and ~ftp/bin/<something> are different.
+    my($ftphome, $binls_elf, $ftpls_elf);
+	my @dynlinker = ();
+	my (@errors, @bins);
+    setpwent;
+    if ($ftphome = (getpwnam("ftp"))[7]) {
+		if (-d $ftphome) {
+
+			@errors = ();
+			foreach (@bins) {
+				my ($src, $dst);
+				$src = $_; /^.*\/(.*)/; $dst = "$ftphome/bin/$1";
+				-r $dst or push @errors, "ERROR: Can't find $dst.\n";
+			}
+			@errors and $! = 1, die @errors;
+
+			@errors = ();
+			foreach (@bins, @optbins) {
+				my ($src, $dst);
+				my ($srcmd5, $dstmd5);
+				$src = $_; /^.*\/(.*)/; $dst = "$ftphome/bin/$1";
+
+			   $srcmd5 = (split /\s/, `md5sum $src`, 2)[0];
+			   $dstmd5 = (split /\s/, `md5sum $dst`, 2)[0];
+
+			   ($srcmd5 eq $dstmd5) and next;
+			   push @errors, "$0: ERROR: md5 check failed for $dst\n";
+			}
+			@errors and $! = 1, die @errors;
+
+			opendir(D, "$ftphome/bin") or die("$0: Can't read $ftphome/bin: $!\n"); 
+			@_ = readdir(D); closedir(D);
+
+			@errors = ();
+			foreach (getlibs(<$ftphome/bin/*>)) {
+				/ld-linux/ and push @dynlinker, "$ftphome$_";
+				-f "$ftphome$_" or push @errors, "$0: Warning: $ftphome$_ not found.\n";
+			}
+		   @errors and $! = 1, die @errors;
+		}
+    }
+    endpwent;
+
+	# at the very last, if we went through ... we should check
+	# if the dyn loader is executable (2.0.34 needs this)
+	foreach (@dynlinker) {
+		-x $_ or push @errors, "$0: Dyn. Linker $_ not executable\n";
+	}
+	@errors and $! = 2, die @errors;
+    exit(0);
+}
+
+# First copy to dest.tmp then move to dest (for binaries)
+
+sub copy_move {
+	my ($src, $dst) = (shift, shift);
+	my @cmd;
+	my $tmpdst = "$dst.tmp";
+
+	@cmd = ("cp", $src, $tmpdst);
+	system(@cmd) and return undef; 
+	@cmd = ("mv", $tmpdst, $dst);
+	system(@cmd) and return undef;
+
+	return 1;
+}
+# vim:ts=4:sw=4:ai:aw:si:

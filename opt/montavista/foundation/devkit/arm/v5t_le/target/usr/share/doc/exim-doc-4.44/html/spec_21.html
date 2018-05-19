@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 21</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_20.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_22.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX1709"></a>
+<a name="IX1710"></a>
+<a name="IX1711"></a>
+<h1>
+<a name="CHAP21" href="spec_toc.html#TOC179">
+21. The queryprogram router
+</a></h1>
+<p>
+The <b>queryprogram</b> router routes an address by running an external command and
+acting on its output. This is an expensive way to route, and is intended mainly
+for use in lightly-loaded systems, or for performing experiments. However, if
+it is possible to use the precondition options (<tt>domains</tt>, <tt>local&#095;parts</tt>,
+etc) to skip this router for most addresses, it could sensibly be used in
+special cases, even on a busy host. There are the following private options:
+<a name="IX1712"></a>
+<hr></p>
+<a name="IX1713"></a>
+<h3>command</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option must be set. It specifies the command that is to be run. The
+command is split up into a command name and arguments, and then each is
+expanded separately (exactly as for a <b>pipe</b> transport, described in chapter
+<a href="spec_29.html">29</a>).
+<hr></p>
+<a name="IX1714"></a>
+<a name="IX1715"></a>
+<h3>command_group</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option specifies a gid to be set when running the command. It must be set
+if <tt>command&#095;user</tt> specifies a numerical uid. If it begins with a digit, it is
+interpreted as the numerical value of the gid. Otherwise it is looked up using
+<i>getgrnam()</i>.
+<hr></p>
+<a name="IX1716"></a>
+<a name="IX1717"></a>
+<h3>command_user</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option must be set. It specifies the uid which is set when running the
+command. If it begins with a digit it is interpreted as the numerical value of
+the uid. Otherwise, it is looked up using <i>getpwnam()</i> to obtain a value for
+the uid and, if <tt>command&#095;group</tt> is not set, a value for the gid also.
+<hr></p>
+<a name="IX1718"></a>
+<h3>current_directory</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; /<br>
+<p>
+This option specifies an absolute path which is made the current directory
+before running the command.
+<hr></p>
+<a name="IX1719"></a>
+<h3>timeout</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 1h<br>
+<p>
+If the command does not complete within the timeout period, its process group
+is killed and the message is frozen. A value of zero time specifies no
+timeout.
+<hr><br>
+</p>
+<p>
+The standard output of the command is connected to a pipe, which is read when
+the command terminates. It should consist of a single line of output,
+containing up to five fields, separated by white space. The first field is one
+of the following words (case-insensitive):
+</p>
+<ul>
+<li><p>
+<i>Accept</i>: routing succeeded; the remaining fields specify what to do (see
+below).
+</p>
+</li>
+<li><p>
+<i>Decline</i>: the router declines; pass the address to the next router, unless
+<tt>no&#095;more</tt> is set.
+</p>
+</li>
+<li><p>
+<i>Fail</i>: routing failed; do not pass the address to any more routers. Any
+subsequent text on the line is an error message. If the router is run as part
+of address verification during an incoming SMTP message, the message is
+included in the SMTP response.
+</p>
+</li>
+<li><p>
+<i>Defer</i>: routing could not be completed at this time; try again later. Any
+subsequent text on the line is an error message which is logged. It is not
+included in any SMTP response.
+</p>
+</li>
+<li><p>
+<i>Freeze</i>: the same as <i>defer</i>, except that the message is frozen.
+</p>
+</li>
+<li><p>
+<i>Pass</i>: pass the address to the next router (or the router specified by
+<tt>pass&#095;router</tt>), overriding <tt>no&#095;more</tt>.
+</p>
+</li>
+<li><p>
+<i>Redirect</i>: the message is redirected. The remainder of the line is a list of
+new addresses, which are routed independently, starting with the first router,
+or the router specified by <tt>redirect&#095;router</tt>, if set.
+</p>
+</li>
+</ul>
+<p>
+When the first word is <i>accept</i>, the remainder of the line consists of a
+number of keyed data values, as follows (split into two lines here, to fit on
+the page):
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>ACCEPT TRANSPORT=&#060;<em>transport</em>&#062; HOSTS=&#060;<em>list of hosts</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>       LOOKUP=byname|bydns DATA=&#060;<em>text</em>&#062;</tt><br>
+</p>
+<p>
+The data items can be given in any order, and all are optional. If no transport
+is included, the transport specified by the generic <tt>transport</tt> option is used.
+The list of hosts and the lookup type are needed only if the transport is an
+<b>smtp</b> transport that does not itself supply a list of hosts.
+</p>
+<p>
+The format of the list of hosts is the same as for the <b>manualroute</b> router. 
+As well as host names and IP addresses, it may contain names followed by
+<tt>/MX</tt> to specify sublists of hosts that are obtained by looking up MX
+records.
+</p>
+<p>
+If the lookup type is not specified, Exim behaves as follows when trying to 
+find an IP address for each host: First, a DNS lookup is done. If this yields
+anything other than <font size=-1>HOST&#095;NOT&#095;FOUND</font>, that result is used. Otherwise, Exim
+goes on to try a call to <i>getipnodebyname()</i> or <i>gethostbyname()</i>, and the
+result of the lookup is the result of that call.
+</p>
+<p>
+If the DATA field is set, its value is placed in the <tt>$address&#095;data</tt>
+variable. For example, this return line
+<pre>
+&nbsp;&nbsp;accept hosts=x1.y.example:x2.y.example data="rule1"
+</pre>
+</p>
+<p>
+routes the address to the default transport, with a host list containing two
+hosts. When the transport runs, the string &#147;rule1&#148; is in <tt>$address&#095;data</tt>.
+<hr>
+</p>
+<font size=2>
+<a href="spec_20.html">Previous</a>&nbsp;&nbsp;<a href="spec_22.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

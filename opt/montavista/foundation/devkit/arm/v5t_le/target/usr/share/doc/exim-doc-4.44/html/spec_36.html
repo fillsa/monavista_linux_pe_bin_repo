@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 36</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_35.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_37.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2314"></a>
+<a name="IX2315"></a>
+<a name="IX2316"></a>
+<a name="IX2317"></a>
+<a name="IX2318"></a>
+<a name="IX2319"></a>
+<h1>
+<a name="CHAP36" href="spec_toc.html#TOC257">
+36. The spa authenticator
+</a></h1>
+<p>
+The <b>spa</b> authenticator provides client support for Microsoft's <i>Secure
+Password Authentication</i> mechanism,
+which is also sometimes known as NTLM (NT LanMan). The code for client side of
+this authenticator was contributed by Marc Prud'hommeaux, and much of it is
+taken from the Samba project (<a href="http://www.samba.org">http://www.samba.org</a>). The code for the
+server side was subsequently contributed by Tom Kistner.
+</p>
+<p>
+The mechanism works as follows:
+</p>
+<ul>
+<li><p>
+After the <font size=-1>AUTH</font> command has been accepted, the client sends an SPA
+authentication request based on the user name and optional domain.
+</p>
+</li>
+<li><p>
+The server sends back a challenge.
+</p>
+</li>
+<li><p>
+The client builds a challenge response which makes use of the user's password
+and sends it to the server, which then accepts or rejects it.
+</p>
+</li>
+</ul>
+<p>
+Encryption is used to protect the password in transit.
+</p>
+<h2>
+<a name="SECT36.1" href="spec_toc.html#TOC258">
+36.1. Using spa as a server
+</a></h2>
+<p>
+The <b>spa</b> authenticator has just one server option:
+<a name="IX2320"></a>
+<hr></p>
+<a name="IX2321"></a>
+<a name="IX2322"></a>
+<h3>server_password</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option is expanded, and the result must be the cleartext password for the 
+authenticating user, whose name is at this point in <tt>$1</tt>. For example:
+<pre>
+&nbsp;&nbsp;spa:
+&nbsp;&nbsp;  driver = spa
+&nbsp;&nbsp;  public_name = NTLM
+&nbsp;&nbsp;  server_password = ${lookup{$1}lsearch{/etc/exim/spa_clearpass}}
+</pre>
+</p>
+<p>
+If the expansion is forced to fail, authentication fails. Any other expansion 
+failure causes a temporary error code to be returned.
+<hr><br>
+</p>
+<h2>
+<a name="SECT36.2" href="spec_toc.html#TOC259">
+36.2. Using spa as a client
+</a></h2>
+<p>
+The <b>spa</b> authenticator has the following client options:
+<a name="IX2323"></a>
+<hr></p>
+<a name="IX2324"></a>
+<h3>client_domain</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option specifies an optional domain for the authentication.
+<hr></p>
+<a name="IX2325"></a>
+<h3>client_password</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option specifies the user's password, and must be set.
+<hr></p>
+<a name="IX2326"></a>
+<h3>client_username</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option specifies the user name, and must be set.
+<hr><br>
+</p>
+<p>
+Here is an example of a configuration of this authenticator for use with the
+mail servers at <i>msn.com</i>:
+<pre>
+&nbsp;&nbsp;msn:
+&nbsp;&nbsp;  driver = spa
+&nbsp;&nbsp;  public_name = MSN
+&nbsp;&nbsp;  client_username = msn/msn_username
+&nbsp;&nbsp;  client_password = msn_plaintext_password
+&nbsp;&nbsp;  client_domain = DOMAIN_OR_UNSET
+</pre>
+<hr>
+</p>
+<font size=2>
+<a href="spec_35.html">Previous</a>&nbsp;&nbsp;<a href="spec_37.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

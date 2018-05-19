@@ -1,0 +1,165 @@
+README for a bunch of preemption latency test utilities
+
+Jun Sun, jsun@mvista.com
+10/23/2001
+
+OVERVIEW
+========
+
+This suite uses two virtual devices: /dev/delay, which introduces busy
+looping inside kernel, and /dev/ptimer, which regulates periodic task
+release.  By using /dev/ptimer we can measure the jitters due to 
+kernel preemption delay.  By using /dev/delay, we can artifically
+generate system calls with a specified in-kernel duration.
+
+The test collects the intervals between two consecutive instance
+releases while /dev/delay is accessed by another process.  Additional
+workload may be present.
+
+The collected data are then fitted with a Normal distribution curve.
+Then we can compare the preemption delay statistically.  We can also
+view the difference through gnuplot
+
+
+FILES
+=====
+
+Makefile generates the following targets.  Modify Makefile before you use it.
+
+delay.o
+	driver for /dev/delay.  You can do write() on /dev/delay.
+	It will do busy looping inside kernel for the specified number of
+	micro-seconds.
+
+	It is a module.
+
+	To create /dev/delay, su as root.  mknod /dev/delay c 241 0
+
+do_delay
+	A userland program that uses /dev/delay to create random
+	busy loopings inside kernel.
+
+	You can specify the percent of time in kernel (and therefore in
+	userland).  Yuo can specify the maximum number of microseconds
+	for a single syscall.
+
+	By default, it will spend 100% in kernel, and the maximum number
+	of syscall duration is 1024 usecs.
+
+ptimer.o
+	It is a module.
+
+	Driver for /dev/ptimer.
+
+	/dev/ptimer regulates the releases of a periodic task.  A periodic task
+	is determined by its phase (the jiffies at which first instance starts)
+	and its period (number of jiffies later when next instance should 
+	start).
+
+	A typically application would use ioctl() to set up period and
+	phase.  And then do a loop:
+
+		for(;;) {
+			read(ptimer, &count, sizeof(count));
+			
+			/* do jobs */
+		}
+
+	read() call will delay the process until next release point.
+	Various policies guide what should happen if read() is made *after*
+	next release point (an overrun case).  By default, read() does not 
+	cause any delay in overrun case.  In fact, it will accumulate
+	the number of misses releases in case of multiple instance overrun.
+
+	ptimer.c is implemented based on timer_bh, and thus is arch and
+	hardware independent.
+
+	To create /dev/ptimer, su as root.  mknod /dev/ptimer c 240 0
+
+read_ptimer
+	A test program of /dev/ptimer.
+
+do_ptimer
+	a test program that uses /dev/ptimer and measure the interval
+	between any two consecutive instance releases.  Essentially it
+	measures the jitters in releases.
+
+	Pass a single argument "realtime" will cause the test to be done
+	with a realtime priority (recommanded).
+
+	It produces an output data file "data"
+
+fitdata
+	Created from fitdata.cxx and statistic library.
+	
+	It reads the data produced by do_ptimer.  It will fit the data
+	with a Normal distribution.  Finally it will output the distribution
+	curve for the experiemental data, the fitting Normal distribution
+	and the density function of the fitting curve.  The output file
+	is "dist.data".
+
+
+HOW TO TEST
+===========
+
+1. start the target machine.
+
+2. insmod -f delay.o; insmod ptimer.o
+
+3. ./do_delay
+
+4. (optional) introduce some other workload
+
+5. [in another terminal] ./do_ptimer or ./do_ptimer realtime
+
+6. copy data file to the host machine.
+
+7. on the host machine, "fitdata data".
+
+8. use gnuplot to view curves if you want.  Refer to "gnuplot.cmd" file
+   for some useful gnuplot commonds.
+
+
+TEST RESULTS
+============
+
+Some test results are put under result1/ and result2/.
+
+machine: DDB5476 (MIPS), 166 MHz
+
+test1: same as 'HOW TO TEST' with no optional workload
+
+test2: same as test1 with another stress workload, whcih consists of
+	three FPU-intensive processes.  It introduces more jitters.
+
+Notations in filename:
+
+	prek : run under preemptive kernel
+	realtime : do_ptimer uses realtime priority
+	normal : no realtime priority nor preemptive kernel
+	.dist : the distribution and density data produced by fitdata
+	.data : the raw data
+	.gif : some output produced by gnuplot
+
+
+TODO
+====
+
+Apparently, we see
+
+. realtime case performs better than non-realtime case
+. preemptive kernel is much better than normal kernel
+
+However, in every test with preemptive kernel, I still see a couple of jitters 
+up to 300 micro-seconds.  What are those jitters?  Interrupt blocking time? 
+Taht long?
+
+
+CREDITS
+=======
+
+Many of ideas in this test suite are inspired or directly influenced by 
+
+	Jeremy Siegel, jsiegel@mvista.com
+	George Azinger, george@mvista.com
+	

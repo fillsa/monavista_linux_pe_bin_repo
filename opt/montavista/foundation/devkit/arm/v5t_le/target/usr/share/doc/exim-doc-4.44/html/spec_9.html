@@ -1,0 +1,1345 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 9</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_8.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_10.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX614"></a>
+<a name="IX615"></a>
+<a name="IX616"></a>
+<h1>
+<a name="CHAP9" href="spec_toc.html#TOC82">
+9. File and database lookups
+</a></h1>
+<p>
+Exim can be configured to look up data in files or databases as it processes
+messages. Two different kinds of syntax are used:
+</p>
+<ol>
+<li TYPE="1"><p>
+A string that is to be expanded may contain explicit lookup requests. These
+cause parts of the string to be replaced by data that is obtained from the 
+lookup. 
+</p>
+</li>
+<li TYPE="1"><p>
+Lists of domains, hosts, and email addresses can contain lookup requests as a
+way of avoiding excessively long linear lists. In this case, the data that is
+returned by the lookup is often (but not always) discarded; whether the lookup
+succeeds or fails is what really counts. These kinds of list are described in
+chapter <a href="spec_10.html">10</a>.
+</p>
+</li>
+</ol>
+<p>
+It is easy to confuse the two different kinds of lookup, especially as the
+lists that may contain the second kind are always expanded before being
+processed as lists. Therefore, they may also contain lookups of the first kind. 
+Be careful to distinguish between the following two examples:
+<pre>
+&nbsp;&nbsp;domains = ${lookup{$sender_host_address}lsearch{/some/file}}
+&nbsp;&nbsp;domains = lsearch;/some/file
+</pre>
+</p>
+<p>
+The first uses a string expansion, the result of which must be a domain list.
+String expansions are described in detail in chapter <a href="spec_11.html">11</a>. The
+expansion takes place first, and the file that is searched could contain lines
+like this:
+<pre>
+&nbsp;&nbsp;192.168.3.4: domain1 : domain2 : ...
+&nbsp;&nbsp;192.168.1.9: domain3 : domain4 : ...
+</pre>
+</p>
+<p>
+Thus, the result of the expansion is a list of domains (and possibly other 
+types of item that are allowed in domain lists).
+</p>
+<p>
+In the second case, the lookup is a single item in a domain list. It causes 
+Exim to use a lookup to see if the domain that is being processed can be found
+in the file. The file could contains lines like this:
+<pre>
+&nbsp;&nbsp;domain1: 
+&nbsp;&nbsp;domain2:
+</pre>
+</p>
+<p>
+Any data that follows the keys is not relevant when checking that the domain 
+matches the list item.
+</p>
+<p>
+It is possible to use both kinds of lookup at once. Consider a file containing 
+lines like this:
+<pre>
+&nbsp;&nbsp;192.168.5.6: lsearch;/another/file
+</pre>
+</p>
+<p>
+If the value of <tt>$sender&#095;host&#095;address</tt> is 192.168.5.6, expansion of the 
+first <tt>domains</tt> setting above generates the second setting, which therefore 
+causes a second lookup to occur.
+</p>
+<p>
+The rest of this chapter describes the different lookup types that are
+available. Any of them can be used in either of the circumstances described
+above. The syntax requirements for the two cases are described in chapters 
+<a href="spec_11.html">11</a> and <a href="spec_10.html">10</a>, respectively.
+</p>
+<a name="IX617"></a>
+<a name="IX618"></a>
+<h2>
+<a name="SECT9.1" href="spec_toc.html#TOC83">
+9.1. Lookup types
+</a></h2>
+<p>
+Two different styles of data lookup are implemented:
+</p>
+<ul>
+<li><p>
+The <i>single-key</i> style requires the specification of a file in which to look,
+and a single key to search for. The lookup type determines how the file is
+searched.
+</p>
+</li>
+<li><a name="IX619"></a>
+<p>
+The <i>query</i> style accepts a generalized database query.
+No particular key value is assumed by Exim for query-style lookups. You can
+use whichever Exim variable(s) you need to construct the database query.
+</p>
+</li>
+</ul>
+<p>
+The code for each lookup type is in a separate source file that is included in
+the binary of Exim only if the corresponding compile-time option is set. The
+default settings in <i>src/EDITME</i> are:
+<pre>
+&nbsp;&nbsp;LOOKUP_DBM=yes
+&nbsp;&nbsp;LOOKUP_LSEARCH=yes
+</pre>
+</p>
+<p>
+which means that only linear searching and DBM lookups are included by default.
+For some types of lookup (e.g. SQL databases), you need to install appropriate
+libraries and header files before building Exim.
+</p>
+<a name="IX620"></a>
+<a name="IX621"></a>
+<h2>
+<a name="SECT9.2" href="spec_toc.html#TOC84">
+9.2. Single-key lookup types
+</a></h2>
+<p>
+The following single-key lookup types are implemented:
+</p>
+<ul>
+<li><a name="IX622"></a>
+<a name="IX623"></a>
+<a name="IX624"></a>
+<p>
+<b>cdb</b>: The given file is searched as a Constant DataBase file, using the key
+string without a terminating binary zero. The cdb format is designed for
+indexed files that are read frequently and never updated, except by total
+re-creation. As such, it is particulary suitable for large files containing
+aliases or other indexed data referenced by an MTA. Information about cdb can
+be found in several places:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><a href="http://www.pobox.com/&#126;djb/cdb.html">http://www.pobox.com/&#126;djb/cdb.html</a><br>
+<tt>&nbsp;&nbsp;</tt><a href="ftp://ftp.corpit.ru/pub/tinycdb/">ftp://ftp.corpit.ru/pub/tinycdb/</a><br>
+<tt>&nbsp;&nbsp;</tt><a href="http://packages.debian.org/stable/utils/freecdb.html">http://packages.debian.org/stable/utils/freecdb.html</a><br>
+</p>
+<p>
+A cdb distribution is not needed in order to build Exim with cdb support,
+because the code for reading cdb files is included directly in Exim itself.
+However, no means of building or testing cdb files is provided with Exim, so
+you need to obtain a cdb distribution in order to do this.
+</p>
+</li>
+<li><a name="IX625"></a>
+<a name="IX626"></a>
+<a name="IX627"></a>
+<p>
+<a name="IX628"></a>
+<b>dbm</b>: Calls to DBM library functions are used to extract data from the given
+DBM file by looking up the record with the given key. A terminating binary
+zero is included in the key that is passed to the DBM library. See section
+<a href="spec_4.html#SECT4.3">4.3</a> for a discussion of DBM libraries.
+For all versions of Berkeley DB, Exim uses the <font size=-1>DB&#095;HASH</font> style of database 
+when building DBM files using the <tt>exim&#095;dbmbuild</tt> utility. However, when using 
+Berkeley DB versions 3 or 4, it opens existing databases for reading with the
+<font size=-1>DB&#095;UNKNOWN</font> option. This enables it to handle any of the types of database
+that the library supports, and can be useful for accessing DBM files created by 
+other applications. (For earlier DB versions, <font size=-1>DB&#095;HASH</font> is always used.)
+</p>
+</li>
+<li><a name="IX629"></a>
+<a name="IX630"></a>
+<a name="IX631"></a>
+<a name="IX632"></a>
+<a name="IX633"></a>
+<a name="IX634"></a>
+<p>
+<b>dbmnz</b>: This is the same as <b>dbm</b>, except that a terminating binary zero
+is not included in the key that is passed to the DBM library. You may need this
+if you want to look up data in files that are created by or shared with some
+other application that does not use terminating zeros. For example, you need to
+use <b>dbmnz</b> rather than <b>dbm</b> if you want to authenticate incoming SMTP
+calls using the passwords from Courier's <i>/etc/userdbshadow.dat</i> file. Exim's
+utility program for creating DBM files (<i>exim&#095;dbmbuild</i>) includes the zeros
+by default, but has an option to omit them (see section <a href="spec_46.html#SECT46.9">46.9</a>).
+</p>
+</li>
+<li><a name="IX635"></a>
+<a name="IX636"></a>
+<p>
+<b>dsearch</b>: The given file must be a directory; this is searched for a file
+whose name is the key. The key may not contain any forward slash characters.
+The result of a successful lookup is the name of the file. An example of how
+this lookup can be used to support virtual domains is given in section
+<a href="spec_42.html#SECT42.6">42.6</a>.
+</p>
+</li>
+<li><a name="IX637"></a>
+<a name="IX638"></a>
+<p>
+<font color=green>
+<b>iplsearch</b>: The given file is a text file containing keys and data. A key is
+terminated by a colon or white space or the end of the line. The keys in the
+file must be IP addresses, or IP addresses with CIDR masks. Keys that involve
+IPv6 addresses must be enclosed in quotes to prevent the first internal colon
+being interpreted as a key terminator. For example:
+<pre>
+&nbsp;&nbsp;1.2.3.4:           data for 1.2.3.4
+&nbsp;&nbsp;192.168.0.0/16     data for 192.168.0.0/16
+&nbsp;&nbsp;"abcd::cdab":      data for abcd::cdab
+&nbsp;&nbsp;"abcd:abcd::/32"   data for abcd:abcd::/32
+</pre>
+</p>
+<p>
+The key for an <b>iplsearch</b> lookup must be an IP address (without a mask). The
+file is searched linearly, using the CIDR masks where present, until a matching
+key is found. The first key that matches is used; there is no attempt to find a
+&#147;best&#148; match. Apart from the way the keys are matched, the processing for 
+<b>iplsearch</b> is the same as for <b>lsearch</b>.
+</p>
+<p>
+<b>Warning 1</b>: Unlike most other single-key lookup types, a file of data for
+<b>iplsearch</b> can <i>not</i> be turned into a DBM or cdb file, because those
+lookup types support only literal keys.
+</p>
+<p>
+<b>Warning 2</b>: In a host list, you must always use <b>net-iplsearch</b> so that 
+the implicit key is the host's IP address rather than its name (see section
+<a href="spec_10.html#SECT10.12">10.12</a>).
+</font>
+</p>
+</li>
+<li><a name="IX639"></a>
+<a name="IX640"></a>
+<a name="IX641"></a>
+<p>
+<b>lsearch</b>: The given file is a text file that is searched linearly for a
+line beginning with the search key, terminated by a colon or white space or the
+end of the line. The first occurrence that is found in the file is used. White
+space between the key and the colon is permitted. The remainder of the line,
+with leading and trailing white space removed, is the data. This can be
+continued onto subsequent lines by starting them with any amount of white
+space, but only a single space character is included in the data at such a
+junction. If the data begins with a colon, the key must be terminated by a
+colon, for example:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>baduser:  :fail:</tt><br>
+</p>
+<p>
+Empty lines and lines beginning with &#035; are ignored, even if they occur in the
+middle of an item. This is the traditional textual format of alias files. Note
+that the keys in an <b>lsearch</b> file are literal strings. There is no
+wildcarding of any kind.
+<a name="IX642"></a>
+</p>
+<p>
+In most <b>lsearch</b> files, keys are not required to contain colons 
+<font color=green>
+or &#035; characters, or
+</font>
+whitespace. However, if you need this feature, it is available. If a key begins
+with a doublequote character, it is terminated only by a matching quote (or end
+of line), and the normal escaping rules apply to its contents (see section
+<a href="spec_6.html#SECT6.12">6.12</a>). An optional colon is permitted after quoted keys (exactly as
+for unquoted keys). There is no special handling of quotes for the data part of
+an <b>lsearch</b> line.
+</p>
+</li>
+<li><a name="IX643"></a>
+<a name="IX644"></a>
+<a name="IX645"></a>
+<p>
+<b>nis</b>: The given file is the name of a NIS map, and a NIS lookup is done with
+the given key, without a terminating binary zero. There is a variant called
+<b>nis0</b> which does include the terminating binary zero in the key. This is
+reportedly needed for Sun-style alias files. Exim does not recognize NIS
+aliases; the full map names must be used.
+</p>
+</li>
+<li><a name="IX646"></a>
+<a name="IX647"></a>
+<a name="IX648"></a>
+<a name="IX649"></a>
+<p>
+<b>wildlsearch</b> or <b>nwildlsearch</b>: These search a file linearly, like
+<b>lsearch</b>, but instead of being interpreted as a literal string, each key may
+be wildcarded. The difference between these two lookup types is that for
+<b>wildlsearch</b>, each key in the file is string-expanded before being used, 
+whereas for <b>nwildlsearch</b>, no expansion takes place.
+</p>
+<p>
+Like <b>lsearch</b>, the testing is done case-insensitively. The following forms
+of wildcard are recognized:
+</p>
+<ol>
+<li TYPE="1"><p>
+The string may begin with an asterisk to mean &#147;begins with&#148;. For example:
+<pre>
+&nbsp;&nbsp;*.a.b.c       data for anything.a.b.c
+&nbsp;&nbsp;*fish         data for anythingfish
+</pre>
+</p>
+</li>
+<li TYPE="1"><p>
+The string may begin with a circumflex to indicate a regular expression. For
+example, for <b>wildlsearch</b>:
+<pre>
+&nbsp;&nbsp;^\N\d+\.a\.b\N    data for &#060;digits&#062;.a.b
+</pre>
+</p>
+<p>
+Note the use of <tt>&#092;N</tt> to disable expansion of the contents of the regular 
+expression. If you are using <b>nwildlsearch</b>, where the keys are not 
+string-expanded, the equivalent entry is:
+<pre>
+&nbsp;&nbsp;^\d+\.a\.b        data for &#060;digits&#062;.a.b
+</pre>
+</p>
+<p>
+If the regular expression contains white space or colon characters, you must
+either quote it (see <b>lsearch</b> above), or represent these characters in other
+ways. For example, <tt>&#092;s</tt> can be used for white space and <tt>&#092;x3A</tt> for a
+colon. This may be easier than quoting, because if you quote, you have to
+escape all the backslashes inside the quotes.
+</p>
+</li>
+<li TYPE="1"><p>
+Although I cannot see it being of much use, the general matching function
+that is used to implement 
+<b>(n)wildlsearch</b> 
+means that the string may begin with a lookup name terminated by a semicolon,
+and followed by lookup data. For example:
+<pre>
+&nbsp;&nbsp;cdb;/some/file  data for keys that match the file
+</pre>
+</p>
+<p>
+The data that is obtained from the nested lookup is discarded.
+</p>
+</li>
+</ol>
+<p>
+Keys that do not match any of these patterns are interpreted literally. The
+continuation rules for the data are the same as for <b>lsearch</b>, and keys may
+be followed by optional colons.
+</p>
+<p>
+<b>Warning</b>: Unlike most other single-key lookup types, a file of data for
+<b>(n)wildlsearch</b> can <i>not</i> be turned into a DBM or cdb file, because those
+lookup types support only literal keys.
+</p>
+</li>
+</ul>
+<a name="IX650"></a>
+<a name="IX651"></a>
+<h2>
+<a name="SECT9.3" href="spec_toc.html#TOC85">
+9.3. Query-style lookup types
+</a></h2>
+<p>
+The supported query-style lookup types are listed below. Further details about 
+many of them are given in later sections.
+</p>
+<ul>
+<li><a name="IX652"></a>
+<a name="IX653"></a>
+<p>
+<b>dnsdb</b>: This does a DNS search for a record whose domain name is the supplied
+query. The resulting data is the contents of the record. See section
+<a href="spec_9.html#SECT9.9">9.9</a>.
+</p>
+</li>
+<li><a name="IX654"></a>
+<a name="IX655"></a>
+<p>
+<b>ibase</b>: This does a lookup in an Interbase database.
+</p>
+</li>
+<li><a name="IX656"></a>
+<a name="IX657"></a>
+<p>
+<b>ldap</b>: This does an LDAP lookup using a query in the form of a URL, and
+returns attributes from a single entry. There is a variant called <b>ldapm</b>
+that permits values from multiple entries to be returned. A third variant
+called <b>ldapdn</b> returns the Distinguished Name of a single entry instead of
+any attribute values. See section <a href="spec_9.html#SECT9.10">9.10</a>.
+</p>
+</li>
+<li><a name="IX658"></a>
+<a name="IX659"></a>
+<p>
+<b>mysql</b>: The format of the query is an SQL statement that is passed to a MySQL
+database. See section <a href="spec_9.html#SECT9.17">9.17</a>.
+</p>
+</li>
+<li><a name="IX660"></a>
+<a name="IX661"></a>
+<p>
+<b>nisplus</b>: This does a NIS+ lookup using a query that can specify the name of
+the field to be returned. See section <a href="spec_9.html#SECT9.16">9.16</a>.
+</p>
+</li>
+<li><a name="IX662"></a>
+<a name="IX663"></a>
+<p>
+<b>oracle</b>: The format of the query is an SQL statement that is passed to an
+Oracle database. See section <a href="spec_9.html#SECT9.17">9.17</a>.
+</p>
+</li>
+<li><a name="IX664"></a>
+<a name="IX665"></a>
+<p>
+<b>passwd</b> is a query-style lookup with queries that are just user names. The
+lookup calls <i>getpwnam()</i> to interrogate the system password data, and on
+success, the result string is the same as you would get from an <b>lsearch</b>
+lookup on a traditional <i>/etc/passwd file</i>, though with <tt>*</tt> for the
+password value. For example:
+<pre>
+&nbsp;&nbsp;*:42:42:King Rat:/home/kr:/bin/bash
+</pre>
+</p>
+</li>
+<li><a name="IX666"></a>
+<a name="IX667"></a>
+<p>
+<b>pgsql</b>: The format of the query is an SQL statement that is passed to a
+PostgreSQL database. See section <a href="spec_9.html#SECT9.17">9.17</a>.
+</p>
+</li>
+<li><p>
+<b>testdb</b>: This is a lookup type that is used for testing Exim. It is
+not likely to be useful in normal operation.
+</p>
+</li>
+<li><a name="IX668"></a>
+<a name="IX669"></a>
+<p>
+<b>whoson</b>: <i>Whoson</i> (<a href="http://whoson.sourceforge.net">http://whoson.sourceforge.net</a>) is a proposed
+Internet protocol that allows Internet server programs to check whether a
+particular (dynamically allocated) IP address is currently allocated to a known
+(trusted) user and, optionally, to obtain the identity of the said user. In
+Exim, this can be used to implement &#147;POP before SMTP&#148; checking using ACL
+statements such as
+<pre>
+&nbsp;&nbsp;require condition = \
+&nbsp;&nbsp;  ${lookup whoson {$sender_host_address}{yes}{no}}
+</pre>
+</p>
+<p>
+The query consists of a single IP address. The value returned is the name of
+the authenticated user.
+</p>
+</li>
+</ul>
+<a name="IX670"></a>
+<h2>
+<a name="SECT9.4" href="spec_toc.html#TOC86">
+9.4. Temporary errors in lookups
+</a></h2>
+<p>
+Lookup functions can return temporary error codes if the lookup cannot be
+completed. For example, a NIS or LDAP database might be unavailable. For this
+reason, it is not advisable to use a lookup that might do this for critical
+options such as a list of local domains.
+</p>
+<p>
+When a lookup cannot be completed in a router or transport, delivery
+of the message (to the relevant address) is deferred, as for any other
+temporary error. In other circumstances Exim may assume the lookup has failed,
+or may give up altogether.
+</p>
+<a name="IX671"></a>
+<a name="IX672"></a>
+<a name="IX673"></a>
+<a name="IX674"></a>
+<a name="IX675"></a>
+<h2>
+<a name="SECT9.5" href="spec_toc.html#TOC87">
+9.5. Default values in single-key lookups
+</a></h2>
+<p>
+In this context, a &#147;default value&#148; is a value specified by the administrator
+that is to be used if a lookup fails.
+</p>
+<p>
+If &#147;*&#148; is added to a single-key lookup type (for example, <tt>lsearch*</tt>) and
+the initial lookup fails, the key &#147;*&#148; is looked up in the file to provide
+a default value. See also the section on partial matching below.
+<a name="IX676"></a>
+<a name="IX677"></a>
+<a name="IX678"></a>
+</p>
+<p>
+Alternatively, if &#147;*&#064;&#148; is added to a single-key lookup type (for example
+<tt>dbm*&#064;</tt>) then, if the initial lookup fails and the key contains an &#064;
+character, a second lookup is done with everything before the last &#064; replaced
+by *. This makes it possible to provide per-domain defaults in alias files
+that include the domains in the keys. If the second lookup fails (or doesn't
+take place because there is no &#064; in the key), &#147;*&#148; is looked up.
+For example, a <b>redirect</b> router might contain:
+<pre>
+&nbsp;&nbsp;data = ${lookup{$local_part@$domain}lsearch*@{/etc/mixed-aliases}}
+</pre>
+</p>
+<p>
+Suppose the address that is being processed is <i>jane&#064;eyre.example</i>. Exim 
+looks up these keys, in this order:
+<pre>
+&nbsp;&nbsp;jane@eyre.example
+&nbsp;&nbsp;*@eyre.example
+&nbsp;&nbsp;*
+</pre>
+</p>
+<p>
+The data is taken from whichever key it finds first. <b>Note</b>: in an 
+<b>lsearch</b> file, this does not mean the first of these keys in the file. A 
+complete scan is done for each key, and only if it is not found at all does 
+Exim move on to try the next key.
+</p>
+<a name="IX679"></a>
+<a name="IX680"></a>
+<a name="IX681"></a>
+<a name="IX682"></a>
+<a name="IX683"></a>
+<h2>
+<a name="SECT9.6" href="spec_toc.html#TOC88">
+9.6. Partial matching in single-key lookups
+</a></h2>
+<p>
+The normal operation of a single-key lookup is to search the file for an exact
+match with the given key. However, in a number of situations where domains are
+being looked up, it is useful to be able to do partial matching. In this case,
+information in the file that has a key starting with &#147;*.&#148; is matched by any
+domain that ends with the components that follow the full stop. For example, if
+a key in a DBM file is
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>*.dates.fict.example</tt><br>
+</p>
+<p>
+then when partial matching is enabled this is matched by (amongst others)
+<i>2001.dates.fict.example</i> and <i>1984.dates.fict.example</i>. It is also matched
+by <i>dates.fict.example</i>, if that does not appear as a separate key in the
+file.
+</p>
+<p>
+<b>Note</b>: Partial matching is not available for query-style lookups. It is 
+also not available for any lookup items in address lists (see section
+<a href="spec_10.html#SECT10.18">10.18</a>).
+</p>
+<p>
+Partial matching is implemented by doing a series of separate lookups using
+keys constructed by modifying the original subject key. This means that it can
+be used with any of the single-key lookup types, provided that
+partial matching keys 
+beginning with a special prefix (default &#147;*.&#148;) are included in the data file.
+Keys in the file that do not begin with the prefix are matched only by
+unmodified subject keys when partial matching is in use.
+</p>
+<p>
+Partial matching is requested by adding the string &#147;partial-&#148; to the front of
+the name of a single-key lookup type, for example, <tt>partial-dbm</tt>. When this is
+done, the subject key is first looked up unmodified; if that fails, &#147;*.&#148;
+is added at the start of the subject key, and it is looked up again. If that
+fails, further lookups are tried with dot-separated components removed
+from the start of the subject key, one-by-one, and &#147;*.&#148; added on the front of
+what remains.
+</p>
+<p>
+A minimum number of two non-* components are required. This can be adjusted
+by including a number before the hyphen in the search type. For example,
+<tt>partial3-lsearch</tt> specifies a minimum of three non-* components in the
+modified keys. Omitting the number is equivalent to &#147;partial2-&#148;. If the subject
+key is <i>2250.dates.fict.example</i> then the following keys are looked up when
+the minimum number of non-* components is two:
+<pre>
+&nbsp;&nbsp;2250.dates.fict.example
+&nbsp;&nbsp;*.2250.dates.fict.example
+&nbsp;&nbsp;*.dates.fict.example
+&nbsp;&nbsp;*.fict.example
+</pre>
+</p>
+<p>
+As soon as one key in the sequence is successfully looked up, the lookup
+finishes. 
+<a name="IX684"></a>
+<a name="IX685"></a>
+</p>
+<p>
+The use of &#147;*.&#148; as the partial matching prefix is a default that can be 
+changed. The motivation for this feature is to allow Exim to operate with file
+formats that are used by other MTAs. A different prefix can be supplied in
+parentheses instead of the hyphen after &#147;partial&#148;. For example:
+<pre>
+&nbsp;&nbsp;domains = partial(.)lsearch;/some/file
+</pre>
+</p>
+<p>
+In this example, if the domain is <i>a.b.c</i>, the sequence of lookups is
+<tt>a.b.c</tt>, <tt>.a.b.c</tt>, and <tt>.b.c</tt> (the default minimum of 2 non-wild 
+components is unchanged). The prefix may consist of any punctuation characters
+other than a closing parenthesis. It may be empty, for example:
+<pre>
+&nbsp;&nbsp;domains = partial1()cdb;/some/file
+</pre>
+</p>
+<p>
+For this example, if the domain is <i>a.b.c</i>, the sequence of lookups is
+<tt>a.b.c</tt>, <tt>b.c</tt>, and <tt>c</tt>.
+</p>
+<p>
+If &#147;partial0&#148; is specified, what happens at the end (when the lookup with just
+one non-wild component has failed, and the original key is shortened right down
+to the null string) depends on the prefix:
+</p>
+<ul>
+<li><p>
+If the prefix has zero length, the whole lookup fails.
+</p>
+</li>
+<li><p>
+If the prefix has length 1, a lookup for just the prefix is done. For
+example, the final lookup for &#147;partial0(.)&#148; is for <tt>.</tt> alone.
+</p>
+</li>
+<li><p>
+Otherwise, if the prefix ends in a dot, the dot is removed, and the
+remainder is looked up. With the default prefix, therefore, the final lookup is 
+for &#147;*&#148; on its own.
+</p>
+</li>
+<li><p>
+Otherwise, the whole prefix is looked up.
+</p>
+</li>
+</ul>
+<p>
+If the search type ends in &#147;*&#148; or &#147;*&#064;&#148; (see section
+<a href="spec_9.html#SECT9.5">9.5</a> above), the search for an ultimate default that this
+implies happens after all partial lookups have failed. If &#147;partial0&#148; is
+specified, adding &#147;*&#148; to the search type has no effect with the default
+prefix, because the &#147;*&#148; key is already included in the sequence of partial
+lookups. However, there might be a use for lookup types such as
+&#147;partial0(.)lsearch*&#148;.
+</p>
+<p>
+The use of &#147;*&#148; in lookup partial matching differs from its use as a wildcard
+in domain lists and the like. Partial matching works only in terms of
+dot-separated components; a key such as <tt>*fict.example</tt>
+in a database file is useless, because the asterisk in a partial matching
+subject key is always followed by a dot.
+</p>
+<a name="IX686"></a>
+<a name="IX687"></a>
+<h2>
+<a name="SECT9.7" href="spec_toc.html#TOC89">
+9.7. Lookup caching
+</a></h2>
+<p>
+An Exim process
+caches the most recent lookup result on a per-file basis for single-key
+lookup types, and keeps the relevant files open. In some types of configuration
+this can lead to many files being kept open for messages with many recipients.
+To avoid hitting the operating system limit on the number of simultaneously
+open files, Exim closes the least recently used file when it needs to open more
+files than its own internal limit, which can be changed via the
+<tt>lookup&#095;open&#095;max</tt> option.
+</p>
+<p>
+For query-style lookups, a single data cache per lookup type is kept. The files
+are closed and the caches flushed at strategic points during delivery &#150; for
+example, after all routing is complete.
+</p>
+<a name="IX688"></a>
+<a name="IX689"></a>
+<h2>
+<a name="SECT9.8" href="spec_toc.html#TOC90">
+9.8. Quoting lookup data
+</a></h2>
+<p>
+When data from an incoming message is included in a query-style lookup, there
+is the possibility of special characters in the data messing up the syntax of
+the query. For example, a NIS+ query that contains
+<pre>
+&nbsp;&nbsp;[name=$local_part]
+</pre>
+</p>
+<p>
+will be broken if the local part happens to contain a closing square bracket.
+For NIS+, data can be enclosed in double quotes like this:
+<pre>
+&nbsp;&nbsp;[name="$local_part"]
+</pre>
+</p>
+<p>
+but this still leaves the problem of a double quote in the data. The rule for
+NIS+ is that double quotes must be doubled. Other lookup types have different
+rules, and to cope with the differing requirements, an expansion operator
+of the following form is provided:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#036;&#123;quote&#095;&#060;<em>lookup-type</em>&#062;:&#060;<em>string</em>&#062;&#125;</tt><br>
+</p>
+<p>
+For example, the safest way to write the NIS+ query is
+<pre>
+&nbsp;&nbsp;[name="${quote_nisplus:$local_part}"]
+</pre>
+</p>
+<p>
+See chapter <a href="spec_11.html">11</a> for full coverage of string expansions. The quote
+operator can be used for all lookup types, but has no effect for single-key
+lookups, since no quoting is ever needed in their key strings.
+</p>
+<a name="IX690"></a>
+<a name="IX691"></a>
+<a name="IX692"></a>
+<h2>
+<a name="SECT9.9" href="spec_toc.html#TOC91">
+9.9. More about dnsdb
+</a></h2>
+<p>
+The <b>dnsdb</b> lookup type uses the DNS as its database. A query consists of a
+record type and a domain name, separated by an equals sign. For example, an
+expansion string could contain:
+<pre>
+&nbsp;&nbsp;${lookup dnsdb{mx=a.b.example}{$value}fail}
+</pre>
+</p>
+<p>
+<font color=green>
+The supported record types are A, CNAME, MX, NS, PTR, SRV, and TXT, 
+</font>
+and, when Exim is compiled with IPv6 support, AAAA (and A6 if that is also
+configured). If no type is given, TXT is assumed. When the type is PTR, the
+address should be given as normal; it is converted to the necessary inverted
+format internally. For example:
+<pre>
+&nbsp;&nbsp;${lookup dnsdb{ptr=192.168.4.5}{$value}fail}
+</pre>
+<a name="IX693"></a>
+</p>
+<p>
+<a name="IX694"></a>
+For MX records, both the preference value and the host name are returned,
+separated by a space. 
+<font color=green>
+For SRV records, the priority, weight, port, and host name are returned, 
+separated by spaces. For any record type,
+</font>
+if multiple records are found (or, for A6 lookups, if a single record leads to
+multiple addresses), the data is returned as a concatenation, separated by
+newlines. The order, of course, depends on the DNS resolver.
+</p>
+<a name="IX695"></a>
+<a name="IX696"></a>
+<a name="IX697"></a>
+<h2>
+<a name="SECT9.10" href="spec_toc.html#TOC92">
+9.10. More about LDAP
+</a></h2>
+<p>
+The original LDAP implementation came from the University of Michigan; this has
+become &#147;Open LDAP&#148;, and there are now two different releases. Another
+implementation comes from Netscape, and Solaris 7 and subsequent releases
+contain inbuilt LDAP support. Unfortunately, though these are all compatible at
+the lookup function level, their error handling is different. For this reason
+it is necessary to set a compile-time variable when building Exim with LDAP, to
+indicate which LDAP library is in use. One of the following should appear in
+your <i>Local/Makefile</i>:
+<pre>
+&nbsp;&nbsp;LDAP_LIB_TYPE=UMICHIGAN
+&nbsp;&nbsp;LDAP_LIB_TYPE=OPENLDAP1
+&nbsp;&nbsp;LDAP_LIB_TYPE=OPENLDAP2
+&nbsp;&nbsp;LDAP_LIB_TYPE=NETSCAPE
+&nbsp;&nbsp;LDAP_LIB_TYPE=SOLARIS
+</pre>
+</p>
+<p>
+If <font size=-1>LDAP&#095;LIB&#095;TYPE</font> is not set, Exim assumes <tt>OPENLDAP1</tt>, which has the
+same interface as the University of Michigan version.
+</p>
+<p>
+There are three LDAP lookup types in Exim. These behave slightly differently in
+the way they handle the results of a query:
+</p>
+<ul>
+<li><p>
+<b>ldap</b> requires the result to contain just one entry; if there are more, it
+gives an error.
+</p>
+</li>
+<li><p>
+<b>ldapdn</b> also requires the result to contain just one entry, but it is the
+Distinguished Name that is returned rather than any attribute values.
+</p>
+</li>
+<li><p>
+<b>ldapm</b> permits the result to contain more than one entry; the attributes from
+all of them are returned.
+</p>
+</li>
+</ul>
+<p>
+For <b>ldap</b> and <b>ldapm</b>, if a query finds only entries with no attributes,
+Exim behaves as if the entry did not exist, and the lookup fails. The format of
+the data returned by a successful lookup is described in the next section.
+First we explain how LDAP queries are coded.
+</p>
+<a name="IX698"></a>
+<h2>
+<a name="SECT9.11" href="spec_toc.html#TOC93">
+9.11. Format of LDAP queries
+</a></h2>
+<p>
+An LDAP query takes the form of a URL as defined in RFC 2255. For example, in
+the configuration of a <b>redirect</b> router one might have this setting:
+<pre>
+&nbsp;&nbsp;data = ${lookup ldap \
+&nbsp;&nbsp;  {ldap:///cn=$local_part,o=University%20of%20Cambridge,\
+&nbsp;&nbsp;  c=UK?mailbox?base?}}
+</pre>
+<a name="IX699"></a>
+</p>
+<p>
+The URL may begin with <tt>ldap</tt> or <tt>ldaps</tt> if your LDAP library supports
+secure (encrypted) LDAP connections. The second of these ensures that an
+encrypted TLS connection is used.
+</p>
+<a name="IX700"></a>
+<h2>
+<a name="SECT9.12" href="spec_toc.html#TOC94">
+9.12. LDAP quoting
+</a></h2>
+<p>
+Two levels of quoting are required in LDAP queries, the first for LDAP itself
+and the second because the LDAP query is represented as a URL. Furthermore,
+within an LDAP query, two different kinds of quoting are required. For this 
+reason, there are two different LDAP-specific quoting operators.
+</p>
+<p>
+The <tt>quote&#095;ldap</tt> operator is designed for use on strings that are part of
+filter specifications. Conceptually, it first does the following conversions on
+the string:
+<pre>
+&nbsp;&nbsp;*   =&#062;   \2A
+&nbsp;&nbsp;(   =&#062;   \28
+&nbsp;&nbsp;)   =&#062;   \29
+&nbsp;&nbsp;\   =&#062;   \5C
+</pre>
+</p>
+<p>
+in accordance with RFC 2254. The resulting string is then quoted according
+to the rules for URLs, that is, all characters except
+<pre>
+&nbsp;&nbsp;! $ ' - . _ ( ) * +
+</pre>
+</p>
+<p>
+are converted to their hex values, preceded by a percent sign. For example:
+<pre>
+&nbsp;&nbsp;${quote_ldap: a(bc)*, a&#060;yz&#062;; }
+</pre>
+</p>
+<p>
+yields
+<pre>
+&nbsp;&nbsp;%20a%5C28bc%5C29%5C2A%2C%20a%3Cyz%3E%3B%20
+</pre>
+</p>
+<p>
+Removing the URL quoting, this is (with a leading and a trailing space):
+<pre>
+&nbsp;&nbsp;a\28bc\29\2A, a&#060;yz&#062;;
+</pre>
+</p>
+<p>
+The <tt>quote&#095;ldap&#095;dn</tt> operator is designed for use on strings that are part of
+base DN specifications in queries. Conceptually, it first converts the string
+by inserting a backslash in front of any of the following characters:
+<pre>
+&nbsp;&nbsp;, + " \ &#060; &#062; ;
+</pre>
+</p>
+<p>
+It also inserts a backslash before any leading spaces or &#035; characters, and
+before any trailing spaces. (These rules are in RFC 2253.) The resulting string
+is then quoted according to the rules for URLs. For example:
+<pre>
+&nbsp;&nbsp;${quote_ldap_dn: a(bc)*, a&#060;yz&#062;; } 
+</pre>
+</p>
+<p>
+yields
+<pre>
+&nbsp;&nbsp;%5C%20a(bc)*%5C%2C%20a%5C%3Cyz%5C%3E%5C%3B%5C%20
+</pre>
+</p>
+<p>
+Removing the URL quoting, this is (with a trailing space):
+<pre>
+&nbsp;&nbsp;\ a(bc)*\, a\&#060;yz\&#062;\;\
+</pre>
+</p>
+<p>
+There are some further comments about quoting in the section on LDAP 
+authentication below.
+</p>
+<a name="IX701"></a>
+<h2>
+<a name="SECT9.13" href="spec_toc.html#TOC95">
+9.13. LDAP connections
+</a></h2>
+<p>
+The connection to an LDAP server may either be over TCP/IP, or, when OpenLDAP
+is in use, via a Unix domain socket. The example given above does not specify
+an LDAP server. A server that is reached by TCP/IP can be specified in a query
+by starting it with
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>ldap://&#060;<em>hostname</em>&#062;:&#060;<em>port</em>&#062;/...</tt><br>
+</p>
+<p>
+If the port (and preceding colon) are omitted, the standard LDAP port (389) is
+used. When no server is specified in a query, a list of default servers is
+taken from the <tt>ldap&#095;default&#095;servers</tt> configuration option. This supplies a
+colon-separated list of servers which are tried in turn until one successfully
+handles a query, or there is a serious error. Successful handling either
+returns the requested data, or indicates that it does not exist. Serious errors
+are syntactical, or multiple values when only a single value is expected.
+Errors which cause the next server to be tried are connection failures, bind
+failures, and timeouts.
+</p>
+<p>
+For each server name in the list, a port number can be given. The standard way
+of specifing a host and port is to use a colon separator (RFC 1738). Because
+<tt>ldap&#095;default&#095;servers</tt> is a colon-separated list, such colons have to be
+doubled. For example
+<pre>
+&nbsp;&nbsp;ldap_default_servers = ldap1.example.com::145:ldap2.example.com
+</pre>
+</p>
+<p>
+If <tt>ldap&#095;default&#095;servers</tt> is unset, a URL with no server name is passed
+to the LDAP library with no server name, and the library's default (normally
+the local host) is used.
+</p>
+<p>
+If you are using the OpenLDAP library, you can connect to an LDAP server using
+a Unix domain socket instead of a TCP/IP connection. This is specified by using
+<tt>ldapi</tt> instead of <tt>ldap</tt> in LDAP queries. What follows here applies only
+to OpenLDAP. If Exim is compiled with a different LDAP library, this feature is
+not available.
+</p>
+<p>
+For this type of connection, instead of a host name for the server, a pathname
+for the socket is required, and the port number is not relevant. The pathname
+can be specified either as an item in <tt>ldap&#095;default&#095;servers</tt>, or inline in
+the query. In the former case, you can have settings such as
+<pre>
+&nbsp;&nbsp;ldap_default_servers = /tmp/ldap.sock : backup.ldap.your.domain
+</pre>
+</p>
+<p>
+When the pathname is given in the query, you have to escape the slashes as
+<tt>%2F</tt> to fit in with the LDAP URL syntax. For example:
+<pre>
+&nbsp;&nbsp;${lookup ldap {ldapi://%2Ftmp%2Fldap.sock/o=...
+</pre>
+</p>
+<p>
+When Exim processes an LDAP lookup and finds that the &#147;hostname&#148; is really
+a pathname, it uses the Unix domain socket code, even if the query actually
+specifies <tt>ldap</tt> or <tt>ldaps</tt>. In particular, no encryption is used for a
+socket connection. This behaviour means that you can use a setting of
+<tt>ldap&#095;default&#095;servers</tt> such as in the example above with traditional <tt>ldap</tt>
+or <tt>ldaps</tt> queries, and it will work. First, Exim tries a connection via
+the Unix domain socket; if that fails, it tries a TCP/IP connection to the
+backup host.
+</p>
+<p>
+If an explicit <tt>ldapi</tt> type is given in a query when a host name is
+specified, an error is diagnosed. However, if there are more items in
+<tt>ldap&#095;default&#095;servers</tt>, they are tried. In other words:
+</p>
+<ul>
+<li><p>
+Using a pathname with <tt>ldap</tt> or <tt>ldaps</tt> forces the use of the Unix domain
+interface.
+</p>
+</li>
+<li><p>
+Using <tt>ldapi</tt> with a host name causes an error. 
+</p>
+</li>
+</ul>
+<p>
+Using <tt>ldapi</tt> with no host or path in the query, and no setting of
+<tt>ldap&#095;default&#095;servers</tt>, does whatever the library does by default.
+</p>
+<a name="IX702"></a>
+<h2>
+<a name="SECT9.14" href="spec_toc.html#TOC96">
+9.14. LDAP authentication and control information
+</a></h2>
+<p>
+The LDAP URL syntax provides no way of passing authentication and other control
+information to the server. To make this possible, the URL in an LDAP query may
+be preceded by any number of &#147;&#060;<em>name</em>&#062;=&#060;<em>value</em>&#062;&#148; settings, separated by
+spaces. If a value contains spaces it must be enclosed in double quotes, and
+when double quotes are used, backslash is interpreted in the usual way inside
+them. 
+</p>
+<p>
+The following names are recognized:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>CONNECT     </tt>set a connection timeout<br>
+<tt>&nbsp;&nbsp;</tt><tt>DEREFERENCE </tt>set the dereferencing parameter<br>
+<tt>&nbsp;&nbsp;</tt><tt>USER        </tt>set the DN, for authenticating the LDAP bind<br>
+<tt>&nbsp;&nbsp;</tt><tt>PASS        </tt>set the password, likewise<br>
+<tt>&nbsp;&nbsp;</tt><tt>SIZE        </tt>set the limit for the number of entries returned<br>
+<tt>&nbsp;&nbsp;</tt><tt>TIME        </tt>set the maximum waiting time for a query<br>
+</p>
+<p>
+The value of the <font size=-1>DEREFERENCE</font> parameter must be one of the words &#147;never&#148;, 
+&#147;searching&#148;, &#147;finding&#148;, or &#147;always&#148;.
+</p>
+<p>
+Here is an example of an LDAP query in an Exim lookup that uses some of these
+values. This is a single line, folded for ease of reading:
+<pre>
+&nbsp;&nbsp;${lookup ldap
+&nbsp;&nbsp;  {user="cn=manager,o=University of Cambridge,c=UK" pass=secret
+&nbsp;&nbsp;  ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=foo)}
+&nbsp;&nbsp;  {$value}fail}
+</pre>
+</p>
+<p>
+The encoding of spaces as %20 is a URL thing which should not be done for any
+of the auxiliary data. Exim configuration settings that include lookups which
+contain password information should be preceded by &#147;hide&#148; to prevent non-admin
+users from using the <i>-bP</i> option to see their values.
+</p>
+<p>
+The auxiliary data items may be given in any order. The default is no
+connection timeout (the system timeout is used), no user or password, no limit
+on the number of entries returned, and no time limit on queries.
+</p>
+<p>
+The time limit for connection is given in seconds; zero means use the default.
+This facility is available in Netscape SDK 4.1; it may not be available in
+other LDAP implementations. Exim uses the given value if
+<font size=-1>LDAP&#095;X&#095;OPT&#095;CONNECT&#095;TIMEOUT</font> is defined in the LDAP headers.
+</p>
+<p>
+When a DN is quoted in the <font size=-1>USER=</font> setting for LDAP authentication, Exim
+removes any URL quoting that it may contain before passing it LDAP. Apparently
+some libraries do this for themselves, but some do not. Removing the URL
+quoting has two advantages:
+</p>
+<ul>
+<li><p>
+It makes it possible to use the same <tt>quote&#095;ldap&#095;dn</tt> expansion for <font size=-1>USER=</font>
+DNs as with DNs inside actual queries.
+</p>
+</li>
+<li><p>
+It permits spaces inside <font size=-1>USER=</font> DNs. 
+</p>
+</li>
+</ul>
+<p>
+For example, a setting such as
+<pre>
+&nbsp;&nbsp;USER=cn=${quote_ldap_dn:$1}
+</pre>
+</p>
+<p>
+should work even if <tt>$1</tt> contains spaces.
+</p>
+<p>
+Expanded data for the <font size=-1>PASS=</font> value should be quoted using the <tt>quote</tt> 
+expansion operator, rather than the LDAP quote operators. The only reason this 
+field needs quoting is to ensure that it conforms to the Exim syntax, which 
+does not allow unquoted spaces. For example:
+<pre>
+&nbsp;&nbsp;PASS=${quote:$3}
+</pre>
+</p>
+<p>
+The LDAP authentication mechanism can be used to check passwords as part of
+SMTP authentication. See the <tt>ldapauth</tt> expansion string condition in chapter
+<a href="spec_11.html">11</a>.
+</p>
+<a name="IX703"></a>
+<h2>
+<a name="SECT9.15" href="spec_toc.html#TOC97">
+9.15. Format of data returned by LDAP
+</a></h2>
+<p>
+The <b>ldapdn</b> lookup type returns the Distinguished Name from a single entry as
+a sequence of values, for example
+<pre>
+&nbsp;&nbsp;cn=manager, o=University of Cambridge, c=UK
+</pre>
+</p>
+<p>
+The <b>ldap</b> lookup type generates an error if more than one entry matches the
+search filter, whereas <b>ldapm</b> permits this case, and inserts a newline in the
+result between the data from different entries. It is possible for multiple
+values to be returned for both <b>ldap</b> and <b>ldapm</b>, but in the former case you
+know that whatever values are returned all came from a single entry in the
+directory.
+</p>
+<p>
+In the common case where you specify a single attribute in your LDAP query, the
+result is not quoted, and does not contain the attribute name. If the attribute
+has multiple values, they are separated by commas.
+</p>
+<p>
+If you specify multiple attributes, the result contains space-separated, quoted
+strings, each preceded by the attribute name and an equals sign. Within the
+quotes, the quote character, backslash, and newline are escaped with
+backslashes, and commas are used to separate multiple values for the attribute.
+Apart from the escaping, the string within quotes takes the same form as the
+output when a single attribute is requested. Specifying no attributes is the
+same as specifying all of an entry's attributes.
+</p>
+<p>
+Here are some examples of the output format. The first line of each pair is an
+LDAP query, and the second is the data that is returned. The attribute called
+<tt>attr1</tt> has two values, whereas <tt>attr2</tt> has only one value:
+<pre>
+&nbsp;&nbsp;ldap:///o=base?attr1?sub?(uid=fred)
+&nbsp;&nbsp;value1.1, value1.2
+&nbsp;&nbsp;
+&nbsp;&nbsp;ldap:///o=base?attr2?sub?(uid=fred)
+&nbsp;&nbsp;value two
+&nbsp;&nbsp;
+&nbsp;&nbsp;ldap:///o=base?attr1,attr2?sub?(uid=fred)
+&nbsp;&nbsp;attr1="value1.1, value1.2" attr2="value two"
+&nbsp;&nbsp;
+&nbsp;&nbsp;ldap:///o=base??sub?(uid=fred)
+&nbsp;&nbsp;objectClass="top" attr1="value1.1, value1.2" attr2="value two"
+</pre>
+</p>
+<p>
+The <tt>extract</tt> operator in string expansions can be used to pick out individual
+fields from data that consists of <em>key</em>=<em>value</em> pairs. You can make use
+of Exim's <i>-be</i> option to run expansion tests and thereby check the results of
+LDAP lookups.
+</p>
+<a name="IX704"></a>
+<a name="IX705"></a>
+<h2>
+<a name="SECT9.16" href="spec_toc.html#TOC98">
+9.16. More about NIS+
+</a></h2>
+<p>
+NIS+ queries consist of a NIS+ <i>indexed name</i> followed by an optional colon
+and field name. If this is given, the result of a successful query is the
+contents of the named field; otherwise the result consists of a concatenation
+of <i>field-name=field-value</i> pairs, separated by spaces. Empty values and
+values containing spaces are quoted. For example, the query
+<pre>
+&nbsp;&nbsp;[name=mg1456],passwd.org_dir
+</pre>
+</p>
+<p>
+might return the string
+<pre>
+&nbsp;&nbsp;name=mg1456 passwd="" uid=999 gid=999 gcos="Martin Guerre"
+&nbsp;&nbsp;home=/home/mg1456 shell=/bin/bash shadow=""
+</pre>
+</p>
+<p>
+(split over two lines here to fit on the page), whereas
+<pre>
+&nbsp;&nbsp;[name=mg1456],passwd.org_dir:gcos
+</pre>
+</p>
+<p>
+would just return
+<pre>
+&nbsp;&nbsp;Martin Guerre
+</pre>
+</p>
+<p>
+with no quotes. A NIS+ lookup fails if NIS+ returns more than one table entry
+for the given indexed key. The effect of the <tt>quote&#095;nisplus</tt> expansion
+operator is to double any quote characters within the text.
+</p>
+<a name="IX706"></a>
+<a name="IX707"></a>
+<a name="IX708"></a>
+<a name="IX709"></a>
+<a name="IX710"></a>
+<a name="IX711"></a>
+<a name="IX712"></a>
+<a name="IX713"></a>
+<h2>
+<a name="SECT9.17" href="spec_toc.html#TOC99">
+9.17. More about MySQL, PostgreSQL, Oracle, and Interbase
+</a></h2>
+<p>
+If any MySQL, PostgreSQL, Oracle, or Interbase lookups are used, the
+<tt>mysql&#095;servers</tt>, <tt>pgsql&#095;servers</tt>, <tt>oracle&#095;servers</tt>, or <tt>ibase&#095;servers</tt>
+option (as appropriate) must be set to a colon-separated list of server
+information. Each item in the list is a slash-separated list of four items:
+host name, database name, user name, and password. In the case of Oracle, the
+host name field is used for the &#147;service name&#148;, and the database name field is
+not used and should be empty. For example:
+<pre>
+&nbsp;&nbsp;hide oracle_servers = oracle.plc.example//ph10/abcdwxyz
+</pre>
+</p>
+<p>
+Because password data is sensitive, you should always precede the setting with
+&#147;hide&#148;, to prevent non-admin users from obtaining the setting via the <i>-bP</i>
+option. Here is an example where two MySQL servers are listed:
+<pre>
+&nbsp;&nbsp;hide mysql_servers = localhost/users/root/secret:\
+&nbsp;&nbsp;                     otherhost/users/root/othersecret
+</pre>
+</p>
+<p>
+For MySQL and PostgreSQL, a host may be specified as &#060;<em>name</em>&#062;:&#060;<em>port</em>&#062; but
+because this is a colon-separated list, the colon has to be doubled.
+</p>
+<p>
+For each query, these parameter groups are tried in order until a connection
+and a query succeeds. Queries for these databases are SQL statements, so an
+example might be
+<pre>
+&nbsp;&nbsp;${lookup mysql{select mailbox from users where id='ph10'}{$value}fail}
+</pre>
+</p>
+<p>
+If the result of the query contains more than one field, the data for
+each field in the row is returned, preceded by its name, so the result
+of
+<pre>
+&nbsp;&nbsp;${lookup pgsql{select home,name from users where id='ph10'}{$value}}
+</pre>
+</p>
+<p>
+might be
+<pre>
+&nbsp;&nbsp;home=/home/ph10 name="Philip Hazel"
+</pre>
+</p>
+<p>
+Values containing spaces and empty values are double quoted, with embedded
+quotes escaped by a backslash.
+</p>
+<p>
+If the result of the query contains just one field, the value is passed back
+verbatim, without a field name, for example:
+<pre>
+&nbsp;&nbsp;Philip Hazel
+</pre>
+</p>
+<p>
+If the result of the query yields more than one row, it is all concatenated,
+with a newline between the data for each row.
+</p>
+<p>
+The <tt>quote&#095;mysql</tt>, <tt>quote&#095;pgsql</tt>, and <tt>quote&#095;oracle</tt> expansion operators
+convert newline, tab, carriage return, and backspace to &#092;n, &#092;t, &#092;r, and &#092;b
+respectively, and the characters single-quote, double-quote, and backslash
+itself are escaped with backslashes. The <tt>quote&#095;pgsql</tt> expansion operator, in
+addition, escapes the percent and underscore characters. This cannot be done
+for MySQL because these escapes are not recognized in contexts where these
+characters are not special.
+</p>
+<h2>
+<a name="SECT9.18" href="spec_toc.html#TOC100">
+9.18. Special MySQL features
+</a></h2>
+<p>
+For MySQL, an empty host name or the use of &#147;localhost&#148; in <tt>mysql&#095;servers</tt>
+causes a connection to the server on the local host by means of a Unix domain
+socket. An alternate socket can be specified in parentheses. The full syntax of
+each item in <tt>mysql&#095;servers</tt> is:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#060;<em>hostname</em>&#062;&#058;&#058;&#060;<em>port</em>&#062;(&#060;<em>socket name</em>&#062;)/&#060;<em>database</em>&#062;/&#060;<em>user</em>&#062;/&#060;<em>password</em>&#062;</tt><br>
+</p>
+<p>
+Any of the three sub-parts of the first field can be omitted. For normal use on
+the local host it can be left blank or set to just &#147;localhost&#148;.
+</p>
+<p>
+No database need be supplied &#150; but if it is absent here, it must be given in
+the queries.
+</p>
+<p>
+If a MySQL query is issued that does not request any data (an insert, update,
+or delete command), the result of the lookup is the number of rows affected.
+</p>
+<h2>
+<a name="SECT9.19" href="spec_toc.html#TOC101">
+9.19. Special PostgreSQL features
+</a></h2>
+<p>
+PostgreSQL lookups can also use Unix domain socket connections to the database.
+This is usually faster and costs less CPU time than a TCP/IP connection.
+However it can be used only if the mail server runs on the same machine as the
+database server. A configuration line for PostgreSQL via Unix domain sockets
+looks like this:
+<pre>
+&nbsp;&nbsp;hide pgsql_servers = (/tmp/.s.PGSQL.5432)/db/user/password : ...
+</pre>
+</p>
+<p>
+In other words, instead of supplying a host name, a path to the socket is
+given. The path name is enclosed in parentheses so that its slashes aren't
+visually confused with the delimiters for the other server parameters.
+</p>
+<p>
+If a PostgreSQL query is issued that does not request any data (an insert,
+update, or delete command), the result of the lookup is the number of rows
+affected.
+<hr>
+</p>
+<font size=2>
+<a href="spec_8.html">Previous</a>&nbsp;&nbsp;<a href="spec_10.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

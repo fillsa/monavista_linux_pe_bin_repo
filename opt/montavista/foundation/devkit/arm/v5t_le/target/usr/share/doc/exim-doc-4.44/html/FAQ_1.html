@@ -1,0 +1,431 @@
+<html>
+<head>
+<title>The Exim FAQ Section 1</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_0.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_2.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC92">1. BUILDING AND INSTALLING</a></h2>
+<p>
+<a name="TOC93" href="FAQ.html#TOC93">Q0101:</a>&nbsp;&nbsp;I'm having a problem with an Exim RPM.
+</p>
+<p>
+<font color="#00BB00">A0101:</font>&nbsp;&nbsp;Normally the thing to do if you have a problem with an RPM package is
+to contact the person who built the package first, not the person who
+made the software that's in the package.  You can usually find out who
+made a package using the following command:
+</p>
+<pre>
+   rpm --query --package --queryformat '%{PACKAGER}\n' &#60;rpm-package-file&#62;</pre>
+<p>
+where &#60;<i>rpm-package-file</i>&#62; is the actual file, e.g. <i>exim-3.03-2.i386.rpm</i>.
+Or, if the package is installed on your system:
+</p>
+<pre>
+   rpm --query --queryformat '%{PACKAGER}\n' &#60;package-name&#62;</pre>
+<p>
+where &#60;<i>package-name</i>&#62; is the name component of the package, e.g. <tt>exim</tt>.
+If the packager is unable or unwilling to help, only then should you
+contact the actual author or associated mailing list of the software.
+</p>
+<p>
+If you discover through the querying process that you can't tell who
+the person (or company or group) is who built the package, or that they
+no longer exist at the given address, then you should reconsider
+whether you want a package from an unknown source on your system.
+</p>
+<p>
+If you discover through the querying process that you yourself are the
+person who built the package, then you should either (a) contact the
+author or associated mailing list, or (b) reconsider whether you ought
+to be building and distributing RPM packages of software you don't
+understand.
+</p>
+<p>
+Similar rules of thumb govern other binary package formats, including
+debs, tarballs, and POSIX packages.
+</p>
+<p>
+<a name="TOC94" href="FAQ.html#TOC94">Q0102:</a>&nbsp;&nbsp;I can't get Exim to compile with Berkeley DB version 2.x or 3.x.
+</p>
+<p>
+<font color="#00BB00">A0102:</font>&nbsp;&nbsp;Have you set <tt>"USE_DB=yes</tt>" in <i>Local/Makefile</i>? This causes Exim to use the
+native interface to the DBM library instead of the compatibility
+interface, which needs a header called <i>ndbm.h</i> that may not exist on your
+system.
+</p>
+<p>
+<a name="TOC95" href="FAQ.html#TOC95">Q0103:</a>&nbsp;&nbsp;I'm getting an <i>undefined symbol</i> error for <tt>hosts_ctl</tt> when I try to
+build Exim. (On some systems this error is <i>undefined reference to
+'hosts_ctl'</i>.)
+</p>
+<p>
+<font color="#00BB00">A0103:</font>&nbsp;&nbsp;You should either remove the definition of <small>USE_TCP_WRAPPERS</small> or add
+<tt>-lwrap</tt> to your <small>EXTRALIBS</small> setting in Local/Makefile.
+</p>
+<p>
+<a name="TOC96" href="FAQ.html#TOC96">Q0104:</a>&nbsp;&nbsp;I'm about to upgrade to a new Exim release. Do I need to ensure the
+spool is empty, or take any other special action?
+</p>
+<p>
+<font color="#00BB00">A0104:</font>&nbsp;&nbsp;It depends on where you are coming from.
+</p>
+<p>
+(1) &nbsp;If you are changing to release 4.00 or later from a release prior to
+4.00, you will need to make changes to the run time configuration file.
+See the file <i>doc/Exim4.upgrade</i> for details. If you are coming from
+before release 3.00, you should also see <i>doc/Exim3.upgrade</i>.
+</p>
+<p>
+(2) &nbsp;If you are upgrading from an Exim 4 release to a later release, you
+do not need to take special action. New releases are made backwards
+compatible with old spool files and hints databases, so that upgrading
+can be done on a running system. All that should be necessary is to
+install a new binary and then HUP the daemon.
+</p>
+<p>
+<a name="TOC97" href="FAQ.html#TOC97">Q0105:</a>&nbsp;&nbsp;What does the error <i>install-info: command not found</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0105:</font>&nbsp;&nbsp;You have set <small>INFO_DIRECTORY</small> in your <i>Local/Makefile</i>, and Exim is trying
+to install the Texinfo documentation, but cannot find the command called
+<i>install-info</i>. If you have a version of Texinfo prior to 3.9, you
+should upgrade. Otherwise, check your installation of Texinfo to see why
+the <i>install-info</i> command is not available.
+</p>
+<p>
+<a name="TOC98" href="FAQ.html#TOC98">Q0106:</a>&nbsp;&nbsp;Exim doesn't seem to be recognizing my operating system type correctly,
+and so is failing to build.
+</p>
+<p>
+<font color="#00BB00">A0106:</font>&nbsp;&nbsp;Run the command <tt>scripts/os-type -generic</tt>. The output should be one of
+the known OS types, and should correspond to your operating system. You
+can see which OS are supported by obeying <tt>ls OS/Makefile-*</tt> and looking
+at the file name suffixes.
+</p>
+<p>
+If there is a discrepancy, it means that the script is failing to
+interpret the output from the <tt>uname</tt> command correctly, or that the
+output is wrong. Meanwhile, you can build Exim by obeying
+</p>
+<pre>
+   EXIM_OSTYPE=xxxx make</pre>
+<p>
+instead of just <tt>make</tt>, provided you are running a Bourne-compatible
+shell, or otherwise by setting <small>EXIM_OSTYPE</small> correctly in your
+environment. It is probably best to start again from a clean
+distribution, to avoid any wreckage left over from the failed attempt.
+</p>
+<p>
+<a name="TOC99" href="FAQ.html#TOC99">Q0107:</a>&nbsp;&nbsp;Exim fails to build, complaining about the absence of the <tt>killpg</tt>
+function.
+</p>
+<p>
+<font color="#00BB00">A0107:</font>&nbsp;&nbsp;This function should be present in all modern flavours of Unix. If you
+are using an older version, you should be able to get round the problem
+by inserting
+</p>
+<pre>
+   #define killpg(pgid,sig)   kill(-(pgid),sig)</pre>
+<p>
+into the file called <i>OS/os.h-xxx</i>, where xxx identifies your operating
+system, and is the output of the command <tt>scripts/os-type -generic</tt>.
+</p>
+<p>
+<a name="TOC100" href="FAQ.html#TOC100">Q0108:</a>&nbsp;&nbsp;I'm getting an unresolved symbol <tt>ldap_is_ldap_url</tt> when trying to build
+Exim.
+</p>
+<p>
+<font color="#00BB00">A0108:</font>&nbsp;&nbsp;You must have specified <tt>LOOKUP_LDAP=yes</tt> in the configuration. Have you
+remembered to set <tt>-lldap</tt> somewhere (e.g. in <small>LOOKUP_LIBS</small>)? You need that
+in order to get the LDAP library scanned when linking.
+</p>
+<p>
+<a name="TOC101" href="FAQ.html#TOC101">Q0109:</a>&nbsp;&nbsp;I'm getting an unresolved symbol <tt>mysql_close</tt> when trying to build Exim.
+</p>
+<p>
+<font color="#00BB00">A0109:</font>&nbsp;&nbsp;You must have specified <tt>LOOKUP_MYSQL=yes</tt> in the configuration. Have you
+remembered to set <tt>-lmysqlclient</tt> somewhere (e.g. in <small>LOOKUP_LIBS</small>)? You
+need that in order to get the MySQL library scanned when linking.
+</p>
+<p>
+<a name="TOC102" href="FAQ.html#TOC102">Q0110:</a>&nbsp;&nbsp;I'm trying to build Exim with PAM support. I have included <tt>-lpam</tt> in
+<small>EXTRALIBS</small>, but I'm still getting a linking error:
+</p>
+<pre>
+   /lib/libpam.so: undefined reference to `dlerror'
+   /lib/libpam.so: undefined reference to `dlclose'
+   /lib/libpam.so: undefined reference to `dlopen'
+   /lib/libpam.so: undefined reference to `dlsym'</pre>
+<p>
+<font color="#00BB00">A0110:</font>&nbsp;&nbsp;Add <tt>-ldl</tt> to <small>EXTRALIBS</small>. In some systems these dynamic loading functions
+are in their own library.
+</p>
+<p>
+<a name="TOC103" href="FAQ.html#TOC103">Q0111:</a>&nbsp;&nbsp;I'm getting the error <i>db.h: No such file or directory</i> when I try to
+build Exim.
+</p>
+<p>
+<font color="#00BB00">A0111:</font>&nbsp;&nbsp;This problem has been seen with RedHat 7.0, but could also happen in
+other environments. If your system is using the DB library, you
+need to install the DB development package in order to build Exim.
+The package is called something like <tt>db3-devel-3.1.14-16.i386.rpm</tt> for
+Linux systems, but you should check which version of DB you have
+installed (current releases are DB 4).
+</p>
+<p>
+<a name="TOC104" href="FAQ.html#TOC104">Q0112:</a>&nbsp;&nbsp;I'm getting the error <i>/usr/bin/ld: cannot find -ldb</i> when I try to
+build Exim.
+</p>
+<p>
+<font color="#00BB00">A0112:</font>&nbsp;&nbsp;This is probably the same problem as <a href="FAQ_1.html#TOC103">Q0111</a>.
+</p>
+<p>
+<a name="TOC105" href="FAQ.html#TOC105">Q0113:</a>&nbsp;&nbsp;I've compiled Exim and I've managed to start it but there was one
+problem - it always complained that <i>libmsqlclient.so.10</i> was not found,
+even though this file is in <i>/usr/local/lib/mysql/</i>.
+</p>
+<p>
+<font color="#00BB00">A0113:</font>&nbsp;&nbsp;Solaris: ensure you have this in your <i>Local/Makefile</i>:
+</p>
+<pre>
+   LOOKUP_LIBS=-L/usr/local/lib/mysql -R/usr/local/lib/mysql</pre>
+<p>
+Net/Open/FreeBSD: Run this command (or ensure it gets run automatically
+at boot time):
+</p>
+<pre>
+   ldconfig -m /usr/local/lib/mysql</pre>
+<p>
+Linux: add <i>/usr/local/lib/mysql</i> to <i>/etc/ld.so.conf</i> and re-run <i>ldconfig</i>.
+Alternatively, add
+</p>
+<pre>
+   -Wl,-rpath -Wl,/usr/local/lib/mysql</pre>
+<p>
+to EXTRA_LIBS and  then re-link (this is similar to the Solaris solution
+above). This will probably also work on other systems that use GNU
+Binutils.
+</p>
+<p>
+<a name="TOC106" href="FAQ.html#TOC106">Q0114:</a>&nbsp;&nbsp;How can I remove Sendmail from my system? I've built Exim and run <tt>make
+install</tt>, but it still doesn't seem to be fully operational.
+</p>
+<p>
+<font color="#00BB00">A0114:</font>&nbsp;&nbsp;If you are running FreeBSD, see <a href="FAQ_21.html#TOC368">Q9201</a>. Otherwise, you need to arrange
+that whichever of the paths <i>/usr/sbin/sendmail</i> or <i>/usr/lib/sendmail</i>
+exists on your system is changed to refer to Exim. For example, you
+could use these commands (as <i>root</i>):
+</p>
+<pre>
+   mv /usr/sbin/sendmail /usr/sbin/sendmail.original
+   chmod u-s /usr/sbin/sendmail.original
+   ln -s /path/to/exim /usr/sbin/sendmail</pre>
+<p>
+The second command removes the setuid privilege from the old MTA, as a
+general safety precaution. In the third command, substitute the actual
+path to the Exim binary for <i>/path/to/exim</i>.
+</p>
+<p>
+<a name="TOC107" href="FAQ.html#TOC107">Q0115:</a>&nbsp;&nbsp;What does <i>Can't open <i>../scripts/newer</i>: No such file or directory</i>
+mean? I got it while trying to build Exim.
+</p>
+<p>
+<font color="#00BB00">A0115:</font>&nbsp;&nbsp;You are using FreeBSD, or another OS that has a <i>make</i> command which
+tries to optimize the running of commands. Exim's <i>Makefile</i> contains
+targets with sequential commands like this:
+</p>
+<pre>
+   buildpcre:
+     @cd pcre; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" \
+       CFLAGS="$(CFLAGS) $(PCRE_CFLAGS)" \
+       RANLIB="$(RANLIB)" HDRS="$(PHDRS)" \
+       INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"
+     @if $(SHELL) $(SCRIPTS)/newer pcre/libpcre.a exim; then \
+       /bin/rm -f exim eximon.bin; fi</pre>
+<p>
+The second command assumes that the <tt>cd pcre</tt> in the first command is
+no longer in effect. If you have <tt>-j3</tt> in your default set of
+<tt>MAKEFLAGS</tt>, FreeBSD <i>make</i> tries to optimize, and ends up up with both
+commands in the same shell process. The result is that <tt>$(SCRIPTS)</tt>
+(which has a value of <tt>../scripts</tt>) is not found.
+</p>
+<p>
+The simplest solution is to force <i>make</i> to use backwards compatibility
+mode with each command in its own shell, by using the <tt>-B</tt> flag. To
+ensure that this happens throughout the build, it's best to export it in
+your environment:
+</p>
+<pre>
+ 	 MAKEFLAGS='-B'
+	 export MAKEFLAGS
+	 make</pre>
+<p>
+<a name="TOC108" href="FAQ.html#TOC108">Q0116:</a>&nbsp;&nbsp;I have tried to build Exim with Berkeley DB 3 and 4, but I always get
+errors.
+</p>
+<p>
+<font color="#00BB00">A0116:</font>&nbsp;&nbsp;One common problem, especially when you have several different versions
+of BDB installed on the same host, is that the header files and library
+files for BDB are not in a standard place. You therefore need to tell
+Exim where they are, by setting INCLUDE and DBMLIB in your
+<i>Local/Makefile</i>. For example, I use this on my workstation when
+I want to build with DB 4.1:
+</p>
+<pre>
+   INCLUDE=-I/opt/local/include/db-4.1
+   DBMLIB=/opt/local/lib/db-4.1/libdb.a</pre>
+<p>
+Specifying the complete library file like this will cause it to be
+statically linked with Exim. You'll have to check to see where these
+files are on your system. For example, on FreeBSD 5, the header is in
+<i>/usr/local/include/db4</i> and the library is in <i>/usr/local/lib</i> and
+called <i>libdb4</i>. In that environment, you could use:
+</p>
+<pre>
+   INCLUDE=-I/usr/local/include/db4
+   DBMLIB=-L/usr/local/lib -ldb4</pre>
+<p>
+This time, DBMLIB is specifying the library directory (<i>/usr/local/lib</i>)
+and the name of the library (<i>db4</i>) separately. The name of the actual
+library file is <i>/usr/local/lib/libdb4.something</i>. If the library was
+compiled for dynamic linking, that will be used.
+</p>
+<p>
+<a name="TOC109" href="FAQ.html#TOC109">Q0117:</a>&nbsp;&nbsp;Is there a quick walk-through of an Exim install from source anywhere?
+</p>
+<p>
+<font color="#00BB00">A0117:</font>&nbsp;&nbsp;Here! This is a contribution from a RedHat user, somewhat edited. On
+other operating systems things may be slightly different, but the
+general approach is the same.
+</p>
+<p>
+(1) &nbsp;Install the db needed for Exim. This needs to be done first if you
+don't have a DBM library installed. Go to <a href="http://www.sleepycat.com">http://www.sleepycat.com</a>
+and download <i>db-4.1.25.tar.gz</i>, or whatever the current release is.
+Then:
+</p>
+<pre>
+   gunzip db-4.1.25.tar.gz
+   tar -xvf db-4.1.25.tar
+   cd db-4.1.25
+   cd build_unix
+   ../dist/configure
+   make
+   make install</pre>
+<p>
+(2) &nbsp;Add a user for use by Exim, unless you want to use an existing user
+such as <i>mail</i>:
+</p>
+<pre>
+   adduser exim</pre>
+<p>
+(3) &nbsp;Now you can prepare to build Exim. Go to <a href="http://www.exim.org">http://www.exim.org</a> or
+one of its mirrors, or the master ftp site
+<a href="ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/exim4">ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/exim4</a>, and download
+<i>exim-4.20.tar.gz</i> or whatever the current release is. Then:
+</p>
+<pre>
+   gunzip exim-4.20.tar.gz
+   tar -xvf exim-4.20.tar
+   cd exim-4.20
+   cp src/EDITME Local/Makefile
+   cp exim_monitor/EDITME Local/eximon.conf</pre>
+<p>
+(4) &nbsp;Edit <i>Local/Makefile</i>:
+</p>
+<p>
+Comment out EXIM_MONITOR= unless you want to install the Exim
+monitor (it requires X-windows).
+</p>
+<p>
+Set the user you want Exim to use for itself:
+</p>
+<pre>
+   EXIM_USER=exim</pre>
+<p>
+If your DBM library is Berkeley DB, set up to use its native interface:
+</p>
+<pre>
+   USE_DB=yes</pre>
+<p>
+Make sure Exim's build can find the DBM library and its headers. If
+you've installed Berkeley DB 4 you'll need to have settings like this
+in <i>Local/Makefile</i>:
+</p>
+<pre>
+   INCLUDE=-I/usr/local/BerkeleyDB.4.1/include
+   DBMLIB=/usr/local/BerkeleyDB.4.1/lib/libdb.a</pre>
+<p>
+(Check that the first directory contains the db.h file and that the
+second library exists.)
+</p>
+<p>
+You don't need to change anything else, but you might want to review
+the default settings in the &#147;must specify&#148; section.
+</p>
+<p>
+(4) &nbsp;Build Exim by running the <i>make</i> command.
+</p>
+<p>
+(5) &nbsp;Install Exim by running, as <i>root</i>:
+</p>
+<pre>
+   make install</pre>
+<p>
+You <i>must</i> be <i>root</i> to do this. You do not have to be root for any of
+the previous building activity.
+</p>
+<p>
+(6) &nbsp;Run some tests on Exim; see if it will do local and remote
+deliveries. Change the configuration if necessary (for example,
+uncommenting <tt>group</tt> on the <b>local_delivery</b> transport if you don't
+use a &#147;sticky bit&#148; directory).
+</p>
+<p>
+(7) &nbsp;Change Sendmail to Exim (of course you need to have had Sendmail
+installed to do this).
+</p>
+<pre>
+   /etc/init.d/sendmail stop
+   mv /usr/sbin/sendmail /usr/sbin/sendmail.org
+   ln -s /usr/exim/bin/exim /usr/sbin/sendmail
+   /etc/init.d/sendmail start</pre>
+<p>
+(8) &nbsp;Check the Exim log. Either use the Exim monitor, or:
+</p>
+<pre>
+   tail -f /var/spool/exim/log/mainlog</pre>
+<p>
+<a name="TOC110" href="FAQ.html#TOC110">Q0118:</a>&nbsp;&nbsp;I've set <tt>LOOKUP_INCLUDE=-I/client/include</tt> in Local/Makefile, but the
+compilation of <i>exim_dumpdb</i> is ignoring this option and failing. Why?
+</p>
+<p>
+<font color="#00BB00">A0118:</font>&nbsp;&nbsp;LOOKUP_INCLUDE is the special include file for lookup modules in Exim
+(e.g. mysql, LDAP). Confusingly, it doesn't apply to basic DBM code
+which is used also for other things. Try setting INCLUDE and DBMLIB
+instead. For example:
+</p>
+<pre>
+   USE_DB=yes
+   INCLUDE=-I/client/include
+   DBMLIB=/client/lib/libdb.a</pre>
+<p>
+<a name="TOC111" href="FAQ.html#TOC111">Q0119:</a>&nbsp;&nbsp;I know there are some 3rd-party patches for Exim, for exiscan and
+other things. Where are they?
+</p>
+<p>
+<font color="#00BB00">A0119:</font>&nbsp;&nbsp;Exiscan is at <a href="http://duncanthrax.net/exiscan-acl/">http://duncanthrax.net/exiscan-acl/</a>.<br>Scanexi is at <a href="http://w1.231.telia.com/~u23107873/scanexi.html">http://w1.231.telia.com/~u23107873/scanexi.html</a><br>A sample <i>local_scan()</i> function for interfacing to <i>uvscan</i> is
+at <a href="http://www.dcs.qmul.ac.uk/~mb/local_scan/">http://www.dcs.qmul.ac.uk/~mb/local_scan/</a>.<br>An interface to SpamAssassin at SMTP time is at
+<a href="http://marc.merlins.org/linux/exim/sa.html">http://marc.merlins.org/linux/exim/sa.html</a>.<br>A mini-HOWTO (PDF file) about scanning and virus scanning, and some RPMs
+can be found at <a href="http://www.timj.co.uk/linux/exim.php">http://www.timj.co.uk/linux/exim.php</a>.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_0.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_2.html">Next</a>
+</body>
+</html>

@@ -1,0 +1,83 @@
+prog xterm xterm xterm
+prog rxvt xterm rxvt -bg black -cr green -fg white -C -fn 9x15 -sl 500
+prog fte fte fte
+prog Mozilla mozilla mozilla
+prog Gimp gimp gimp
+prog Chat xchat xchat
+prog Word abiword abiword
+prog Spread gnumeric gnumeric
+separator
+menu Applications folder {
+    menu Editors folder {
+        prog fte fte fte
+	prog vi vi rxvt -e vi
+	prog vim vim gvim 
+        prog xemacs xemacs xemacs
+        prog emacs emacs emacs
+        prog xedit xedit xedit
+        prog Lyx emacs lyx
+    }
+    menu "WWW Browsers" folder {
+        prog Mozilla mozilla mozilla
+        prog Netfront netfront netfront
+        prog Netscape netscape netscape
+        prog konq konq konq
+        prog Arena arena arena
+        prog Lynx lynx rxvt -e lynx
+    }
+    menu "Graphics/Sound" folder {
+        prog Gimp gimp gimp
+        prog Gnapster gnapster gnapster
+        prog xmms xmms xmms
+        prog XV xv xv
+        prog XPaint xpaint xpaint
+        prog XFig xfig xfig
+    }
+    menu Devel folder {
+        prog ddd ddd ddd
+	prog Glade glade glade
+    }
+    prog "PDF Reader" pdf xpdf
+    prog "DVI Previewer" xdvi xdvi
+    prog "Ghostview" ghostview gv
+    prog "xfm" xfm xfm
+}
+menu Games folder {
+    prog "Koules for X" koules xkoules -f
+    prog Xboing xboing xboing
+    prog Xboard xboard xboard
+    prog XGalaga xgalaga xgal
+    prog XDemineur xdemineur xdemineur
+    prog Doom doom prboom
+}
+
+menu System folder {
+    prog xload xload xload
+    prog xosview xosview xosview
+    prog "Network Sniffer" ethereal ethereal
+}
+menu Utilities folder {
+    prog XPlayCD xplaycd xplaycd
+    prog XMixer xmixer xmixer
+    prog "Font Selector" xfontsel xfontsel
+    prog "Touch Screen" tscalibrate tscalibrate
+    prog "Touch Screen" xcalibrate xcalibrate
+    prog Keyboard keytap keytap
+    prog Clock xclock xclock
+    prog Magnify xmag xmag
+    prog Calculator xcalc xcalc
+    prog Colormap xcolormap xcmap
+    prog Clipboard xclip xclipboard
+    prog xkill bomb xkill
+    separator
+    prog "Screen Saver" xlock xlock -nolock
+    prog "Screen Lock" xlock xlock
+}
+menu "Window Managers" folder {
+    restart icewm - icewm
+    restart wmaker - wmaker
+    restart enlightenment - enlightenment
+    restart blackbox - blackbox
+    restart fvwm2 - fvwm2
+    restart fvwm - fvwm
+}

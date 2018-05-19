@@ -1,0 +1,1252 @@
+\hypertarget{mp_8h}{
+\section{mp.h File Reference}
+\label{mp_8h}\index{mp.h@{mp.h}}
+}
+Multi-precision integer routines. 
+
+{\tt \#include \char`\"{}beecrypt.api.h\char`\"{}}\par
+{\tt \#include \char`\"{}mpopt.h\char`\"{}}\par
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \hyperlink{mp_8h_a0}{MP\_\-HWBITS}\ (MP\_\-WBITS $>$$>$ 1)
+\item 
+\#define \hyperlink{mp_8h_a1}{MP\_\-WBYTES}\ (MP\_\-WBITS $>$$>$ 3)
+\item 
+\#define \hyperlink{mp_8h_a2}{MP\_\-WNIBBLES}\ (MP\_\-WBITS $>$$>$ 2)
+\item 
+\#define \hyperlink{mp_8h_a3}{MP\_\-WORDS\_\-TO\_\-BITS}(x)\ ((x) $<$$<$ 5)
+\item 
+\#define \hyperlink{mp_8h_a4}{MP\_\-WORDS\_\-TO\_\-NIBBLES}(x)\ ((x) $<$$<$ 3)
+\item 
+\#define \hyperlink{mp_8h_a5}{MP\_\-WORDS\_\-TO\_\-BYTES}(x)\ ((x) $<$$<$ 2)
+\item 
+\#define \hyperlink{mp_8h_a6}{MP\_\-BITS\_\-TO\_\-WORDS}(x)\ ((x) $>$$>$ 5)
+\item 
+\#define \hyperlink{mp_8h_a7}{MP\_\-NIBBLES\_\-TO\_\-WORDS}(x)\ ((x) $>$$>$ 3)
+\item 
+\#define \hyperlink{mp_8h_a8}{MP\_\-BYTES\_\-TO\_\-WORDS}(x)\ ((x) $>$$>$ 2)
+\item 
+\#define \hyperlink{mp_8h_a9}{MP\_\-MSBMASK}\ (((\hyperlink{beecrypt_8api_8h_a9}{mpw}) 0x1) $<$$<$ (MP\_\-WBITS-1))
+\item 
+\#define \hyperlink{mp_8h_a10}{MP\_\-LSBMASK}\ ((\hyperlink{beecrypt_8api_8h_a9}{mpw}) 0x1)
+\item 
+\#define \hyperlink{mp_8h_a11}{MP\_\-ALLMASK}\ $\sim$((\hyperlink{beecrypt_8api_8h_a9}{mpw}) 0x0)
+\item 
+\#define \hyperlink{mp_8h_a12}{mpcopy}(size, dst, src)\ memcpy(dst, src, MP\_\-WORDS\_\-TO\_\-BYTES(size))
+\item 
+\#define \hyperlink{mp_8h_a13}{mpmove}(size, dst, src)\ memmove(dst, src, MP\_\-WORDS\_\-TO\_\-BYTES(size))
+\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \hyperlink{mp_8h_a14}{mpzero} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function zeroes a multi-precision integer of a given size. \item\end{CompactList}\item 
+void \hyperlink{mp_8h_a15}{mpfill} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data, \hyperlink{beecrypt_8api_8h_a9}{mpw} fill)
+\begin{CompactList}\small\item\em This function fills each word of a multi-precision integer with a given value. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a16}{mpodd} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This functions tests if a multi-precision integer is odd. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a17}{mpeven} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function tests if a multi-precision integer is even. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a18}{mpz} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function tests if a multi-precision integer is zero. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a19}{mpnz} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function tests if a multi-precision integer is not zero. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a20}{mpeq} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function tests if two multi-precision integers of the same size are equal. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a21}{mpne} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function tests if two multi-precision integers of the same size differ. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a22}{mpgt} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function tests if the first of two multi-precision integers of the same size is greater than the second. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a23}{mplt} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function tests if the first of two multi-precision integers of the same size is less than the second. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a24}{mpge} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function tests if the first of two multi-precision integers of the same size is greater than or equal to the second. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a25}{mple} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function tests if the first of two multi-precision integers of the same size is less than or equal to the second. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a26}{mpeqx} (size\_\-t xsize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, size\_\-t ysize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function tests if two multi-precision integers of different size are equal. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a27}{mpnex} (size\_\-t xsize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, size\_\-t ysize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function tests if two multi-precision integers of different size are equal. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a28}{mpgtx} (size\_\-t xsize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, size\_\-t ysize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function tests if the first of two multi-precision integers of different size is greater than the second. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a29}{mpltx} (size\_\-t xsize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, size\_\-t ysize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function tests if the first of two multi-precision integers of different size is less than the second. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a30}{mpgex} (size\_\-t xsize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, size\_\-t ysize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function tests if the first of two multi-precision integers of different size is greater than or equal to the second. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a31}{mplex} (size\_\-t xsize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, size\_\-t ysize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function tests if the first of two multi-precision integers of different size is less than or equal to the second. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a32}{mpisone} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This functions tests if the value of a multi-precision integer is equal to one. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a33}{mpistwo} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function tests if the value of a multi-precision integer is equal to two. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a34}{mpleone} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function tests if the value of a multi-precision integer is less than or equal to one. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a35}{mpeqmone} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function tests if multi-precision integer x is equal to y minus one. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a36}{mpmsbset} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function tests if the most significant bit of a multi-precision integer is set. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a37}{mplsbset} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function tests if the leiast significant bit of a multi-precision integer is set. \item\end{CompactList}\item 
+void \hyperlink{mp_8h_a38}{mpsetmsb} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function sets the most significant bit of a multi-precision integer. \item\end{CompactList}\item 
+void \hyperlink{mp_8h_a39}{mpsetlsb} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function sets the least significant bit of a multi-precision integer. \item\end{CompactList}\item 
+void \hyperlink{mp_8h_a40}{mpclrmsb} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function clears the most significant bit of a multi-precision integer. \item\end{CompactList}\item 
+void \hyperlink{mp_8h_a41}{mpclrlsb} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function clears the least significant bit of a multi-precision integer. \item\end{CompactList}\item 
+void \hyperlink{mp_8h_a42}{mpand} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function computes the bit-wise AND of two multi-precision integers. Modifies xdata. \item\end{CompactList}\item 
+void \hyperlink{mp_8h_a43}{mpor} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function computes the bit-wise OR of two multi-precision integers. Modifies xdata. \item\end{CompactList}\item 
+void \hyperlink{mp_8h_a44}{mpxor} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function computes the bit-wise XOR of two multi-precision integers. Modifies xdata. \item\end{CompactList}\item 
+void \hyperlink{mp_8h_a45}{mpnot} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function flips all bits of a multi-precision integer. \item\end{CompactList}\item 
+void \hyperlink{mp_8h_a46}{mpsetw} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, \hyperlink{beecrypt_8api_8h_a9}{mpw} y)
+\begin{CompactList}\small\item\em This function sets the value of a multi-precision integer to the given word. The given value is copied into the least significant word, while the most significant words are zeroed. \item\end{CompactList}\item 
+void \hyperlink{mp_8h_a47}{mpsetx} (size\_\-t xsize, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, size\_\-t ysize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function set the value of the first multi-precision integer to the second, truncating the most significant words if ysize $>$ xsize, or zeroing the most significant words if ysize $<$ xsize. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a48}{mpaddw} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, \hyperlink{beecrypt_8api_8h_a9}{mpw} y)
+\begin{CompactList}\small\item\em This function adds one word to a multi-precision integer. The performed operation is in pseudocode: x += y. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a49}{mpadd} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function adds two multi-precision integers of equal size. The performed operation is in pseudocode: x += y. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a50}{mpaddx} (size\_\-t xsize, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, size\_\-t ysize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function adds two multi-precision integers of different size. The performed operation in pseudocode: x += y. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a51}{mpsubw} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, \hyperlink{beecrypt_8api_8h_a9}{mpw} y)
+\begin{CompactList}\small\item\em This function subtracts one word to a multi-precision integer. The performed operation in pseudocode: x -= y. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a52}{mpsub} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function subtracts two multi-precision integers of equal size. The performed operation in pseudocode: x -= y. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a53}{mpsubx} (size\_\-t xsize, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, size\_\-t ysize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function subtracts two multi-precision integers of different size. The performed operation in pseudocode: x -= y. \item\end{CompactList}\item 
+int \hyperlink{mp_8h_a54}{mpmultwo} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\item 
+void \hyperlink{mp_8h_a55}{mpneg} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function negates a multi-precision integer. \item\end{CompactList}\item 
+size\_\-t \hyperlink{mp_8h_a56}{mpsize} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function returns the true size of a multi-precision integer, after stripping leading zero words. \item\end{CompactList}\item 
+size\_\-t \hyperlink{mp_8h_a57}{mpbits} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function returns the number of significant bits in a multi-precision integer. \item\end{CompactList}\item 
+size\_\-t \hyperlink{mp_8h_a58}{mpmszcnt} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\item 
+size\_\-t \hyperlink{mp_8h_a59}{mplszcnt} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\item 
+void \hyperlink{mp_8h_a60}{mplshift} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data, size\_\-t count)
+\item 
+void \hyperlink{mp_8h_a61}{mprshift} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data, size\_\-t count)
+\item 
+size\_\-t \hyperlink{mp_8h_a62}{mprshiftlsz} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\item 
+size\_\-t \hyperlink{mp_8h_a63}{mpnorm} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\item 
+void \hyperlink{mp_8h_a64}{mpdivtwo} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\item 
+void \hyperlink{mp_8h_a65}{mpsdivtwo} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\item 
+\hyperlink{beecrypt_8api_8h_a9}{mpw} \hyperlink{mp_8h_a66}{mpsetmul} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$result, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data, \hyperlink{beecrypt_8api_8h_a9}{mpw} y)
+\begin{CompactList}\small\item\em This function performs a multi-precision multiply-setup. \item\end{CompactList}\item 
+\hyperlink{beecrypt_8api_8h_a9}{mpw} \hyperlink{mp_8h_a67}{mpaddmul} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$result, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data, \hyperlink{beecrypt_8api_8h_a9}{mpw} y)
+\begin{CompactList}\small\item\em This function performs a mult-precision multiply-accumulate. \item\end{CompactList}\item 
+void \hyperlink{mp_8h_a68}{mpaddsqrtrc} (size\_\-t size, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$result, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function is used in the calculation of a multi-precision squaring. \item\end{CompactList}\item 
+void \hyperlink{mp_8h_a69}{mpmul} (\hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$result, size\_\-t xsize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, size\_\-t ysize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata)
+\begin{CompactList}\small\item\em This function computes a full multi-precision product. \item\end{CompactList}\item 
+void \hyperlink{mp_8h_a70}{mpsqr} (\hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$result, size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\begin{CompactList}\small\item\em This function computes a full multi-precision square. \item\end{CompactList}\item 
+void \hyperlink{mp_8h_a71}{mpgcd\_\-w} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$result, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$wksp)
+\item 
+int \hyperlink{mp_8h_a72}{mpextgcd\_\-w} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$result, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$wksp)
+\item 
+\hyperlink{beecrypt_8api_8h_a9}{mpw} \hyperlink{mp_8h_a73}{mppndiv} (\hyperlink{beecrypt_8api_8h_a9}{mpw} xhi, \hyperlink{beecrypt_8api_8h_a9}{mpw} xlo, \hyperlink{beecrypt_8api_8h_a9}{mpw} y)
+\item 
+void \hyperlink{mp_8h_a74}{mpmod} (\hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$result, size\_\-t xsize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, size\_\-t ysize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$wksp)
+\item 
+void \hyperlink{mp_8h_a75}{mpndivmod} (\hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$result, size\_\-t xsize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$xdata, size\_\-t ysize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ydata, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$wksp)
+\item 
+void \hyperlink{mp_8h_a76}{mpprint} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\item 
+void \hyperlink{mp_8h_a77}{mpprintln} (size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\item 
+void \hyperlink{mp_8h_a78}{mpfprint} (FILE $\ast$f, size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\item 
+void \hyperlink{mp_8h_a79}{mpfprintln} (FILE $\ast$f, size\_\-t size, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$data)
+\item 
+int \hyperlink{mp_8h_a80}{os2ip} (\hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$idata, size\_\-t isize, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$osdata, size\_\-t ossize)
+\item 
+int \hyperlink{mp_8h_a81}{i2osp} (\hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$osdata, size\_\-t ossize, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$idata, size\_\-t isize)
+\item 
+int \hyperlink{mp_8h_a82}{hs2ip} (\hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$idata, size\_\-t isize, const char $\ast$hsdata, size\_\-t hssize)
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Multi-precision integer routines. 
+
+The routines declared here are all low-level operations, most of them suitable to be implemented in assembler. Prime candidates are in order of importance (according to gprof): \begin{itemize}
+\item mpaddmul \item mpsetmul \item mpaddsqrtrc \item mpsub \item mpadd \end{itemize}
+
+
+With some smart use of available assembler instructions, it's possible to speed these routines up by a factor of 2 to 4.
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{mp_8h-source}{mp.h}.
+
+\subsection{Define Documentation}
+\hypertarget{mp_8h_a11}{
+\index{mp.h@{mp.h}!MP_ALLMASK@{MP\_\-ALLMASK}}
+\index{MP_ALLMASK@{MP\_\-ALLMASK}!mp.h@{mp.h}}
+\subsubsection[MP\_\-ALLMASK]{\setlength{\rightskip}{0pt plus 5cm}\#define MP\_\-ALLMASK\ $\sim$((\hyperlink{beecrypt_8api_8h_a9}{mpw}) 0x0)}}
+\label{mp_8h_a11}
+
+
+Definition at line 71 of file mp.h.\hypertarget{mp_8h_a6}{
+\index{mp.h@{mp.h}!MP_BITS_TO_WORDS@{MP\_\-BITS\_\-TO\_\-WORDS}}
+\index{MP_BITS_TO_WORDS@{MP\_\-BITS\_\-TO\_\-WORDS}!mp.h@{mp.h}}
+\subsubsection[MP\_\-BITS\_\-TO\_\-WORDS]{\setlength{\rightskip}{0pt plus 5cm}\#define MP\_\-BITS\_\-TO\_\-WORDS(x)\ ((x) $>$$>$ 5)}}
+\label{mp_8h_a6}
+
+
+Definition at line 62 of file mp.h.\hypertarget{mp_8h_a8}{
+\index{mp.h@{mp.h}!MP_BYTES_TO_WORDS@{MP\_\-BYTES\_\-TO\_\-WORDS}}
+\index{MP_BYTES_TO_WORDS@{MP\_\-BYTES\_\-TO\_\-WORDS}!mp.h@{mp.h}}
+\subsubsection[MP\_\-BYTES\_\-TO\_\-WORDS]{\setlength{\rightskip}{0pt plus 5cm}\#define MP\_\-BYTES\_\-TO\_\-WORDS(x)\ ((x) $>$$>$ 2)}}
+\label{mp_8h_a8}
+
+
+Definition at line 64 of file mp.h.\hypertarget{mp_8h_a0}{
+\index{mp.h@{mp.h}!MP_HWBITS@{MP\_\-HWBITS}}
+\index{MP_HWBITS@{MP\_\-HWBITS}!mp.h@{mp.h}}
+\subsubsection[MP\_\-HWBITS]{\setlength{\rightskip}{0pt plus 5cm}\#define MP\_\-HWBITS\ (MP\_\-WBITS $>$$>$ 1)}}
+\label{mp_8h_a0}
+
+
+Definition at line 47 of file mp.h.\hypertarget{mp_8h_a10}{
+\index{mp.h@{mp.h}!MP_LSBMASK@{MP\_\-LSBMASK}}
+\index{MP_LSBMASK@{MP\_\-LSBMASK}!mp.h@{mp.h}}
+\subsubsection[MP\_\-LSBMASK]{\setlength{\rightskip}{0pt plus 5cm}\#define MP\_\-LSBMASK\ ((\hyperlink{beecrypt_8api_8h_a9}{mpw}) 0x1)}}
+\label{mp_8h_a10}
+
+
+Definition at line 70 of file mp.h.\hypertarget{mp_8h_a9}{
+\index{mp.h@{mp.h}!MP_MSBMASK@{MP\_\-MSBMASK}}
+\index{MP_MSBMASK@{MP\_\-MSBMASK}!mp.h@{mp.h}}
+\subsubsection[MP\_\-MSBMASK]{\setlength{\rightskip}{0pt plus 5cm}\#define MP\_\-MSBMASK\ (((\hyperlink{beecrypt_8api_8h_a9}{mpw}) 0x1) $<$$<$ (MP\_\-WBITS-1))}}
+\label{mp_8h_a9}
+
+
+Definition at line 69 of file mp.h.\hypertarget{mp_8h_a7}{
+\index{mp.h@{mp.h}!MP_NIBBLES_TO_WORDS@{MP\_\-NIBBLES\_\-TO\_\-WORDS}}
+\index{MP_NIBBLES_TO_WORDS@{MP\_\-NIBBLES\_\-TO\_\-WORDS}!mp.h@{mp.h}}
+\subsubsection[MP\_\-NIBBLES\_\-TO\_\-WORDS]{\setlength{\rightskip}{0pt plus 5cm}\#define MP\_\-NIBBLES\_\-TO\_\-WORDS(x)\ ((x) $>$$>$ 3)}}
+\label{mp_8h_a7}
+
+
+Definition at line 63 of file mp.h.\hypertarget{mp_8h_a1}{
+\index{mp.h@{mp.h}!MP_WBYTES@{MP\_\-WBYTES}}
+\index{MP_WBYTES@{MP\_\-WBYTES}!mp.h@{mp.h}}
+\subsubsection[MP\_\-WBYTES]{\setlength{\rightskip}{0pt plus 5cm}\#define MP\_\-WBYTES\ (MP\_\-WBITS $>$$>$ 3)}}
+\label{mp_8h_a1}
+
+
+Definition at line 48 of file mp.h.\hypertarget{mp_8h_a2}{
+\index{mp.h@{mp.h}!MP_WNIBBLES@{MP\_\-WNIBBLES}}
+\index{MP_WNIBBLES@{MP\_\-WNIBBLES}!mp.h@{mp.h}}
+\subsubsection[MP\_\-WNIBBLES]{\setlength{\rightskip}{0pt plus 5cm}\#define MP\_\-WNIBBLES\ (MP\_\-WBITS $>$$>$ 2)}}
+\label{mp_8h_a2}
+
+
+Definition at line 49 of file mp.h.\hypertarget{mp_8h_a3}{
+\index{mp.h@{mp.h}!MP_WORDS_TO_BITS@{MP\_\-WORDS\_\-TO\_\-BITS}}
+\index{MP_WORDS_TO_BITS@{MP\_\-WORDS\_\-TO\_\-BITS}!mp.h@{mp.h}}
+\subsubsection[MP\_\-WORDS\_\-TO\_\-BITS]{\setlength{\rightskip}{0pt plus 5cm}\#define MP\_\-WORDS\_\-TO\_\-BITS(x)\ ((x) $<$$<$ 5)}}
+\label{mp_8h_a3}
+
+
+Definition at line 59 of file mp.h.\hypertarget{mp_8h_a5}{
+\index{mp.h@{mp.h}!MP_WORDS_TO_BYTES@{MP\_\-WORDS\_\-TO\_\-BYTES}}
+\index{MP_WORDS_TO_BYTES@{MP\_\-WORDS\_\-TO\_\-BYTES}!mp.h@{mp.h}}
+\subsubsection[MP\_\-WORDS\_\-TO\_\-BYTES]{\setlength{\rightskip}{0pt plus 5cm}\#define MP\_\-WORDS\_\-TO\_\-BYTES(x)\ ((x) $<$$<$ 2)}}
+\label{mp_8h_a5}
+
+
+Definition at line 61 of file mp.h.\hypertarget{mp_8h_a4}{
+\index{mp.h@{mp.h}!MP_WORDS_TO_NIBBLES@{MP\_\-WORDS\_\-TO\_\-NIBBLES}}
+\index{MP_WORDS_TO_NIBBLES@{MP\_\-WORDS\_\-TO\_\-NIBBLES}!mp.h@{mp.h}}
+\subsubsection[MP\_\-WORDS\_\-TO\_\-NIBBLES]{\setlength{\rightskip}{0pt plus 5cm}\#define MP\_\-WORDS\_\-TO\_\-NIBBLES(x)\ ((x) $<$$<$ 3)}}
+\label{mp_8h_a4}
+
+
+Definition at line 60 of file mp.h.\hypertarget{mp_8h_a12}{
+\index{mp.h@{mp.h}!mpcopy@{mpcopy}}
+\index{mpcopy@{mpcopy}!mp.h@{mp.h}}
+\subsubsection[mpcopy]{\setlength{\rightskip}{0pt plus 5cm}\#define mpcopy(size, dst, src)\ memcpy(dst, src, MP\_\-WORDS\_\-TO\_\-BYTES(size))}}
+\label{mp_8h_a12}
+
+
+Definition at line 78 of file mp.h.\hypertarget{mp_8h_a13}{
+\index{mp.h@{mp.h}!mpmove@{mpmove}}
+\index{mpmove@{mpmove}!mp.h@{mp.h}}
+\subsubsection[mpmove]{\setlength{\rightskip}{0pt plus 5cm}\#define mpmove(size, dst, src)\ memmove(dst, src, MP\_\-WORDS\_\-TO\_\-BYTES(size))}}
+\label{mp_8h_a13}
+
+
+Definition at line 85 of file mp.h.
+
+\subsection{Function Documentation}
+\hypertarget{mp_8h_a82}{
+\index{mp.h@{mp.h}!hs2ip@{hs2ip}}
+\index{hs2ip@{hs2ip}!mp.h@{mp.h}}
+\subsubsection[hs2ip]{\setlength{\rightskip}{0pt plus 5cm}int hs2ip (\hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em idata}, size\_\-t {\em isize}, const char $\ast$ {\em hsdata}, size\_\-t {\em hssize})}}
+\label{mp_8h_a82}
+
+
+\hypertarget{mp_8h_a81}{
+\index{mp.h@{mp.h}!i2osp@{i2osp}}
+\index{i2osp@{i2osp}!mp.h@{mp.h}}
+\subsubsection[i2osp]{\setlength{\rightskip}{0pt plus 5cm}int i2osp (\hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$ {\em osdata}, size\_\-t {\em ossize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em idata}, size\_\-t {\em isize})}}
+\label{mp_8h_a81}
+
+
+\hypertarget{mp_8h_a49}{
+\index{mp.h@{mp.h}!mpadd@{mpadd}}
+\index{mpadd@{mpadd}!mp.h@{mp.h}}
+\subsubsection[mpadd]{\setlength{\rightskip}{0pt plus 5cm}int mpadd (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a49}
+
+
+This function adds two multi-precision integers of equal size. The performed operation is in pseudocode: x += y. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integers. \item[{\em xdata}]The first multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]The carry-over value of the operation; this value is either 0 or 1. \end{Desc}
+\hypertarget{mp_8h_a67}{
+\index{mp.h@{mp.h}!mpaddmul@{mpaddmul}}
+\index{mpaddmul@{mpaddmul}!mp.h@{mp.h}}
+\subsubsection[mpaddmul]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{beecrypt_8api_8h_a9}{mpw} mpaddmul (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em result}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data}, \hyperlink{beecrypt_8api_8h_a9}{mpw} {\em y})}}
+\label{mp_8h_a67}
+
+
+This function performs a mult-precision multiply-accumulate. 
+
+This function is used in the computation of a full multi-precision multiplication. It computes the product-by-one-word and accumulates it with the previous result.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of multi-precision integer multiplier. \item[{\em result}]The place where result will be accumulated. \item[{\em data}]The multi-precision integer multiplier. \item[{\em y}]The multiplicand. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em The}]carry-over multi-precision word. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a68}{
+\index{mp.h@{mp.h}!mpaddsqrtrc@{mpaddsqrtrc}}
+\index{mpaddsqrtrc@{mpaddsqrtrc}!mp.h@{mp.h}}
+\subsubsection[mpaddsqrtrc]{\setlength{\rightskip}{0pt plus 5cm}void mpaddsqrtrc (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em result}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a68}
+
+
+This function is used in the calculation of a multi-precision squaring. 
+
+\hypertarget{mp_8h_a48}{
+\index{mp.h@{mp.h}!mpaddw@{mpaddw}}
+\index{mpaddw@{mpaddw}!mp.h@{mp.h}}
+\subsubsection[mpaddw]{\setlength{\rightskip}{0pt plus 5cm}int mpaddw (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, \hyperlink{beecrypt_8api_8h_a9}{mpw} {\em y})}}
+\label{mp_8h_a48}
+
+
+This function adds one word to a multi-precision integer. The performed operation is in pseudocode: x += y. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em xdata}]The first multi-precision integer. \item[{\em y}]The multi-precision word. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]The carry-over value of the operation; this value is either 0 or 1. \end{Desc}
+\hypertarget{mp_8h_a50}{
+\index{mp.h@{mp.h}!mpaddx@{mpaddx}}
+\index{mpaddx@{mpaddx}!mp.h@{mp.h}}
+\subsubsection[mpaddx]{\setlength{\rightskip}{0pt plus 5cm}int mpaddx (size\_\-t {\em xsize}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, size\_\-t {\em ysize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a50}
+
+
+This function adds two multi-precision integers of different size. The performed operation in pseudocode: x += y. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em xsize}]The size of the first multi-precision integer. \item[{\em xdata}]The first multi-precision integer. \item[{\em ysize}]The size of the second multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]The carry-over value of the operation; this value is either 0 or 1. \end{Desc}
+\hypertarget{mp_8h_a42}{
+\index{mp.h@{mp.h}!mpand@{mpand}}
+\index{mpand@{mpand}!mp.h@{mp.h}}
+\subsubsection[mpand]{\setlength{\rightskip}{0pt plus 5cm}mpand (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a42}
+
+
+This function computes the bit-wise AND of two multi-precision integers. Modifies xdata. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integers. \item[{\em xdata}]The multi-precision integer data. \item[{\em ydata}]The multi-precision integer data. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a57}{
+\index{mp.h@{mp.h}!mpbits@{mpbits}}
+\index{mpbits@{mpbits}!mp.h@{mp.h}}
+\subsubsection[mpbits]{\setlength{\rightskip}{0pt plus 5cm}size\_\-t mpbits (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a57}
+
+
+This function returns the number of significant bits in a multi-precision integer. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a41}{
+\index{mp.h@{mp.h}!mpclrlsb@{mpclrlsb}}
+\index{mpclrlsb@{mpclrlsb}!mp.h@{mp.h}}
+\subsubsection[mpclrlsb]{\setlength{\rightskip}{0pt plus 5cm}void mpclrlsb (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a41}
+
+
+This function clears the least significant bit of a multi-precision integer. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a40}{
+\index{mp.h@{mp.h}!mpclrmsb@{mpclrmsb}}
+\index{mpclrmsb@{mpclrmsb}!mp.h@{mp.h}}
+\subsubsection[mpclrmsb]{\setlength{\rightskip}{0pt plus 5cm}void mpclrmsb (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a40}
+
+
+This function clears the most significant bit of a multi-precision integer. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a64}{
+\index{mp.h@{mp.h}!mpdivtwo@{mpdivtwo}}
+\index{mpdivtwo@{mpdivtwo}!mp.h@{mp.h}}
+\subsubsection[mpdivtwo]{\setlength{\rightskip}{0pt plus 5cm}void mpdivtwo (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a64}
+
+
+\hypertarget{mp_8h_a20}{
+\index{mp.h@{mp.h}!mpeq@{mpeq}}
+\index{mpeq@{mpeq}!mp.h@{mp.h}}
+\subsubsection[mpeq]{\setlength{\rightskip}{0pt plus 5cm}int mpeq (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a20}
+
+
+This function tests if two multi-precision integers of the same size are equal. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integers. \item[{\em xdata}]The first multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if equal \item[{\em 0}]if not equal \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a35}{
+\index{mp.h@{mp.h}!mpeqmone@{mpeqmone}}
+\index{mpeqmone@{mpeqmone}!mp.h@{mp.h}}
+\subsubsection[mpeqmone]{\setlength{\rightskip}{0pt plus 5cm}int mpeqmone (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a35}
+
+
+This function tests if multi-precision integer x is equal to y minus one. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integers. \item[{\em xdata}]The first multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if less than or equal to one. \item[{\em 0}]if greater than one. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a26}{
+\index{mp.h@{mp.h}!mpeqx@{mpeqx}}
+\index{mpeqx@{mpeqx}!mp.h@{mp.h}}
+\subsubsection[mpeqx]{\setlength{\rightskip}{0pt plus 5cm}int mpeqx (size\_\-t {\em xsize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, size\_\-t {\em ysize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a26}
+
+
+This function tests if two multi-precision integers of different size are equal. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em xsize}]The size of the first multi-precision integer. \item[{\em xdata}]The first multi-precision integer. \item[{\em ysize}]The size of the first multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if equal \item[{\em 0}]if not equal \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a17}{
+\index{mp.h@{mp.h}!mpeven@{mpeven}}
+\index{mpeven@{mpeven}!mp.h@{mp.h}}
+\subsubsection[mpeven]{\setlength{\rightskip}{0pt plus 5cm}int mpeven (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a17}
+
+
+This function tests if a multi-precision integer is even. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if even \item[{\em 0}]if odd \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a72}{
+\index{mp.h@{mp.h}!mpextgcd_w@{mpextgcd\_\-w}}
+\index{mpextgcd_w@{mpextgcd\_\-w}!mp.h@{mp.h}}
+\subsubsection[mpextgcd\_\-w]{\setlength{\rightskip}{0pt plus 5cm}int mpextgcd\_\-w (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em result}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em wksp})}}
+\label{mp_8h_a72}
+
+
+\hypertarget{mp_8h_a15}{
+\index{mp.h@{mp.h}!mpfill@{mpfill}}
+\index{mpfill@{mpfill}!mp.h@{mp.h}}
+\subsubsection[mpfill]{\setlength{\rightskip}{0pt plus 5cm}void mpfill (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data}, \hyperlink{beecrypt_8api_8h_a9}{mpw} {\em fill})}}
+\label{mp_8h_a15}
+
+
+This function fills each word of a multi-precision integer with a given value. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \item[{\em fill}]The value fill the data with. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a78}{
+\index{mp.h@{mp.h}!mpfprint@{mpfprint}}
+\index{mpfprint@{mpfprint}!mp.h@{mp.h}}
+\subsubsection[mpfprint]{\setlength{\rightskip}{0pt plus 5cm}void mpfprint (FILE $\ast$ {\em f}, size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a78}
+
+
+\hypertarget{mp_8h_a79}{
+\index{mp.h@{mp.h}!mpfprintln@{mpfprintln}}
+\index{mpfprintln@{mpfprintln}!mp.h@{mp.h}}
+\subsubsection[mpfprintln]{\setlength{\rightskip}{0pt plus 5cm}void mpfprintln (FILE $\ast$ {\em f}, size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a79}
+
+
+\hypertarget{mp_8h_a71}{
+\index{mp.h@{mp.h}!mpgcd_w@{mpgcd\_\-w}}
+\index{mpgcd_w@{mpgcd\_\-w}!mp.h@{mp.h}}
+\subsubsection[mpgcd\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpgcd\_\-w (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em result}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em wksp})}}
+\label{mp_8h_a71}
+
+
+\hypertarget{mp_8h_a24}{
+\index{mp.h@{mp.h}!mpge@{mpge}}
+\index{mpge@{mpge}!mp.h@{mp.h}}
+\subsubsection[mpge]{\setlength{\rightskip}{0pt plus 5cm}int mpge (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a24}
+
+
+This function tests if the first of two multi-precision integers of the same size is greater than or equal to the second. 
+
+\begin{Desc}
+\item[Note:]The comparison treats the arguments as unsigned. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integers. \item[{\em xdata}]The first multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if greater or equal \item[{\em 0}]if less \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a30}{
+\index{mp.h@{mp.h}!mpgex@{mpgex}}
+\index{mpgex@{mpgex}!mp.h@{mp.h}}
+\subsubsection[mpgex]{\setlength{\rightskip}{0pt plus 5cm}int mpgex (size\_\-t {\em xsize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, size\_\-t {\em ysize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a30}
+
+
+This function tests if the first of two multi-precision integers of different size is greater than or equal to the second. 
+
+\begin{Desc}
+\item[Note:]The comparison treats the arguments as unsigned. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em xsize}]The size of the first multi-precision integer. \item[{\em xdata}]The first multi-precision integer. \item[{\em ysize}]The size of the second multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if greater or equal \item[{\em 0}]if less \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a22}{
+\index{mp.h@{mp.h}!mpgt@{mpgt}}
+\index{mpgt@{mpgt}!mp.h@{mp.h}}
+\subsubsection[mpgt]{\setlength{\rightskip}{0pt plus 5cm}int mpgt (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a22}
+
+
+This function tests if the first of two multi-precision integers of the same size is greater than the second. 
+
+\begin{Desc}
+\item[Note:]The comparison treats the arguments as unsigned. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integers. \item[{\em xdata}]The first multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if greater \item[{\em 0}]if less or equal \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a28}{
+\index{mp.h@{mp.h}!mpgtx@{mpgtx}}
+\index{mpgtx@{mpgtx}!mp.h@{mp.h}}
+\subsubsection[mpgtx]{\setlength{\rightskip}{0pt plus 5cm}int mpgtx (size\_\-t {\em xsize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, size\_\-t {\em ysize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a28}
+
+
+This function tests if the first of two multi-precision integers of different size is greater than the second. 
+
+\begin{Desc}
+\item[Note:]The comparison treats the arguments as unsigned. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em xsize}]The size of the first multi-precision integer. \item[{\em xdata}]The first multi-precision integer. \item[{\em ysize}]The size of the second multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if greater \item[{\em 0}]if less or equal \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a32}{
+\index{mp.h@{mp.h}!mpisone@{mpisone}}
+\index{mpisone@{mpisone}!mp.h@{mp.h}}
+\subsubsection[mpisone]{\setlength{\rightskip}{0pt plus 5cm}int mpisone (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a32}
+
+
+This functions tests if the value of a multi-precision integer is equal to one. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if one \item[{\em 0}]if not one \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a33}{
+\index{mp.h@{mp.h}!mpistwo@{mpistwo}}
+\index{mpistwo@{mpistwo}!mp.h@{mp.h}}
+\subsubsection[mpistwo]{\setlength{\rightskip}{0pt plus 5cm}int mpistwo (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a33}
+
+
+This function tests if the value of a multi-precision integer is equal to two. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if two \item[{\em 0}]if not two \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a25}{
+\index{mp.h@{mp.h}!mple@{mple}}
+\index{mple@{mple}!mp.h@{mp.h}}
+\subsubsection[mple]{\setlength{\rightskip}{0pt plus 5cm}int mple (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a25}
+
+
+This function tests if the first of two multi-precision integers of the same size is less than or equal to the second. 
+
+\begin{Desc}
+\item[Note:]The comparison treats the arguments as unsigned. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integers. \item[{\em xdata}]The first multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if less or equal \item[{\em 0}]if greater \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a34}{
+\index{mp.h@{mp.h}!mpleone@{mpleone}}
+\index{mpleone@{mpleone}!mp.h@{mp.h}}
+\subsubsection[mpleone]{\setlength{\rightskip}{0pt plus 5cm}int mpleone (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a34}
+
+
+This function tests if the value of a multi-precision integer is less than or equal to one. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if less than or equal to one. \item[{\em 0}]if greater than one. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a31}{
+\index{mp.h@{mp.h}!mplex@{mplex}}
+\index{mplex@{mplex}!mp.h@{mp.h}}
+\subsubsection[mplex]{\setlength{\rightskip}{0pt plus 5cm}int mplex (size\_\-t {\em xsize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, size\_\-t {\em ysize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a31}
+
+
+This function tests if the first of two multi-precision integers of different size is less than or equal to the second. 
+
+\begin{Desc}
+\item[Note:]The comparison treats the arguments as unsigned. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em xsize}]The size of the first multi-precision integer. \item[{\em xdata}]The first multi-precision integer. \item[{\em ysize}]The size of the second multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if less or equal \item[{\em 0}]if greater \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a37}{
+\index{mp.h@{mp.h}!mplsbset@{mplsbset}}
+\index{mplsbset@{mplsbset}!mp.h@{mp.h}}
+\subsubsection[mplsbset]{\setlength{\rightskip}{0pt plus 5cm}int mplsbset (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a37}
+
+
+This function tests if the leiast significant bit of a multi-precision integer is set. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if set \item[{\em 0}]if not set \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a60}{
+\index{mp.h@{mp.h}!mplshift@{mplshift}}
+\index{mplshift@{mplshift}!mp.h@{mp.h}}
+\subsubsection[mplshift]{\setlength{\rightskip}{0pt plus 5cm}void mplshift (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data}, size\_\-t {\em count})}}
+\label{mp_8h_a60}
+
+
+\hypertarget{mp_8h_a59}{
+\index{mp.h@{mp.h}!mplszcnt@{mplszcnt}}
+\index{mplszcnt@{mplszcnt}!mp.h@{mp.h}}
+\subsubsection[mplszcnt]{\setlength{\rightskip}{0pt plus 5cm}size\_\-t mplszcnt (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a59}
+
+
+\hypertarget{mp_8h_a23}{
+\index{mp.h@{mp.h}!mplt@{mplt}}
+\index{mplt@{mplt}!mp.h@{mp.h}}
+\subsubsection[mplt]{\setlength{\rightskip}{0pt plus 5cm}int mplt (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a23}
+
+
+This function tests if the first of two multi-precision integers of the same size is less than the second. 
+
+\begin{Desc}
+\item[Note:]The comparison treats the arguments as unsigned. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integers. \item[{\em xdata}]The first multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if less \item[{\em 0}]if greater or equal \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a29}{
+\index{mp.h@{mp.h}!mpltx@{mpltx}}
+\index{mpltx@{mpltx}!mp.h@{mp.h}}
+\subsubsection[mpltx]{\setlength{\rightskip}{0pt plus 5cm}int mpltx (size\_\-t {\em xsize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, size\_\-t {\em ysize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a29}
+
+
+This function tests if the first of two multi-precision integers of different size is less than the second. 
+
+\begin{Desc}
+\item[Note:]The comparison treats the arguments as unsigned. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em xsize}]The size of the first multi-precision integer. \item[{\em xdata}]The first multi-precision integer. \item[{\em ysize}]The size of the second multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if less \item[{\em 0}]if greater or equal \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a74}{
+\index{mp.h@{mp.h}!mpmod@{mpmod}}
+\index{mpmod@{mpmod}!mp.h@{mp.h}}
+\subsubsection[mpmod]{\setlength{\rightskip}{0pt plus 5cm}void mpmod (\hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em result}, size\_\-t {\em xsize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, size\_\-t {\em ysize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em wksp})}}
+\label{mp_8h_a74}
+
+
+\hypertarget{mp_8h_a36}{
+\index{mp.h@{mp.h}!mpmsbset@{mpmsbset}}
+\index{mpmsbset@{mpmsbset}!mp.h@{mp.h}}
+\subsubsection[mpmsbset]{\setlength{\rightskip}{0pt plus 5cm}int mpmsbset (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a36}
+
+
+This function tests if the most significant bit of a multi-precision integer is set. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if set \item[{\em 0}]if not set \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a58}{
+\index{mp.h@{mp.h}!mpmszcnt@{mpmszcnt}}
+\index{mpmszcnt@{mpmszcnt}!mp.h@{mp.h}}
+\subsubsection[mpmszcnt]{\setlength{\rightskip}{0pt plus 5cm}size\_\-t mpmszcnt (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a58}
+
+
+\hypertarget{mp_8h_a69}{
+\index{mp.h@{mp.h}!mpmul@{mpmul}}
+\index{mpmul@{mpmul}!mp.h@{mp.h}}
+\subsubsection[mpmul]{\setlength{\rightskip}{0pt plus 5cm}void mpmul (\hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em result}, size\_\-t {\em xsize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, size\_\-t {\em ysize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a69}
+
+
+This function computes a full multi-precision product. 
+
+\hypertarget{mp_8h_a54}{
+\index{mp.h@{mp.h}!mpmultwo@{mpmultwo}}
+\index{mpmultwo@{mpmultwo}!mp.h@{mp.h}}
+\subsubsection[mpmultwo]{\setlength{\rightskip}{0pt plus 5cm}int mpmultwo (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a54}
+
+
+\hypertarget{mp_8h_a75}{
+\index{mp.h@{mp.h}!mpndivmod@{mpndivmod}}
+\index{mpndivmod@{mpndivmod}!mp.h@{mp.h}}
+\subsubsection[mpndivmod]{\setlength{\rightskip}{0pt plus 5cm}void mpndivmod (\hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em result}, size\_\-t {\em xsize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, size\_\-t {\em ysize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em wksp})}}
+\label{mp_8h_a75}
+
+
+\hypertarget{mp_8h_a21}{
+\index{mp.h@{mp.h}!mpne@{mpne}}
+\index{mpne@{mpne}!mp.h@{mp.h}}
+\subsubsection[mpne]{\setlength{\rightskip}{0pt plus 5cm}int mpne (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a21}
+
+
+This function tests if two multi-precision integers of the same size differ. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integers. \item[{\em xdata}]The first multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if not equal \item[{\em 0}]if equal \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a55}{
+\index{mp.h@{mp.h}!mpneg@{mpneg}}
+\index{mpneg@{mpneg}!mp.h@{mp.h}}
+\subsubsection[mpneg]{\setlength{\rightskip}{0pt plus 5cm}void mpneg (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a55}
+
+
+This function negates a multi-precision integer. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a27}{
+\index{mp.h@{mp.h}!mpnex@{mpnex}}
+\index{mpnex@{mpnex}!mp.h@{mp.h}}
+\subsubsection[mpnex]{\setlength{\rightskip}{0pt plus 5cm}int mpnex (size\_\-t {\em xsize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, size\_\-t {\em ysize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a27}
+
+
+This function tests if two multi-precision integers of different size are equal. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em xsize}]The size of the first multi-precision integer. \item[{\em xdata}]The first multi-precision integer. \item[{\em ysize}]The size of the first multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if equal \item[{\em 0}]if not equal \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a63}{
+\index{mp.h@{mp.h}!mpnorm@{mpnorm}}
+\index{mpnorm@{mpnorm}!mp.h@{mp.h}}
+\subsubsection[mpnorm]{\setlength{\rightskip}{0pt plus 5cm}size\_\-t mpnorm (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a63}
+
+
+\hypertarget{mp_8h_a45}{
+\index{mp.h@{mp.h}!mpnot@{mpnot}}
+\index{mpnot@{mpnot}!mp.h@{mp.h}}
+\subsubsection[mpnot]{\setlength{\rightskip}{0pt plus 5cm}mpnot (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a45}
+
+
+This function flips all bits of a multi-precision integer. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a19}{
+\index{mp.h@{mp.h}!mpnz@{mpnz}}
+\index{mpnz@{mpnz}!mp.h@{mp.h}}
+\subsubsection[mpnz]{\setlength{\rightskip}{0pt plus 5cm}int mpnz (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a19}
+
+
+This function tests if a multi-precision integer is not zero. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if not zero \item[{\em 0}]if zero \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a16}{
+\index{mp.h@{mp.h}!mpodd@{mpodd}}
+\index{mpodd@{mpodd}!mp.h@{mp.h}}
+\subsubsection[mpodd]{\setlength{\rightskip}{0pt plus 5cm}int mpodd (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a16}
+
+
+This functions tests if a multi-precision integer is odd. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if odd \item[{\em 0}]if even \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a43}{
+\index{mp.h@{mp.h}!mpor@{mpor}}
+\index{mpor@{mpor}!mp.h@{mp.h}}
+\subsubsection[mpor]{\setlength{\rightskip}{0pt plus 5cm}void mpor (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a43}
+
+
+This function computes the bit-wise OR of two multi-precision integers. Modifies xdata. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em xdata}]The multi-precision integer data. \item[{\em ydata}]The multi-precision integer data. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a73}{
+\index{mp.h@{mp.h}!mppndiv@{mppndiv}}
+\index{mppndiv@{mppndiv}!mp.h@{mp.h}}
+\subsubsection[mppndiv]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{beecrypt_8api_8h_a9}{mpw} mppndiv (\hyperlink{beecrypt_8api_8h_a9}{mpw} {\em xhi}, \hyperlink{beecrypt_8api_8h_a9}{mpw} {\em xlo}, \hyperlink{beecrypt_8api_8h_a9}{mpw} {\em y})}}
+\label{mp_8h_a73}
+
+
+\hypertarget{mp_8h_a76}{
+\index{mp.h@{mp.h}!mpprint@{mpprint}}
+\index{mpprint@{mpprint}!mp.h@{mp.h}}
+\subsubsection[mpprint]{\setlength{\rightskip}{0pt plus 5cm}void mpprint (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a76}
+
+
+\hypertarget{mp_8h_a77}{
+\index{mp.h@{mp.h}!mpprintln@{mpprintln}}
+\index{mpprintln@{mpprintln}!mp.h@{mp.h}}
+\subsubsection[mpprintln]{\setlength{\rightskip}{0pt plus 5cm}void mpprintln (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a77}
+
+
+\hypertarget{mp_8h_a61}{
+\index{mp.h@{mp.h}!mprshift@{mprshift}}
+\index{mprshift@{mprshift}!mp.h@{mp.h}}
+\subsubsection[mprshift]{\setlength{\rightskip}{0pt plus 5cm}void mprshift (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data}, size\_\-t {\em count})}}
+\label{mp_8h_a61}
+
+
+\hypertarget{mp_8h_a62}{
+\index{mp.h@{mp.h}!mprshiftlsz@{mprshiftlsz}}
+\index{mprshiftlsz@{mprshiftlsz}!mp.h@{mp.h}}
+\subsubsection[mprshiftlsz]{\setlength{\rightskip}{0pt plus 5cm}size\_\-t mprshiftlsz (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a62}
+
+
+\hypertarget{mp_8h_a65}{
+\index{mp.h@{mp.h}!mpsdivtwo@{mpsdivtwo}}
+\index{mpsdivtwo@{mpsdivtwo}!mp.h@{mp.h}}
+\subsubsection[mpsdivtwo]{\setlength{\rightskip}{0pt plus 5cm}void mpsdivtwo (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a65}
+
+
+\hypertarget{mp_8h_a39}{
+\index{mp.h@{mp.h}!mpsetlsb@{mpsetlsb}}
+\index{mpsetlsb@{mpsetlsb}!mp.h@{mp.h}}
+\subsubsection[mpsetlsb]{\setlength{\rightskip}{0pt plus 5cm}void mpsetlsb (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a39}
+
+
+This function sets the least significant bit of a multi-precision integer. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a38}{
+\index{mp.h@{mp.h}!mpsetmsb@{mpsetmsb}}
+\index{mpsetmsb@{mpsetmsb}!mp.h@{mp.h}}
+\subsubsection[mpsetmsb]{\setlength{\rightskip}{0pt plus 5cm}void mpsetmsb (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a38}
+
+
+This function sets the most significant bit of a multi-precision integer. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a66}{
+\index{mp.h@{mp.h}!mpsetmul@{mpsetmul}}
+\index{mpsetmul@{mpsetmul}!mp.h@{mp.h}}
+\subsubsection[mpsetmul]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{beecrypt_8api_8h_a9}{mpw} mpsetmul (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em result}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data}, \hyperlink{beecrypt_8api_8h_a9}{mpw} {\em y})}}
+\label{mp_8h_a66}
+
+
+This function performs a multi-precision multiply-setup. 
+
+This function is used in the computation of a full multi-precision multiplication. By using it we can shave off a few cycles; otherwise we'd have to zero the least significant half of the result first and use another call to the slightly slower mpaddmul function.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of multi-precision integer multiplier. \item[{\em result}]The place where result will be accumulated. \item[{\em data}]The multi-precision integer multiplier. \item[{\em y}]The multiplicand. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]The carry-over multi-precision word. \end{Desc}
+\hypertarget{mp_8h_a46}{
+\index{mp.h@{mp.h}!mpsetw@{mpsetw}}
+\index{mpsetw@{mpsetw}!mp.h@{mp.h}}
+\subsubsection[mpsetw]{\setlength{\rightskip}{0pt plus 5cm}void mpsetw (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, \hyperlink{beecrypt_8api_8h_a9}{mpw} {\em y})}}
+\label{mp_8h_a46}
+
+
+This function sets the value of a multi-precision integer to the given word. The given value is copied into the least significant word, while the most significant words are zeroed. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em xdata}]The first multi-precision integer. \item[{\em y}]The multi-precision word. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a47}{
+\index{mp.h@{mp.h}!mpsetx@{mpsetx}}
+\index{mpsetx@{mpsetx}!mp.h@{mp.h}}
+\subsubsection[mpsetx]{\setlength{\rightskip}{0pt plus 5cm}void mpsetx (size\_\-t {\em xsize}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, size\_\-t {\em ysize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a47}
+
+
+This function set the value of the first multi-precision integer to the second, truncating the most significant words if ysize $>$ xsize, or zeroing the most significant words if ysize $<$ xsize. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em xsize}]The size of the first multi-precision integer. \item[{\em xdata}]The first multi-precision integer. \item[{\em ysize}]The size of the second multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a56}{
+\index{mp.h@{mp.h}!mpsize@{mpsize}}
+\index{mpsize@{mpsize}!mp.h@{mp.h}}
+\subsubsection[mpsize]{\setlength{\rightskip}{0pt plus 5cm}size\_\-t mpsize (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a56}
+
+
+This function returns the true size of a multi-precision integer, after stripping leading zero words. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a70}{
+\index{mp.h@{mp.h}!mpsqr@{mpsqr}}
+\index{mpsqr@{mpsqr}!mp.h@{mp.h}}
+\subsubsection[mpsqr]{\setlength{\rightskip}{0pt plus 5cm}void mpsqr (\hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em result}, size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a70}
+
+
+This function computes a full multi-precision square. 
+
+\hypertarget{mp_8h_a52}{
+\index{mp.h@{mp.h}!mpsub@{mpsub}}
+\index{mpsub@{mpsub}!mp.h@{mp.h}}
+\subsubsection[mpsub]{\setlength{\rightskip}{0pt plus 5cm}int mpsub (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a52}
+
+
+This function subtracts two multi-precision integers of equal size. The performed operation in pseudocode: x -= y. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integers. \item[{\em xdata}]The first multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]The carry-over value of the operation; this value is either 0 or 1. \end{Desc}
+\hypertarget{mp_8h_a51}{
+\index{mp.h@{mp.h}!mpsubw@{mpsubw}}
+\index{mpsubw@{mpsubw}!mp.h@{mp.h}}
+\subsubsection[mpsubw]{\setlength{\rightskip}{0pt plus 5cm}int mpsubw (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, \hyperlink{beecrypt_8api_8h_a9}{mpw} {\em y})}}
+\label{mp_8h_a51}
+
+
+This function subtracts one word to a multi-precision integer. The performed operation in pseudocode: x -= y. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integers. \item[{\em xdata}]The first multi-precision integer. \item[{\em y}]The multi-precision word. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]The carry-over value of the operation; this value is either 0 or 1. \end{Desc}
+\hypertarget{mp_8h_a53}{
+\index{mp.h@{mp.h}!mpsubx@{mpsubx}}
+\index{mpsubx@{mpsubx}!mp.h@{mp.h}}
+\subsubsection[mpsubx]{\setlength{\rightskip}{0pt plus 5cm}int mpsubx (size\_\-t {\em xsize}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, size\_\-t {\em ysize}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a53}
+
+
+This function subtracts two multi-precision integers of different size. The performed operation in pseudocode: x -= y. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em xsize}]The size of the first multi-precision integer. \item[{\em xdata}]The first multi-precision integer. \item[{\em ysize}]The size of the second multi-precision integer. \item[{\em ydata}]The second multi-precision integer. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]The carry-over value of the operation; this value is either 0 or 1. \end{Desc}
+\hypertarget{mp_8h_a44}{
+\index{mp.h@{mp.h}!mpxor@{mpxor}}
+\index{mpxor@{mpxor}!mp.h@{mp.h}}
+\subsubsection[mpxor]{\setlength{\rightskip}{0pt plus 5cm}void mpxor (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em xdata}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em ydata})}}
+\label{mp_8h_a44}
+
+
+This function computes the bit-wise XOR of two multi-precision integers. Modifies xdata. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em xdata}]The multi-precision integer data. \item[{\em ydata}]The multi-precision integer data. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a18}{
+\index{mp.h@{mp.h}!mpz@{mpz}}
+\index{mpz@{mpz}!mp.h@{mp.h}}
+\subsubsection[mpz]{\setlength{\rightskip}{0pt plus 5cm}int mpz (size\_\-t {\em size}, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a18}
+
+
+This function tests if a multi-precision integer is zero. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]if zero \item[{\em 0}]if not zero \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a14}{
+\index{mp.h@{mp.h}!mpzero@{mpzero}}
+\index{mpzero@{mpzero}!mp.h@{mp.h}}
+\subsubsection[mpzero]{\setlength{\rightskip}{0pt plus 5cm}void mpzero (size\_\-t {\em size}, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em data})}}
+\label{mp_8h_a14}
+
+
+This function zeroes a multi-precision integer of a given size. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]The size of the multi-precision integer. \item[{\em data}]The multi-precision integer data. \end{description}
+\end{Desc}
+\hypertarget{mp_8h_a80}{
+\index{mp.h@{mp.h}!os2ip@{os2ip}}
+\index{os2ip@{os2ip}!mp.h@{mp.h}}
+\subsubsection[os2ip]{\setlength{\rightskip}{0pt plus 5cm}int os2ip (\hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ {\em idata}, size\_\-t {\em isize}, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$ {\em osdata}, size\_\-t {\em ossize})}}
+\label{mp_8h_a80}
+
+

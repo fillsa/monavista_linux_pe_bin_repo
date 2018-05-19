@@ -1,0 +1,162 @@
+\contentsline {section}{\numberline {1}About this document}{3}
+\contentsline {section}{\numberline {2}{\tt ip} --- command syntax}{3}
+\contentsline {section}{\numberline {3}{\tt ip} --- error messages}{5}
+\contentsline {section}{\numberline {4}{\tt ip link} --- network device configuration}{6}
+\contentsline {paragraph}{Object:}{6}
+\contentsline {paragraph}{Commands:}{6}
+\contentsline {subsection}{\numberline {4.1}{\tt ip link set} --- change device attributes}{6}
+\contentsline {paragraph}{Abbreviations:}{6}
+\contentsline {paragraph}{Arguments:}{6}
+\contentsline {paragraph}{Warning:}{7}
+\contentsline {paragraph}{Examples:}{7}
+\contentsline {subsection}{\numberline {4.2}{\tt ip link show} --- display device attributes}{7}
+\contentsline {paragraph}{Abbreviations:}{7}
+\contentsline {paragraph}{Arguments:}{8}
+\contentsline {paragraph}{Output format:}{8}
+\contentsline {paragraph}{Statistics:}{10}
+\contentsline {section}{\numberline {5}{\tt ip address} --- protocol address management}{11}
+\contentsline {paragraph}{Abbreviations:}{11}
+\contentsline {paragraph}{Object:}{11}
+\contentsline {paragraph}{Commands:}{12}
+\contentsline {subsection}{\numberline {5.1}{\tt ip address add} --- add a new protocol address}{12}
+\contentsline {paragraph}{Abbreviations:}{12}
+\contentsline {paragraph}{Arguments:}{12}
+\contentsline {paragraph}{Examples:}{13}
+\contentsline {subsection}{\numberline {5.2}{\tt ip address delete} --- delete a protocol address}{13}
+\contentsline {paragraph}{Abbreviations:}{13}
+\contentsline {paragraph}{Arguments:}{13}
+\contentsline {paragraph}{Examples:}{13}
+\contentsline {subsection}{\numberline {5.3}{\tt ip address show} --- display protocol addresses}{13}
+\contentsline {paragraph}{Abbreviations:}{13}
+\contentsline {paragraph}{Arguments:}{14}
+\contentsline {paragraph}{Output format:}{14}
+\contentsline {subsection}{\numberline {5.4}{\tt ip address flush} --- flush protocol addresses}{15}
+\contentsline {paragraph}{Abbreviations:}{15}
+\contentsline {paragraph}{Description:}{15}
+\contentsline {paragraph}{Arguments:}{15}
+\contentsline {paragraph}{Warning:}{15}
+\contentsline {paragraph}{Statistics:}{15}
+\contentsline {paragraph}{Example:}{16}
+\contentsline {section}{\numberline {6}{\tt ip neighbour} --- neighbour/arp tables management}{16}
+\contentsline {paragraph}{Abbreviations:}{16}
+\contentsline {paragraph}{Object:}{16}
+\contentsline {paragraph}{Commands:}{16}
+\contentsline {paragraph}{See also:}{16}
+\contentsline {subsection}{\numberline {6.1}{\tt ip neighbour add} --- add a new neighbour entry\\ {\tt ip neighbour change} --- change an existing entry\\ {\tt ip neighbour replace} --- add a new entry or change an existing one}{16}
+\contentsline {paragraph}{Abbreviations:}{16}
+\contentsline {paragraph}{Description:}{17}
+\contentsline {paragraph}{Arguments:}{17}
+\contentsline {paragraph}{Examples:}{17}
+\contentsline {subsection}{\numberline {6.2}{\tt ip neighbour delete} --- delete a neighbour entry}{17}
+\contentsline {paragraph}{Abbreviations:}{17}
+\contentsline {paragraph}{Description:}{17}
+\contentsline {paragraph}{Arguments:}{18}
+\contentsline {paragraph}{Example:}{18}
+\contentsline {paragraph}{Warning:}{18}
+\contentsline {subsection}{\numberline {6.3}{\tt ip neighbour show} --- list neighbour entries}{18}
+\contentsline {paragraph}{Abbreviations:}{18}
+\contentsline {paragraph}{Description:}{18}
+\contentsline {paragraph}{Arguments:}{18}
+\contentsline {paragraph}{Output format:}{19}
+\contentsline {paragraph}{Statistics:}{20}
+\contentsline {subsection}{\numberline {6.4}{\tt ip neighbour flush} --- flush neighbour entries}{20}
+\contentsline {paragraph}{Abbreviations:}{20}
+\contentsline {paragraph}{Description:}{20}
+\contentsline {paragraph}{Arguments:}{20}
+\contentsline {paragraph}{Statistics:}{20}
+\contentsline {paragraph}{Example:}{20}
+\contentsline {section}{\numberline {7}{\tt ip route} --- routing table management}{21}
+\contentsline {paragraph}{Abbreviations:}{21}
+\contentsline {paragraph}{Object:}{21}
+\contentsline {paragraph}{Route attributes:}{22}
+\contentsline {paragraph}{Route types:}{22}
+\contentsline {paragraph}{Route tables:}{23}
+\contentsline {subsection}{\numberline {7.1}{\tt ip route add} --- add a new route\\ {\tt ip route change} --- change a route\\ {\tt ip route replace} --- change a route or add a new one}{23}
+\contentsline {paragraph}{Abbreviations:}{23}
+\contentsline {paragraph}{Arguments:}{23}
+\contentsline {paragraph}{Examples:}{26}
+\contentsline {subsection}{\numberline {7.2}{\tt ip route delete} --- delete a route}{27}
+\contentsline {paragraph}{Abbreviations:}{27}
+\contentsline {paragraph}{Arguments:}{27}
+\contentsline {paragraph}{Example:}{27}
+\contentsline {subsection}{\numberline {7.3}{\tt ip route show} --- list routes}{27}
+\contentsline {paragraph}{Abbreviations:}{27}
+\contentsline {paragraph}{Description:}{27}
+\contentsline {paragraph}{Arguments:}{28}
+\contentsline {paragraph}{Examples:}{29}
+\contentsline {paragraph}{Output format:}{29}
+\contentsline {paragraph}{Statistics:}{31}
+\contentsline {subsection}{\numberline {7.4}{\tt ip route flush} --- flush routing tables}{31}
+\contentsline {paragraph}{Abbreviations:}{31}
+\contentsline {paragraph}{Description:}{31}
+\contentsline {paragraph}{Arguments:}{31}
+\contentsline {paragraph}{Statistics:}{31}
+\contentsline {paragraph}{Examples:}{31}
+\contentsline {subsection}{\numberline {7.5}{\tt ip route get} --- get a single route}{32}
+\contentsline {paragraph}{Abbreviations:}{32}
+\contentsline {paragraph}{Description:}{32}
+\contentsline {paragraph}{Arguments:}{33}
+\contentsline {paragraph}{Output format:}{33}
+\contentsline {paragraph}{Examples:}{33}
+\contentsline {section}{\numberline {8}{\tt ip rule} --- routing policy database management}{35}
+\contentsline {paragraph}{Abbreviations:}{35}
+\contentsline {paragraph}{Object:}{35}
+\contentsline {paragraph}{Rule attributes:}{37}
+\contentsline {paragraph}{Rule types:}{37}
+\contentsline {paragraph}{Commands:}{37}
+\contentsline {subsection}{\numberline {8.1}{\tt ip rule add} --- insert a new rule\\ {\tt ip rule delete} --- delete a rule}{37}
+\contentsline {paragraph}{Abbreviations:}{37}
+\contentsline {paragraph}{Arguments:}{37}
+\contentsline {paragraph}{Warning:}{38}
+\contentsline {paragraph}{Examples:}{39}
+\contentsline {subsection}{\numberline {8.2}{\tt ip rule show} --- list rules}{39}
+\contentsline {paragraph}{Abbreviations:}{39}
+\contentsline {paragraph}{Arguments:}{39}
+\contentsline {paragraph}{Output format:}{39}
+\contentsline {section}{\numberline {9}{\tt ip maddress} --- multicast addresses management}{40}
+\contentsline {paragraph}{Object:}{40}
+\contentsline {paragraph}{Commands:}{40}
+\contentsline {subsection}{\numberline {9.1}{\tt ip maddress show} --- list multicast addresses}{40}
+\contentsline {paragraph}{Abbreviations:}{40}
+\contentsline {paragraph}{Arguments:}{40}
+\contentsline {paragraph}{Output format:}{40}
+\contentsline {subsection}{\numberline {9.2}{\tt ip maddress add} --- add a multicast address\\ {\tt ip maddress delete} --- delete a multicast address}{40}
+\contentsline {paragraph}{Abbreviations:}{40}
+\contentsline {paragraph}{Description:}{40}
+\contentsline {paragraph}{Arguments:}{41}
+\contentsline {paragraph}{Example:}{41}
+\contentsline {section}{\numberline {10}{\tt ip mroute} --- multicast routing cache management}{41}
+\contentsline {paragraph}{Abbreviations:}{41}
+\contentsline {paragraph}{Object:}{41}
+\contentsline {paragraph}{Commands:}{41}
+\contentsline {subsection}{\numberline {10.1}{\tt ip mroute show} --- list mroute cache entries}{41}
+\contentsline {paragraph}{Abbreviations:}{41}
+\contentsline {paragraph}{Arguments:}{42}
+\contentsline {paragraph}{Output format:}{42}
+\contentsline {paragraph}{Statistics:}{42}
+\contentsline {section}{\numberline {11}{\tt ip tunnel} --- tunnel configuration}{42}
+\contentsline {paragraph}{Abbreviations:}{42}
+\contentsline {paragraph}{Object:}{42}
+\contentsline {paragraph}{Commands:}{43}
+\contentsline {paragraph}{See also:}{43}
+\contentsline {subsection}{\numberline {11.1}{\tt ip tunnel add} --- add a new tunnel\\ {\tt ip tunnel change} --- change an existing tunnel\\ {\tt ip tunnel delete} --- destroy a tunnel}{43}
+\contentsline {paragraph}{Abbreviations:}{43}
+\contentsline {paragraph}{Arguments:}{43}
+\contentsline {paragraph}{Example:}{44}
+\contentsline {subsection}{\numberline {11.2}{\tt ip tunnel show} --- list tunnels}{44}
+\contentsline {paragraph}{Abbreviations:}{44}
+\contentsline {paragraph}{Arguments:}{44}
+\contentsline {paragraph}{Output format:}{44}
+\contentsline {paragraph}{Statistics:}{45}
+\contentsline {section}{\numberline {12}{\tt ip monitor} and {\tt rtmon} --- state monitoring}{45}
+\contentsline {section}{\numberline {13}Route realms and policy propagation, {\tt rtacct}}{46}
+\contentsline {section}{References}{48}
+\contentsline {section}{Appendix}{48}
+\contentsline {section}{\numberline {A}Source address selection}{48}
+\contentsline {section}{\numberline {B}Proxy ARP/NDISC}{49}
+\contentsline {section}{\numberline {C}Route NAT status}{50}
+\contentsline {paragraph}{What it is not:}{50}
+\contentsline {paragraph}{How it works.}{51}
+\contentsline {paragraph}{How to only translate selected ports:}{52}
+\contentsline {section}{\numberline {D}Example: minimal host setup}{52}
+\contentsline {section}{\numberline {E}Example: {\tt ifcfg} --- interface address management}{55}

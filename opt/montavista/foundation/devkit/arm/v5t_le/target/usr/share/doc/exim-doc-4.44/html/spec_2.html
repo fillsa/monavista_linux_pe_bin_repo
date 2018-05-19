@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 2</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_1.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_3.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX45"></a>
+<a name="IX46"></a>
+<a name="IX47"></a>
+<h1>
+<a name="CHAP2" href="spec_toc.html#TOC13">
+2. Incorporated code
+</a></h1>
+<p>
+A number of pieces of external code are included in the Exim distribution.
+</p>
+<ul>
+<li><p>
+Regular expressions are supported in the main Exim program and in the Exim
+monitor using the freely-distributable PCRE library, copyright &copy; 2003
+University of Cambridge. The source is distributed in the directory
+<i>src/pcre</i>. However, this is a cut-down version of PCRE. If you want to use
+the PCRE library in other programs, you should obtain and install the full
+version from <a href="ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre">ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre</a>.
+<br>
+</p>
+</li>
+<li><a name="IX48"></a>
+<p>
+Support for the cdb (Constant DataBase) lookup method is provided by code
+contributed by Nigel Metheringham of Planet Online Ltd. which contains the
+following statements:
+</p>
+<hr>
+<p>
+Copyright &copy; 1998 Nigel Metheringham, Planet Online Ltd
+</p>
+<p>
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation; either version 2 of the License, or (at your option) any later
+version.
+</p>
+<p>
+This code implements Dan Bernstein's Constant DataBase (cdb) spec. Information,
+the spec and sample code for cdb can be obtained from
+<a href="http://www.pobox.com/&#126;djb/cdb.html">http://www.pobox.com/&#126;djb/cdb.html</a>. This implementation borrows some code
+from Dan Bernstein's implementation (which has no license restrictions applied
+to it).
+<br>
+</p>
+<hr>
+<p>
+The implementation is completely contained within the code of Exim.
+It does not link against an external cdb library.
+<br>
+</p>
+</li>
+<li><a name="IX49"></a>
+<a name="IX50"></a>
+<a name="IX51"></a>
+<p>
+Client support for Microsoft's <i>Secure Password Authentication</i> is provided
+by code contributed by Marc Prud'hommeaux. Server support was contributed by 
+Tom Kistner. This includes code taken from the Samba project, which is released
+under the Gnu GPL.
+<br>
+</p>
+</li>
+<li><a name="IX52"></a>
+<a name="IX53"></a>
+<a name="IX54"></a>
+<p>
+Support for calling the Cyrus <i>pwcheck</i> and <i>saslauthd</i> daemons is provided
+by code taken from the Cyrus-SASL library and adapted by Alexander S.
+Sabourenkov. The permission notice appears below, in accordance with the
+conditions expressed therein.
+</p>
+<hr>
+<p>
+Copyright &copy; 2001 Carnegie Mellon University.  All rights reserved.
+</p>
+<p>
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+</p>
+<ol>
+<li TYPE="1"><p>
+Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+</p>
+</li>
+<li TYPE="1"><p>
+Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in
+the documentation and/or other materials provided with the
+distribution.
+</p>
+</li>
+<li TYPE="1"><p>
+The name &#147;Carnegie Mellon University&#148; must not be used to
+endorse or promote products derived from this software without
+prior written permission. For permission or any other legal
+details, please contact
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt>Office of Technology Transfer<br>
+<tt>&nbsp;&nbsp;</tt>Carnegie Mellon University<br>
+<tt>&nbsp;&nbsp;</tt>5000 Forbes Avenue<br>
+<tt>&nbsp;&nbsp;</tt>Pittsburgh, PA  15213-3890<br>
+<tt>&nbsp;&nbsp;</tt>(412) 268-4387, fax: (412) 268-7395<br>
+<tt>&nbsp;&nbsp;</tt>tech-transfer&#064;andrew.cmu.edu<br>
+</p>
+</li>
+<li TYPE="1"><p>
+Redistributions of any form whatsoever must retain the following
+acknowledgment:
+<br>
+</p>
+<p>
+<em>This product includes software developed by Computing Services
+at Carnegie Mellon University (<a href="http://www.cmu.edu/computing/">http://www.cmu.edu/computing/</a>).</em>
+<br>
+</p>
+</li>
+</ol>
+<p>
+CARNEGIE MELLON UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO
+THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS, IN NO EVENT SHALL CARNEGIE MELLON UNIVERSITY BE LIABLE
+FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN
+AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
+OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+<br>
+</p>
+<hr>
+<br>
+</li>
+<li><a name="IX55"></a>
+<a name="IX56"></a>
+<a name="IX57"></a>
+<p>
+The Exim Monitor program, which is an X-Window application, includes
+modified versions of the Athena StripChart and TextPop widgets.
+This code is copyright by DEC and MIT, and their permission notice appears
+below, in accordance with the conditions expressed therein.
+</p>
+<hr>
+<p>
+Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts,
+and the Massachusetts Institute of Technology, Cambridge, Massachusetts.
+<br>
+</p>
+<p>
+ All Rights Reserved
+<br>
+</p>
+<p>
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation, and that the names of Digital or MIT not be
+used in advertising or publicity pertaining to distribution of the
+software without specific, written prior permission.
+</p>
+<p>
+DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
+DIGITAL BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR
+ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
+SOFTWARE.
+<br>
+</p>
+<hr>
+</li>
+</ul>
+<hr>
+<font size=2>
+<a href="spec_1.html">Previous</a>&nbsp;&nbsp;<a href="spec_3.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

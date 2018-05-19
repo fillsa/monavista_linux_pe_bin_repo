@@ -1,0 +1,219 @@
+<html>
+<head>
+<title>The Exim FAQ Section 25</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_24.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_26.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC377">96. LINUX</a></h2>
+<p>
+<a name="TOC378" href="FAQ.html#TOC378">Q9601:</a>&nbsp;&nbsp;Exim is mysteriously crashing, usually when forking to send a delivery
+error message.
+</p>
+<p>
+<font color="#00BB00">A9601:</font>&nbsp;&nbsp;This has been seen in cases where Exim has been incorrectly built with
+a muddled combination of an <i>ndbm.h</i> include file and a non-matching
+DBM library.
+</p>
+<p>
+Faults like this have also been seen on systems with faulty motherboards.
+You could try to compile the Linux kernel 10 times - if the compile
+process stops with signal 11, your hardware is to blame.
+</p>
+<p>
+<a name="TOC379" href="FAQ.html#TOC379">Q9602:</a>&nbsp;&nbsp;I want to use <i>logrotate</i> which is standard with RH5.2 Linux to rotate
+my mail logs. Anyone worked out the <i>logrotate</i> config file that will
+do this?
+</p>
+<p>
+<font color="#00BB00">A9602:</font>&nbsp;&nbsp;Here's one suggestion:
+</p>
+<pre>
+   /var/log/exim/main.log {
+       create 644 exim exim
+       rotate 4
+       compress
+       delaycompress
+   }</pre>
+<p>
+The sleep is added to allow things to close the log file prior to
+compression. You also need similar entries for the panic log and the
+reject log, of course.
+</p>
+<p>
+<a name="TOC380" href="FAQ.html#TOC380">Q9603:</a>&nbsp;&nbsp;I'm seeing the message <i>inetd[334]: imap/tcp server failing (looping),
+service terminated</i> on a RedHat 5.2 system, causing <i>imap</i> connections to
+be refused. The <i>imapd</i> in use is Washington Univers 12.250. Could this
+be anything to do with Exim?
+</p>
+<p>
+<font color="#00BB00">A9603:</font>&nbsp;&nbsp;No, it's nothing to do with Exim, but here's the answer anyway: there
+is a maximum connection rate for <i>inetd</i>. If connections come in faster
+than that, it thinks a caller is looping. The default setting on RedHat
+5.2 is 40 calls in any one minute before <i>inetd</i> thinks there's a problem
+and suspends further calls for 10 mins. This default setting is very
+conservative. You should probably increase it by a factor of 10 or 20.
+For example:
+</p>
+<pre>
+   imap stream tcp nowait.400 root /usr/sbin/tcpd /usr/local/etc/imapd</pre>
+<p>
+The rate setting is the number following &#147;nowait&#148;. This syntax seems to
+be specific to the Linux version of <i>inetd</i>. Other operating systems
+provide similar functionality, but in different ways.
+</p>
+<p>
+<a name="TOC381" href="FAQ.html#TOC381">Q9604:</a>&nbsp;&nbsp;I get the <i>too many open files</i> error especially when a lot of messages
+land for Majordomo at the same time.
+</p>
+<p>
+<font color="#00BB00">A9604:</font>&nbsp;&nbsp;The problem appears to be the number of open files the system can
+handle. This is changable by using the proc filesystem. To your
+<i>/etc/rc.d/rc.local</i> file append something like the following:
+</p>
+<pre>
+   # Now System is up, Modify kernel parameters for max open etc.</pre>
+<pre>
+   if [ -f /proc/sys/kernel/file-max ]; then
+		 echo 16384 &#62;&#62; /proc/sys/kernel/file-max
+   fi
+   if [ -f /proc/sys/kernel/inode-max ]; then
+		 echo 24576 &#62;&#62; /proc/sys/kernel/inode-max
+   fi
+   if [ -f /proc/sys/kernel/file-nr ]; then
+		 echo 2160 &#62;&#62; /proc/sys/kernel/file-nr
+   fi</pre>
+<p>
+By echoing the value you want for file-max to the file <i>file-max</i> etc.,
+you actually change the kernel parameters.
+</p>
+<p>
+<a name="TOC382" href="FAQ.html#TOC382">Q9605:</a>&nbsp;&nbsp;I installed debian 2.2 linux on a small 325mb 486 laptop. When I try
+to test the Mail program, I get the following error: <i>Failed to open
+configuration file /etc/exim.conf</i>.
+</p>
+<p>
+<font color="#00BB00">A9605:</font>&nbsp;&nbsp;The Debian installation should have given you <i>/usr/sbin/eximconfig</i>,
+which asks you some questions and then sets up the configuration file
+in <i>/etc/exim.conf</i>. Try running that (you'll probably need <i>root</i>) and see
+how it goes. In any case you get a thoroughly commented conf file at
+the end, which will give you a sample from which to work if you need
+further modification.
+</p>
+<p>
+The Exim docs in the Debian package are in <i>/usr/doc/exim</i> where the full
+reference manual is <i>spec.txt.gz</i>.
+</p>
+<p>
+<a name="TOC383" href="FAQ.html#TOC383">Q9606:</a>&nbsp;&nbsp;I'm having trouble configuring Exim 4 on a Debian system. How does
+<i>/etc/exim4/conf.d</i> work?
+</p>
+<p>
+<font color="#00BB00">A9606:</font>&nbsp;&nbsp;The Debian Exim 4 package uses a quite uncommon, but elegant,
+method of configuration where the &#147;real&#148; Exim configuration file is
+assembled from a tree of snippets by a script invoked just before the
+daemon is started (see <a href="FAQ_25.html#TOC385">Q9608</a>).
+</p>
+<p>
+This fits very well into the Debian system of configuration file
+management and is a great ease for the automatic configuration with
+Debconf. However, it is <i>very</i> different from the normal way Exim 4 is
+configured. Non-Debian users on the Exim mailing list will probably have
+difficulty in trying to answer specific questions about it. You may have
+to find a Debian expert.
+</p>
+<p>
+<a name="TOC384" href="FAQ.html#TOC384">Q9607:</a>&nbsp;&nbsp;I'm having difficulties trying to make Exim 4 with Redhat 9 and Berkeley
+DB 4.
+</p>
+<p>
+<font color="#00BB00">A9607:</font>&nbsp;&nbsp;Have you remembered to install the db4-devel package?
+</p>
+<p>
+<a name="TOC385" href="FAQ.html#TOC385">Q9608:</a>&nbsp;&nbsp;I'm running Exim 3 under Debian, and want to upgrade to Exim 4. How
+difficult is it?
+</p>
+<p>
+<font color="#00BB00">A9608:</font>&nbsp;&nbsp;A user who did this, using the Debian Exim 4 package, reported as
+follows:
+</p>
+<p>
+(1) &nbsp;The exim4 package installs easily, and the exim (3.38) package
+uninstalls at the same time.
+</p>
+<p>
+(2) &nbsp;Exim runs from <i>inetd</i>. Exim4 runs from <i>/etc/init.d</i>. <i>Much</i> nicer!
+</p>
+<p>
+(3) &nbsp;The exim conffile lives in <i>/etc/exim/exim.conf</i>. The exim4 conffile
+lives in <i>/var/lib/exim4/config.autogenerated</i>. It is, as the name
+suggests, autogenerated.
+</p>
+<p>
+(4) &nbsp;A new directory is created called <i>/etc/exim4</i>. This contains the
+conffiles to generate the above config. You make changes here.
+</p>
+<p>
+(5) &nbsp;Once you have made changes to the files in <i>/etc/exim4</i> you run the
+script <i>update-exim4.conf</i> which generates a replacement
+<i>config.autogenerated</i>.
+</p>
+<p>
+[Added comment by the Debian maintainer, slightly edited:
+You also need to tell the Exim daemon to reread the changed
+configuration. You can do this using SIGHUP by hand. Alternatively,
+instead of running <i>update-exim4.conf</i> you can use
+</p>
+<pre>
+   invoke-rc.d exim4 reload</pre>
+<p>
+which does the rebuild and also tells Exim to reread the changed
+configuration.]
+</p>
+<p>
+(6) &nbsp;In my experience, you need to <i>carefully</i> check the generated
+configs. eg, it did not generate a system filter file reference in the
+<i>config.autogenerated</i>. I didn't bother too much, since this is a home
+setup.
+</p>
+<p>
+(7) &nbsp;All of this may be in the docs. I've read some of them, obviously,
+but didn't come across an actual upgrade guide.
+</p>
+<p>
+[The Debian maintainer says:
+<i>/usr/share/doc/exim4-base/README.Debian.gz</i> and <i>update-exim4.conf(8)</i>
+should answer most of the questions.]
+</p>
+<p>
+(8) &nbsp;I've still got some minor things to tweak to get back to where I
+was before with Exim 3. But overall, it's no drama.
+</p>
+<p>
+<a name="TOC386" href="FAQ.html#TOC386">Q9609:</a>&nbsp;&nbsp;Why do some servers refuse SMTP connections from my Linux box, but accept
+connections from hosts running other operating systems?
+</p>
+<p>
+<font color="#00BB00">A9609:</font>&nbsp;&nbsp;If you are sure this isn't a policy issue (that is, your box isn't
+administratively blocked for some reason), this may be because your
+Linux box has ECN (Explicit Congestion Notification) enabled in its
+TCP/IP stack. There are many broken firewalls that refuse connections
+from ECN-enabled hosts. You can check the state of your box by running
+</p>
+<pre>
+   cat /proc/sys/net/ipv4/tcp_ecn</pre>
+<p>
+If the value is "1", you have ECN enabled. You can turn it off by
+running this command:
+</p>
+<pre>
+   echo "0" &#62; /proc/sys/net/ipv4/tcp_ecn</pre>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_24.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_26.html">Next</a>
+</body>
+</html>

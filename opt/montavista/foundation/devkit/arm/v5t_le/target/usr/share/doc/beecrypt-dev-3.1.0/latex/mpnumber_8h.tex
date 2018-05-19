@@ -1,0 +1,117 @@
+\hypertarget{mpnumber_8h}{
+\section{mpnumber.h File Reference}
+\label{mpnumber_8h}\index{mpnumber.h@{mpnumber.h}}
+}
+Multi-precision numbers, headers. 
+
+{\tt \#include \char`\"{}mp.h\char`\"{}}\par
+\subsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \hyperlink{structmpnumber}{mpnumber}
+\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \hyperlink{mpnumber_8h_a0}{mpnzero} (\hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+void \hyperlink{mpnumber_8h_a1}{mpnsize} (\hyperlink{structmpnumber}{mpnumber} $\ast$, size\_\-t)
+\item 
+void \hyperlink{mpnumber_8h_a2}{mpninit} (\hyperlink{structmpnumber}{mpnumber} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpnumber_8h_a3}{mpnfree} (\hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+void \hyperlink{mpnumber_8h_a4}{mpncopy} (\hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+void \hyperlink{mpnumber_8h_a5}{mpnwipe} (\hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+void \hyperlink{mpnumber_8h_a6}{mpnset} (\hyperlink{structmpnumber}{mpnumber} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpnumber_8h_a7}{mpnsetw} (\hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw})
+\item 
+void \hyperlink{mpnumber_8h_a8}{mpnsethex} (\hyperlink{structmpnumber}{mpnumber} $\ast$, const char $\ast$)
+\item 
+int \hyperlink{mpnumber_8h_a9}{mpninv} (\hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Multi-precision numbers, headers. 
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{mpnumber_8h-source}{mpnumber.h}.
+
+\subsection{Function Documentation}
+\hypertarget{mpnumber_8h_a4}{
+\index{mpnumber.h@{mpnumber.h}!mpncopy@{mpncopy}}
+\index{mpncopy@{mpncopy}!mpnumber.h@{mpnumber.h}}
+\subsubsection[mpncopy]{\setlength{\rightskip}{0pt plus 5cm}void mpncopy (\hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{mpnumber_8h_a4}
+
+
+\hypertarget{mpnumber_8h_a3}{
+\index{mpnumber.h@{mpnumber.h}!mpnfree@{mpnfree}}
+\index{mpnfree@{mpnfree}!mpnumber.h@{mpnumber.h}}
+\subsubsection[mpnfree]{\setlength{\rightskip}{0pt plus 5cm}void mpnfree (\hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{mpnumber_8h_a3}
+
+
+\hypertarget{mpnumber_8h_a2}{
+\index{mpnumber.h@{mpnumber.h}!mpninit@{mpninit}}
+\index{mpninit@{mpninit}!mpnumber.h@{mpnumber.h}}
+\subsubsection[mpninit]{\setlength{\rightskip}{0pt plus 5cm}void mpninit (\hyperlink{structmpnumber}{mpnumber} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpnumber_8h_a2}
+
+
+\hypertarget{mpnumber_8h_a9}{
+\index{mpnumber.h@{mpnumber.h}!mpninv@{mpninv}}
+\index{mpninv@{mpninv}!mpnumber.h@{mpnumber.h}}
+\subsubsection[mpninv]{\setlength{\rightskip}{0pt plus 5cm}int mpninv (\hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{mpnumber_8h_a9}
+
+
+\hypertarget{mpnumber_8h_a6}{
+\index{mpnumber.h@{mpnumber.h}!mpnset@{mpnset}}
+\index{mpnset@{mpnset}!mpnumber.h@{mpnumber.h}}
+\subsubsection[mpnset]{\setlength{\rightskip}{0pt plus 5cm}void mpnset (\hyperlink{structmpnumber}{mpnumber} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpnumber_8h_a6}
+
+
+\hypertarget{mpnumber_8h_a8}{
+\index{mpnumber.h@{mpnumber.h}!mpnsethex@{mpnsethex}}
+\index{mpnsethex@{mpnsethex}!mpnumber.h@{mpnumber.h}}
+\subsubsection[mpnsethex]{\setlength{\rightskip}{0pt plus 5cm}void mpnsethex (\hyperlink{structmpnumber}{mpnumber} $\ast$, const char $\ast$)}}
+\label{mpnumber_8h_a8}
+
+
+\hypertarget{mpnumber_8h_a7}{
+\index{mpnumber.h@{mpnumber.h}!mpnsetw@{mpnsetw}}
+\index{mpnsetw@{mpnsetw}!mpnumber.h@{mpnumber.h}}
+\subsubsection[mpnsetw]{\setlength{\rightskip}{0pt plus 5cm}void mpnsetw (\hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw})}}
+\label{mpnumber_8h_a7}
+
+
+\hypertarget{mpnumber_8h_a1}{
+\index{mpnumber.h@{mpnumber.h}!mpnsize@{mpnsize}}
+\index{mpnsize@{mpnsize}!mpnumber.h@{mpnumber.h}}
+\subsubsection[mpnsize]{\setlength{\rightskip}{0pt plus 5cm}void mpnsize (\hyperlink{structmpnumber}{mpnumber} $\ast$, size\_\-t)}}
+\label{mpnumber_8h_a1}
+
+
+\hypertarget{mpnumber_8h_a5}{
+\index{mpnumber.h@{mpnumber.h}!mpnwipe@{mpnwipe}}
+\index{mpnwipe@{mpnwipe}!mpnumber.h@{mpnumber.h}}
+\subsubsection[mpnwipe]{\setlength{\rightskip}{0pt plus 5cm}void mpnwipe (\hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{mpnumber_8h_a5}
+
+
+\hypertarget{mpnumber_8h_a0}{
+\index{mpnumber.h@{mpnumber.h}!mpnzero@{mpnzero}}
+\index{mpnzero@{mpnzero}!mpnumber.h@{mpnumber.h}}
+\subsubsection[mpnzero]{\setlength{\rightskip}{0pt plus 5cm}void mpnzero (\hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{mpnumber_8h_a0}
+
+

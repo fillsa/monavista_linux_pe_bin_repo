@@ -1,0 +1,123 @@
+<html lang="en">
+<head>
+<title>Threads and Signal Handling - The GNU C Library</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU C Library">
+<meta name="generator" content="makeinfo 4.7">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="POSIX-Threads.html#POSIX-Threads" title="POSIX Threads">
+<link rel="prev" href="Thread_002dSpecific-Data.html#Thread_002dSpecific-Data" title="Thread-Specific Data">
+<link rel="next" href="Threads-and-Fork.html#Threads-and-Fork" title="Threads and Fork">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc { font-variant:small-caps }
+  span.roman { font-family: serif; font-weight: normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Threads-and-Signal-Handling"></a>Next:&nbsp;<a rel="next" accesskey="n" href="Threads-and-Fork.html#Threads-and-Fork">Threads and Fork</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Thread_002dSpecific-Data.html#Thread_002dSpecific-Data">Thread-Specific Data</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="POSIX-Threads.html#POSIX-Threads">POSIX Threads</a>
+<hr><br>
+</div>
+
+<h3 class="section">34.9 Threads and Signal Handling</h3>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_sigmask</b> (<var>int how, const sigset_t *newmask, sigset_t *oldmask</var>)<var><a name="index-pthread_005fsigmask-3756"></a></var><br>
+<blockquote><p><code>pthread_sigmask</code> changes the signal mask for the calling thread as
+described by the <var>how</var> and <var>newmask</var> arguments. If <var>oldmask</var>
+is not <code>NULL</code>, the previous signal mask is stored in the location
+pointed to by <var>oldmask</var>.
+
+        <p>The meaning of the <var>how</var> and <var>newmask</var> arguments is the same as
+for <code>sigprocmask</code>. If <var>how</var> is <code>SIG_SETMASK</code>, the signal
+mask is set to <var>newmask</var>. If <var>how</var> is <code>SIG_BLOCK</code>, the
+signals specified to <var>newmask</var> are added to the current signal mask. 
+If <var>how</var> is <code>SIG_UNBLOCK</code>, the signals specified to
+<var>newmask</var> are removed from the current signal mask.
+
+        <p>Recall that signal masks are set on a per-thread basis, but signal
+actions and signal handlers, as set with <code>sigaction</code>, are shared
+between all threads.
+
+        <p>The <code>pthread_sigmask</code> function returns 0 on success, and one of the
+following error codes on error:
+          <dl>
+<dt><code>EINVAL</code><dd><var>how</var> is not one of <code>SIG_SETMASK</code>, <code>SIG_BLOCK</code>, or <code>SIG_UNBLOCK</code>
+
+          <br><dt><code>EFAULT</code><dd><var>newmask</var> or <var>oldmask</var> point to invalid addresses
+</dl>
+        </p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_kill</b> (<var>pthread_t thread, int signo</var>)<var><a name="index-pthread_005fkill-3757"></a></var><br>
+<blockquote><p><code>pthread_kill</code> sends signal number <var>signo</var> to the thread
+<var>thread</var>.  The signal is delivered and handled as described in
+<a href="Signal-Handling.html#Signal-Handling">Signal Handling</a>.
+
+        <p><code>pthread_kill</code> returns 0 on success, one of the following error codes
+on error:
+          <dl>
+<dt><code>EINVAL</code><dd><var>signo</var> is not a valid signal number
+
+          <br><dt><code>ESRCH</code><dd>The thread <var>thread</var> does not exist (e.g. it has already terminated)
+</dl>
+        </p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>sigwait</b> (<var>const sigset_t *set, int *sig</var>)<var><a name="index-sigwait-3758"></a></var><br>
+<blockquote><p><code>sigwait</code> suspends the calling thread until one of the signals in
+<var>set</var> is delivered to the calling thread. It then stores the number
+of the signal received in the location pointed to by <var>sig</var> and
+returns. The signals in <var>set</var> must be blocked and not ignored on
+entrance to <code>sigwait</code>. If the delivered signal has a signal handler
+function attached, that function is <em>not</em> called.
+
+        <p><code>sigwait</code> is a cancellation point.  It always returns 0. 
+</p></blockquote></div>
+
+   <p>For <code>sigwait</code> to work reliably, the signals being waited for must be
+blocked in all threads, not only in the calling thread, since
+otherwise the POSIX semantics for signal delivery do not guarantee
+that it's the thread doing the <code>sigwait</code> that will receive the signal. 
+The best way to achieve this is block those signals before any threads
+are created, and never unblock them in the program other than by
+calling <code>sigwait</code>.
+
+   <p>Signal handling in LinuxThreads departs significantly from the POSIX
+standard. According to the standard, &ldquo;asynchronous&rdquo; (external) signals
+are addressed to the whole process (the collection of all threads),
+which then delivers them to one particular thread. The thread that
+actually receives the signal is any thread that does not currently block
+the signal.
+
+   <p>In LinuxThreads, each thread is actually a kernel process with its own
+PID, so external signals are always directed to one particular thread. 
+If, for instance, another thread is blocked in <code>sigwait</code> on that
+signal, it will not be restarted.
+
+   <p>The LinuxThreads implementation of <code>sigwait</code> installs dummy signal
+handlers for the signals in <var>set</var> for the duration of the
+wait. Since signal handlers are shared between all threads, other
+threads must not attach their own signal handlers to these signals, or
+alternatively they should all block these signals (which is recommended
+anyway).
+
+   </body></html>
+

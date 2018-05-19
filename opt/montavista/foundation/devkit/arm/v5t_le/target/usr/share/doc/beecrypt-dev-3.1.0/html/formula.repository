@@ -1,0 +1,39 @@
+\form#0:$p$
+\form#1:$q$
+\form#2:$g$
+\form#3:$\mathds{Z}^{*}_p$
+\form#4:$x$
+\form#5:$y$
+\form#6:$r=(g^{k}\ \textrm{mod}\ p)\ \textrm{mod}\ q$
+\form#7:$s=k^{-1}(h(m)+xr)\ \textrm{mod}\ q$
+\form#8:$0<r<q$
+\form#9:$0<s<q$
+\form#10:$w=s^{-1}\ \textrm{mod}\ q$
+\form#11:$u_1=w \cdot h(m)\ \textrm{mod}\ q$
+\form#12:$u_2=rw\ \textrm{mod}\ q$
+\form#13:$v=(g^{u_1}y^{u_2}\ \textrm{mod}\ p)\ \textrm{mod}\ q$
+\form#14:$v=r$
+\form#15:$r=g^{k}\ \textrm{mod}\ p$
+\form#16:$s=k^{-1}(h(m)-xr)\ \textrm{mod}\ (p-1)$
+\form#17:$0<r<p$
+\form#18:$0<s<(p-1)$
+\form#19:$v_1=y^{r}r^{s}\ \textrm{mod}\ p$
+\form#20:$v_2=g^{h(m)}\ \textrm{mod}\ p$
+\form#21:$v_1=v_2$
+\form#22:$s=xr+kh(m)\ \textrm{mod}\ (p-1)$
+\form#23:$v_1=g^{s}\ \textrm{mod}\ p$
+\form#24:$v_2=y^{r}r^{h(m)}\ \textrm{mod}\ p$
+\form#25:$c=m^{e}\ \textrm{mod}\ n$
+\form#26:$m=c^{d}\ \textrm{mod}\ n$
+\form#27:$j_1=c^{d_1}\ \textrm{mod}\ p$
+\form#28:$j_2=c^{d_2}\ \textrm{mod}\ q$
+\form#29:$h=c \cdot (j_1-j_2)\ \textrm{mod}\ p$
+\form#30:$m=j_2+hq$
+\form#31:$p-1$
+\form#32:$p=qr+1$
+\form#33:$G$
+\form#34:$n=p-1=qr$
+\form#35:$n=pq$
+\form#36:$d_1=d\ \textrm{mod}\ (p-1)$
+\form#37:$d_2=d\ \textrm{mod}\ (q-1)$
+\form#38:$c=q^{-1}\ \textrm{mod}\ p$

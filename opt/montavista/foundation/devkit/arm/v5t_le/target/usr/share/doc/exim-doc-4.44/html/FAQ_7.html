@@ -1,0 +1,794 @@
+<html>
+<head>
+<title>The Exim FAQ Section 7</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_6.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_8.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC230">7. POLICY CONTROLS</a></h2>
+<p>
+<a name="TOC231" href="FAQ.html#TOC231">Q0701:</a>&nbsp;&nbsp;How do I block unwanted messages from outside my host?
+</p>
+<p>
+<font color="#00BB00">A0701:</font>&nbsp;&nbsp;Exim uses Access Control Lists (ACLs) for controlling incoming mail from
+other hosts. A whole chapter in the reference manual is devoted to
+describing how they work. A wide variety of conditions can be imposed on
+incoming messages.
+</p>
+<p>
+The default Exim run time configuration contains an example of an ACL
+which blocks all relaying, and messages whose senders cannot be
+verified. This example is heavily commented and worth studying.
+</p>
+<p>
+<a name="TOC232" href="FAQ.html#TOC232">Q0702:</a>&nbsp;&nbsp;I don't want to block spam entirely; how can I inspect each message
+before deciding whether or not to deliver it?
+</p>
+<p>
+<font color="#00BB00">A0702:</font>&nbsp;&nbsp;Wherever possible, inspection and rejection is best done automatically
+in an ACL, that is, before the message is accepted. If you want to
+verify manually each message that is classified as spam by an automatic
+check, you can arrange for a system filter to freeze such messages after
+they have been accepted.
+</p>
+<p>
+If, after inspection, you decide not to deliver the message, it is
+safest to discard it, using the <b>-Mrm</b> option. Use of the <b>-Mg</b> option
+to force a bounce carries the risk of &#147;collateral spam&#148; if the sender
+address is faked.
+</p>
+<p>
+<a name="TOC233" href="FAQ.html#TOC233">Q0703:</a>&nbsp;&nbsp;How can I test that my spam blocks are working?
+</p>
+<p>
+<font color="#00BB00">A0703:</font>&nbsp;&nbsp;The <b>-bh</b> option allows you to run a testing SMTP session as if from a
+given IP address. For example,
+</p>
+<pre>
+   exim -bh 192.168.178.39</pre>
+<p>
+In addition to the normal SMTP replies, it outputs commentary about
+which tests have succeeded or failed. If you are not interested in the
+details, but just want to know if a particular sender at a particular IP
+address is able to mail to a particular recipient, you can use the
+<tt>exim_checkaccess</tt> utility, which provides a &#147;packaged&#148; version of
+<b>-bh</b>. You call it like this:
+</p>
+<pre>
+   exim_checkaccess 192.168.53.23 recip@my.domain -f sender@some.domain</pre>
+<p>
+If you don't give a sender, <tt>&#60;&#62;</tt> is used (that it, it acts like a
+bounce message).
+</p>
+<p>
+<a name="TOC234" href="FAQ.html#TOC234">Q0704:</a>&nbsp;&nbsp;How can I test that Exim is correctly configured to use the Realtime
+Blackhole List (RBL)?
+</p>
+<p>
+<font color="#00BB00">A0704:</font>&nbsp;&nbsp;The <b>-bh</b> option allows you to run a testing SMTP session as if from a
+given address. The <i>exim_checkaccess</i> utility provides a more packaged
+version of this facility. You need to know a blocked IP address with
+which to test. Such a testing address is kindly provided by Russell
+Nelson:
+</p>
+<pre>
+   linux.crynwr.com [192.203.178.39]</pre>
+<p>
+You can also send mail to <i>nelson@linux.crynwr.com</i> from the server
+whose RBL block you are testing. The robot that receives that email
+will attempt to send a piece of test email in reply. If your RBL block
+didn't work, you get a message to that effect. Regardless of whether the
+RBL block succeeds or not, it emails you the results of the SMTP
+conversation from a host that is not on the RBL, so you can see how your
+server looks from the view of someone on the RBL.
+</p>
+<p>
+<a name="TOC235" href="FAQ.html#TOC235">Q0705:</a>&nbsp;&nbsp;How can I use tcpwrappers in conjunction with Exim?
+</p>
+<p>
+<font color="#00BB00">A0705:</font>&nbsp;&nbsp;Exim's own control facilities can do all that tcpwrappers can do.
+However, if you are already using tcpwrappers for other things it might
+be convenient to include Exim controls in the same place.
+</p>
+<p>
+First of all, ensure that Exim is built to call the tcpwrappers library,
+by including <small>USE_TCPWRAPPERS=yes</small> in <i>Local/Makefile</i>. You also need to
+ensure that the header file <i>tcpd.h</i> is available at compile time, and the
+<i>libwrap.a</i> library is available at link time, typically by including it in
+<small>EXTRALIBS</small>. You may need to copy these two files from the tcpwrappers
+build directory to, for example, <i>/usr/local/include</i> and <i>/usr/local/lib</i>,
+respectively. Then you could reference them by
+</p>
+<pre>
+   CFLAGS=-I/usr/local/include
+   EXTRALIBS=-L/usr/local/lib -lwrap</pre>
+<p>
+in <i>Local/Makefile</i>. There are two ways to make use of the functionality,
+depending on how you have tcpwrappers set up. If you have it set up to
+use only one file, you ought to have something like:
+</p>
+<pre>
+   /etc/hosts.allow:</pre>
+<pre>
+   exim : &#60;client_list&#62;  : &#60;allow_or_deny&#62;</pre>
+<p>
+For example:
+</p>
+<pre>
+   exim : LOCAL  192.168.0.  .friendly.domain  special.host : ALLOW
+   exim : ALL                                               : DENY</pre>
+<p>
+This allows connections from local hosts (chiefly <i>localhost</i>), from
+the subnet 192.168.0.0/24, from all hosts in <i>*.friendly.domain</i>, and
+from a specific host called <i>special.host</i>. All other connections are
+denied. If you have tcpwrappers set up to use two files, use the
+following:
+</p>
+<pre>
+   /etc/hosts.allow:</pre>
+<pre>
+   exim    : &#60;client_list&#62;</pre>
+<pre>
+   /etc/hosts.deny:</pre>
+<pre>
+   exim    : &#60;client_list&#62;</pre>
+<p>
+Read the <i>hosts_access</i> man page for more ways of specifying clients,
+including ports, etc., and on logging connections.
+</p>
+<p>
+<a name="TOC236" href="FAQ.html#TOC236">Q0706:</a>&nbsp;&nbsp;How can I get POP-auth-before-relay (aka POP-before-SMTP) support in
+Exim?
+</p>
+<p>
+<font color="#00BB00">A0706:</font>&nbsp;&nbsp;Exim 4 supports the &#147;whoson&#148; (<a href="http://whoson.sourceforge.net">http://whoson.sourceforge.net</a>)
+facility for doing this. If you set this up, you can do the check in an
+Exim ACL by a statement like this:
+</p>
+<pre>
+   require condition = \
+     ${lookup whoson {$sender_host_address}{yes}{no}}</pre>
+<p>
+Otherwise you need to arrange for a list of permitted IP addresses to be
+maintained in a file or database, and use this in a <tt>hosts</tt> condition in
+an ACL statement. An Exim user has published this recipe:
+</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.zeiss.cx/memo/computer/linux/email/exim-s-a-p.html">http://www.zeiss.cx/memo/computer/linux/email/exim-s-a-p.html</a>
+</p>
+<p>
+Another Exim user submitted the following idea:
+</p>
+<p>
+Use a script to grab authenticated IP addresses from the log files of
+the POP3 and IMAP4 daemons. These are used to create files in the
+directory tree <i>/var/db/popb4smtp</i>. The existence of a file represents a
+valid &#147;popped recently token&#148; for the IP address used as the filename.
+</p>
+<p>
+Another script periodically removes stale files from the tree (after two
+hours).  There's a small race condition here; it's possible for a file
+to be deleted just after it has been updated by the script that watches
+the logs. For low-volume servers, the odds of hitting this window are
+low.
+</p>
+<p>
+A POPB4SMTP_CLIENT macro in the Exim configure file provides a reusable
+&#147;has this sender popped recently?&#148; query:
+</p>
+<pre>
+   POPB4SMTP_SUBDIR = /var/db/popb4smtp/${substr_-1_1:$sender_host_address}
+   POPB4SMTP_CLIENT = ${if exists {POPB4SMTP_SUBDIR/$sender_host_address} \
+       {$sender_host_address} {0} }</pre>
+<p>
+Now you can use it just about anywhere, including in your ACLs. Simple
+examples include:
+</p>
+<pre>
+   hostlist relay_hosts = 127.0.0.1/32 : ... : POPB4SMTP_CLIENT
+   host_lookup = !127.0.0.1/32 : ... : !POPB4SMTP_CLIENT
+   rfc1413_hosts = !127.0.0.1/32 : ... : !POPB4SMTP_CLIENT</pre>
+<p>
+The two scripts (and a FreeBSD startup script for them) are available
+for download at:
+</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://people.FreeBSD.org/~sheldonh/popb4smtp-nodb.tar.gz">http://people.FreeBSD.org/~sheldonh/popb4smtp-nodb.tar.gz</a>
+</p>
+<p>
+<a name="TOC237" href="FAQ.html#TOC237">Q0707:</a>&nbsp;&nbsp;I have one or two cases where my host correctly rejects messages, but
+the remote host is quite persistent, and keeps trying over and over.
+</p>
+<p>
+<font color="#00BB00">A0707:</font>&nbsp;&nbsp;It is an unfortunate fact that a number of SMTP clients, in violation of
+the SMTP RFC, do not treat a permanent error code that is given after
+the DATA portion of the transaction as a permanent error. Consequently
+they keep resending the message, and the worst offenders do so at very
+short intervals.
+</p>
+<p>
+The only way to stop such behaviour is to blacklist the IP address, or
+the envelope sender, or both, in such a way that future messages get
+rejected at RCPT time instead of at DATA time. You could also complain
+to the remote host's administrators.
+</p>
+<p>
+<a name="TOC238" href="FAQ.html#TOC238">Q0708:</a>&nbsp;&nbsp;How can I run customized verification checks on incoming addresses?
+</p>
+<p>
+<font color="#00BB00">A0708:</font>&nbsp;&nbsp;There are a number of possibilities:
+</p>
+<p>
+(1) &nbsp;If you can implement your checks in Perl, you can use Exim's
+facility for running an embedded Perl interpreter. For example, if you
+want to run special checks on local addresses, you could use ACL
+an statement like this:
+</p>
+<pre>
+   require domains = my.local.domain
+           condition = ${perl{verify}{$local_part}}</pre>
+<p>
+The result of the Perl function should be &#147;yes&#148; or &#147;no&#148;.
+</p>
+<p>
+(2) &nbsp;You could also run an external program in a similar way, by a
+statement such as:
+</p>
+<pre>
+   require domains = my.local.domain
+           condition = ${run{/my/verifier $local_part}}</pre>
+<p>
+This requires the use of another process, so could prove more expensive
+than Perl.
+</p>
+<p>
+(3) &nbsp;If you are prepared to write C code, read the chapter in the manual
+entitled <i>Adding a local scan function to Exim</i>.
+</p>
+<p>
+<a name="TOC239" href="FAQ.html#TOC239">Q0709:</a>&nbsp;&nbsp;Does Exim apply RBL checks to error messages, those with an envelope
+sender of <tt>&#60;&#62;</tt> ?
+</p>
+<p>
+<font color="#00BB00">A0709:</font>&nbsp;&nbsp;This depends on the ACL configuration. You can test for bounce messages
+(by looking for an empty sender address) and thereby exclude them from
+RBL checking if you want. This ACL statement does that:
+</p>
+<pre>
+   deny senders = ! :
+        dnslist = blackholes.mail-abuse.org</pre>
+<p>
+However, some spam does come with an empty sender address, so this may
+not be a good idea.
+</p>
+<p>
+<a name="TOC240" href="FAQ.html#TOC240">Q0710:</a>&nbsp;&nbsp;I want to reject certain sender-recipient combinations, with a specific
+message for each such combination.
+</p>
+<p>
+<font color="#00BB00">A0710:</font>&nbsp;&nbsp;Set up a file (or database) containing the messages, keyed by the
+combination, for example:
+</p>
+<pre>
+   sender1@sdomain1=&#62;recipient1@rdomain1: blocked because...
+   sender2@sdomain2=&#62;recipient2@rdomain2: blocked because...</pre>
+<p>
+If you have lots of recipients for the same sender, it might be easier
+to generate this file from more convenient data. In your ACL that is run
+for each RCPT command, you can then put:
+</p>
+<pre>
+   deny message   = ${lookup{$sender_address=&#62;$local_part@$domain}\
+                    lsearch{/that/file}}
+        condition = ${lookup{$sender_address=&#62;$local_part@$domain}\
+                    lsearch{/that/file}}{yes}{no}}</pre>
+<p>
+The condition is tested first. If the lookup succeeds, the condition
+succeeds so access is denied. The message is then expanded, but the
+lookup won't be repeated, because Exim will have cached the previous
+result.
+</p>
+<p>
+This approach blocks only incoming SMTP messages. If you need to do
+similar blocks for messages that do not arrive over SMTP, you have to
+set up a suitable <b>redirect</b> router with a <tt>:fail:</tt> setting.
+</p>
+<p>
+<a name="TOC241" href="FAQ.html#TOC241">Q0711:</a>&nbsp;&nbsp;Will Exim allow me to create a file of regexs and match incoming
+external email to the list - and if a match is found file the offending
+message into a special location? Also is it possible to make Exim only
+filter parts of an incoming email - e.g. ignore large MIME attachments
+for example and only process text/plain?
+</p>
+<p>
+<font color="#00BB00">A0711:</font>&nbsp;&nbsp;You can do some of this in a system filter. For example:
+</p>
+<pre>
+   if $message_body matches &#60;...some complicated regex...&#62; or
+      $message_body matches &#60;...some other regex...&#62; or
+      $header_from: matches &#60;...regex...&#62; or
+      etc.
+   then
+     save /some/special/file
+   endif</pre>
+<p>
+or instead of <tt>save</tt> you could have <tt>deliver</tt> (to some address) or
+<tt>pipe</tt> (to some script).
+</p>
+<p>
+There isn't any mechanism for ignoring attachments, but <i>$message_body</i>
+only looks at the first n bytes of the body, where n defaults to 500 but
+can be changed.
+</p>
+<p>
+A more expensive alternative would be to run a Perl subroutine using the
+embedded Perl mechanism. If you passed over the message id, the Perl
+code could read the message files on the spool and implement any
+algorithm it liked for deciding what should be done.
+</p>
+<p>
+<a name="TOC242" href="FAQ.html#TOC242">Q0712:</a>&nbsp;&nbsp;I've hacked sendmail to make an ioctl call at the time of the SMTP RCPT
+command, to check if a user has exceeded their email quota. If they have
+I issue a temporary failure and a message - can I do this with Exim?
+</p>
+<p>
+<font color="#00BB00">A0712:</font>&nbsp;&nbsp;If you can make this happen in Perl you can use the embedded Perl
+facility, and use it from a <tt>condition</tt> condition in an ACL statement.
+You can also use the expansion facility to run an external program, but
+this uses more resources because it uses another process.
+</p>
+<p>
+<a name="TOC243" href="FAQ.html#TOC243">Q0713:</a>&nbsp;&nbsp;I'd like to pass all messages through a virus-scanning system before
+delivery. Can Exim do this?
+</p>
+<p>
+<font color="#00BB00">A0713:</font>&nbsp;&nbsp;One way of achieving this is to deliver all messages via a pipe to a
+checking program that resubmits them for delivery in some private way
+that can be checked (e.g. on a specific SMTP port, or IP address). One
+possibility is to use the `received protocol` field that can be set
+for locally submitted mail via the <b>-oMr</b> command line option. This
+router sends all messages that are not from the local host and whose
+received protocol is not <tt>scanned-ok</tt> to the <b>virus_scan</b> transport:
+</p>
+<pre>
+   vircheck:
+     driver = accept
+     transport = virus_scan
+     condition = ${if or {{eq {$received_protocol}{scanned-ok}} \
+                          {eq {$sender_host_address}{127.0.0.1}}}\
+                          {0}{1}}</pre>
+<p>
+One problem is that this approach scans the message for each recipient,
+not just once per message.
+</p>
+<p>
+The virus_scan transport should be set up to pipe the message to a
+suitable checking program or script which runs as a trusted user. This
+can then re-submit the message to Exim, using <b>-oMr</b> to set the received
+protocol to <tt>scanned-ok</tt>, and the <b>-f</b> option to set the correct envelope
+sender address. <b>Warning:</b> If you forget to make the resubmitting process
+run as a trusted user, the received protocol does not get set, and you
+are likely to generate a loop.
+</p>
+<p>
+<a name="TOC244" href="FAQ.html#TOC244">Q0714:</a>&nbsp;&nbsp;Is there a way to configure Exim to reject mail to a certain local host?
+</p>
+<p>
+<font color="#00BB00">A0714:</font>&nbsp;&nbsp;No, only to certain domains. To reject at SMTP time, you can put a line
+like this in your ACL:
+</p>
+<pre>
+   deny message = this domain is deliberately rejected
+        domains = a.certain.domain</pre>
+<p>
+To fail addresses in messages that do not arrive over SMTP, you can set
+up a router like this:
+</p>
+<pre>
+   reject_a_certain_domain:
+     driver = redirect
+     domains = a.certain.domain
+     allow_fail
+     data = :fail: this domain is deliberately rejected</pre>
+<p>
+<a name="TOC245" href="FAQ.html#TOC245">Q0715:</a>&nbsp;&nbsp;How can I get Exim to remove attachments from messages?
+</p>
+<p>
+<font color="#00BB00">A0715:</font>&nbsp;&nbsp;Exim does not contain facilities for modifying messages. You must use
+an external program if you want to do this. You can route messages that
+have a <i>Content-type:</i> header line via a pipe to a command that does
+the job and then re-submits the message to Exim. Alternatively, you
+could use a transport filter to do this job.
+</p>
+<p>
+<a name="TOC246" href="FAQ.html#TOC246">Q0716:</a>&nbsp;&nbsp;How can I arrange for each user to have a file listing the only sender
+addresses from which she will accept mail? I want to do this so my
+family members don't get any spam (or other inappropriate mail).
+</p>
+<p>
+<font color="#00BB00">A0716:</font>&nbsp;&nbsp;Let's assume each user has a file called <i>.acceptlist</i> in the home
+directory. You can put in your ACL a line like this:
+</p>
+<pre>
+   require senders = /home/$local_part/.acceptlist</pre>
+<p>
+This will reject RCPT commands when the sender is not in the accept
+list for the recipient. (Replace <i>/home/$local_part</i> with whatever
+the correct path to your user's home directories is.)
+</p>
+<p>
+One problem with this is that it will block bounce messages, which have
+empty senders. You can get round this, by changing the line to this:
+</p>
+<pre>
+   require senders =  : /home/$local_part/.acceptlist</pre>
+<p>
+However, this will, of course, let in spam that has a null sender.
+</p>
+<p>
+<a name="TOC247" href="FAQ.html#TOC247">Q0717:</a>&nbsp;&nbsp;When using Nessus on a system that runs Exim, a number of security
+issues are raised. Nessus complains that Exim answers to EXPN and/or
+VRFY; sometimes it even complains that Exim allows relaying.
+</p>
+<p>
+<font color="#00BB00">A0717:</font>&nbsp;&nbsp;Exim supports EXPN and VRFY only if you permit it to do so in the ACLs
+defined by <tt>acl_smtp_expn</tt> and <tt>acl_smtp_vrfy</tt>, respectively. Otherwise,
+its responses are
+</p>
+<pre>
+   550 Administrative prohibition
+   252 Administrative prohibition</pre>
+<p>
+Maybe the use of 252 is the &#147;problem&#148;. It is recommended that this be
+done (by those that discuss these things) because there are stupid
+clients that attempt VRFY before sending a message.
+</p>
+<p>
+<a name="TOC248" href="FAQ.html#TOC248">Q0718:</a>&nbsp;&nbsp;Could anyone points me to right rules to prevent sending/receiving
+messages to/for domains which have one MX to localhost or only have
+address 127.0.0.1 ?
+</p>
+<p>
+<font color="#00BB00">A0718:</font>&nbsp;&nbsp;See <a href="FAQ_3.html#TOC139">Q0319</a>.
+</p>
+<p>
+<a name="TOC249" href="FAQ.html#TOC249">Q0719:</a>&nbsp;&nbsp;I would like to have a per-user limit for the maximum size of messages
+that can be sent.
+</p>
+<p>
+<font color="#00BB00">A0719:</font>&nbsp;&nbsp;The simplest way to do this is to put something in a system filter along
+these lines:
+</p>
+<pre>
+   if $message_size is above
+     "${lookup{$sender_address}lsearch{/some/file}{$value}{10M}}"
+   then
+     fail "Message is larger than $sender_address is allowed to send"
+   endif</pre>
+<p>
+In practice, an additional check that the message has arrived from your
+local host or local network is probably wise because sender addresses
+are easily forged.
+</p>
+<p>
+<a name="TOC250" href="FAQ.html#TOC250">Q0720:</a>&nbsp;&nbsp;I set <tt>accept hosts=192.168.122.96/32</tt> in order to accept mail for
+relaying from my local LAN, but it doesn't work. What's wrong?
+</p>
+<p>
+<font color="#00BB00">A0720:</font>&nbsp;&nbsp;192.168.122.96/32 is not a network, it is a single host. Exim uses CIDR
+notation for specifying networks, where the number after the slash is
+the number of bits in the IP address that must match. Your setting says
+&#147;32 bits must match&#148;. If you really mean to specify ``the next 32
+IP addresses'', you need 192.168.122.96/27.
+</p>
+<p>
+<a name="TOC251" href="FAQ.html#TOC251">Q0721:</a>&nbsp;&nbsp;I have POP-before-SMTP set up on my Exim server, but some clients use
+Outlook Express, which sends queued messages before checking the
+mailbox, so it doesn't work.
+</p>
+<p>
+<font color="#00BB00">A0721:</font>&nbsp;&nbsp;Implement SMTP authentication.
+</p>
+<p>
+<a name="TOC252" href="FAQ.html#TOC252">Q0722:</a>&nbsp;&nbsp;I installed Amavis and it is working, but bounces are simply vanishing.
+</p>
+<p>
+<font color="#00BB00">A0722:</font>&nbsp;&nbsp;Check that you haven't inadvertently set up the transport like this:
+</p>
+<pre>
+   amavis:
+     driver = pipe
+     command = "/usr/sbin/amavis -f ${sender_address} -d ${pipe_addresses}"</pre>
+<p>
+The last line should be:
+</p>
+<pre>
+   command = /usr/sbin/amavis -f &#60;$sender_address&#62; -d $pipe_addresses</pre>
+<p>
+The important thing is the &#60;&#62; around the sender address; removal of
+the unnecessary "" and {} is just tidying. See the amavis FAQ at
+<a href="http://www.amavis.org/amavis-faq.php3">http://www.amavis.org/amavis-faq.php3</a>.
+</p>
+<p>
+<a name="TOC253" href="FAQ.html#TOC253">Q0723:</a>&nbsp;&nbsp;I can't get Pine to work with PLAIN authentication; Exim keeps
+responding "535 Incorrect authentication data".
+</p>
+<p>
+<font color="#00BB00">A0723:</font>&nbsp;&nbsp;You need to have this setting in your PLAIN authenticator:
+</p>
+<pre>
+   server_prompts = :</pre>
+<p>
+This is missing in the examples in all but the most recent Exim
+documentation, because it was not realized that PLAIN authentication
+could be requested by a client without sending the data with the
+request. If the data is not sent, an empty prompt is expected.
+</p>
+<p>
+<a name="TOC254" href="FAQ.html#TOC254">Q0724:</a>&nbsp;&nbsp;I have used <tt>:fail:</tt> in some aliases; when one of these addresses is
+refused, I see the message on the log, but the response to the remote
+user is &#147;unknown user&#148; instead of the message from the alias file.
+How can I change this?
+</p>
+<p>
+<font color="#00BB00">A0724:</font>&nbsp;&nbsp;Have you got a <tt>message</tt> qualifier in the relevant ACL? Exim uses the
+message line in the ACL in preference to the message returned by the
+router. This is so you can restrict the amount of information that
+&#147;escapes&#148; from your site via SMTP if you want to. Remove the <tt>message</tt>
+line in the ACL entry that has <tt>verify = recipient</tt> and your message
+will get through.
+</p>
+<p>
+Alternatively, if you are running Exim 4.10 or later, you can use the
+<i>$acl_verify_message</i> variable in your message to include the message
+from the router. See also <a href="FAQ_7.html#TOC255">Q0725</a>.
+</p>
+<p>
+<a name="TOC255" href="FAQ.html#TOC255">Q0725:</a>&nbsp;&nbsp;I've set up some specific rejection messages for certain recipients, but
+when I test them, the SMTP message is always <i>550 5.1.1
+&#60;user@mydomain.com&#62;... User unknown</i>.
+</p>
+<p>
+<font color="#00BB00">A0725:</font>&nbsp;&nbsp;That is not an Exim message (the &#147;5.1.1&#148; is a clue; Exim doesn't use
+those extended codes). You are probably being defeated by software that
+sees the 550 error code, and insists on putting in its own text. There
+is stupid software that does this. You can test Exim by using <b>-bh</b> or
+making a telnet call to the SMTP port. That way, there's no other
+software intervening.
+</p>
+<p>
+<a name="TOC256" href="FAQ.html#TOC256">Q0726:</a>&nbsp;&nbsp;My SMTP authentication can be bypassed by sending an unknown user name
+and an empty password. What is wrong with this condition in a PLAIN
+authenticator?
+</p>
+<pre>
+   server_condition = ${if eq{$2} {${lookup mysql{SELECT password FROM \
+     accounts WHERE username='${local_part:$1}'}}}{1}{0}}</pre>
+<p>
+<font color="#00BB00">A0726:</font>&nbsp;&nbsp;Your lookup item returns an empty string when the user does not exist.
+You should instead arrange for the lookup to fail:
+</p>
+<pre>
+   server_condition = ${if eq{$2} {${lookup mysql{SELECT password FROM \
+     accounts WHERE username='${local_part:$1}'}{$value}fail}}{1}{0}}</pre>
+<p>
+<a name="TOC257" href="FAQ.html#TOC257">Q0727:</a>&nbsp;&nbsp;When a message has many recipients, how can I stop SpamAssassin from
+being called for each of them? I'm running it from a pipe transport.
+</p>
+<p>
+<font color="#00BB00">A0727:</font>&nbsp;&nbsp;In the transport configuration, set <tt>batch_max</tt> to a value greater than
+one.
+</p>
+<p>
+<a name="TOC258" href="FAQ.html#TOC258">Q0728:</a>&nbsp;&nbsp;How do I use Exiscan, SA-Exim, SpamAssassin, Clam Antivirus, Sophos
+SAVI, or sophie with Exim?
+</p>
+<p>
+<font color="#00BB00">A0728:</font>&nbsp;&nbsp;There's a mini-HOWTO about these available via
+<a href="http://www.timj.co.uk/linux/exim.php">http://www.timj.co.uk/linux/exim.php</a>.
+See also sample configuration <a href="C047.txt">C047</a>.
+</p>
+<p>
+<a name="TOC259" href="FAQ.html#TOC259">Q0729:</a>&nbsp;&nbsp;How can I screen out addresses that are neither valid usernames or
+distribution lists on mail being forwarded to an internal Win2K server?
+</p>
+<p>
+<font color="#00BB00">A0729:</font>&nbsp;&nbsp;A user suggested using a router like this to do the recipient
+verification:
+</p>
+<pre>
+   verify_user_router:
+      driver = accept
+      domains = win2kdomain.com
+      local_parts=\
+        ldap;user="cn=ldap-guest,cn=Users,dc=win2kdomain,dc=com"\
+        pass=guest \
+        ldap:://win2kpdc/dc=win2kdomain,dc=com?mailNickname?\
+        sub?(&(mailNickname=$local_part)\
+        (showInAddressBook=*)(sAMAccountName=*))
+      verify_only</pre>
+<p>
+Set up ldap-guest as a normal domain user on the Win2K PDC.
+</p>
+<p>
+Also, you need to set <tt>no_verify</tt> on all the other routers that handle
+that domain.
+</p>
+<p>
+<a name="TOC260" href="FAQ.html#TOC260">Q0730:</a>&nbsp;&nbsp;How can I use the same passwords for SMTP authentication as I use for
+Courier IMAP access to my server?
+</p>
+<p>
+<font color="#00BB00">A0730:</font>&nbsp;&nbsp;You can access the Courier authdaemon from an Exim authenticator. You
+must arrange for the Exim user (often <i>exim</i> but sometimes <i>mail</i>)
+to be able to access <i>/var/run/courier/authdaemon/socket</i>. The
+configuration is something of a hack, but it is reported to work. Here
+is a LOGIN authenticator:
+</p>
+<pre>
+   login:
+     driver = plaintext
+     public_name = LOGIN
+     server_prompts = Username:: : Password::
+     server_condition = \
+       ${if eq {${readsocket{/var/run/courier/authdaemon/socket}\
+       {AUTH 76\n${length_76:exim\nlogin\n$1\n$2\
+       \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+       \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+       \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n}}}}{FAIL\n} {no}{yes}}
+     server_set_id = $1</pre>
+<p>
+Here is a PLAIN authenticator:
+</p>
+<pre>
+   plain:
+     driver = plaintext
+     public_name = PLAIN
+     server_prompts = :
+     server_condition = \
+       ${if eq {${readsocket{/var/run/courier/authdaemon/socket}\
+       {AUTH 76\n${length_76:exim\nlogin\n$2\n$3\
+       \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+       \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+       \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n}}}}{FAIL\n} {no}{yes}}
+     server_set_id = $2</pre>
+<p>
+<a name="TOC261" href="FAQ.html#TOC261">Q0731:</a>&nbsp;&nbsp;Is there any defence I can use against spam sent through an open proxy?
+</p>
+<p>
+<font color="#00BB00">A0731:</font>&nbsp;&nbsp;The <i>ident</i> feature can be used in some cases. See the discussion in
+<a href="FAQ_19.html#TOC353">Q5023</a>.
+</p>
+<p>
+<a name="TOC262" href="FAQ.html#TOC262">Q0732:</a>&nbsp;&nbsp;I would like to either warn or deny when a host uses an underscore in
+the EHLO command.
+</p>
+<p>
+<font color="#00BB00">A0732:</font>&nbsp;&nbsp;First, set
+</p>
+<pre>
+   helo_allow_chars = _</pre>
+<p>
+This tells Exim not to reject the EHLO or HELO command immediately. Once
+you have done that, you can test for the underscore in an ACL. For
+example, to log a warning for hosts in your LAN, and reject for other
+hosts, you could do something like this:
+</p>
+<pre>
+   deny  message = Underscores are not valid in host names
+         hosts = ! +lan_hosts
+         condition = ${if match{$sender_helo_name}{_}{yes}{no}}</pre>
+<pre>
+   warn  log_message = Accepted underscore from [$sender_host_address]
+         condition = ${if match{$sender_helo_name}{_}{yes}{no}}</pre>
+<p>
+<a name="TOC263" href="FAQ.html#TOC263">Q0733:</a>&nbsp;&nbsp;Is there any way to tell Exim not to lookup the IP address against any
+DNS black list if the connection is over IPv6?
+</p>
+<p>
+<font color="#00BB00">A0733:</font>&nbsp;&nbsp;Use this condition in your ACL:
+</p>
+<pre>
+   condition = ${if match{${mask:$sender_host_address/0}}\
+                {${mask:::0/0}}{no}{yes}}</pre>
+<p>
+From Exim 4.23 onwards, this can be simplified to
+</p>
+<pre>
+   condition = ${if isip6{$sender_host_address}{no}{yes}}</pre>
+<p>
+<a name="TOC264" href="FAQ.html#TOC264">Q0734:</a>&nbsp;&nbsp;How do MailScanner and Exiscan compare? What are the pros and cons?
+</p>
+<p>
+<font color="#00BB00">A0734:</font>&nbsp;&nbsp;The big advantage of Exiscan is that it can reject messages at SMTP time
+before you have accepted responsibility for them, which means you don't
+have to deal with bouncing messages and thereby becoming a collateral
+spammer.
+</p>
+<p>
+The big advantage of MailScanner is that it gives you much greater
+control over the load on your machines. You configure it according to
+the maximum processing capacity of your computer and it will not exceed
+that; in fact because it deals with messages in batches the cost of
+processing a message actually goes down slightly as the load increases,
+because the per-batch costs are shared by more messages.
+</p>
+<p>
+With Exiscan, you have to rely on Exim's load protection mechanisms,
+which basically means that you have to stop accepting messages when your
+machine gets too loaded. This is bad if the machine happens to be an
+SMTP smarthost. You therefore need more overcapacity with Exiscan than
+with MailScanner.
+</p>
+<p>
+<a name="TOC265" href="FAQ.html#TOC265">Q0735:</a>&nbsp;&nbsp;How can I block non-FQDNs in HELO/EHLOs?
+</p>
+<p>
+<font color="#00BB00">A0735:</font>&nbsp;&nbsp;Many workstation clients send single-component names; take care that you
+do not block legitimate mail. With that proviso, you can do it using
+something like this in an ACL:
+</p>
+<pre>
+ 	 drop  message = HELO doesn't look like a hostname
+	       log_message = Not a hostname
+	       condition = ${if match{$sender_helo_name} \
+				{\N^[^.].*\.[^.]+$\N}{no}{yes}}</pre>
+<p>
+This means: Drop the HELO unless it contains a dot somewhere in the HELO
+string, but the string may not begin or end with a dot. Thus, the
+imposed minimum length is 3 characters.
+</p>
+<p>
+The data for HELO/EHLO doesn't have to be a host name; it may
+legitimately be an IP address literal instead. The above test succeeds
+with an IPv4 address literal, but if you want also to accept IPv6
+address literals, you will have to modify the regular expression.
+</p>
+<p>
+<a name="TOC266" href="FAQ.html#TOC266">Q0736:</a>&nbsp;&nbsp;Is it possible to tell exim to drop the connection after a server
+attempts to send a message to a number of unknown users?
+</p>
+<p>
+<font color="#00BB00">A0736:</font>&nbsp;&nbsp;Yes. Use <i>$rcpt_fail_count</i> and the <i>drop</i> ACL command, as in this
+example:
+</p>
+<pre>
+   drop  message = Too many unknown users
+         condition = ${if &#62;{$rcpt_fail_count}{15}{yes}{no}}</pre>
+<p>
+<a name="TOC267" href="FAQ.html#TOC267">Q0737:</a>&nbsp;&nbsp;Is there some way to tell Exim not to consider 127.0.0.1 as a valid MX?
+</p>
+<p>
+<font color="#00BB00">A0737:</font>&nbsp;&nbsp;See <a href="FAQ_3.html#TOC139">Q0319</a>.
+</p>
+<p>
+<a name="TOC268" href="FAQ.html#TOC268">Q0738:</a>&nbsp;&nbsp;How can I configure Exim to delay the SMTP connection if more than 10
+invalid recipients are received in one message?
+</p>
+<p>
+<font color="#00BB00">A0738:</font>&nbsp;&nbsp;Put something like this in your RCPT ACL:
+</p>
+<pre>
+   deny  message         = Max $rcpt_fail_count failed recipients allowed
+         condition       = ${if &#62;{$rcpt_fail_count}{10} {1}}
+         ! verify        = recipient
+         delay           = ${eval: $rcpt_fail_count * 10}s
+         log_message     = $rcpt_fail_count failed recipient attempts</pre>
+<p>
+This example increases the delay for each failed recipient.
+</p>
+<p>
+<a name="TOC269" href="FAQ.html#TOC269">Q0739:</a>&nbsp;&nbsp;Does Exim support SPF?
+</p>
+<p>
+<font color="#00BB00">A0739:</font>&nbsp;&nbsp;An Exim ACL can be used. See <a href="http://spf.pobox.com/downloads.html">http://spf.pobox.com/downloads.html</a>.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_6.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_8.html">Next</a>
+</body>
+</html>

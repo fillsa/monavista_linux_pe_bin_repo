@@ -1,0 +1,114 @@
+\hypertarget{md5_8h}{
+\section{md5.h File Reference}
+\label{md5_8h}\index{md5.h@{md5.h}}
+}
+MD5 hash function. 
+
+{\tt \#include \char`\"{}beecrypt.h\char`\"{}}\par
+\subsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \hyperlink{structmd5Param}{md5Param}
+\begin{CompactList}\small\item\em Holds all the parameters necessary for the MD5 algorithm. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \hyperlink{md5_8h_a1}{md5Process} (\hyperlink{structmd5Param}{md5Param} $\ast$mp)
+\item 
+int \hyperlink{md5_8h_a2}{md5Reset} (\hyperlink{structmd5Param}{md5Param} $\ast$mp)
+\begin{CompactList}\small\item\em This function resets the parameter block so that it's ready for a new hash. \item\end{CompactList}\item 
+int \hyperlink{md5_8h_a3}{md5Update} (\hyperlink{structmd5Param}{md5Param} $\ast$mp, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$data, size\_\-t size)
+\begin{CompactList}\small\item\em This function should be used to pass successive blocks of data to be hashed. \item\end{CompactList}\item 
+int \hyperlink{md5_8h_a4}{md5Digest} (\hyperlink{structmd5Param}{md5Param} $\ast$mp, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$digest)
+\begin{CompactList}\small\item\em This function finishes the current hash computation and copies the digest value into {\em digest\/}. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+const \hyperlink{structhashFunction}{hash\-Function} \hyperlink{md5_8h_a0}{md5}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+MD5 hash function. 
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{md5_8h-source}{md5.h}.
+
+\subsection{Function Documentation}
+\hypertarget{md5_8h_a4}{
+\index{md5.h@{md5.h}!md5Digest@{md5Digest}}
+\index{md5Digest@{md5Digest}!md5.h@{md5.h}}
+\subsubsection[md5Digest]{\setlength{\rightskip}{0pt plus 5cm}int md5Digest (\hyperlink{structmd5Param}{md5Param} $\ast$ {\em mp}, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$ {\em digest})}}
+\label{md5_8h_a4}
+
+
+This function finishes the current hash computation and copies the digest value into {\em digest\/}. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em mp}]The hash function's parameter block. \item[{\em digest}]The place to store the 16-byte digest. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}
+\hypertarget{md5_8h_a1}{
+\index{md5.h@{md5.h}!md5Process@{md5Process}}
+\index{md5Process@{md5Process}!md5.h@{md5.h}}
+\subsubsection[md5Process]{\setlength{\rightskip}{0pt plus 5cm}void md5Process (\hyperlink{structmd5Param}{md5Param} $\ast$ {\em mp})}}
+\label{md5_8h_a1}
+
+
+\hypertarget{md5_8h_a2}{
+\index{md5.h@{md5.h}!md5Reset@{md5Reset}}
+\index{md5Reset@{md5Reset}!md5.h@{md5.h}}
+\subsubsection[md5Reset]{\setlength{\rightskip}{0pt plus 5cm}int md5Reset (\hyperlink{structmd5Param}{md5Param} $\ast$ {\em mp})}}
+\label{md5_8h_a2}
+
+
+This function resets the parameter block so that it's ready for a new hash. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em mp}]The hash function's parameter block. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}
+\hypertarget{md5_8h_a3}{
+\index{md5.h@{md5.h}!md5Update@{md5Update}}
+\index{md5Update@{md5Update}!md5.h@{md5.h}}
+\subsubsection[md5Update]{\setlength{\rightskip}{0pt plus 5cm}int md5Update (\hyperlink{structmd5Param}{md5Param} $\ast$ {\em mp}, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$ {\em data}, size\_\-t {\em size})}}
+\label{md5_8h_a3}
+
+
+This function should be used to pass successive blocks of data to be hashed. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em mp}]The hash function's parameter block. \item[{\em data}]\item[{\em size}]\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}
+
+
+\subsection{Variable Documentation}
+\hypertarget{md5_8h_a0}{
+\index{md5.h@{md5.h}!md5@{md5}}
+\index{md5@{md5}!md5.h@{md5.h}}
+\subsubsection[md5]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structhashFunction}{hash\-Function} \hyperlink{md5_8h_a0}{md5}}}
+\label{md5_8h_a0}
+
+

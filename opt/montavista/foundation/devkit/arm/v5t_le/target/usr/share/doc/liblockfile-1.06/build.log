@@ -1,0 +1,30 @@
+creating cache ./config.cache
+checking for gcc... arm_v5t_le-gcc 
+checking whether the C compiler (arm_v5t_le-gcc  -O2 ) works... yes
+checking whether the C compiler (arm_v5t_le-gcc  -O2 ) is a cross-compiler... yes
+checking whether we are using GNU C... yes
+checking whether arm_v5t_le-gcc  accepts -g... yes
+checking build shared libs... yes
+checking build libnfslock... no
+checking for ldconfig... /sbin/ldconfig
+checking how to run the C preprocessor... arm_v5t_le-cpp 
+checking for ANSI C header files... yes
+checking for getopt.h... yes
+checking for paths.h... yes
+checking for sys/param.h... yes
+checking for utime... yes
+checking for utimes... yes
+updating cache ./config.cache
+creating ./config.status
+creating ./Makefile
+creating ./maillock.h
+creating autoconf.h
+arm_v5t_le-gcc  -O2 -Wall -D_GNU_SOURCE -fPIC -D_REENTRANT -I. -DLIB -DLOCKPROG=\"/usr/bin/dotlockfile\" \
+		-c lockfile.c
+ar rv liblockfile.a lockfile.o
+a - lockfile.o
+arm_v5t_le-gcc  -fPIC -shared -Wl,-soname,liblockfile.so.1 \
+		-o liblockfile.so lockfile.o -lc
+arm_v5t_le-gcc  -O2 -Wall -D_GNU_SOURCE -fPIC -D_REENTRANT -I.   -c -o dotlockfile.o dotlockfile.c
+arm_v5t_le-gcc  -O2 -Wall -D_GNU_SOURCE -fPIC -D_REENTRANT -I. -c lockfile.c -o xlockfile.o
+arm_v5t_le-gcc   -o dotlockfile dotlockfile.o xlockfile.o

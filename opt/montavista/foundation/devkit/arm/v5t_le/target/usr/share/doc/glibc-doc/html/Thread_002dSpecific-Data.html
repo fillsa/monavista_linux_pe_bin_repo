@@ -1,0 +1,158 @@
+<html lang="en">
+<head>
+<title>Thread-Specific Data - The GNU C Library</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU C Library">
+<meta name="generator" content="makeinfo 4.7">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="POSIX-Threads.html#POSIX-Threads" title="POSIX Threads">
+<link rel="prev" href="POSIX-Semaphores.html#POSIX-Semaphores" title="POSIX Semaphores">
+<link rel="next" href="Threads-and-Signal-Handling.html#Threads-and-Signal-Handling" title="Threads and Signal Handling">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc { font-variant:small-caps }
+  span.roman { font-family: serif; font-weight: normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Thread_002dSpecific-Data"></a>Next:&nbsp;<a rel="next" accesskey="n" href="Threads-and-Signal-Handling.html#Threads-and-Signal-Handling">Threads and Signal Handling</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="POSIX-Semaphores.html#POSIX-Semaphores">POSIX Semaphores</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="POSIX-Threads.html#POSIX-Threads">POSIX Threads</a>
+<hr><br>
+</div>
+
+<h3 class="section">34.8 Thread-Specific Data</h3>
+
+<p>Programs often need global or static variables that have different
+values in different threads. Since threads share one memory space, this
+cannot be achieved with regular variables. Thread-specific data is the
+POSIX threads answer to this need.
+
+   <p>Each thread possesses a private memory block, the thread-specific data
+area, or TSD area for short. This area is indexed by TSD keys. The TSD
+area associates values of type <code>void *</code> to TSD keys. TSD keys are
+common to all threads, but the value associated with a given TSD key can
+be different in each thread.
+
+   <p>For concreteness, the TSD areas can be viewed as arrays of <code>void *</code>
+pointers, TSD keys as integer indices into these arrays, and the value
+of a TSD key as the value of the corresponding array element in the
+calling thread.
+
+   <p>When a thread is created, its TSD area initially associates <code>NULL</code>
+with all keys.
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_key_create</b> (<var>pthread_key_t *key, void </var>(<var>*destr_function</var>) (<var>void *</var>))<var><a name="index-pthread_005fkey_005fcreate-3752"></a></var><br>
+<blockquote><p><code>pthread_key_create</code> allocates a new TSD key. The key is stored in
+the location pointed to by <var>key</var>. There is a limit of
+<code>PTHREAD_KEYS_MAX</code> on the number of keys allocated at a given
+time. The value initially associated with the returned key is
+<code>NULL</code> in all currently executing threads.
+
+        <p>The <var>destr_function</var> argument, if not <code>NULL</code>, specifies a
+destructor function associated with the key. When a thread terminates
+via <code>pthread_exit</code> or by cancellation, <var>destr_function</var> is
+called on the value associated with the key in that thread. The
+<var>destr_function</var> is not called if a key is deleted with
+<code>pthread_key_delete</code> or a value is changed with
+<code>pthread_setspecific</code>.  The order in which destructor functions are
+called at thread termination time is unspecified.
+
+        <p>Before the destructor function is called, the <code>NULL</code> value is
+associated with the key in the current thread.  A destructor function
+might, however, re-associate non-<code>NULL</code> values to that key or some
+other key.  To deal with this, if after all the destructors have been
+called for all non-<code>NULL</code> values, there are still some
+non-<code>NULL</code> values with associated destructors, then the process is
+repeated.  The LinuxThreads implementation stops the process after
+<code>PTHREAD_DESTRUCTOR_ITERATIONS</code> iterations, even if some
+non-<code>NULL</code> values with associated descriptors remain.  Other
+implementations may loop indefinitely.
+
+        <p><code>pthread_key_create</code> returns 0 unless <code>PTHREAD_KEYS_MAX</code> keys
+have already been allocated, in which case it fails and returns
+<code>EAGAIN</code>. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_key_delete</b> (<var>pthread_key_t key</var>)<var><a name="index-pthread_005fkey_005fdelete-3753"></a></var><br>
+<blockquote><p><code>pthread_key_delete</code> deallocates a TSD key. It does not check
+whether non-<code>NULL</code> values are associated with that key in the
+currently executing threads, nor call the destructor function associated
+with the key.
+
+        <p>If there is no such key <var>key</var>, it returns <code>EINVAL</code>.  Otherwise
+it returns 0. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_setspecific</b> (<var>pthread_key_t key, const void *pointer</var>)<var><a name="index-pthread_005fsetspecific-3754"></a></var><br>
+<blockquote><p><code>pthread_setspecific</code> changes the value associated with <var>key</var>
+in the calling thread, storing the given <var>pointer</var> instead.
+
+        <p>If there is no such key <var>key</var>, it returns <code>EINVAL</code>.  Otherwise
+it returns 0. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: void * <b>pthread_getspecific</b> (<var>pthread_key_t key</var>)<var><a name="index-pthread_005fgetspecific-3755"></a></var><br>
+<blockquote><p><code>pthread_getspecific</code> returns the value currently associated with
+<var>key</var> in the calling thread.
+
+        <p>If there is no such key <var>key</var>, it returns <code>NULL</code>. 
+</p></blockquote></div>
+
+   <p>The following code fragment allocates a thread-specific array of 100
+characters, with automatic reclaimation at thread exit:
+
+<pre class="smallexample">     /* Key for the thread-specific buffer */
+     static pthread_key_t buffer_key;
+     
+     /* Once-only initialisation of the key */
+     static pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
+     
+     /* Allocate the thread-specific buffer */
+     void buffer_alloc(void)
+     {
+       pthread_once(&amp;buffer_key_once, buffer_key_alloc);
+       pthread_setspecific(buffer_key, malloc(100));
+     }
+     
+     /* Return the thread-specific buffer */
+     char * get_buffer(void)
+     {
+       return (char *) pthread_getspecific(buffer_key);
+     }
+     
+     /* Allocate the key */
+     static void buffer_key_alloc()
+     {
+       pthread_key_create(&amp;buffer_key, buffer_destroy);
+     }
+     
+     /* Free the thread-specific buffer */
+     static void buffer_destroy(void * buf)
+     {
+       free(buf);
+     }
+</pre>
+   </body></html>
+

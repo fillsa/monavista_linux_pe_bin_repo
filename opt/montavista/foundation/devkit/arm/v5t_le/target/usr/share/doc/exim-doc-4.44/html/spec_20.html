@@ -1,0 +1,576 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 20</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_19.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_21.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX1688"></a>
+<a name="IX1689"></a>
+<a name="IX1690"></a>
+<h1>
+<a name="CHAP20" href="spec_toc.html#TOC171">
+20. The manualroute router
+</a></h1>
+<p>
+The <b>manualroute</b> router is so-called because it provides a way of manually
+routing an address according to its domain. It is mainly used when you want to
+route addresses to remote hosts according to your own rules, bypassing the
+normal DNS routing that looks up MX records. However, <b>manualroute</b> can also
+route to local transports, a facility that may be useful if you want to save
+messages for dial-in hosts in local files.
+</p>
+<p>
+The <b>manualroute</b> router compares a list of domain patterns with the domain it
+is trying to route. If there is no match, the router declines. Each pattern has
+associated with it a list of hosts and some other optional data, which may
+include a transport. The combination of a pattern and its data is called a
+&#147;routing rule&#148;. For patterns that do not have an associated transport, the
+generic <tt>transport</tt> option must specify a transport, unless the router is being
+used purely for verification (see <tt>verify&#095;only</tt>).
+</p>
+<p>
+In the case of verification, matching the domain pattern is sufficient for the
+router to accept the address. When actually routing an address for delivery,
+an address that matches a domain pattern is queued for the associated
+transport. If the transport is not a local one, a host list must be associated
+with the pattern; IP addresses are looked up for the hosts, and these are
+passed to the transport along with the mail address. For local transports, a
+host list is optional. If it is present, it is passed in <tt>$host</tt> as a single
+text string.
+</p>
+<p>
+The list of routing rules can be provided as an inline string in <tt>route&#095;list</tt>,
+or the data can be obtained by looking up the domain in a file or database by
+setting <tt>route&#095;data</tt>. Only one of these settings may appear in any one
+instance of <b>manualroute</b>. The format of routing rules is described below,
+following the list of private options.
+</p>
+<h2>
+<a name="SECT20.1" href="spec_toc.html#TOC172">
+20.1. Private options for manualroute
+</a></h2>
+<p>
+The private options for the <b>manualroute</b> router are as follows:
+<a name="IX1691"></a>
+<hr></p>
+<a name="IX1692"></a>
+<h3>host_find_failed</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; freeze<br>
+<p>
+This option controls what happens when <b>manualroute</b> tries to find an IP
+address for a host, and the host does not exist. The option can be set to one
+of
+<pre>
+&nbsp;&nbsp;decline
+&nbsp;&nbsp;defer
+&nbsp;&nbsp;fail
+&nbsp;&nbsp;freeze
+&nbsp;&nbsp;pass
+</pre>
+</p>
+<p>
+<a name="IX1693"></a>
+The default assumes that this state is a serious configuration error. The
+difference between &#147;pass&#148; and &#147;decline&#148; is that the former forces the address
+to be passed to the next router (or the router defined by <tt>pass&#095;router</tt>),
+overriding <tt>no&#095;more</tt>, whereas the latter passes the address to the next router
+only if <tt>more</tt> is true.
+</p>
+<p>
+This option applies only to a definite &#147;does not exist&#148; state; if a host lookup
+gets a temporary error, delivery is deferred unless the generic
+<tt>pass&#095;on&#095;timeout</tt> option is set.
+<hr></p>
+<a name="IX1694"></a>
+<a name="IX1695"></a>
+<a name="IX1696"></a>
+<h3>hosts_randomize</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set, the order of the items in a host list in a routing rule
+is randomized each time the list is used, unless an option in the routing rule
+overrides (see below). Randomizing the order of a host list can be used to do
+crude load sharing. However, if more than one mail address is routed by the
+same router to the same host list, the host lists are considered to be the same
+(even though they may be randomized into different orders) for the purpose of
+deciding whether to batch the deliveries into a single SMTP transaction.
+</p>
+<p>
+When <tt>hosts&#095;randomize</tt> is true, a host list may be split
+into groups whose order is separately randomized. This makes it possible to
+set up MX-like behaviour. The boundaries between groups are indicated by an
+item that is just <tt>+</tt> in the host list. For example:
+<pre>
+&nbsp;&nbsp;route_list = * host1:host2:host3:+:host4:host5
+</pre>
+</p>
+<p>
+The order of the first three hosts and the order of the last two hosts is
+randomized for each use, but the first three always end up before the last two.
+If <tt>hosts&#095;randomize</tt> is not set, a <tt>+</tt> item in the list is ignored. If a
+randomized host list is passed to an <b>smtp</b> transport that also has
+<tt>hosts&#095;randomize set</tt>, the list is not re-randomized.
+<hr></p>
+<a name="IX1697"></a>
+<h3>route_data</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If this option is set, it must expand to yield the data part of a routing rule.
+Typically, the expansion string includes a lookup based on the domain. For
+example:
+<pre>
+&nbsp;&nbsp;route_data = ${lookup{$domain}dbm{/etc/routes}}
+</pre>
+</p>
+<p>
+If the expansion is forced to fail, or the result is an empty string, the
+router declines. Other kinds of expansion failure cause delivery to be
+deferred.
+<hr></p>
+<a name="IX1698"></a>
+<h3>route_list</h3>
+<i>Type:</i>&nbsp; string list, semicolon-separated<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This string is a list of routing rules, in the form defined below. Note that,
+unlike most string lists, the items are separated by semicolons. This is so
+that they may contain colon-separated host lists.
+<hr></p>
+<a name="IX1699"></a>
+<a name="IX1700"></a>
+<h3>same_domain_copy_routing</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+Addresses with the same domain are normally routed by the <b>manualroute</b> router
+to the same list of hosts. However, this cannot be presumed, because the router
+options and preconditions may refer to the local part of the address. By
+default, therefore, Exim routes each address in a message independently. DNS
+servers run caches, so repeated DNS lookups are not normally expensive, and in
+any case, personal messages rarely have more than a few recipients.
+</p>
+<p>
+If you are running mailing lists with large numbers of subscribers at the same
+domain, and you are using a <b>manualroute</b> router which is independent of the
+local part, you can set <tt>same&#095;domain&#095;copy&#095;routing</tt> to bypass repeated DNS
+lookups for identical domains in one message. In this case, when <b>manualroute</b>
+routes an address to a remote transport, any other unrouted addresses in the
+message that have the same domain are automatically given the same routing
+without processing them independently. However, this is only done if
+<tt>headers&#095;add</tt> and <tt>headers&#095;remove</tt> are unset.
+<hr><br>
+</p>
+<h2>
+<a name="SECT20.2" href="spec_toc.html#TOC173">
+20.2. Routing rules in route&#095;list
+</a></h2>
+<p>
+The value of <tt>route&#095;list</tt> is a string consisting of a sequence of routing
+rules, separated by semicolons. If a semicolon is needed in a rule, it can be
+entered as two semicolons. Empty rules are ignored. The format of each rule is
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#060;<em>domain pattern</em>&#062;  &#060;<em>list of hosts</em>&#062;  &#060;<em>options</em>&#062;</tt><br>
+</p>
+<p>
+The following example contains two rules, each with a simple domain pattern and
+no options:
+<pre>
+&nbsp;&nbsp;route_list = \
+&nbsp;&nbsp;  dict.ref.example  mail-1.ref.example:mail-2.ref.example ; \
+&nbsp;&nbsp;  thes.ref.example  mail-3.ref.example:mail-4.ref.example
+</pre>
+</p>
+<p>
+The three parts of a rule are separated by white space. The pattern and the 
+list of hosts can be enclosed in quotes if necessary, and if they are, the
+usual quoting rules apply. Each rule in a <tt>route&#095;list</tt> must start with a
+single domain pattern, which is the only mandatory item in the rule. The
+pattern is in the same format as one item in a domain list (see section
+<a href="spec_10.html#SECT10.8">10.8</a>), 
+except that it may not be the name of an interpolated file.
+That is, it may be wildcarded, or a regular expression, or a file or database
+lookup (with semicolons doubled, because of the use of semicolon as a separator
+in a <tt>route&#095;list</tt>).
+</p>
+<p>
+The rules in <tt>route&#095;list</tt> are searched in order until one of the patterns
+matches the domain that is being routed. The list of hosts and then options are
+then used as described below. If there is no match, the router declines. When
+<tt>route&#095;list</tt> is set, <tt>route&#095;data</tt> must not be set.
+</p>
+<h2>
+<a name="SECT20.3" href="spec_toc.html#TOC174">
+20.3. Routing rules in route&#095;data
+</a></h2>
+<p>
+The use of <tt>route&#095;list</tt> is convenient when there are only a small number of
+routing rules. For larger numbers, it is easier to use a file or database to
+hold the routing information, and use the <tt>route&#095;data</tt> option instead.
+The value of <tt>route&#095;data</tt> is a list of hosts, followed by (optional) options.
+Most commonly, <tt>route&#095;data</tt> is set as a string that contains an
+expansion lookup. For example, suppose we place two routing rules in a file
+like this:
+<pre>
+&nbsp;&nbsp;dict.ref.example:  mail-1.ref.example:mail-2.ref.example
+&nbsp;&nbsp;thes.ref.example:  mail-3.ref.example:mail-4.ref.example
+</pre>
+</p>
+<p>
+This data can be accessed by setting
+<pre>
+&nbsp;&nbsp;route_data = ${lookup{$domain}lsearch{/the/file/name}}
+</pre>
+</p>
+<p>
+Failure of the lookup results in an empty string, causing the router to
+decline. However, you do not have to use a lookup in <tt>route&#095;data</tt>. The only
+requirement is that the result of expanding the string is a list of hosts,
+possibly followed by options, separated by white space. The list of hosts must
+be enclosed in quotes if it contains white space.
+</p>
+<h2>
+<a name="SECT20.4" href="spec_toc.html#TOC175">
+20.4. Format of the list of hosts
+</a></h2>
+<p>
+A list of hosts, whether obtained via <tt>route&#095;data</tt> or <tt>route&#095;list</tt>, is always
+separately expanded before use. If the expansion fails, the router declines.
+The result of the expansion must be a colon-separated list of names and/or
+IP addresses. IP addresses are not enclosed in brackets.
+</p>
+<p>
+<a name="IX1701"></a>
+If the list of hosts was obtained from a <tt>route&#095;list</tt> item, the following
+variables are set during its expansion:
+</p>
+<ul>
+<li><p>
+If the domain was matched against a regular expression, the numeric variables
+<tt>$1</tt>, <tt>$2</tt>, etc. may be set.
+</p>
+</li>
+<li><p>
+<tt>$0</tt> is always set to the entire domain.
+</p>
+</li>
+<li><p>
+<tt>$1</tt> is also set when partial matching is done in a file lookup.
+</p>
+</li>
+<li><a name="IX1702"></a>
+<p>
+If the pattern that matched the domain was a lookup item, the data that was
+looked up is available in the expansion variable <tt>$value</tt>.
+</p>
+</li>
+</ul>
+<font color=green><h2>
+<a name="SECT20.5" href="spec_toc.html#TOC176">
+20.5. How the list of hosts is used
+</a></h2>
+<p>
+When an address is routed to an <b>smtp</b> transport by <b>manualroute</b>, each of 
+the hosts is tried, in the order specified, when carrying out the SMTP
+delivery. However, the order can be changed by setting the <tt>hosts&#095;randomize</tt>
+option, either on the router (see section <a href="spec_20.html#SECT20.1">20.1</a> above), or on the
+transport.
+</p>
+<p>
+Hosts may be listed by name or by IP address. An unadorned name in the list of
+hosts is interpreted as a host name. A name that is followed by <tt>/MX</tt> is
+interpreted as an indirection to a sublist of hosts obtained by looking up MX
+records in the DNS. For example:
+<pre>
+&nbsp;&nbsp;route_list = *  x.y.z:p.q.r/MX:e.f.g
+</pre>
+</p>
+<p>
+<a name="IX1703"></a>
+If the <tt>hosts&#095;randomize</tt> option is set, the order of the items in the list is
+randomized before any lookups are done. Exim then scans the list; for any name 
+that is not followed by <tt>/MX</tt> it looks up an IP address. If this turns out to 
+be an interface on the local host and the item is not the first in the list,
+Exim discards it and any subsequent items. If it is the first item, what
+happens is controlled by the 
+<tt>self</tt> option of the router.
+</p>
+<p>
+A name on the list that is followed by <tt>/MX</tt> is replaced with the list of
+hosts obtained by looking up MX records for the name. This is always a DNS
+lookup; the <tt>bydns</tt> and <tt>byname</tt> options (see section <a href="spec_20.html#SECT20.6">20.6</a> below)
+are not relevant here. The order of these hosts is determined by the preference
+values in the MX records, according to the usual rules. Because randomizing
+happens before the MX lookup, it does not affect the order that is defined by
+MX preferences.
+</font>
+</p>
+<p>
+If the local host is present in the sublist obtained from MX records, but is
+not the most preferred host in that list, it and any equally or less
+preferred hosts are removed before the sublist is inserted into the main list.
+</p>
+<p>
+If the local host is the most preferred host in the MX list, what happens
+depends on where in the original list of hosts the <tt>/MX</tt> item appears. If it
+is not the first item (that is, there are previous hosts in the main list),
+Exim discards this name and any subsequent items in the main list.
+</p>
+<p>
+If the MX item is first in the list of hosts, and the local host is the
+most preferred host, what happens is controlled by the <tt>self</tt> option of the
+router.
+</p>
+<p>
+DNS failures when lookup up the MX records are treated in the same way as DNS
+failures when looking up IP addresses: <tt>pass&#095;on&#095;timeout</tt> and
+<tt>host&#095;find&#095;failed</tt> are used when relevant.
+</p>
+<p>
+<font color=green>
+The generic <tt>ignore&#095;target&#095;hosts</tt> option applies to all hosts in the list,
+whether obtained from an MX lookup or not.
+</font>
+</p>
+<h2>
+<a name="SECT20.6" href="spec_toc.html#TOC177">
+20.6. How the options are used
+</a></h2>
+<p>
+The options are a sequence of words; in practice no more than three are ever
+present. One of the words can be the name of a transport; this overrides the
+<tt>transport</tt> option on the router for this particular routing rule only. The
+other words (if present) control randomization of the list of hosts on a
+per-rule basis, and how the IP addresses of the hosts are to be found when
+routing to a remote transport. These options are as follows:
+</p>
+<ul>
+<li><p>
+<tt>randomize</tt>: randomize the order of the hosts in this list, overriding the 
+setting of <tt>hosts&#095;randomize</tt> for this routing rule only.
+</p>
+</li>
+<li><p>
+<tt>no&#095;randomize</tt>: do not randomize the order of the hosts in this list,
+overriding the setting of <tt>hosts&#095;randomize</tt> for this routing rule only.
+</p>
+</li>
+<li><p>
+<tt>byname</tt>: use <i>getipnodebyname()</i> (<i>gethostbyname()</i> on older systems) to
+find IP addresses. This function may ultimately cause a DNS lookup, but it may
+also look in <i>/etc/hosts</i> or other sources of information.
+</p>
+</li>
+<li><p>
+<tt>bydns</tt>: look up address records for the hosts directly in the DNS; fail if
+no address records are found. If there is a temporary DNS error (such as a 
+timeout), delivery is deferred. 
+</p>
+</li>
+</ul>
+<p>
+For example:
+<pre>
+&nbsp;&nbsp;route_list = domain1  host1:host2:host3  randomize bydns;\
+&nbsp;&nbsp;             domain2  host4:host5
+</pre>
+</p>
+<p>
+If neither <tt>byname</tt> nor <tt>bydns</tt> is given, Exim behaves as follows: First, a DNS
+lookup is done. If this yields anything other than <font size=-1>HOST&#095;NOT&#095;FOUND</font>, that
+result is used. Otherwise, Exim goes on to try a call to <i>getipnodebyname()</i>
+or <i>gethostbyname()</i>, and the result of the lookup is the result of that
+call.
+</p>
+<p>
+<b>Warning</b>: It has been discovered that on some systems, if a DNS lookup
+called via <i>getipnodebyname()</i> times out, <font size=-1>HOST&#095;NOT&#095;FOUND</font> is returned
+instead of <font size=-1>TRY&#095;AGAIN</font>. That is why the default action is to try a DNS
+lookup first. Only if that gives a definite &#147;no such host&#148; is the local
+function called.
+</p>
+<p>
+If no IP address for a host can be found, what happens is controlled by the
+<tt>host&#095;find&#095;failed</tt> option.
+</p>
+<p>
+When an address is routed to a local transport, IP addresses are not looked up.
+The host list is passed to the transport in the <tt>$host</tt> variable.
+</p>
+<h2>
+<a name="SECT20.7" href="spec_toc.html#TOC178">
+20.7. Manualroute examples
+</a></h2>
+<p>
+In some of the examples that follow, the presence of the <tt>remote&#095;smtp</tt>
+transport, as defined in the default configuration file, is assumed:
+</p>
+<ul>
+<li><a name="IX1704"></a>
+<p>
+The <b>manualroute</b> router can be used to forward all external mail to a
+<i>smart host</i>. If you have set up, in the main part of the configuration, a
+named domain list that contains your local domains, for example,
+<pre>
+&nbsp;&nbsp;domainlist local_domains = my.domain.example
+</pre>
+</p>
+<p>
+you can arrange for all other domains to be routed to a smart host by making
+your first router something like this:
+<pre>
+&nbsp;&nbsp;smart_route:
+&nbsp;&nbsp;  driver = manualroute
+&nbsp;&nbsp;  domains = !+local_domains
+&nbsp;&nbsp;  transport = remote_smtp
+&nbsp;&nbsp;  route_list = * smarthost.ref.example
+</pre>
+</p>
+<p>
+This causes all non-local addresses to be sent to the single host
+<i>smarthost.ref.example</i>. If a colon-separated list of smart hosts is given,
+they are tried in order
+(but you can use <tt>hosts&#095;randomize</tt> to vary the order each time).
+Another way of configuring the same thing is this:
+<pre>
+&nbsp;&nbsp;smart_route:
+&nbsp;&nbsp;  driver = manualroute
+&nbsp;&nbsp;  transport = remote_smtp
+&nbsp;&nbsp;  route_list = !+local_domains  smarthost.ref.example
+</pre>
+</p>
+<p>
+There is no difference in behaviour between these two routers as they stand.
+However, they behave differently if <tt>no&#095;more</tt> is added to them. In the first
+example, the router is skipped if the domain does not match the <tt>domains</tt>
+precondition; the following router is always tried. If the router runs, it
+always matches the domain and so can never decline. Therefore, <tt>no&#095;more</tt> would
+have no effect. In the second case, the router is never skipped; it always
+runs. However, if it doesn't match the domain, it declines. In this case
+<tt>no&#095;more</tt> would prevent subsequent routers from running.
+</p>
+</li>
+<li><a name="IX1705"></a>
+<p>
+A <i>mail hub</i> is a host which receives mail for a number of domains via MX
+records in the DNS and delivers it via its own private routing mechanism. Often
+the final destinations are behind a firewall, with the mail hub being the one
+machine that can connect to machines both inside and outside the firewall. The
+<b>manualroute</b> router is usually used on a mail hub to route incoming messages
+to the correct hosts. For a small number of domains, the routing can be inline,
+using the <tt>route&#095;list</tt> option, but for a larger number a file or database
+lookup is easier to manage.
+</p>
+<p>
+If the domain names are in fact the names of the machines to which the mail is
+to be sent by the mail hub, the configuration can be quite simple. For
+example,
+<pre>
+&nbsp;&nbsp;hub_route:
+&nbsp;&nbsp;  driver = manualroute
+&nbsp;&nbsp;  transport = remote_smtp
+&nbsp;&nbsp;  route_list = *.rhodes.tvs.example  $domain
+</pre>
+</p>
+<p>
+This configuration routes domains that match <tt>*.rhodes.tvs.example</tt> to hosts
+whose names are the same as the mail domains. A similar approach can be taken
+if the host name can be obtained from the domain name by a string manipulation
+that the expansion facilities can handle. Otherwise, a lookup based on the
+domain can be used to find the host:
+<pre>
+&nbsp;&nbsp;through_firewall:
+&nbsp;&nbsp;  driver = manualroute
+&nbsp;&nbsp;  transport = remote_smtp
+&nbsp;&nbsp;  route_data = ${lookup {$domain} cdb {/internal/host/routes}}
+</pre>
+</p>
+<p>
+The result of the lookup must be the name or IP address of the host (or
+hosts) to which the address is to be routed. If the lookup fails, the route
+data is empty, causing the router to decline. The address then passes to the
+next router.
+</p>
+</li>
+<li><a name="IX1706"></a>
+<a name="IX1707"></a>
+<p>
+You can use <b>manualroute</b> to deliver messages to pipes or files in batched
+SMTP format for onward transportation by some other means. This is one way of
+storing mail for a dial-up host when it is not connected. The route list entry
+can be as simple as a single domain name in a configuration like this:
+<pre>
+&nbsp;&nbsp;save_in_file:
+&nbsp;&nbsp;  driver = manualroute
+&nbsp;&nbsp;  transport = batchsmtp_appendfile
+&nbsp;&nbsp;  route_list = saved.domain.example
+</pre>
+</p>
+<p>
+though often a pattern is used to pick up more than one domain. If there are
+several domains or groups of domains with different transport requirements,
+different transports can be listed in the routing information:
+<pre>
+&nbsp;&nbsp;save_in_file:
+&nbsp;&nbsp;  driver = manualroute
+&nbsp;&nbsp;  route_list = \
+&nbsp;&nbsp;    *.saved.domain1.example  $domain  batch_appendfile; \
+&nbsp;&nbsp;    *.saved.domain2.example  \
+&nbsp;&nbsp;      ${lookup{$domain}dbm{/domain2/hosts}{$value}fail} \
+&nbsp;&nbsp;      batch_pipe
+</pre>
+</p>
+<p>
+The first of these just passes the domain in the <tt>$host</tt> variable, which
+doesn't achieve much (since it is also in <tt>$domain</tt>), but the second does a
+file lookup to find a value to pass, causing the router to decline to handle
+the address if the lookup fails.
+</p>
+</li>
+<li><a name="IX1708"></a>
+<p>
+Routing mail directly to UUCP software is a specific case of the use of
+<b>manualroute</b> in a gateway to another mail environment. This is an example of
+one way it can be done:
+<pre>
+&nbsp;&nbsp;# Transport
+&nbsp;&nbsp;uucp:
+&nbsp;&nbsp;  driver = pipe
+&nbsp;&nbsp;  user = nobody
+&nbsp;&nbsp;  command = /usr/local/bin/uux -r - \
+&nbsp;&nbsp;    ${substr_-5:$host}!rmail ${local_part}
+&nbsp;&nbsp;  return_fail_output = true
+</pre>
+<pre>
+&nbsp;&nbsp;# Router
+&nbsp;&nbsp;uucphost:
+&nbsp;&nbsp;  transport = uucp
+&nbsp;&nbsp;  driver = manualroute
+&nbsp;&nbsp;  route_data = \
+&nbsp;&nbsp;    ${lookup{$domain}lsearch{/usr/local/exim/uucphosts}}
+</pre>
+</p>
+<p>
+The file <i>/usr/local/exim/uucphosts</i> contains entries like
+<pre>
+&nbsp;&nbsp;darksite.ethereal.example:           darksite.UUCP
+</pre>
+</p>
+<p>
+It can be set up more simply without adding and removing &#147;.UUCP&#148; but this way
+makes clear the distinction between the domain name
+<i>darksite.ethereal.example</i> and the UUCP host name <i>darksite</i>.
+</p>
+</li>
+</ul>
+<hr>
+<font size=2>
+<a href="spec_19.html">Previous</a>&nbsp;&nbsp;<a href="spec_21.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

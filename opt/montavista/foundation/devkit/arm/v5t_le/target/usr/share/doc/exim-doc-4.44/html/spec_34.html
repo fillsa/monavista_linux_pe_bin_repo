@@ -1,0 +1,303 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 34</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_33.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_35.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2288"></a>
+<a name="IX2289"></a>
+<h1>
+<a name="CHAP34" href="spec_toc.html#TOC248">
+34. The plaintext authenticator
+</a></h1>
+<p>
+The <b>plaintext</b> authenticator can be configured to support the PLAIN and
+LOGIN authentication mechanisms, both of which transfer authentication data as
+plain (unencrypted) text (though base64 encoded). The use of plain text is a
+security risk. If you use one of these mechanisms without also making use of
+SMTP encryption (see chapter <a href="spec_37.html">37</a>) you should not use the same passwords
+for SMTP connections as you do for login accounts.
+</p>
+<h2>
+<a name="SECT34.1" href="spec_toc.html#TOC249">
+34.1. Using plaintext in a server
+</a></h2>
+<p>
+When running as a server, <b>plaintext</b> performs the authentication test by
+expanding a string. It has the following options:
+<a name="IX2290"></a>
+<hr></p>
+<a name="IX2291"></a>
+<h3>server_prompts</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The contents of this option, after expansion, must be a colon-separated list of
+prompt strings. If expansion fails, a temporary authentication rejection is
+given.
+<hr></p>
+<a name="IX2292"></a>
+<h3>server_condition</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option must be set in order to configure the driver as a server. Its use
+is described below.
+<hr><br>
+<a name="IX2293"></a>
+<a name="IX2294"></a>
+<a name="IX2295"></a>
+<a name="IX2296"></a>
+</p>
+<p>
+The data sent by the client with the <font size=-1>AUTH</font> command, or in response to
+subsequent prompts, is base64 encoded, and so may contain any byte values
+when decoded. If any data is supplied with the command, it is treated as a
+list of strings, separated by NULs (binary zeros), which are placed in the
+expansion variables <tt>$1</tt>, <tt>$2</tt>, etc. If there are more strings in
+<tt>server&#095;prompts</tt> than the number of strings supplied with the <font size=-1>AUTH</font>
+command, the remaining prompts are used to obtain more data. Each response from
+the client may be a list of NUL-separated strings.
+</p>
+<p>
+Once a sufficient number of data strings have been received,
+<tt>server&#095;condition</tt> is expanded.
+If the expansion is forced to fail, authentication fails. Any other expansion
+failure causes a temporary error code to be returned.
+If the result of a successful expansion is an empty string, &#147;0&#148;, &#147;no&#148;, or
+&#147;false&#148;, authentication fails. If the result of the expansion is &#147;1&#148;, &#147;yes&#148;, or
+&#147;true&#148;, authentication succeeds and the generic <tt>server&#095;set&#095;id</tt> option is
+expanded and saved in <tt>$authenticated&#095;id</tt>. For any other result, a temporary
+error code is returned, with the expanded string as the error text.
+</p>
+<p>
+<b>Warning</b>: If you use a lookup in the expansion to find the user's 
+password, be sure to make the authentication fail if the user is unknown. 
+There are good and bad examples at the end of the next section.
+</p>
+<a name="IX2297"></a>
+<a name="IX2298"></a>
+<a name="IX2299"></a>
+<h2>
+<a name="SECT34.2" href="spec_toc.html#TOC250">
+34.2. The PLAIN authentication mechanism
+</a></h2>
+<p>
+The PLAIN authentication mechanism (RFC 2595) specifies that three strings be
+sent as one item of data (that is, one combined string containing two NUL 
+separators). The data is sent either as part of the <font size=-1>AUTH</font> command, or
+subsequently in response to an empty prompt from the server.
+</p>
+<p>
+The second and third strings are a user name and a corresponding password.
+Using a single fixed user name and password as an example, this could be
+configured as follows:
+<pre>
+&nbsp;&nbsp;fixed_plain:
+&nbsp;&nbsp;  driver = plaintext
+&nbsp;&nbsp;  public_name = PLAIN
+&nbsp;&nbsp;  server_prompts = : 
+&nbsp;&nbsp;  server_condition = \
+&nbsp;&nbsp;    ${if and {{eq{$2}{username}}{eq{$3}{mysecret}}}{yes}{no}}
+&nbsp;&nbsp;  server_set_id = $2
+</pre>
+</p>
+<p>
+The <tt>server&#095;prompts</tt> setting specifies a single, empty prompt (empty items at
+the end of a string list are ignored). If all the data comes as part of the
+<font size=-1>AUTH</font> command, as is commonly the case, the prompt is not used. This
+authenticator is advertised in the response to <font size=-1>EHLO</font> as
+<pre>
+&nbsp;&nbsp;250-AUTH PLAIN
+</pre>
+</p>
+<p>
+and a client host can authenticate itself by sending the command
+<pre>
+&nbsp;&nbsp;AUTH PLAIN AHVzZXJuYW1lAG15c2VjcmV0
+</pre>
+</p>
+<p>
+As this contains three strings (more than the number of prompts), no further
+data is required from the client. Alternatively, the client may just send
+<pre>
+&nbsp;&nbsp;AUTH PLAIN
+</pre>
+</p>
+<p>
+to initiate authentication, in which case the server replies with an empty 
+prompt. The client must respond with the combined data string.
+</p>
+<p>
+<font color=green>
+The data string is base64 encoded, as required by the RFC. This example,
+when decoded, is <tt>&#060;<em>NUL</em>&#062;username&#060;<em>NUL</em>&#062;mysecret</tt>, where &#060;<em>NUL</em>&#062; represents a
+zero byte. This is split up into three strings, the first of which is empty.
+The <tt>server&#095;condition</tt> option in the authenticator checks that the second two
+are <tt>username</tt> and <tt>mysecret</tt> respectively.
+</p>
+<p>
+Having just one fixed user name and password, as in this example, is not very 
+realistic, though for a small organization with only a handful of 
+authenticating clients it could make sense.
+</font>
+</p>
+<p>
+A more sophisticated instance of this authenticator could use the user name in
+<tt>$2</tt> to look up a password in a file or database, and maybe do an encrypted
+comparison (see <tt>crypteq</tt> in chapter <a href="spec_11.html">11</a>). Here is a example of this
+approach, where the passwords are looked up in a DBM file. <b>Warning</b>: This
+is an incorrect example:
+<pre>
+&nbsp;&nbsp;server_condition = \
+&nbsp;&nbsp;  ${if eq{$3}{${lookup{$2}dbm{/etc/authpwd}}}{yes}{no}}
+</pre>
+</p>
+<p>
+The expansion uses the user name (<tt>$2</tt>) as the key to look up a password,
+which it then compares to the supplied password (<tt>$3</tt>). Why is this example
+incorrect? It works fine for existing users, but consider what happens if a
+non-existent user name is given. The lookup fails, but as no success/failure
+strings are given for the lookup, it yields an empty string. Thus, to defeat 
+the authentication, all a client has to do is to supply a non-existent user 
+name and an empty password. The correct way of writing this test is:
+<pre>
+&nbsp;&nbsp;server_condition = ${lookup{$2}dbm{/etc/authpwd}\
+&nbsp;&nbsp;  {${if eq{$value}{$3}{yes}{no}}}{no}}    
+</pre>
+</p>
+<p>
+In this case, if the lookup succeeds, the result is checked; if the lookup
+fails, authentication fails. If <tt>crypteq</tt> is being used instead of <tt>eq</tt>, the
+first example is in fact safe, because <tt>crypteq</tt> always fails if its second
+argument is empty. However, the second way of writing the test makes the logic
+clearer.
+</p>
+<a name="IX2300"></a>
+<a name="IX2301"></a>
+<h2>
+<a name="SECT34.3" href="spec_toc.html#TOC251">
+34.3. The LOGIN authentication mechanism
+</a></h2>
+<p>
+The LOGIN authentication mechanism is not documented in any RFC, but is in use
+in a number of programs. No data is sent with the <font size=-1>AUTH</font> command. Instead, a
+user name and password are supplied separately, in response to prompts. The
+plaintext authenticator can be configured to support this as in this example:
+<pre>
+&nbsp;&nbsp;fixed_login:
+&nbsp;&nbsp;  driver = plaintext
+&nbsp;&nbsp;  public_name = LOGIN
+&nbsp;&nbsp;  server_prompts = User Name : Password
+&nbsp;&nbsp;  server_condition = \
+&nbsp;&nbsp;    ${if and {{eq{$1}{username}}{eq{$2}{mysecret}}}{yes}{no}}
+&nbsp;&nbsp;  server_set_id = $1
+</pre>
+</p>
+<p>
+Because of the way plaintext operates, this authenticator accepts data supplied
+with the <font size=-1>AUTH</font> command (in contravention of the specification of LOGIN), but
+if the client does not supply it (as is the case for LOGIN clients), the prompt
+strings are used to obtain two data items.
+</p>
+<p>
+Some clients are very particular about the precise text of the prompts. For
+example, Outlook Express is reported to recognize only &#147;Username:&#148; and
+&#147;Password:&#148;. Here is an example of a LOGIN authenticator which uses those
+strings, and which uses the <tt>ldapauth</tt> expansion condition to check the user
+name and password by binding to an LDAP server:
+<pre>
+&nbsp;&nbsp;login:
+&nbsp;&nbsp;  driver = plaintext
+&nbsp;&nbsp;  public_name = LOGIN
+&nbsp;&nbsp;  server_prompts = Username:: : Password::
+&nbsp;&nbsp;  server_condition = ${if ldapauth \
+&nbsp;&nbsp;    {user="cn=${quote_ldap_dn:$1},ou=people,o=example.org" \
+&nbsp;&nbsp;    pass=${quote:$2} \
+&nbsp;&nbsp;    ldap://ldap.example.org/}{yes}{no}}
+&nbsp;&nbsp;  server_set_id = uid=$1,ou=people,o=example.org
+</pre>
+</p>
+<p>
+Note the use of the <tt>quote&#095;ldap&#095;dn</tt> operator to correctly quote the DN for
+authentication. However, the basic <tt>quote</tt> operator, rather than any of the
+LDAP quoting operators, is the correct one to use for the password, because 
+quoting is needed only to make the password conform to the Exim syntax. At the 
+LDAP level, the password is an uninterpreted string.
+</p>
+<h2>
+<a name="SECT34.4" href="spec_toc.html#TOC252">
+34.4. Support for different kinds of authentication 
+</a></h2>
+<p>
+A number of string expansion features are provided for the purpose of
+interfacing to different ways of user authentication. These include checking
+traditionally encrypted passwords from <i>/etc/passwd</i> (or equivalent), PAM,
+Radius, <tt>ldapauth</tt>, and <i>pwcheck</i>. For details see section <a href="spec_11.html#SECT11.6">11.6</a>.
+</p>
+<h2>
+<a name="SECT34.5" href="spec_toc.html#TOC253">
+34.5. Using plaintext in a client
+</a></h2>
+<p>
+The <b>plaintext</b> authenticator has just one client option:
+<a name="IX2302"></a>
+<hr></p>
+<a name="IX2303"></a>
+<h3>client_send</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The string is a colon-separated list of authentication data strings. Each
+string is independently expanded before being sent to the server. The first
+string is sent with the <font size=-1>AUTH</font> command; any more strings are sent in response
+to prompts from the server.
+</p>
+<p>
+<b>Note</b>: you cannot use expansion to create multiple strings, because
+splitting takes priority and happens first.
+</p>
+<p>
+Because the PLAIN authentication mechanism requires NUL (binary zero) bytes in
+the data, further processing is applied to each string before it is sent. If
+there are any single circumflex characters in the string, they are converted to
+NULs. Should an actual circumflex be required as data, it must be doubled in
+the string.
+<hr><br>
+</p>
+<p>
+This is an example of a client configuration that implements the PLAIN
+authentication mechanism with a fixed user name and password:
+<pre>
+&nbsp;&nbsp;fixed_plain:
+&nbsp;&nbsp;  driver = plaintext
+&nbsp;&nbsp;  public_name = PLAIN
+&nbsp;&nbsp;  client_send = ^username^mysecret
+</pre>
+</p>
+<p>
+The lack of colons means that the entire text is sent with the <font size=-1>AUTH</font>
+command, with the circumflex characters converted to NULs. A similar example
+that uses the LOGIN mechanism is:
+<pre>
+&nbsp;&nbsp;fixed_login:
+&nbsp;&nbsp;  driver = plaintext
+&nbsp;&nbsp;  public_name = LOGIN
+&nbsp;&nbsp;  client_send = : username : mysecret
+</pre>
+</p>
+<p>
+The initial colon means that the first string is empty, so no data is sent with
+the <font size=-1>AUTH</font> command itself. The remaining strings are sent in response to
+prompts.
+<hr>
+</p>
+<font size=2>
+<a href="spec_33.html">Previous</a>&nbsp;&nbsp;<a href="spec_35.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

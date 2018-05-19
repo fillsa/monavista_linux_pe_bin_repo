@@ -1,0 +1,501 @@
+<html>
+<head>
+<title>The Exim FAQ Section 3</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_2.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_4.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC120">3. ROUTING TO REMOTE HOSTS</a></h2>
+<p>
+<a name="TOC121" href="FAQ.html#TOC121">Q0301:</a>&nbsp;&nbsp;What do <i>lowest numbered MX record points to local host</i> and <i>remote
+host address is the local host</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0301:</font>&nbsp;&nbsp;They mean exactly what they say. Exim expected to route an address to a
+remote host, but the IP address it obtained from a router was for the
+local host. If you really do want to send over TCP/IP to the local host
+(to a different version of Exim or another MTA, for example), see <a href="FAQ_2.html#TOC118">Q0206</a>.
+</p>
+<p>
+More commonly, these errors arise when Exim thinks it is routing some
+foreign domain. For example, the router configuration causes Exim to
+look up the domain in the DNS, but when Exim examines the DNS output,
+either the lowest numbered MX record points at the local host, or there
+are no MX records, and the address record for the domain contains an
+IP address that belongs to the local host.
+</p>
+<p>
+There has been a rash of instances of domains being deliberately set up
+with MX records pointing to <tt>localhost</tt> (or other names with A records
+that specify 127.0.0.1), which causes this behaviour. You can use the
+<tt>ignore_target_hosts</tt> option to get Exim to ignore these records. The
+default contiguration does this. For more discussion, see <a href="FAQ_3.html#TOC139">Q0319</a>. For
+other cases:
+</p>
+<p>
+(1) &nbsp;If the domain is meant to be handled as a local domain, there
+is a problem with the configuration, because it should not then have
+been looked up in the DNS. Check the <tt>domains</tt> settings on your
+routers.
+</p>
+<p>
+(2) &nbsp;If the domain is one for which the local host is providing a
+relaying service (called &#147;mail hubbing&#148;), possibly as part of a
+firewall, you need to set up a router to tell Exim where to send
+messages addressed to this domain, because the DNS directs them to
+the local host. You should put a router like this one before the one
+that does DNS lookups:
+</p>
+<pre>
+   hubbed_hosts:
+     driver = manualroute
+     transport = remote_smtp
+     route_list = see discussion below</pre>
+<p>
+The contents of the <tt>route_list</tt> option depend on how many hosts you
+are hubbing for, and how their names are related to the domain name.
+Suppose the local host is a firewall, and all the domains in
+<i>*.foo.bar</i> have MX records pointing to it, and each domain
+corresponds to a host of the same name. Then the setting could be
+</p>
+<pre>
+   route_list = *.foo.bar $domain</pre>
+<p>
+If there isn't a convenient relationship between the domain names
+and the host names, you either have to list each domain separately,
+or use a lookup expansion to look up the host from the domain, or
+put the routing information in a file and use the <tt>route_data</tt>
+option with a lookup expansion.
+</p>
+<p>
+(3) &nbsp;If neither (1) nor (2) is the case, the lowest numbered MX record or
+the address record for the domain should not be pointing to your
+host. You should arrange to get the DNS mended.
+</p>
+<p>
+<a name="TOC122" href="FAQ.html#TOC122">Q0302:</a>&nbsp;&nbsp;Why does Exim say <i>all relevant MX records point to non-existent hosts</i>
+when MX records point to IP addresses?
+</p>
+<p>
+<font color="#00BB00">A0302:</font>&nbsp;&nbsp;MX records cannot point to IP addresses. They are defined to point to
+host names, so Exim always interprets them that way. (An IP address is a
+syntactically valid host name.) The DNS for the domain you are having
+problems with is misconfigured.
+</p>
+<p>
+However, it appears that more and more DNS zones are breaking the rules
+and putting IP addresses on the RHS of MX records. Exim follows the
+rules and rejects this, but other MTAs do support it, so the
+<tt>allow_mx_to_ip</tt> was regretfully added at release 3.14 to permit this
+heinous activity.
+</p>
+<p>
+<a name="TOC123" href="FAQ.html#TOC123">Q0303:</a>&nbsp;&nbsp;How do I configure Exim to send all messages to a central server? I
+don't want to do any local deliveries at all on this host.
+</p>
+<p>
+<font color="#00BB00">A0303:</font>&nbsp;&nbsp;Use this as your first and only router:
+</p>
+<pre>
+   send_to_gateway:
+     driver = manualroute
+     transport = remote_smtp
+     route_list = * central.server.host</pre>
+<p>
+<a name="TOC124" href="FAQ.html#TOC124">Q0304:</a>&nbsp;&nbsp;How do I configure Exim to send all non-local mail to a gateway host?
+</p>
+<p>
+<font color="#00BB00">A0304:</font>&nbsp;&nbsp;Replace the <b>dnslookup</b> router in the default configuration with the
+following:
+</p>
+<pre>
+   send_to_gateway:
+     driver = manualroute
+     domains = !+local_domains
+     transport = remote_smtp
+     route_list = * gate.way.host</pre>
+<p>
+If there are several hosts you can send to, you can specify them as a
+colon-separated list.
+</p>
+<p>
+<a name="TOC125" href="FAQ.html#TOC125">Q0305:</a>&nbsp;&nbsp;How can I arrange for mail on my local network to be delivered directly
+to the relevant hosts, but all other mail to be sent to my ISP's mail
+server? The local hosts are all DNS-registered and behave like normal
+Internet hosts.
+</p>
+<p>
+<font color="#00BB00">A0305:</font>&nbsp;&nbsp;Set up a first router to pick off all the domains for your local
+network. There are several ways you might do this. For example
+</p>
+<pre>
+   local_network:
+     driver = dnslookup
+     transport = remote_smtp
+     domains = *.mydomain.com</pre>
+<p>
+This does a perfectly conventional DNS routing operation, but only for
+the domains that match <i>*.mydomain.com</i>. Follow this with a `smart
+host' router:
+</p>
+<pre>
+   internet:
+     driver = manualroute
+     domains = !+local_domains
+     transport = remote_smtp
+     route_list = * mail.isp.net</pre>
+<p>
+This routes any other non-local domains to the smart host.
+</p>
+<p>
+<a name="TOC126" href="FAQ.html#TOC126">Q0306:</a>&nbsp;&nbsp;How do I configure Exim to send all non-local mail to a central server
+if it cannot be immediately delivered by my host? I don't want to have
+queued mail waiting on my host.
+</p>
+<p>
+<font color="#00BB00">A0306:</font>&nbsp;&nbsp;Add to the <b>remote_smtp</b> transport the following:
+</p>
+<pre>
+   fallback_hosts = central.server.name(s)</pre>
+<p>
+If there are several names, they must be separated by colons.
+</p>
+<p>
+<a name="TOC127" href="FAQ.html#TOC127">Q0307:</a>&nbsp;&nbsp;The <tt>route_list</tt> setting <tt>^foo$:^bar$ $domain</tt> in a <b>manualroute</b>
+router does not work.
+</p>
+<p>
+<font color="#00BB00">A0307:</font>&nbsp;&nbsp;The first thing in a <tt>route_list</tt> item is a single pattern, not a list of
+patterns. You need to write that as <tt>^(foo|bar)$ $domain</tt>.
+Alternatively, you could use several items and write
+</p>
+<pre>
+   route_list = foo $domain; bar $domain</pre>
+<p>
+Note the semicolon separator. This is because the second thing in each
+item can itself be a list - of hosts.
+</p>
+<p>
+<a name="TOC128" href="FAQ.html#TOC128">Q0308:</a>&nbsp;&nbsp;I have a domain for which some local parts must be delivered locally,
+but the remainder are to be treated like any other remote addresses.
+</p>
+<p>
+<font color="#00BB00">A0308:</font>&nbsp;&nbsp;One possible way of doing this is as follows: Assuming you are using a
+configuration that is similar to the default one, first exclude your
+domain from the first router by changing it to look like this:
+</p>
+<pre>
+   non_special_remote:
+     driver = dnslookup
+     domains = ! +local_domains : ! special.domain
+     transport = remote_smtp
+     ignore_target_hosts = 127.0.0.0/8
+     no_more</pre>
+<p>
+Then add a second router which handles the local parts that are not to
+be delivered locally:
+</p>
+<pre>
+   special_remote:
+     driver = dnslookup
+     domains = special.domain
+     local_parts = ! lsearch;/list/of/special/localparts
+     transport = remote_smtp
+     ignore_target_hosts = 127.0.0.0/8
+     no_more</pre>
+<p>
+The remaining local parts will fall through to the remaining routers,
+which can delivery them locally.
+</p>
+<p>
+<a name="TOC129" href="FAQ.html#TOC129">Q0309:</a>&nbsp;&nbsp;How can I configure Exim on a firewall machine so that if mail arrives
+addressed to a domain whose MX points to the firewall, it is forwarded
+to the internal mail server, without having to have a list of all the
+domains involved?
+</p>
+<p>
+<font color="#00BB00">A0309:</font>&nbsp;&nbsp;As your first router, have the standard <b>dnslookup</b> router from the
+default configuration, with the added option
+</p>
+<pre>
+   self = pass</pre>
+<p>
+This will handle all domains whose lowest numbered MX records do not
+point to your host. Because of the <tt>no_more</tt> setting, if it encounters
+an unknown domain, routing will fail. However, if it hits a domain whose
+lowest numbered MX points to your host, the <tt>self</tt> option comes into
+play, and overrides <tt>no_more</tt>. The <tt>pass</tt> setting causes it to pass
+the address on to the next router. (The default causes it to generate an
+error.)
+</p>
+<p>
+The only non-local domains that reach the second router are those with
+MX records pointing to the local host. Set it up to send them to the
+internal mail server like this:
+</p>
+<pre>
+   internal:
+     driver = manualroute
+     domains = ! +local_domains
+     transport = remote_smtp
+     route_list = * internal.server</pre>
+<p>
+<a name="TOC130" href="FAQ.html#TOC130">Q0310:</a>&nbsp;&nbsp;If a DNS lookup returns no MX records why doesn't Exim just bin the
+message?
+</p>
+<p>
+<font color="#00BB00">A0310:</font>&nbsp;&nbsp;If a DNS lookup returns no MXs, Exim looks for an address record, in
+accordance with the rules that are defined in the RFCs. If you want to
+break the rules, you can set <tt>mx_domains</tt> in the <b>dnslookup</b> router, but
+you will cut yourself off from those sites (and there still seem to be
+plenty) who do not set up MX records.
+</p>
+<p>
+<a name="TOC131" href="FAQ.html#TOC131">Q0311:</a>&nbsp;&nbsp;When a DNS lookup for MX records fails to complete, why doesn't Exim
+send the messsage to the host defined by the A record?
+</p>
+<p>
+<font color="#00BB00">A0311:</font>&nbsp;&nbsp;The RFCs are quite clear on this. Only if it is known that there are no
+MX records is an MTA allowed to make use of the A record. When an MX
+lookup fails to complete, Exim does not know whether there are any MX
+records or not. There seem to be some name servers (or some
+configurations of some name servers) that give a &#147;server fail&#148; error when
+asked for a non-existent MX record. Exim uses standard resolver calls,
+which unfortunately do not distinguish between this case and a timeout,
+so all Exim can do is try again later.
+</p>
+<p>
+<a name="TOC132" href="FAQ.html#TOC132">Q0312:</a>&nbsp;&nbsp;Is it possible to use a conditional expression for the host item in a
+<tt>route_list</tt> for <b>manualroute</b> router? I tried the following, but it
+doesn't work:
+</p>
+<pre>
+   route_list = * ${if match{$header_from:}{\N.*\.usa\.net$\N} \
+                {&#60;smarthost1&#62;}{&#60;smarthost2&#62;}</pre>
+<p>
+<font color="#00BB00">A0312:</font>&nbsp;&nbsp;The problem is that the second item in <tt>route_list</tt> contains white
+space, which means that it gets terminated prematurely. To avoid this,
+you must put the second item in quotes:
+</p>
+<pre>
+   route_list = * "${if match{$header_from:}{\N.*\.usa\.net$\N} \
+                {&#60;smarthost1&#62;}{&#60;smarthost2&#62;}}"</pre>
+<p>
+<a name="TOC133" href="FAQ.html#TOC133">Q0313:</a>&nbsp;&nbsp;I send all external mail to a smart host, but this means that bad
+addresses also get passed to the smart host. Can I avoid this?
+</p>
+<p>
+<font color="#00BB00">A0313:</font>&nbsp;&nbsp;Assuming you have DNS availability, set up a conventional <b>dnslookup</b>
+router to do the routing, but in the <b>remote_smtp</b> transport set this:
+</p>
+<pre>
+   hosts = your.smart.host
+   hosts_override</pre>
+<p>
+This will override the hosts that the router finds so that everything
+goes to the smart host, but any non-existent domains will be failed by
+the router.
+</p>
+<p>
+<a name="TOC134" href="FAQ.html#TOC134">Q0314:</a>&nbsp;&nbsp;I have a really annoying intermittent problem where attempts to mail to
+valid sites are rejected with <i>unknown mail domain</i>. This only happens a
+few times a day and there is no particular pattern to the sites it
+rejects. If I try to lookup the same domain a few minutes later then it
+is OK.
+</p>
+<p>
+<font color="#00BB00">A0314:</font>&nbsp;&nbsp;This is almost certainly a problem with the DNS resolver or the the
+domain's name servers.
+</p>
+<p>
+(1) &nbsp;Have you linked Exim against the newest DNS resolver library that
+comes with Bind? If you are using SunOS4 that may be your problem, as
+the resolver that comes with that OS is known to be buggy and to give
+intermittent false negatives.
+</p>
+<p>
+(2) &nbsp;Effects like this are sometimes seen if a domain's name servers get
+out of step with each other.
+</p>
+<p>
+<a name="TOC135" href="FAQ.html#TOC135">Q0315:</a>&nbsp;&nbsp;I'd like route all mail with addresses that can't be resolved (the DNS
+lookup times out) to a relay machine.
+</p>
+<p>
+<font color="#00BB00">A0315:</font>&nbsp;&nbsp;Set <tt>pass_on_timeout</tt> on your <b>dnslookup</b> router, and add below it a
+<b>manualroute</b> router that routes all relevant domains to the relay.
+</p>
+<p>
+<a name="TOC136" href="FAQ.html#TOC136">Q0316:</a>&nbsp;&nbsp;I would like to forward all incoming email for a particular domain to
+another host via SMTP. Whereabouts would I configure that?
+</p>
+<p>
+<font color="#00BB00">A0316:</font>&nbsp;&nbsp;Use this as your first router:
+</p>
+<pre>
+   special:
+     driver = manualroute
+     transport = remote_smtp
+     route_list = the.particular.domain the.other.host</pre>
+<p>
+You will also need to adjust the ACL for incoming SMTP so that this
+domain is accepted for relaying. If you are using the default
+configuration, there is a domain list called <tt>relay_domains</tt> that is
+set up for this.
+</p>
+<p>
+<a name="TOC137" href="FAQ.html#TOC137">Q0317:</a>&nbsp;&nbsp;What I'd like to do is have alternative smart hosts, where the one to be
+used is determined by which ISP I'm connected to.
+</p>
+<p>
+<font color="#00BB00">A0317:</font>&nbsp;&nbsp;The simplest way to do this is to arrange for the name of the smart host
+du jour to be placed in a file when you connect, say <i>/etc/smarthost</i>.
+Then you can read this file from a <b>manualroute</b> router like this:
+</p>
+<pre>
+   smarthost:
+     driver = manualroute
+     transport = remote_smtp
+     route_list = * ${readfile{/etc/smarthost}{}}</pre>
+<p>
+The second argument of the <tt>readfile</tt> item is a string that replaces
+any newline characters in the file (in this case, with nothing).
+By keeping the data out of the main configuration file, you avoid having
+to HUP the daemon when it changes.
+</p>
+<p>
+<a name="TOC138" href="FAQ.html#TOC138">Q0318:</a>&nbsp;&nbsp;Exim won't route to a host with no MX record.
+</p>
+<p>
+<font color="#00BB00">A0318:</font>&nbsp;&nbsp;More than one thing may cause this.
+</p>
+<p>
+(1) &nbsp;Are you sure there really is no MX record? Sometimes a typo results
+in a malformed MX record in the zone file, in which case some name
+servers give a SERVFAIL error rather than NXDOMAIN. Exim has to treat
+this as a temporary error, so it can't go on to look for address records.
+You can check for this state using one of the DNS interrogation commands,
+such as <i>nslookup</i>, <i>host</i>, or <i>dig</i>.
+</p>
+<p>
+(2) &nbsp;Is there a wildcard MX record for <i>your</i> domain? Is the
+<tt>search_parents</tt> option on in your <b>dnslookup</b> router? If the answer to
+both these questions is &#147;yes&#148;, that is the cause of the problem. When
+the DNS resolver fails to find the MX record, it tries adding on your
+domain if <tt>search_parents</tt> is true, and thereby finds your wildcard MX
+record. For example:
+</p>
+<p>
+.  There is a wildcard MX record for <i>*.a.b.c</i>.
+</p>
+<p>
+.  There is a host called <i>x.y.z</i> that has an A record and no MX record.
+</p>
+<p>
+.  Somebody on the host <i>m.a.b.c</i> domain tries to mail to <i>user@x.y.z</i>.
+</p>
+<p>
+.  Exim calls the DNS to look for an MX record for <i>x.y.z</i>.
+</p>
+<p>
+.  The DNS doesn't find any MX record. Because <tt>search_parents</tt> is true,
+it then tries searching the current host's parent domain, so it
+looks for <i>x.y.z.a.b.c</i> and picks up the wildcard MX record.
+</p>
+<p>
+Setting <tt>search_parents</tt> false makes this case work while retaining the
+wildcard MX record. However, anybody on the host <i>m.a.b.c</i> who mails to
+<i>user@n.a</i> (expecting it to go to <i>user@n.a.b.c</i>) now has a problem. The
+<tt>widen_domains</tt> option of the <b>dnslookup</b> router may be helpful in this
+circumstance.
+</p>
+<p>
+<a name="TOC139" href="FAQ.html#TOC139">Q0319:</a>&nbsp;&nbsp;I have some mails on my queues that are sticking around longer than
+the retry time indicates they should. They are all getting frozen
+because some remote admin has set their MX record to 127.0.0.1.
+</p>
+<p>
+<font color="#00BB00">A0319:</font>&nbsp;&nbsp;The admin in question is an idiot. Exim will always freeze such messages
+because they are apparently routed to the local host. To bounce these
+messages immediately, set
+</p>
+<pre>
+   ignore_target_hosts = 127.0.0.1</pre>
+<p>
+on the <b>dnslookup</b> router. This causes Exim to completely ignore any hosts
+with that IP address. In fact, there are quite a number of IP addresses
+that should never be used. Here is a suggested configuration list for
+the IPv4 ones:
+</p>
+<pre>
+   # Don't allow domains whose single MX (or A) record is a
+   # "special-use IPv4 address", as listed in RFC 3330.
+   ignore_target_hosts = \
+	       # Hosts on "this network"; RFC 1700 (page 4) states that these
+	       # are only allowed as source addresses
+	       0.0.0.0/8 : \
+	       # Private networks, RFC 1918
+	       10.0.0.0/8 : 172.16.0.0/12 : 192.168.0.0/16 : \
+	       # Internet host loopback address, RFC 1700 (page 5)
+	       127.0.0.0/8 : \
+	       # "Link local" block
+	       169.254.0.0/16 : \
+	       # "TEST-NET" - should not appear on the public Internet
+	       192.0.2.0/24 : \
+	       # 6to4 relay anycast addresses, RFC 3068
+	       192.88.99.0/24 : \
+	       # Network interconnect device benchmark testing, RFC 2544
+	       198.18.0.0/15 : \
+	       # Multicast addresses, RFC 3171
+	       224.0.0.0/4 : \
+	       # Reserved for future use, RFC 1700 (page 4)
+	       240.0.0.0/4</pre>
+<p>
+<a name="TOC140" href="FAQ.html#TOC140">Q0320:</a>&nbsp;&nbsp;How can I arrange for all mail to <i>user@some.domain</i> to be forwarded
+to <i>user@other.domain</i>?
+</p>
+<p>
+<font color="#00BB00">A0320:</font>&nbsp;&nbsp;Put this as your first router:
+</p>
+<pre>
+   forward:
+     driver = redirect
+     domains = some.domain
+     data = ${quote:$local_part}@other.domain</pre>
+<p>
+<a name="TOC141" href="FAQ.html#TOC141">Q0321:</a>&nbsp;&nbsp;How can I tell an Exim router to use only IPv4 or only IPv6 addresses
+when it finds both types in the DNS?
+</p>
+<p>
+<font color="#00BB00">A0321:</font>&nbsp;&nbsp;You can do this by making it ignore the addresses you don't want. This
+example ignores all IPv6 addresses and all IPv4 addresses in the 127
+network:
+</p>
+<pre>
+   ignore_target_hosts = &#60;; 0000::0000/0 ; 127.0.0.0/8</pre>
+<p>
+To ignore all IPv4 addresses, use
+</p>
+<pre>
+   ignore_target_hosts = 0.0.0.0/0</pre>
+<p>
+See <a href="FAQ_3.html#TOC139">Q0319</a> for a general discussion of <tt>ignore_target_hosts</tt>.
+</p>
+<p>
+<a name="TOC142" href="FAQ.html#TOC142">Q0322:</a>&nbsp;&nbsp;How can I reroute all messages bound for 192.168.10.0 and 10.0.0.0 to
+a specific mail server?
+</p>
+<p>
+<font color="#00BB00">A0322:</font>&nbsp;&nbsp;That is an odd requirement. However, there is an obscure feature in
+Exim, originally implemented for packet radio people, that perhaps can
+help. Check out the <tt>translate_ip_address</tt> generic router option.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_2.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_4.html">Next</a>
+</body>
+</html>

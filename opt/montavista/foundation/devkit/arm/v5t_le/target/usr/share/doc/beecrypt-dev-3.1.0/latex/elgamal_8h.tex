@@ -1,0 +1,132 @@
+\hypertarget{elgamal_8h}{
+\section{elgamal.h File Reference}
+\label{elgamal_8h}\index{elgamal.h@{elgamal.h}}
+}
+El\-Gamal algorithm. 
+
+{\tt \#include \char`\"{}mpbarrett.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{elgamal_8h_a0}{elgv1sign} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$p, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$n, const \hyperlink{structmpnumber}{mpnumber} $\ast$g, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$hm, const \hyperlink{structmpnumber}{mpnumber} $\ast$x, \hyperlink{structmpnumber}{mpnumber} $\ast$r, \hyperlink{structmpnumber}{mpnumber} $\ast$s)
+\begin{CompactList}\small\item\em This function performs raw El\-Gamal signing, variant 1. \item\end{CompactList}\item 
+int \hyperlink{elgamal_8h_a1}{elgv3sign} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$p, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$n, const \hyperlink{structmpnumber}{mpnumber} $\ast$g, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$hm, const \hyperlink{structmpnumber}{mpnumber} $\ast$x, \hyperlink{structmpnumber}{mpnumber} $\ast$r, \hyperlink{structmpnumber}{mpnumber} $\ast$s)
+\begin{CompactList}\small\item\em This function performs raw El\-Gamal signing, variant 3. \item\end{CompactList}\item 
+int \hyperlink{elgamal_8h_a2}{elgv1vrfy} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$p, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$n, const \hyperlink{structmpnumber}{mpnumber} $\ast$g, const \hyperlink{structmpnumber}{mpnumber} $\ast$hm, const \hyperlink{structmpnumber}{mpnumber} $\ast$y, const \hyperlink{structmpnumber}{mpnumber} $\ast$r, const \hyperlink{structmpnumber}{mpnumber} $\ast$s)
+\begin{CompactList}\small\item\em This function performs raw El\-Gamal verification, variant 1. \item\end{CompactList}\item 
+int \hyperlink{elgamal_8h_a3}{elgv3vrfy} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$p, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$n, const \hyperlink{structmpnumber}{mpnumber} $\ast$g, const \hyperlink{structmpnumber}{mpnumber} $\ast$hm, const \hyperlink{structmpnumber}{mpnumber} $\ast$y, const \hyperlink{structmpnumber}{mpnumber} $\ast$r, const \hyperlink{structmpnumber}{mpnumber} $\ast$s)
+\begin{CompactList}\small\item\em This function performs raw El\-Gamal verification, variant 3. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+El\-Gamal algorithm. 
+
+For more information on this algorithm, see: \char`\"{}Handbook of Applied Cryptography\char`\"{}, 11.5.2: \char`\"{}The El\-Gamal signature scheme\char`\"{}, p. 454-459
+
+Two of the signature variants in Note 11.70 are implemented.
+
+\begin{Desc}
+\item[\hyperlink{todo__todo000002}{Todo}]Implement El\-Gamal encryption and decryption. 
+
+Explore the possibility of using simultaneous multiple exponentiation, as described in HAC, 14.87 (iii). \end{Desc}
+
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{elgamal_8h-source}{elgamal.h}.
+
+\subsection{Function Documentation}
+\hypertarget{elgamal_8h_a0}{
+\index{elgamal.h@{elgamal.h}!elgv1sign@{elgv1sign}}
+\index{elgv1sign@{elgv1sign}!elgamal.h@{elgamal.h}}
+\subsubsection[elgv1sign]{\setlength{\rightskip}{0pt plus 5cm}int elgv1sign (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$ {\em p}, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$ {\em n}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em g}, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$ {\em rgc}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em hm}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em x}, \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em r}, \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em s})}}
+\label{elgamal_8h_a0}
+
+
+This function performs raw El\-Gamal signing, variant 1. 
+
+Signing equations:
+
+\begin{itemize}
+\item $r=g^{k}\ \textrm{mod}\ p$ \item $s=k^{-1}(h(m)-xr)\ \textrm{mod}\ (p-1)$\end{itemize}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em p}]The prime. \item[{\em n}]The reducer mod (p-1). \item[{\em g}]The generator. \item[{\em rgc}]The pseudo-random generat \item[{\em hm}]The hash to be signed. \item[{\em x}]The private key value. \item[{\em r}]The signature's {\em r\/} value. \item[{\em s}]The signature's {\em s\/} value. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \item[{\em -1}]on failure. \end{description}
+\end{Desc}
+\hypertarget{elgamal_8h_a2}{
+\index{elgamal.h@{elgamal.h}!elgv1vrfy@{elgv1vrfy}}
+\index{elgv1vrfy@{elgv1vrfy}!elgamal.h@{elgamal.h}}
+\subsubsection[elgv1vrfy]{\setlength{\rightskip}{0pt plus 5cm}int elgv1vrfy (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$ {\em p}, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$ {\em n}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em g}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em hm}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em y}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em r}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em s})}}
+\label{elgamal_8h_a2}
+
+
+This function performs raw El\-Gamal verification, variant 1. 
+
+Verifying equations:
+
+\begin{itemize}
+\item Check $0<r<p$ and $0<s<(p-1)$ \item $v_1=y^{r}r^{s}\ \textrm{mod}\ p$ \item $v_2=g^{h(m)}\ \textrm{mod}\ p$ \item Check $v_1=v_2$\end{itemize}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em p}]The prime. \item[{\em n}]The reducer mod (p-1). \item[{\em g}]The generator. \item[{\em hm}]The hash to be signed. \item[{\em y}]The public key value. \item[{\em r}]The signature's {\em r\/} value. \item[{\em s}]The signature's {\em s\/} value. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]on success. \item[{\em 0}]on failure. \end{description}
+\end{Desc}
+\hypertarget{elgamal_8h_a1}{
+\index{elgamal.h@{elgamal.h}!elgv3sign@{elgv3sign}}
+\index{elgv3sign@{elgv3sign}!elgamal.h@{elgamal.h}}
+\subsubsection[elgv3sign]{\setlength{\rightskip}{0pt plus 5cm}int elgv3sign (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$ {\em p}, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$ {\em n}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em g}, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$ {\em rgc}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em hm}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em x}, \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em r}, \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em s})}}
+\label{elgamal_8h_a1}
+
+
+This function performs raw El\-Gamal signing, variant 3. 
+
+Signing equations:
+
+\begin{itemize}
+\item $r=g^{k}\ \textrm{mod}\ p$ \item $s=xr+kh(m)\ \textrm{mod}\ (p-1)$\end{itemize}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em p}]The prime. \item[{\em n}]The reducer mod (p-1). \item[{\em g}]The generator. \item[{\em rgc}]The pseudo-random generat \item[{\em hm}]The hash to be signed. \item[{\em x}]The private key value. \item[{\em r}]The signature's {\em r\/} value. \item[{\em s}]The signature's {\em s\/} value. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \item[{\em -1}]on failure. \end{description}
+\end{Desc}
+\hypertarget{elgamal_8h_a3}{
+\index{elgamal.h@{elgamal.h}!elgv3vrfy@{elgv3vrfy}}
+\index{elgv3vrfy@{elgv3vrfy}!elgamal.h@{elgamal.h}}
+\subsubsection[elgv3vrfy]{\setlength{\rightskip}{0pt plus 5cm}int elgv3vrfy (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$ {\em p}, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$ {\em n}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em g}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em hm}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em y}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em r}, const \hyperlink{structmpnumber}{mpnumber} $\ast$ {\em s})}}
+\label{elgamal_8h_a3}
+
+
+This function performs raw El\-Gamal verification, variant 3. 
+
+Verifying equations:
+
+\begin{itemize}
+\item Check $0<r<p$ and $0<s<(p-1)$ \item $v_1=g^{s}\ \textrm{mod}\ p$ \item $v_2=y^{r}r^{h(m)}\ \textrm{mod}\ p$ \item Check $v_1=v_2$\end{itemize}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em p}]The prime. \item[{\em n}]The reducer mod (p-1). \item[{\em g}]The generator. \item[{\em hm}]The hash to be signed. \item[{\em y}]The public key value. \item[{\em r}]The signature's {\em r\/} value. \item[{\em s}]The signature's {\em s\/} value. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 1}]on success. \item[{\em 0}]on failure. \end{description}
+\end{Desc}

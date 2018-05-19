@@ -1,0 +1,14 @@
+Manual pages for Debian GNU/Linux
+---------------------------------
+
+These manual pages were written by many different people and improved
+by probably even more.  Listing all authors and modificators for each
+page is not possible.
+
+This package was put together by Martin Schulze <joey@infodrom.org>
+from the sources at <ftp://ftp.win.tue.nl/pub/linux-local/manpages/>.
+Its previous maintainers were Martin Schulze and Nicolás Lichtmaier.
+
+The source of the Debian package is managed using CVS.  It is publically
+available at <http://cvs.infodrom.org/manpages/?cvsroot=debian> or as
+<:pserver:anonymous@cvs.infodrom.org/var/cvs/debian/manpages/>.

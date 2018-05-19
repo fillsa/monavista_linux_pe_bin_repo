@@ -1,0 +1,977 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 39</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_38.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_40.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2457"></a>
+<a name="IX2458"></a>
+<a name="IX2459"></a>
+<h1>
+<a name="CHAP39" href="spec_toc.html#TOC299">
+39. Adding a local scan function to Exim
+</a></h1>
+<p>
+In these days of email worms, viruses, and ever-increasing spam, some sites
+want to apply a lot of checking to messages before accepting them. You can do a
+certain amount through string expansions and the <tt>condition</tt> condition in the
+ACL that runs after the SMTP <font size=-1>DATA</font> command or the ACL for non-SMTP messages
+(see chapter <a href="spec_38.html">38</a>), but this has its limitations. 
+<a name="IX2460"></a>
+</p>
+<p>
+An increasingly popular way of doing additional checking is to make use of the 
+Exiscan patch for Exim, which adds ACL conditions that perform body scans of 
+various kinds. This is available from<A HREF="http://duncanthrax.net/exiscan-acl/">
+/?http://duncanthrax.net/exiscan-acl/?\.
+</A>
+</p>
+<p>
+To allow for even more general checking that can be customized to a site's own
+requirements, there is the possibility of linking Exim with a private message
+scanning function, written in C. If you want to run code that is written in
+something other than C, you can of course use a little C stub to call it.
+</p>
+<p>
+The local scan function is run once for every incoming message, at the point 
+when Exim is just about to accept the message.
+It can therefore be used to control non-SMTP messages from local processes as
+well as messages arriving via SMTP.
+</p>
+<p>
+Exim applies a timeout to calls of the local scan function, and there is an
+option called <tt>local&#095;scan&#095;timeout</tt> for setting it. The default is 5 minutes.
+Zero means &#147;no timeout&#148;. 
+Exim also sets up signal handlers for SIGSEGV, SIGILL, SIGFPE, and SIGBUS
+before calling the local scan function, so that the most common types of crash
+are caught. If the timeout is exceeded or one of those signals is caught, the
+incoming message is rejected with a temporary error if it is an SMTP message.
+For a non-SMTP message, the message is dropped and Exim ends with a non-zero
+code. The incident is logged on the main and reject logs.
+</p>
+<a name="IX2461"></a>
+<h2>
+<a name="SECT39.1" href="spec_toc.html#TOC300">
+39.1. Building Exim to use a local scan function
+</a></h2>
+<p>
+To make use of the local scan function feature, you must tell Exim where your
+function is before building Exim, by setting <font size=-1>LOCAL&#095;SCAN&#095;SOURCE</font> in your
+<i>Local/Makefile</i>. A recommended place to put it is in the <i>Local</i>
+directory, so you might set
+<pre>
+&nbsp;&nbsp;LOCAL_SCAN_SOURCE=Local/local_scan.c
+</pre>
+</p>
+<p>
+for example. The function must be called <i>local&#095;scan()</i>. It is called by
+Exim after it has received a message, when the success return code is about to
+be sent. This is after all the ACLs have been run. The return code from your
+function controls whether the message is actually accepted or not. There is a
+commented template function (that just accepts the message) in the file
+<i>src/local&#095;scan.c</i>.
+</p>
+<p>
+If you want to make use of Exim's run time configuration file to set options 
+for your <i>local&#095;scan()</i> function, you must also set
+<pre>
+&nbsp;&nbsp;LOCAL_SCAN_HAS_OPTIONS=yes
+</pre>
+</p>
+<p>
+in <i>Local/Makefile</i> (see section <a href="spec_39.html#SECT39.3">39.3</a> below).
+</p>
+<a name="IX2462"></a>
+<h2>
+<a name="SECT39.2" href="spec_toc.html#TOC301">
+39.2. API for local&#095;scan()
+</a></h2>
+<p>
+You must include this line near the start of your code:
+<pre>
+&nbsp;&nbsp;#include "local_scan.h"
+</pre>
+</p>
+<p>
+This header file defines a number of variables and other values, and the
+prototype for the function itself. Exim is coded to use unsigned char values
+almost exclusively, and one of the things this header defines is a shorthand
+for <tt>unsigned char</tt> called <tt>uschar</tt>. 
+It also contains the following macro definitions, to simplify casting character 
+strings and pointers to character strings:
+<pre>
+&nbsp;&nbsp;#define CS   (char *)
+&nbsp;&nbsp;#define CCS  (const char *)
+&nbsp;&nbsp;#define CSS  (char **)
+&nbsp;&nbsp;#define US   (unsigned char *)
+&nbsp;&nbsp;#define CUS  (const unsigned char *)
+&nbsp;&nbsp;#define USS  (unsigned char **)
+</pre>
+</p>
+<p>
+The function prototype for <i>local&#095;scan()</i> is:
+<pre>
+&nbsp;&nbsp;extern int local_scan(int fd, uschar **return_text);
+</pre>
+</p>
+<p>
+The arguments are as follows:
+</p>
+<ul>
+<li><p>
+<tt>fd</tt> is a file descriptor for the file that contains the body of the message
+(the -D file). 
+The file is open for reading and writing, but updating it is not recommended.
+<b>Warning</b>: You must <i>not</i> close this file descriptor.
+</p>
+<p>
+The descriptor is positioned at character 19 of the file, which is the first
+character of the body itself, because the first 19 characters are the message
+id followed by <tt>-D</tt> and a newline. If you rewind the file, you should use the
+macro <font size=-1>SPOOL&#095;DATA&#095;START&#095;OFFSET</font> to reset to the start of the data, just in
+case this changes in some future version.
+</p>
+</li>
+<li><p>
+<tt>return&#095;text</tt> is an address which you can use to return a pointer to a text
+string at the end of the function. The value it points to on entry is NULL.
+</p>
+</li>
+</ul>
+<p>
+The function must return an <tt>int</tt> value which is one of the following macros:
+</p>
+<ul>
+<li><p>
+<tt>LOCAL&#095;SCAN&#095;ACCEPT</tt>
+</p>
+<p>
+The message is accepted. If you pass back a string of text, it is saved with
+the message, and made available in the variable <tt>$local&#095;scan&#095;data</tt>. No
+newlines are permitted (if there are any, they are turned into spaces) and the
+maximum length of text is 1000 characters.
+</p>
+</li>
+<li><p>
+<tt>LOCAL&#095;SCAN&#095;ACCEPT&#095;FREEZE</tt>
+</p>
+<p>
+This behaves as <font size=-1>LOCAL&#095;SCAN&#095;ACCEPT</font>, except that the accepted message is 
+queued without immediate delivery, and is frozen.
+</p>
+</li>
+<li><p>
+<tt>LOCAL&#095;SCAN&#095;ACCEPT&#095;QUEUE</tt>
+</p>
+<p>
+This behaves as <font size=-1>LOCAL&#095;SCAN&#095;ACCEPT</font>, except that the accepted message is 
+queued without immediate delivery.
+</p>
+</li>
+<li><p>
+<tt>LOCAL&#095;SCAN&#095;REJECT</tt>
+</p>
+<p>
+The message is rejected; the returned text is used as an error message which is
+passed back to the sender and which is also logged. Newlines are permitted &#150;
+they cause a multiline response for SMTP rejections, but are converted to
+<tt>&#092;n</tt> in log lines.
+If no message is given, &#147;Administrative prohibition&#148; is used.
+</p>
+</li>
+<li><p>
+<tt>LOCAL&#095;SCAN&#095;TEMPREJECT</tt>
+</p>
+<p>
+The message is temporarily rejected; the returned text is used as an error
+message as for <font size=-1>LOCAL&#095;SCAN&#095;REJECT</font>. If no message is given, &#147;Temporary
+local problem&#148; is used.
+</p>
+</li>
+<li><p>
+<tt>LOCAL&#095;SCAN&#095;REJECT&#095;NOLOGHDR</tt>
+</p>
+<p>
+This behaves as <font size=-1>LOCAL&#095;SCAN&#095;REJECT</font>, except that the header of the rejected
+message is not written to the reject log. It has the effect of unsetting the
+<tt>rejected&#095;header</tt> log selector for just this rejection. If <tt>rejected&#095;header</tt>
+is already unset (see the discussion of the <tt>log&#095;selection</tt> option in section
+<a href="spec_45.html#SECT45.15">45.15</a>), this code is the same as <font size=-1>LOCAL&#095;SCAN&#095;REJECT</font>.
+</p>
+</li>
+<li><p>
+<tt>LOCAL&#095;SCAN&#095;TEMPREJECT&#095;NOLOGHDR</tt>
+</p>
+<p>
+This code is a variation of <font size=-1>LOCAL&#095;SCAN&#095;TEMPREJECT</font> in the same way that
+<font size=-1>LOCAL_SCAN_REJECT_NOLOGHDR</font> is a variation of <font size=-1>LOCAL&#095;SCAN&#095;REJECT</font>.
+</p>
+</li>
+</ul>
+<p>
+If the message is not being received by interactive SMTP, rejections are
+reported by writing to <tt>stderr</tt> or by sending an email, as configured by the
+<i>-oe</i> command line options.
+</p>
+<a name="IX2463"></a>
+<h2>
+<a name="SECT39.3" href="spec_toc.html#TOC302">
+39.3. Configuration options for local&#095;scan()
+</a></h2>
+<p>
+It is possible to have option settings in the main configuration file
+that set values in static variables in the <i>local&#095;scan()</i> module. If you
+want to do this, you must have the line
+<pre>
+&nbsp;&nbsp;LOCAL_SCAN_HAS_OPTIONS=yes
+</pre>
+</p>
+<p>
+in your <i>Local/Makefile</i> when you build Exim. (This line is in
+<i>OS/Makefile-Default</i>, commented out). Then, in the <i>local&#095;scan()</i> source
+file, you must define static variables to hold the option values, and a table to
+define them. 
+</p>
+<p>
+The table must be a vector called <tt>local&#095;scan&#095;options</tt>, of type
+<tt>optionlist</tt>. Each entry is a triplet, consisting of a name, an option type,
+and a pointer to the variable that holds the value. The entries must appear in
+alphabetical order. Following <tt>local&#095;scan&#095;options</tt> you must also define a
+variable called <tt>local&#095;scan&#095;options&#095;count</tt> that contains the number of
+entries in the table. Here is a short example, showing two kinds of option:
+<pre>
+&nbsp;&nbsp;static int my_integer_option = 42;
+&nbsp;&nbsp;static uschar *my_string_option = US"a default string";
+&nbsp;&nbsp;
+&nbsp;&nbsp;optionlist local_scan_options[] = {
+&nbsp;&nbsp;  { "my_integer", opt_int,       &#038;my_integer_option },
+&nbsp;&nbsp;  { "my_string",  opt_stringptr, &#038;my_string_option }
+&nbsp;&nbsp;};
+&nbsp;&nbsp;int local_scan_options_count =
+&nbsp;&nbsp;  sizeof(local_scan_options)/sizeof(optionlist);
+</pre>
+</p>
+<p>
+The values of the variables can now be changed from Exim's runtime
+configuration file by including a local scan section as in this example:
+<pre>
+&nbsp;&nbsp;begin local_scan
+&nbsp;&nbsp;my_integer = 99
+&nbsp;&nbsp;my_string = some string of text...
+</pre>
+</p>
+<p>
+The available types of option data are as follows:
+<hr></p>
+<p>
+<b>opt&#095;bool</b>
+</p>
+<p>
+This specifies a boolean (true/false) option. The address should point to
+a variable of type <tt>BOOL</tt>, which will be set to <font size=-1>TRUE</font> or <font size=-1>FALSE</font>, which 
+are macros that are defined as &#147;1&#148; and &#147;0&#148;, respectively. If you want to detect
+whether such a variable has been set at all, you can initialize it to
+<font size=-1>TRUE&#095;UNSET</font>. (BOOL variables are integers underneath, so can hold more than
+two values.)
+<hr></p>
+<p>
+<b>opt&#095;fixed</b>
+</p>
+<p>
+This specifies a fixed point number, such as is used for load averages.
+The address should point to a variable of type <tt>int</tt>. The value is stored
+multiplied by 1000, so, for example, 1.4142 is truncated and stored as 1414.
+<hr></p>
+<p>
+<b>opt&#095;int</b>
+</p>
+<p>
+This specifies an integer; the address should point to a variable of type 
+<tt>int</tt>. The value may be specified in any of the integer formats accepted by
+Exim.
+<hr></p>
+<p>
+<b>opt&#095;mkint</b>
+</p>
+<p>
+This is the same as <tt>opt&#095;int</tt>, except that when such a value is output in a
+<i>-bP</i> listing, if it is an exact number of kilobytes or megabytes, it is
+printed with the suffix K or M.
+<hr></p>
+<p>
+<b>opt&#095;octint</b>
+</p>
+<p>
+This also specifies an integer, but the value is always interpeted as an
+octal integer, whether or not it starts with the digit zero, and it is
+always output in octal.
+<hr></p>
+<p>
+<b>opt&#095;stringptr</b>
+</p>
+<p>
+This specifies a string value; the address must be a pointer to a
+variable that points to a string (for example, of type <tt>uschar *</tt>).
+<hr></p>
+<p>
+<b>opt&#095;time</b>
+</p>
+<p>
+This specifies a time interval value. The address must point to a variable of
+type <tt>int</tt>. The value that is placed there is a number of seconds.
+<hr><br>
+</p>
+<p>
+If the <i>-bP</i> command line option is followed by <tt>local&#095;scan</tt>, Exim prints
+out the values of all the <i>local&#095;scan()</i> options.
+</p>
+<a name="IX2464"></a>
+<h2>
+<a name="SECT39.4" href="spec_toc.html#TOC303">
+39.4. Available Exim variables
+</a></h2>
+<p>
+The header <i>local&#095;scan.h</i> gives you access to a number of C variables.
+These are the only ones that are guaranteed to be maintained from release to
+release. Note, however, that you can obtain the value of any Exim variable by
+calling <i>expand&#095;string()</i>. The exported variables are as follows:
+<hr></p>
+<p>
+<b>unsigned int debug&#095;selector</b>
+</p>
+<p>
+This variable is set to zero when no debugging is taking place. Otherwise, it
+is a bitmap of debugging selectors. Two bits are identified for use in
+<i>local&#095;scan()</i>; they are defined as macros:
+</p>
+<ul>
+<li><p>
+The <tt>D&#095;v</tt> bit is set when <i>-v</i> was present on the command line. This is a
+testing option that is not privileged &#150; any caller may set it. All the
+other selector bits can be set only by admin users.
+</p>
+</li>
+<li><p>
+The <tt>D&#095;local&#095;scan</tt> bit is provided for use by <i>local&#095;scan()</i>; it is set
+by the <tt>+local&#095;scan</tt> debug selector. It is not included in the default set
+of debugging bits.
+</p>
+</li>
+</ul>
+<p>
+Thus, to write to the debugging output only when <tt>+local&#095;scan</tt> has been
+selected, you should use code like this:
+<pre>
+&nbsp;&nbsp;if ((debug_selector &#038; D_local_scan) != 0) 
+&nbsp;&nbsp;  debug_printf("xxx", ...);
+</pre>
+<hr></p>
+<p>
+<b>uschar *expand&#095;string&#095;message</b>
+</p>
+<p>
+After a failing call to <i>expand&#095;string()</i> (returned value NULL), the
+variable <tt>expand_string_message</tt> contains the error message, zero-terminated.
+<hr></p>
+<p>
+<b>header&#095;line *header&#095;list</b>
+</p>
+<p>
+A pointer to a chain of header lines. The <tt>header&#095;line</tt> structure is discussed
+below.
+<hr></p>
+<p>
+<b>header&#095;line *header&#095;last</b>
+</p>
+<p>
+A pointer to the last of the header lines.
+<hr></p>
+<p>
+<b>uschar *headers&#095;charset</b>
+</p>
+<p>
+The value of the <tt>headers&#095;charset</tt> configuration option.
+<hr></p>
+<p>
+<b>BOOL host&#095;checking</b>
+</p>
+<p>
+This variable is TRUE during a host checking session that is initiated by the 
+<i>-bh</i> command line option.
+<hr></p>
+<p>
+<b>uschar *interface&#095;address</b>
+</p>
+<p>
+The IP address of the interface that received the message, as a string. This
+is NULL for locally submitted messages.
+<hr></p>
+<p>
+<b>int interface&#095;port</b>
+</p>
+<p>
+The port on which this message was received.
+<hr></p>
+<p>
+<b>uschar *message&#095;id</b>
+</p>
+<p>
+This variable contains the message id for the incoming message as a 
+zero-terminated string.
+<hr></p>
+<p>
+<b>uschar *received&#095;protocol</b>
+</p>
+<p>
+The name of the protocol by which the message was received.
+<hr></p>
+<p>
+<b>int recipients&#095;count</b>
+</p>
+<p>
+The number of accepted recipients.
+<hr></p>
+<p>
+<a name="IX2465"></a>
+<a name="IX2466"></a>
+<b>recipient&#095;item *recipients&#095;list</b>
+</p>
+<p>
+The list of accepted recipients, held in a vector of length
+<tt>recipients&#095;count</tt>. The <tt>recipient&#095;item</tt> structure is discussed below. You
+can add additional recipients by calling <i>receive&#095;add&#095;recipient()</i> (see
+below). You can delete recipients by removing them from the vector and adusting
+the value in <tt>recipients&#095;count</tt>. In particular, by setting <tt>recipients&#095;count</tt>
+to zero you remove all recipients. If you then return the value
+<tt>LOCAL&#095;SCAN&#095;ACCEPT</tt>, the message is accepted, but immediately blackholed.
+To replace the recipients, set <tt>recipients&#095;count</tt> to zero and then call 
+<i>receive&#095;add&#095;recipient()</i> as often as needed.
+<hr></p>
+<p>
+<b>uschar *sender&#095;address</b>
+</p>
+<p>
+The envelope sender address. For bounce messages this is the empty string.
+<hr></p>
+<p>
+<b>uschar *sender&#095;host&#095;address</b>
+</p>
+<p>
+The IP address of the sending host, as a string. This is NULL for
+locally-submitted messages.
+<hr></p>
+<p>
+<b>uschar *sender&#095;host&#095;authenticated</b>
+</p>
+<p>
+The name of the authentication mechanism that was used, or NULL if the message
+was not received over an authenticated SMTP connection.
+<hr></p>
+<p>
+<b>uschar *sender&#095;host&#095;name</b>
+</p>
+<p>
+The name of the sending host, if known.
+<hr></p>
+<p>
+<b>int sender&#095;host&#095;port</b>
+</p>
+<p>
+The port on the sending host.
+<hr></p>
+<p>
+<b>BOOL smtp&#095;input</b>
+</p>
+<p>
+This variable is TRUE for all SMTP input, including BSMTP.
+<hr></p>
+<p>
+<b>BOOL smtp&#095;batched&#095;input</b>
+</p>
+<p>
+This variable is TRUE for BSMTP input.
+<hr></p>
+<p>
+<b>int store&#095;pool</b>
+</p>
+<p>
+The contents of this variable control which pool of memory is used for new 
+requests. See section <a href="spec_39.html#SECT39.8">39.8</a> for details.
+<hr><br>
+</p>
+<h2>
+<a name="SECT39.5" href="spec_toc.html#TOC304">
+39.5. Structure of header lines
+</a></h2>
+<p>
+The <tt>header&#095;line</tt> structure contains the members listed below.
+You can add additional header lines by calling the <i>header&#095;add()</i> function
+(see below). You can cause header lines to be ignored (deleted) by setting
+their type to *.
+<hr></p>
+<p>
+<b>struct header&#095;line *next</b>
+</p>
+<p>
+A pointer to the next header line, or NULL for the last line.
+<hr></p>
+<p>
+<b>int type</b>
+</p>
+<p>
+A code identifying certain headers that Exim recognizes. The codes are printing
+characters, and are documented in chapter <a href="spec_49.html">49</a> of this manual. Notice in
+particular that any header line whose type is * is not transmitted with the
+message. This flagging is used for header lines that have been rewritten, or
+are to be removed (for example, <i>Envelope-sender:</i> header lines.) Effectively,
+* means &#147;deleted&#148;.
+<hr></p>
+<p>
+<b>int slen</b>
+</p>
+<p>
+The number of characters in the header line, including the terminating and any
+internal newlines.
+<hr></p>
+<p>
+<b>uschar *text</b>
+</p>
+<p>
+A pointer to the text of the header. It always ends with a newline, followed by
+a zero byte. Internal newlines are preserved.
+<hr><br>
+</p>
+<h2>
+<a name="SECT39.6" href="spec_toc.html#TOC305">
+39.6. Structure of recipient items
+</a></h2>
+<p>
+The <tt>recipient&#095;item</tt> structure contains these members:
+<hr></p>
+<p>
+<b>uschar *address</b>
+</p>
+<p>
+This is a pointer to the recipient address as it was received.
+<hr></p>
+<p>
+<b>int pno</b>
+</p>
+<p>
+This is used in later Exim processing when top level addresses are created
+by the <tt>one&#095;time</tt> option. It is not relevant at the time <i>local&#095;scan()</i> is
+run and 
+must always contain -1 at this stage.
+<hr></p>
+<p>
+<b>uschar *errors&#095;to</b>
+</p>
+<p>
+If this value is not NULL, bounce messages caused by failing to deliver to the 
+recipient are sent to the address it contains. In other words, it overrides the
+envelope sender for this one recipient. (Compare the <tt>errors&#095;to</tt> generic
+router option.) 
+If a <i>local&#095;scan()</i> function sets an <tt>errors&#095;to</tt> field to an unqualified
+address, Exim qualifies it using the domain from <tt>qualify&#095;recipient</tt>.
+When <i>local&#095;scan()</i> is called, the <tt>errors&#095;to</tt> field is NULL for all
+recipients.
+<hr><br>
+</p>
+<a name="IX2467"></a>
+<h2>
+<a name="SECT39.7" href="spec_toc.html#TOC306">
+39.7. Available Exim functions
+</a></h2>
+<p>
+The header <i>local&#095;scan.h</i> gives you access to a number of Exim functions.
+These are the only ones that are guaranteed to be maintained from release to
+release:
+<hr></p>
+<p>
+<b>pid&#095;t child&#095;open(uschar **argv, uschar **envp, int newumask, int *infdptr, int *outfdptr, BOOL make&#095;leader)</b>
+</p>
+<p>
+This function creates a child process that runs the command specified by
+<tt>argv</tt>. The environment for the process is specified by <tt>envp</tt>, which can be 
+NULL if no environment variables are to be passed. A new umask is supplied for
+the process in <tt>newumask</tt>.
+</p>
+<p>
+Pipes to the standard input and output of the new process are set up
+and returned to the caller via the <tt>infdptr</tt> and <tt>outfdptr</tt> arguments. The
+standard error is cloned to the standard output. If there are any file
+descriptors &#147;in the way&#148; in the new process, they are closed. If the final 
+argument is TRUE, the new process is made into a process group leader.
+</p>
+<p>
+The function returns the pid of the new process, or -1 if things go wrong.
+<hr></p>
+<p>
+<b>int child&#095;close(pid&#095;t pid, int timeout)</b>
+</p>
+<p>
+This function waits for a child process to terminate, or for a timeout (in
+seconds) to expire. A timeout value of zero means wait as long as it takes. The
+return value is as follows:
+</p>
+<ul>
+<li><p>
+&#062;= 0
+</p>
+<p>
+The process terminated by a normal exit and the value is the process ending
+status.
+</p>
+</li>
+<li><p>
+&#060; 0 and &#062; &#150;256
+</p>
+<p>
+The process was terminated by a signal and the value is the negation of the
+signal number.
+</p>
+</li>
+<li><p>
+&#150;256
+</p>
+<p>
+The process timed out.
+</p>
+</li>
+<li><p>
+&#150;257
+</p>
+<p>
+The was some other error in wait(); <tt>errno</tt> is still set.
+</p>
+</li>
+</ul>
+<hr><p>
+<b>pid&#095;t child&#095;open&#095;exim(int *fd)</b>
+</p>
+<p>
+This function provide you with a means of submitting a new message to
+Exim. (Of course, you can also call <i>/usr/sbin/sendmail</i> yourself if you
+want, but this packages it all up for you.) The function creates a pipe,
+forks a subprocess that is running
+<pre>
+&nbsp;&nbsp;exim -t -oem -oi -f &#060;&#062;
+</pre>
+</p>
+<p>
+and returns to you (via the <tt>int *</tt> argument) a file descriptor for the pipe
+that is connected to the standard input. The yield of the function is the PID
+of the subprocess. You can then write a message to the file descriptor, with
+recipients in <i>To:</i>, <i>Cc:</i>, and/or <i>Bcc:</i> header lines. 
+</p>
+<p>
+When you have finished, call <i>child&#095;close()</i> to wait for the process to
+finish and to collect its ending status. A timeout value of zero is usually
+fine in this circumstance. Unless you have made a mistake with the recipient
+addresses, you should get a return code of zero.
+<hr></p>
+<p>
+<b>void debug&#095;printf(char *, ...)</b>
+</p>
+<p>
+This is Exim's debugging function, with arguments as for <i>(printf()</i>. The 
+output is written to the standard error stream. If no debugging is selected,
+calls to <i>debug&#095;printf()</i> have no effect. Normally, you should make calls 
+conditional on the <tt>local&#095;scan</tt> debug selector by coding like this:
+<pre>
+&nbsp;&nbsp;if ((debug_selector &#038; D_local_scan) != 0) 
+&nbsp;&nbsp;  debug_printf("xxx", ...);
+</pre>
+<hr></p>
+<p>
+<b>uschar *expand&#095;string(uschar *string)</b>
+</p>
+<p>
+This is an interface to Exim's string expansion code. The return value is the
+expanded string, or NULL if there was an expansion failure.
+The C variable <tt>expand&#095;string&#095;message</tt> contains an error message after an 
+expansion failure. If expansion does not change the string, the return value is 
+the pointer to the input string. Otherwise, the return value points to a new
+block of memory that was obtained by a call to <i>store&#095;get()</i>. See section
+<a href="spec_39.html#SECT39.8">39.8</a> below for a discussion of memory handling.
+<hr></p>
+<p>
+<b>void header&#095;add(int type, char *format, ...)</b>
+</p>
+<p>
+This function allows you to add additional header lines. The first argument is
+the type, and should normally be a space character. The second argument is a
+format string and any number of substitution arguments as for <i>sprintf()</i>.
+You may include internal newlines if you want, and you must ensure that the
+string ends with a newline.
+<hr></p>
+<p>
+<a name="IX2468"></a>
+<b>uschar *lss&#095;b64encode(uschar *cleartext, int length)</b>
+</p>
+<p>
+This function base64-encodes a string, which is passed by address and length.
+The text may contain bytes of any value, including zero. The result is passed
+back in dynamic memory that is obtained by calling <i>store&#095;get()</i>. It is
+zero-terminated.
+<hr></p>
+<p>
+<b>int lss&#095;b64decode(uschar *codetext, uschar **cleartext)</b>
+</p>
+<p>
+This function decodes a base64-encoded string. Its arguments are a
+zero-terminated base64-encoded string and the address of a variable that is set
+to point to the result, which is in dynamic memory. The length of the
+decoded string is the yield of the function. If the input is invalid base64
+data, the yield is -1. A zero byte is added to the end of the output string to
+make it easy to interpret as a C string (assuming it contains no zeros of its
+own). The added zero byte is not included in the returned count.
+<hr></p>
+<p>
+<b>int lss&#095;match&#095;domain(uschar *domain, uschar *list)</b>
+</p>
+<p>
+This function checks for a match in a domain list. Domains are always
+matched caselessly. The return value is one of the following:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>OK     </tt>match succeeded<br>
+<tt>&nbsp;&nbsp;</tt><tt>FAIL   </tt>match failed<br>
+<tt>&nbsp;&nbsp;</tt><tt>DEFER  </tt>match deferred<br>
+</p>
+<p>
+DEFER is usually caused by some kind of lookup defer, such as the
+inability to contact a database.
+<hr></p>
+<p>
+<b>int lss&#095;match&#095;local&#095;part(uschar *localpart, uschar *list, BOOL caseless)</b>
+</p>
+<p>
+This function checks for a match in a local part list. The third argument
+controls case-sensitivity. The return values are as for 
+<i>lss&#095;match&#095;domain()</i>.
+<hr></p>
+<p>
+<b>int lss&#095;match&#095;address(uschar *address, uschar *list, BOOL caseless)</b>
+</p>
+<p>
+This function checks for a match in an address list. The third argument
+controls the case-sensitivity of the local part match. The domain is always
+matched caselessly. The return values are as for <i>lss&#095;match&#095;domain()</i>.
+<hr></p>
+<p>
+<b>int lss&#095;match&#095;host(uschar *host&#095;name, uschar *host&#095;address, uschar *list)</b>
+</p>
+<p>
+This function checks for a match in a host list. The most common usage is
+expected to be
+<pre>
+&nbsp;&nbsp;lss_match_host(sender_host_name, sender_host_address, ...)
+</pre>
+</p>
+<p>
+An empty address field matches an empty item in the host list. If the
+host name is NULL, the name corresponding to <tt>$sender&#095;host&#095;address</tt> is
+automatically looked up if a host name is required to match an item in the
+list. The return values are as for <i>lss&#095;match&#095;domain()</i>, but in addition,
+<i>lss&#095;match&#095;host()</i> returns ERROR in the case when it had to look up a host
+name, but the lookup failed.
+<hr></p>
+<p>
+<b>void log&#095;write(unsigned int selector, int which, char *format, ...)</b>
+</p>
+<p>
+This function writes to Exim's log files. The first argument should be zero (it
+is concerned with <tt>log&#095;selector</tt>). The second argument can be <tt>LOG&#095;MAIN</tt> or
+<tt>LOG&#095;REJECT</tt> or 
+<tt>LOG&#095;PANIC</tt> or the inclusive &#147;or&#148; of any combination of them. It specifies
+to which log or logs the message is written.
+The remaining arguments are a format and relevant insertion arguments. The
+string should not contain any newlines, not even at the end.
+<hr></p>
+<p>
+<b>void receive&#095;add&#095;recipient(uschar *address, int pno)</b>
+</p>
+<p>
+This function adds an additional recipient to the message. The first argument
+is the recipient address. If it is unqualified (has no domain), it is qualified
+with the <tt>qualify&#095;recipient</tt> domain. The second argument must always be -1.
+</p>
+<p>
+This function does not allow you to specify a private <tt>errors&#095;to</tt> address (as 
+described with the structure of <tt>recipient&#095;item</tt> above), because it pre-dates 
+the addition of that field to the structure. However, it is easy to add such a 
+value afterwards. For example:
+<pre>
+&nbsp;&nbsp;receive_add_recipient(US"monitor@mydom.example", -1);
+&nbsp;&nbsp;recipients_list[recipients_count-1].errors_to = 
+&nbsp;&nbsp;  US"postmaster@mydom.example";
+</pre>
+<hr></p>
+<p>
+<b>uschar *rfc2047&#095;decode(uschar *string, BOOL lencheck, uschar *target, int zeroval, int *lenptr, uschar **error)</b>
+</p>
+<p>
+This function decodes strings that are encoded according to RFC 2047. Typically
+these are the contents of header lines. First, each encoded &#147;word&#148; is decoded
+from the Q or B encoding into a byte-string. Then, if provided with the name of
+a charset encoding, and if the <i>iconv()</i> function is available, an attempt is
+made  to translate the result to the named character set. If this fails, the
+binary string is returned with an error message.
+</p>
+<p>
+The first argument is the string to be decoded. If <tt>lencheck</tt> is TRUE, the 
+maximum MIME word length is enforced. The third argument is the target 
+encoding, or NULL if no translation is wanted.
+<a name="IX2469"></a>
+</p>
+<p>
+If a binary zero is encountered in the decoded string, it is replaced by the
+contents of the <tt>zeroval</tt> argument. For use with Exim headers, the value must
+not be 0 because header lines are handled as zero-terminated strings.
+</p>
+<p>
+The function returns the result of processing the string, zero-terminated; if
+<tt>lenptr</tt> is not NULL, the length of the result is set in the variable to which
+it points. When <tt>zeroval</tt> is 0, <tt>lenptr</tt> should not be NULL.
+</p>
+<p>
+If an error is encountered, the function returns NULL and uses the <tt>error</tt> 
+argument to return an error message. The variable pointed to by <tt>error</tt> is set 
+to NULL if there is no error; it may be set non-NULL even when the function 
+returns a non-NULL value if decoding was successful, but there was a problem 
+with translation.
+<hr></p>
+<p>
+<b>int smtp&#095;fflush(void)</b>
+</p>
+<p>
+This function is used in conjunction with <i>smtp&#095;printf()</i>, as described 
+below.
+<hr></p>
+<p>
+<b>void smtp&#095;printf(char *, ...)</b>
+</p>
+<p>
+The arguments of this function are like <i>printf()</i>; it writes to the SMTP
+output stream. You should use this function only when there is an SMTP output
+stream, that is, when the incoming message is being received via interactive
+SMTP. This is the case when <tt>smtp&#095;input</tt> is TRUE and <tt>smtp&#095;batched&#095;input</tt> is
+FALSE. If you want to test for an incoming message from another host (as
+opposed to a local process that used the <i>-bs</i> command line option), you can
+test the value of <tt>sender&#095;host&#095;address</tt>, which is non-NULL when a remote host
+is involved.
+</p>
+<p>
+If an SMTP TLS connection is established, <i>smtp&#095;printf()</i> uses the TLS
+output function, so it can be used for all forms of SMTP connection.
+</p>
+<p>
+Strings that are written by <i>smtp&#095;printf()</i> from within <i>local&#095;scan()</i>
+must start with an appropriate response code: 550 if you are going to return
+<font size=-1>LOCAL&#095;SCAN&#095;REJECT</font>, 451 if you are going to return
+<font size=-1>LOCAL&#095;SCAN&#095;TEMPREJECT</font>, and 250 otherwise. Because you are writing the
+initial lines of a multi-line response, the code must be followed by a hyphen
+to indicate that the line is not the final response line. You must also ensure
+that the lines you write terminate with CRLF. For example:
+<pre>
+&nbsp;&nbsp;smtp_printf("550-this is some extra info\r\n");
+&nbsp;&nbsp;return LOCAL_SCAN_REJECT;
+</pre>
+</p>
+<p>
+Note that you can also create multi-line responses by including newlines in
+the data returned via the <tt>return&#095;text</tt> argument. The added value of using
+<i>smtp&#095;printf()</i> is that, for instance, you could introduce delays between
+multiple output lines.
+</p>
+<p>
+The <i>smtp&#095;printf()</i> function does not return any error indication, because it
+does not automatically flush pending output, and therefore does not test
+the state of the stream. (In the main code of Exim, flushing and error
+detection is done when Exim is ready for the next SMTP input command.) If
+you want to flush the output and check for an error (for example, the
+dropping of a TCP/IP connection), you can call <i>smtp&#095;fflush()</i>, which has no
+arguments. It flushes the output stream, and returns a non-zero value if there
+is an error.
+<hr></p>
+<p>
+<b>void *store&#095;get(int)</b>
+</p>
+<p>
+This function accesses Exim's internal store (memory) manager. It gets a new
+chunk of memory whose size is given by the argument. Exim bombs out if it ever
+runs out of memory. See the next section for a discussion of memory handling.
+<hr></p>
+<p>
+<b>void *store&#095;get&#095;perm(int)</b>
+</p>
+<p>
+This function is like <i>store&#095;get()</i>, but it always gets memory from the 
+permanent pool. See the next section for a discussion of memory handling.
+<hr></p>
+<p>
+<b>uschar *string&#095;copy(uschar *string)</b>
+<br><b>"uschar *string&#095;copyn(uschar *string, int length)" 0</b>
+<br><b>"uschar *string&#095;sprintf(char *format, ...)" 0</b>
+</p>
+<p>
+These three functions create strings using Exim's dynamic memory facilities.
+The first makes a copy of an entire string. The second copies up to a maximum
+number of characters, indicated by the second argument. The third uses a format
+and insertion arguments to create a new string. In each case, the result is a
+pointer to a new string
+in the current memory pool. See the next section for more discussion.
+<hr><br>
+</p>
+<a name="IX2470"></a>
+<h2>
+<a name="SECT39.8" href="spec_toc.html#TOC307">
+39.8. More about Exim's memory handling
+</a></h2>
+<p>
+No function is provided for freeing memory, because that is never needed. 
+The dynamic memory that Exim uses when receiving a message is automatically
+recycled if another message is received by the same process (this applies only 
+to incoming SMTP connections &#150; other input methods can supply only one message 
+at a time). After receiving the last message, a reception process terminates.
+</p>
+<p>
+Because it is recycled, the normal dynamic memory cannot be used for holding
+data that must be preserved over a number of incoming messages on the same SMTP
+connection. However, Exim in fact uses two pools of dynamic memory; the second
+one is not recycled, and can be used for this purpose.
+</p>
+<p>
+If you want to allocate memory that remains available for subsequent messages 
+in the same SMTP connection, you should set
+<pre>
+&nbsp;&nbsp;store_pool = POOL_PERM
+</pre>
+</p>
+<p>
+before calling the function that does the allocation. There is no need to 
+restore the value if you do not need to; however, if you do want to revert to 
+the normal pool, you can either restore the previous value of <tt>store&#095;pool</tt> or
+set it explicitly to <font size=-1>POOL&#095;MAIN</font>.
+</p>
+<p>
+The pool setting applies to all functions that get dynamic memory, including
+<i>expand&#095;string()</i>, <i>store&#095;get()</i>, and the <i>string&#095;xxx()</i> functions.
+There is also a convenience function called <i>store&#095;get&#095;perm()</i> that gets a
+block of memory from the permanent pool while preserving the value of
+<tt>store&#095;pool</tt>.
+<hr>
+</p>
+<font size=2>
+<a href="spec_38.html">Previous</a>&nbsp;&nbsp;<a href="spec_40.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

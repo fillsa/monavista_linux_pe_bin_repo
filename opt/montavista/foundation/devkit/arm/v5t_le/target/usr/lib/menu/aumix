@@ -1,0 +1,3 @@
+?package(aumix):needs=text section=Apps/Sound title="aumix"\
+    icon=/usr/share/pixmaps/icon_aumix.xpm\
+	longtitle="aumix audio mixer" command="/usr/bin/aumix"

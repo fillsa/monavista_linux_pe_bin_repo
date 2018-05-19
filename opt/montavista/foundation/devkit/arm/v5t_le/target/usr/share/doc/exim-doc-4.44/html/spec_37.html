@@ -1,0 +1,649 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 37</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_36.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_38.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2327"></a>
+<a name="IX2328"></a>
+<a name="IX2329"></a>
+<a name="IX2330"></a>
+<a name="IX2331"></a>
+<h1>
+<a name="CHAP37" href="spec_toc.html#TOC260">
+37. Encrypted SMTP connections using TLS/SSL
+</a></h1>
+<p>
+<font color=green>
+Support for TLS (Transport Layer Security), formerly known as SSL (Secure
+Sockets Layer), is implemented by making use of the OpenSSL library or the
+GnuTLS library (Exim requires GnuTLS release 1.0 or later).
+</font>
+There is no cryptographic code in the Exim distribution itself for implementing
+TLS. In order to use this feature you must install OpenSSL or GnuTLS, and then
+build a version of Exim that includes TLS support (see section
+<a href="spec_4.html#SECT4.6">4.6</a>). You also need to understand the basic concepts of encryption
+at a managerial level, and in particular, the way that public keys, private
+keys, and certificates are used.
+</p>
+<p>
+RFC 2487 defines how SMTP connections can make use of encryption. Once a
+connection is established, the client issues a <font size=-1>STARTTLS</font> command. If the
+server accepts this, the client and the server negotiate an encryption
+mechanism. If the negotiation succeeds, the data that subsequently passes
+between them is encrypted.
+</p>
+<p>
+Exim also has support for legacy clients that do not use the <font size=-1>STARTTLS</font>
+mechanism. Instead, they connect to a different port on the server (usually
+called the &#147;ssmtp&#148; port), and expect to negotiate a TLS session as soon as the
+connection to the server is established. The <i>-tls-on-connect</i> command line
+option can be used to run an Exim server in this way from <i>inetd</i>, and it can
+also be used to run a special daemon that operates in this manner (use <i>-oX</i>
+to specify the port).
+</p>
+<p>
+Exim's ACLs can detect whether the current SMTP session is encrypted or not,
+and if so, what cipher suite is in use, whether the client supplied a
+certificate, and whether or not that certificate was verified. This makes it
+possible for an Exim server to deny or accept certain commands based on the
+encryption state.
+</p>
+<p>
+<b>Warning</b>: certain types of firewall and certain anti-virus products can
+disrupt TLS connections. You need to turn off SMTP scanning for these products
+in order to get TLS to work.
+</p>
+<a name="IX2332"></a>
+<h2>
+<a name="SECT37.1" href="spec_toc.html#TOC261">
+37.1. OpenSSL vs GnuTLS
+</a></h2>
+<p>
+The first TLS support in Exim was implemented using OpenSSL. Support for GnuTLS
+followed later, when the first versions of GnuTLS were released. To build Exim
+to use GnuTLS, you need to set
+<pre>
+&nbsp;&nbsp;USE_GNUTLS=yes
+</pre>
+</p>
+<p>
+in Local/Makefile, in addition to
+<pre>
+&nbsp;&nbsp;SUPPORT_TLS=yes
+</pre>
+</p>
+<p>
+You must also set <font size=-1>TLS&#095;LIBS</font> and <font size=-1>TLS&#095;INCLUDE</font> appropriately, so that the
+include files and libraries for GnuTLS can be found.
+</p>
+<p>
+There are some differences in usage when using GnuTLS instead of OpenSSL:
+</p>
+<ul>
+<li><p>
+<font color=green>
+The <tt>tls&#095;verify&#095;certificates</tt> option must contain the name of a file, not the 
+name of a directory (for OpenSSL it can be either).
+</font>
+</p>
+</li>
+<li><p>
+The <tt>tls&#095;dhparam</tt> option is ignored, because early versions of GnuTLS had no
+facility for varying its Diffie-Hellman parameters. I understand that this has 
+changed, but Exim has not been updated to provide this facility.
+</p>
+</li>
+<li><p>
+GnuTLS uses RSA and D-H parameters that take a substantial amount of
+time to compute. It is unreasonable to re-compute them for every TLS
+session. Therefore, Exim keeps this data in a file in its spool
+directory, called <i>gnutls-params</i>. The file is owned by the Exim user and is
+readable only by its owner. Every Exim process that start up GnuTLS reads the
+RSA and D-H parameters from this file. If the file does not exist, the first
+Exim process that needs it computes the data and writes it to a temporary file
+which is renamed once it is complete. It does not matter if several Exim
+processes do this simultaneously (apart from wasting a few resources). Once a
+file is in place, new Exim processes immediately start using it.
+</p>
+<p>
+For maximum security, the parameters that are stored in this file should be
+recalculated periodically, the frequency depending on your paranoia level.
+Arranging this is easy; just delete the file when you want new values to be
+computed.
+</p>
+</li>
+<li><p>
+<font color=green>
+Distinguished Name (DN) strings reported by the OpenSSL library use a slash for 
+separating fields; GnuTLS uses commas, in accordance with RFC 2253. This 
+affects the value of the <tt>$tls&#095;peerdn</tt> variable.
+</font>
+</p>
+</li>
+<li><p>
+OpenSSL identifies cipher suites using hyphens as separators, for example:
+DES-CBC3-SHA. GnuTLS uses underscores, for example: RSA&#095;ARCFOUR&#095;SHA. What is
+more, OpenSSL complains if underscores are present in a cipher list. To make
+life simpler, Exim changes underscores to hyhens for OpenSSL and hyphens to
+underscores for GnuTLS when processing lists of cipher suites in the
+<font color=green>
+<tt>tls&#095;require&#095;ciphers</tt> options (the global option and the <b>smtp</b> transport 
+option).
+</font>
+</p>
+</li>
+<li><p>
+<font color=green>
+The <tt>tls&#095;require&#095;ciphers</tt> options operate differently, as described in the
+following section.
+</font>
+</p>
+</li>
+</ul>
+<a name="IX2333"></a>
+<a name="IX2334"></a>
+<font color=green><h2>
+<a name="SECT37.2" href="spec_toc.html#TOC262">
+37.2. Requiring specific ciphers in OpenSSL and GnuTLS
+</a></h2>
+<p>
+This section documents the different ways the <tt>tls&#095;require&#095;ciphers</tt> options
+(the global option and the <b>smtp</b> transport option) operate in OpenSSL and
+GnuTLS.
+</p>
+<p>
+There is a function in the OpenSSL library that can be passed a list of
+cipher suites before the cipher negotiation takes place. This specifies which
+ciphers are acceptable. The list is colon separated and may contain names like
+DES-CBC3-SHA. Exim passes the expanded value of <tt>tls&#095;require&#095;ciphers</tt>
+directly to this function call. The following quotation from
+the OpenSSL documentation specifies what forms of item are allowed in the
+cipher string:
+</p>
+<ul>
+<li><p>
+It can consist of a single cipher suite such as RC4-SHA.
+</p>
+</li>
+<li><p>
+It can represent a list of cipher suites containing a certain algorithm,
+or cipher suites of a certain type. For example SHA1 represents all
+ciphers suites using the digest algorithm SHA1 and SSLv3 represents all
+SSL v3 algorithms.
+</p>
+</li>
+<li><p>
+Lists of cipher suites can be combined in a single cipher string using
+the + character. This is used as a logical and operation. For example
+SHA1+DES represents all cipher suites containing the SHA1 and the DES
+algorithms.
+</p>
+</li>
+<li><p>
+Each cipher string can be optionally preceded by the characters <tt>!</tt>, <tt>-</tt> or
+<tt>+</tt>.
+</p>
+<ul>
+<li><p>
+If <tt>!</tt> is used then the ciphers are permanently deleted from the list. The
+ciphers deleted can never reappear in the list even if they are explicitly
+stated.
+</p>
+</li>
+<li><p>
+If <tt>-</tt> is used then the ciphers are deleted from the list, but some or all
+of the ciphers can be added again by later options.
+</p>
+</li>
+<li><p>
+If <tt>+</tt> is used then the ciphers are moved to the end of the list. This
+option doesn't add any new ciphers it just moves matching existing ones.
+</p>
+</li>
+<li><p>
+If none of these characters is present then the string is just interpreted as a
+list of ciphers to be appended to the current preference list. If the list
+includes any ciphers already present they will be ignored: that is, they will
+not moved to the end of the list.
+</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>
+The GnuTLS library does not have a combined function like OpenSSL. Instead,
+it allows the caller to specify separate lists of key-exchange methods,
+main cipher algorithms, and MAC algorithms. Unfortunately, these lists are
+numerical, and the library does not have a function for turning names into
+numbers. Consequently, the list of recognized names has to be built into
+the application.
+</p>
+<p>
+At present, Exim permits only the list of main cipher algorithms to be
+changed. The <tt>tls&#095;require&#095;ciphers</tt> option is in the same format as for
+OpenSSL. Exim searches each item for the name of available algorithm. For
+example, if the list contains RSA&#095;ARCFOUR&#095;SHA then ARCFOUR is recognized.
+</p>
+<p>
+The cipher algorithms list starts out with a default set of algorithms. If
+the first item in <tt>tls&#095;require&#095;ciphers</tt> does <i>not</i> start with an
+exclamation mark, all the default items are deleted. Thus, only those specified
+can be used. If the first item in <tt>tls&#095;require&#095;ciphers</tt> <i>does</i> start with
+an exclamation mark, the defaults are left on the list.
+</p>
+<p>
+Then, any item that starts with an exclamation mark causes the relevent
+algorithms to be removed from the list, and any item that does not start
+with an exclamation mark causes the relevant algorithms to be added to the
+list. Thus,
+<pre>
+&nbsp;&nbsp;tls_require_ciphers = !RSA_ARCFOUR_SHA
+</pre>
+</p>
+<p>
+allows all the defaults except those that use ARCFOUR, whereas
+<pre>
+&nbsp;&nbsp;tls_require_ciphers = AES : 3DES
+</pre>
+</p>
+<p>
+allows only cipher suites that use AES and 3DES. The currently recognized
+algorithms are: ARCFOUR&#095;128, ARCFOUR&#095;40, ARCFOUR (both of the preceding),
+AES&#095;256, AES&#095;128, AES (both of the preceding), and 3DES.
+</p>
+<p>
+Unrecognized algorithms are ignored. In a client, the order of the list
+specifies a preference order for the algorithms.
+</font>
+</p>
+<a name="IX2335"></a>
+<h2>
+<a name="SECT37.3" href="spec_toc.html#TOC263">
+37.3. Configuring an Exim server to use TLS
+</a></h2>
+<p>
+When Exim has been built with TLS support, it advertises the availability of
+the <font size=-1>STARTTLS</font> command to client hosts that match <tt>tls&#095;advertise&#095;hosts</tt>,
+but not to any others. The default value of this option is unset, which means
+that <font size=-1>STARTTLS</font> is not advertised at all. This default is chosen because you
+need to set some other options in order to make TLS avaliable, and also it is
+sensible for systems that want to use TLS only as a client.
+</p>
+<p>
+If a client issues a <font size=-1>STARTTLS</font> command and there is some configuration
+problem in the server, the command is rejected with a 454 error. If the client
+persists in trying to issue SMTP commands, all except <font size=-1>QUIT</font> are rejected
+with the error
+<pre>
+&nbsp;&nbsp;554 Security failure
+</pre>
+</p>
+<p>
+If a <font size=-1>STARTTLS</font> command is issued within an existing TLS session, it is
+rejected with a 554 error code.
+</p>
+<p>
+To enable TLS operations on a server, you must set <tt>tls&#095;advertise&#095;hosts</tt> to
+match some hosts. You can, of course, set it to * to match all hosts.
+However, this is not all you need to do. TLS sessions to a server won't work
+without some further configuration at the server end.
+</p>
+<p>
+It is rumoured that all existing clients that support TLS/SSL use RSA
+encryption. To make this work you need to set, in the server,
+<pre>
+&nbsp;&nbsp;tls_certificate = /some/file/name
+&nbsp;&nbsp;tls_privatekey = /some/file/name
+</pre>
+</p>
+<p>
+The first file contains the server's X509 certificate, and the second contains
+the private key that goes with it. These files need to be readable by the Exim
+user, and must always be given as full path names. They can be the same file if
+both the certificate and the key are contained within it. If <tt>tls&#095;privatekey</tt>
+is not set, this is assumed to be the case. The certificate file may also
+contain intermediate certificates that need to be sent to the client to enable
+it to authenticate the server's certificate.
+</p>
+<p>
+If you do not understand about certificates and keys, please try to find a
+source of this background information, which is not Exim-specific. (There are a
+few comments below in section <a href="spec_37.html#SECT37.8">37.8</a>.)
+</p>
+<p>
+<b>Note</b>: These options do not apply when Exim is operating as a client &#150; 
+they apply only in the case of a server. For a client, you must set the options 
+of the same name in an <b>smtp</b> transport.
+</p>
+<p>
+With just these options, Exim will work as a server with clients such as
+Netscape. It does not require the client to have a certificate (but see below
+for how to insist on this). There is one other option that may be needed in
+other situations. If
+<pre>
+&nbsp;&nbsp;tls_dhparam = /some/file/name
+</pre>
+</p>
+<p>
+is set, the SSL library is initialized for the use of Diffie-Hellman ciphers
+with the parameters contained in the file. This increases the set of cipher 
+suites that the server supports. See the command
+<pre>
+&nbsp;&nbsp;openssl dhparam
+</pre>
+</p>
+<p>
+for a way of generating this data.
+At present, <tt>tls&#095;dhparam</tt> is used only when Exim is linked with OpenSSL. It is 
+ignored if GnuTLS is being used.
+</p>
+<p>
+The strings supplied for these three options are expanded every time a client
+host connects. It is therefore possible to use different certificates and keys
+for different hosts, if you so wish, by making use of the client's IP address
+in <tt>$sender&#095;host&#095;address</tt> to control the expansion. If a string expansion is
+forced to fail, Exim behaves as if the option is not set.
+<a name="IX2336"></a>
+<a name="IX2337"></a>
+</p>
+<p>
+The variable <tt>$tls&#095;cipher</tt> is set to the cipher suite that was negotiated for
+an incoming TLS connection. It is included in the <i>Received:</i> header of an
+incoming message (by default &#150; you can, of course, change this), and it is
+also included in the log line that records a message's arrival, keyed by &#147;X=&#148;,
+unless the <tt>tls&#095;cipher</tt> log selector is turned off.
+The <tt>encrypted</tt> condition can be used to test for specific cipher suites in 
+ACLs.
+</p>
+<p>
+The ACLs that run for subsequent SMTP commands can check the name of the cipher
+suite and vary their actions accordingly. The cipher suite names are those used
+by OpenSSL. These may differ from the names used elsewhere. For example,
+OpenSSL uses the name DES-CBC3-SHA for the cipher suite which in other contexts
+is known as TLS&#095;RSA&#095;WITH&#095;3DES&#095;EDE&#095;CBC&#095;SHA. Check the OpenSSL
+documentation for more details.
+</p>
+<a name="IX2338"></a>
+<a name="IX2339"></a>
+<h2>
+<a name="SECT37.4" href="spec_toc.html#TOC264">
+37.4. Requesting and verifying client certificates
+</a></h2>
+<p>
+If you want an Exim server to request a certificate when negotiating a TLS
+session with a client, you must set either <tt>tls&#095;verify&#095;hosts</tt> or
+<tt>tls&#095;try&#095;verify&#095;hosts</tt>. You can, of course, set either of them to * to
+apply to all TLS connections. For any host that matches one of these options,
+Exim requests a certificate as part of the setup of the TLS session. The
+contents of the certificate are verified by comparing it with a list of
+expected certificates. These must be available in a file or,
+<font color=green>
+for OpenSSL only (not GnuTLS), a directory, identified by
+<tt>tls&#095;verify&#095;certificates</tt>.
+</font>
+</p>
+<p>
+A file can contain multiple certificates, concatenated end to end. If a
+directory is used 
+<font color=green>
+(OpenSSL only), 
+</font>
+each certificate must be in a separate file, with a name (or a symbolic link)
+of the form &#060;<em>hash</em>&#062;.0, where &#060;<em>hash</em>&#062; is a hash value constructed from the
+certificate. You can compute the relevant hash by running the command
+<pre>
+&nbsp;&nbsp;openssl x509 -hash -noout -in /cert/file
+</pre>
+</p>
+<p>
+where <i>/cert/file</i> contains a single certificate.
+</p>
+<p>
+The difference between <tt>tls&#095;verify&#095;hosts</tt> and <tt>tls&#095;try&#095;verify&#095;hosts</tt> is
+what happens if the client does not supply a certificate, or if the certificate
+does not match any of the certificates in the collection named by
+<tt>tls&#095;verify&#095;certificates</tt>. If the client matches <tt>tls&#095;verify&#095;hosts</tt>, the
+attempt to set up a TLS session is aborted, and the incoming connection is
+dropped. If the client matches <tt>tls&#095;try&#095;verify&#095;hosts</tt>, the (encrypted) SMTP
+session continues. ACLs that run for subsequent SMTP commands can detect the
+fact that no certificate was verified, and vary their actions accordingly. For
+example, you can insist on a certificate before accepting a message for
+relaying, but not when the message is destined for local delivery.
+</p>
+<p>
+<a name="IX2340"></a>
+When a client supplies a certificate (whether it verifies or not), the value of
+the Distinguished Name of the certificate is made available in the variable
+<tt>$tls&#095;peerdn</tt> during subsequent processing of the message.
+Because it is often a long text string, it is not included in the log line or
+<i>Received:</i> header by default. You can arrange for it to be logged, keyed by
+&#147;DN=&#148;, by setting the <tt>tls&#095;peerdn</tt> log selector, and you can use
+<tt>received&#095;header&#095;text</tt> to change the <i>Received:</i> header. When no certificate
+is supplied, <tt>$tls&#095;peerdn</tt> is empty.
+<font color=green></p>
+<a name="IX2341"></a>
+<a name="IX2342"></a>
+<a name="IX2343"></a>
+<h2>
+<a name="SECT37.5" href="spec_toc.html#TOC265">
+37.5. Revoked certificates
+</a></h2>
+<p>
+Certificate issuing authorities issue Certificate Revocation Lists (CRLs) when
+certificates are revoked. If you have such a list, you can pass it to an Exim
+server using the global option called <tt>tls&#095;crl</tt> and to an Exim client using an
+identically named option for the <b>smtp</b> transport. In each case, the value of
+the option is expanded and must then be the name of a file that contains a CRL
+in PEM format.
+</font>
+</p>
+<a name="IX2344"></a>
+<a name="IX2345"></a>
+<a name="IX2346"></a>
+<a name="IX2347"></a>
+<h2>
+<a name="SECT37.6" href="spec_toc.html#TOC266">
+37.6. Configuring an Exim client to use TLS
+</a></h2>
+<p>
+The <tt>tls&#095;cipher</tt> and <tt>tls&#095;peerdn</tt> log selectors apply to outgoing SMTP
+deliveries as well as to incoming, the latter one causing logging of the
+server certificate's DN. The remaining client configuration for TLS is all
+within the <b>smtp</b> transport.
+</p>
+<p>
+It is not necessary to set any options to have TLS work in the <b>smtp</b>
+transport. If Exim is built with TLS support, and TLS is advertised by a
+server, the <b>smtp</b> transport always tries to start a TLS session. However,
+this can be prevented by setting <tt>hosts&#095;avoid&#095;tls</tt> (an option of the
+transport) to a list of server hosts for which TLS should not be used.
+</p>
+<p>
+If you do not want Exim to attempt to send messages unencrypted when an attempt
+to set up an encrypted connection fails in any way, you can set
+<tt>hosts&#095;require&#095;tls</tt> to a list of hosts for which encryption is mandatory. For
+those hosts, delivery is always deferred if an encrypted connection cannot be
+set up. If there are any other hosts for the address, they are tried in the
+usual way.
+</p>
+<p>
+When the server host is not in <tt>hosts&#095;require&#095;tls</tt>, Exim may try to deliver
+the message unencrypted. It always does this if the response to <font size=-1>STARTTLS</font> is
+a 5<i>xx</i> code. For a temporary error code, or for a failure to negotiate a TLS
+session after a success response code, what happens is controlled by the
+<tt>tls&#095;tempfail&#095;tryclear</tt> option of the <b>smtp</b> transport. If it is false,
+delivery to this host is deferred, and other hosts (if available) are tried. If
+it is true, Exim attempts to deliver unencrypted after a 4<i>xx</i> response to
+<font size=-1>STARTTLS</font>, and if <font size=-1>STARTTLS</font> is accepted, but the subsequent TLS
+negotiation fails, Exim closes the current connection (because it is in an
+unknown state), opens a new one to the same host, and then tries the delivery
+unencrypted.
+</p>
+<p>
+The <tt>tls&#095;certificate</tt> and <tt>tls&#095;privatekey</tt> options of the <b>smtp</b> transport
+provide the client with a certificate, which is passed to the server if it
+requests it. If the server is Exim, it will request a certificate only if
+<tt>tls&#095;verify&#095;hosts</tt> or <tt>tls&#095;try&#095;verify&#095;hosts</tt> matches the client.
+<b>Note</b>: these options must be set in the <b>smtp</b> transport for Exim to use 
+TLS when it is operating as a client. Exim does not assume that a server
+certificate (set by the global options of the same name) should also be used
+when operating as a client.
+</p>
+<p>
+If <tt>tls&#095;verify&#095;certificates</tt> is set, it must name a file or,
+<font color=green>
+for OpenSSL only (not GnuTLS), a directory, that contains a collection of
+expected server certificates. The client verifies the server's certificate
+against this collection, taking into account any revoked certificates that are
+in the list defined by <tt>tls&#095;crl</tt>.
+</font>
+</p>
+<p>
+If
+<tt>tls&#095;require&#095;ciphers</tt> is set on the <b>smtp</b> transport, it must contain a
+list of permitted cipher suites. If either of these checks fails, delivery to
+the current host is abandoned, and the <b>smtp</b> transport tries to deliver to
+alternative hosts, if any.
+</p>
+<p>
+All the TLS options in the <b>smtp</b> transport are expanded before use, with
+<tt>$host</tt> and <tt>$host&#095;address</tt> containing the name and address of the server to
+which the client is connected. Forced failure of an expansion causes Exim to
+behave as if the relevant option were unset.
+</p>
+<a name="IX2348"></a>
+<a name="IX2349"></a>
+<h2>
+<a name="SECT37.7" href="spec_toc.html#TOC267">
+37.7. Multiple messages on the same encrypted TCP/IP connection
+</a></h2>
+<p>
+Exim sends multiple messages down the same TCP/IP connection by starting up
+an entirely new delivery process for each message, passing the socket from
+one process to the next. This implementation does not fit well with the use
+of TLS, because there is quite a lot of state information associated with a TLS
+connection, not just a socket identification. Passing all the state information
+to a new process is not feasible. Consequently, Exim shuts down an existing TLS
+session before passing the socket to a new process. The new process may then
+try to start a new TLS session, and if successful, may try to re-authenticate
+if <font size=-1>AUTH</font> is in use, before sending the next message.
+</p>
+<p>
+The RFC is not clear as to whether or not an SMTP session continues in clear
+after TLS has been shut down, or whether TLS may be restarted again later, as 
+just described. However, if the server is Exim, this shutdown and
+reinitialization works. It is not known which (if any) other servers operate
+successfully if the client closes a TLS session and continues with unencrypted
+SMTP, but there are certainly some that do not work. For such servers, Exim
+should not pass the socket to another process, because the failure of the
+subsequent attempt to use it would cause Exim to record a temporary host error,
+and delay other deliveries to that host.
+</p>
+<p>
+To test for this case, Exim sends an <font size=-1>EHLO</font> command to the server after
+closing down the TLS session. If this fails in any way, the connection is 
+closed instead of being passed to a new delivery process, but no retry
+information is recorded.
+</p>
+<p>
+There is also a manual override; you can set <tt>hosts&#095;nopass&#095;tls</tt> on the 
+<b>smtp</b> transport to match those hosts for which Exim should not pass 
+connections to new processes if TLS has been used.
+</p>
+<a name="IX2350"></a>
+<h2>
+<a name="SECT37.8" href="spec_toc.html#TOC268">
+37.8. Certificates and all that
+</a></h2>
+<p>
+In order to understand fully how TLS works, you need to know about
+certificates, certificate signing, and certificate authorities. This is not the
+place to give a tutorial, especially as I do not know very much about it
+myself. Some helpful introduction can be found in the FAQ for the SSL addition
+to Apache, currently at
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><a href="http://www.modssl.org/docs/2.7/ssl&#095;faq.html&#035;ToC24">http://www.modssl.org/docs/2.7/ssl&#095;faq.html&#035;ToC24</a><br>
+</p>
+<p>
+Other parts of the <i>modssl</i> documentation are also helpful, and have
+links to further files.
+Eric Rescorla's book, <i>SSL and TLS</i>, published by Addison-Wesley (ISBN
+0-201-61598-3), contains both introductory and more in-depth descriptions. 
+Some sample programs taken from the book are available from
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><a href="http://www.rtfm.com/openssl-examples/">http://www.rtfm.com/openssl-examples/</a><br>
+</p>
+<h2>
+<a name="SECT37.9" href="spec_toc.html#TOC269">
+37.9. Certificate chains
+</a></h2>
+<p>
+The file named by <tt>tls&#095;certificate</tt> may contain more than one
+certificate. This is useful in the case where the certificate that is being
+sent is validated by an intermediate certificate which the other end does
+not have. Multiple certificates must be in the correct order in the file.
+First the host's certificate itself, then the first intermediate
+certificate to validate the issuer of the host certificate, then the next
+intermediate certificate to validate the issuer of the first intermediate
+certificate, and so on, until finally (optionally) the root certificate.
+The root certificate must already be trusted by the recipient for
+validation to succeed, of course, but if it's not preinstalled, sending the
+root certificate along with the rest makes it available for the user to
+install if the receiving end is a client MUA that can interact with a user.
+</p>
+<a name="IX2351"></a>
+<h2>
+<a name="SECT37.10" href="spec_toc.html#TOC270">
+37.10. Self-signed certificates
+</a></h2>
+<p>
+You can create a self-signed certificate using the <i>req</i> command provided
+with OpenSSL, like this:
+<pre>
+&nbsp;&nbsp;openssl req -x509 -newkey rsa:1024 -keyout file1 -out file2 \
+&nbsp;&nbsp;            -days 9999 -nodes
+</pre>
+</p>
+<p>
+<i>file1</i> and <i>file2</i> can be the same file; the key and the certificate are
+delimited and so can be identified independently. The <i>-days</i> option
+specifies a period for which the certificate is valid. The <i>-nodes</i> option is
+important: if you do not set it, the key is encrypted with a passphrase
+that you are prompted for, and any use that is made of the key causes more
+prompting for the passphrase. This is not helpful if you are going to use
+this certificate and key in an MTA, where prompting is not possible.
+</p>
+<p>
+A self-signed certificate made in this way is sufficient for testing, and
+may be adequate for all your requirements if you are mainly interested in
+encrypting transfers, and not in secure identification.
+</p>
+<p>
+However, many clients require that the certificate presented by the server be a
+user (also called &#147;leaf&#148; or &#147;site&#148;) certificate, and not a self-signed
+certificate. In this situation, the self-signed certificate described above
+must be installed on the client host as a trusted root <i>certification
+authority</i> (CA), and the certificate used by Exim must be a user certificate
+signed with that self-signed certificate.
+</p>
+<p>
+For information on creating self-signed CA certificates and using them to sign
+user certificates, see the <i>General implementation overview</i> chapter of the
+Open-source PKI book, available online at <a href="http://ospkibook.sourceforge.net/">http://ospkibook.sourceforge.net/</a>.
+<hr>
+</p>
+<font size=2>
+<a href="spec_36.html">Previous</a>&nbsp;&nbsp;<a href="spec_38.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

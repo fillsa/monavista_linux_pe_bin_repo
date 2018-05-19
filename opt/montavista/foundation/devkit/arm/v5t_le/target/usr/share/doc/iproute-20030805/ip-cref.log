@@ -1,0 +1,234 @@
+This is TeX, Version 3.14159 (Web2C 7.3.7) (format=latex 2002.3.25)  23 JUL 2005 00:06
+**ip-cref.tex
+(./ip-cref.tex
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, n
+ohyphenation, loaded.
+(/usr/share/texmf/tex/latex/base/latex209.def
+File: latex209.def 1998/05/13 v0.52 Standard LaTeX file
+
+
+          Entering LaTeX 2.09 COMPATIBILITY MODE
+ *************************************************************
+    !!WARNING!!    !!WARNING!!    !!WARNING!!    !!WARNING!!   
+ 
+ This mode attempts to provide an emulation of the LaTeX 2.09
+ author environment so that OLD documents can be successfully
+ processed. It should NOT be used for NEW documents!
+ 
+ New documents should use Standard LaTeX conventions and start
+ with the \documentclass command.
+ 
+ Compatibility mode is UNLIKELY TO WORK with LaTeX 2.09 style
+ files that change any internal macros, especially not with
+ those that change the FONT SELECTION or OUTPUT ROUTINES.
+ 
+ Therefore such style files MUST BE UPDATED to use
+          Current Standard LaTeX: LaTeX2e.
+ If you suspect that you may be using such a style file, which
+ is probably very, very old by now, then you should attempt to
+ get it updated by sending a copy of this error message to the
+ author of that file.
+ *************************************************************
+
+\footheight=\dimen102
+\@maxsep=\dimen103
+\@dblmaxsep=\dimen104
+\@cla=\count79
+\@clb=\count80
+\mscount=\count81
+(/usr/share/texmf/tex/latex/base/tracefnt.sty
+Package: tracefnt 1997/05/29 v3.0j Standard LaTeX package (font tracing)
+\tracingfonts=\count82
+LaTeX Info: Redefining \selectfont on input line 96.
+)
+\symbold=\mathgroup4
+\symsans=\mathgroup5
+\symtypewriter=\mathgroup6
+\symitalic=\mathgroup7
+\symsmallcaps=\mathgroup8
+\symslanted=\mathgroup9
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 288.
+LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 289.
+LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 290.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 296.
+LaTeX Info: Redefining \em on input line 306.
+
+(/usr/share/texmf/tex/latex/base/latexsym.sty
+Package: latexsym 1998/08/17 v2.2e Standard LaTeX package (lasy symbols)
+\symlasy=\mathgroup10
+LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
+(Font)                  U/lasy/m/n --> U/lasy/b/n on input line 42.
+)
+LaTeX Font Info:    Redeclaring math delimiter \lgroup on input line 370.
+LaTeX Font Info:    Redeclaring math delimiter \rgroup on input line 372.
+LaTeX Font Info:    Redeclaring math delimiter \bracevert on input line 374.
+
+(/usr/share/texmf/tex/latex/config/latex209.cfg
+File: latex209.cfg 2001/06/05 v1.0 teTeX customized LaTeX 2.09 compatibility mo
+de setup
+)
+(/usr/share/texmf/tex/latex/tools/rawfonts.sty
+Package: rawfonts 1994/05/08 Low-level LaTeX 2.09 font compatibility
+
+(/usr/share/texmf/tex/latex/tools/somedefs.sty
+Package: somedefs 1994/06/01 Toolkit for optional definitions
+)
+LaTeX Font Info:    Try loading font information for U+lasy on input line 44.
+
+(/usr/share/texmf/tex/latex/base/ulasy.fd
+File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
+)))
+(/usr/share/texmf/tex/latex/base/article.cls
+Document Class: article 2001/04/21 v1.4e Standard LaTeX document class
+(/usr/share/texmf/tex/latex/base/size12.clo
+File: size12.clo 2001/04/21 v1.4e Standard LaTeX file (size option)
+)
+\c@part=\count83
+\c@section=\count84
+\c@subsection=\count85
+\c@subsubsection=\count86
+\c@paragraph=\count87
+\c@subparagraph=\count88
+\c@figure=\count89
+\c@table=\count90
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+Compatibility mode: definition of \rm ignored.
+Compatibility mode: definition of \sf ignored.
+Compatibility mode: definition of \tt ignored.
+Compatibility mode: definition of \bf ignored.
+Compatibility mode: definition of \it ignored.
+Compatibility mode: definition of \sl ignored.
+Compatibility mode: definition of \sc ignored.
+LaTeX Info: Redefining \cal on input line 501.
+LaTeX Info: Redefining \mit on input line 502.
+\bibindent=\dimen105
+) (./preamble.tex (./SNAPSHOT.tex)
+(./ip-cref.aux)
+\openout1 = `ip-cref.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 25.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 25.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 25.
+ (/usr/share/texmf/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 25.
+) (./ip-cref.toc
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 7.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 7.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 7.
+
+[1
+
+])
+\tf@toc=\write3
+\openout3 = `ip-cref.toc'.
+
+ [2]
+Overfull \hbox (8.04276pt too wide) in paragraph at lines 24--32
+\OT1/cmr/m/n/12 This doc-u-ment presents a com-pre-hen-sive de-scrip-tion of th
+e []\OT1/cmtt/m/n/12 ip \OT1/cmr/m/n/12 util-ity from the []\OT1/cmtt/m/n/12 ip
+route2
+ []
+
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 53.
+[3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18]
+Overfull \hbox (2.81848pt too wide) in paragraph at lines 1013--1015
+[]\OT1/cmr/m/n/12 The link layer ad-dress is valid in all states ex-cept for []
+\OT1/cmtt/m/n/12 none\OT1/cmr/m/n/12 , []\OT1/cmtt/m/n/12 failed \OT1/cmr/m/n/1
+2 and []\OT1/cmtt/m/n/12 incomplete\OT1/cmr/m/n/12 . 
+ []
+
+[19] [20] [21] [22]
+Overfull \hbox (4.43672pt too wide) in paragraph at lines 1188--1193
+\OT1/cmr/m/n/12 num-ber in the range from 1 to 255 or by name from the file []\
+OT1/cmtt/m/n/12 /etc/iproute2/rt_tables\OT1/cmr/m/n/12 .
+ []
+
+[23] [24]
+Overfull \hbox (28.07022pt too wide) in paragraph at lines 1321--1324
+\OT1/cmr/m/n/12 given, Linux uses the value se-lected with []\OT1/cmtt/m/n/12 s
+ysctl \OT1/cmr/m/n/12 vari-able []\OT1/cmtt/m/n/12 net/ipv4/tcp_reordering\OT1/
+cmr/m/n/12 . 
+ []
+
+[25] [26]
+Overfull \hbox (4.18039pt too wide) in paragraph at lines 1469--1471
+ \OT1/cmr/bx/n/12 De-scrip-tion:[] \OT1/cmr/m/n/12 the com-mand dis-plays the c
+on-tents of the rout-ing ta-bles or the route(s)
+ []
+
+[27] [28] [29] [30] [31]
+Overfull \hbox (4.80522pt too wide) in paragraph at lines 1726--1726
+[]\OT1/cmtt/m/n/12 3ffe:2400:0:1:2a0:ccff:fe66:1878 via 3ffe:2400:0:1:2a0:ccff:
+fe66:1878 \[] 
+ []
+
+
+Overfull \hbox (4.80522pt too wide) in paragraph at lines 1726--1726
+[]\OT1/cmtt/m/n/12 3ffe:2400:0:1:a00:20ff:fe71:fb30 via 3ffe:2400:0:1:a00:20ff:
+fe71:fb30 \[] 
+ []
+
+[32]
+Overfull \hbox (1.72575pt too wide) in paragraph at lines 1794--1796
+ \OT1/cmr/bx/n/12 Out-put for-mat:[] \OT1/cmr/m/n/12 This com-mand out-puts rou
+tes in the same for-mat as []\OT1/cmtt/m/n/12 ip route ls\OT1/cmr/m/n/12 . 
+ []
+
+[33] [34] [35]
+Overfull \hbox (4.00388pt too wide) in paragraph at lines 1926--1930
+[]\OT1/cmr/m/n/12 Matching IP pro-to-cols and trans-port ports is also pos-si-b
+le, in-di-rectly, via []\OT1/cmtt/m/n/12 ipchains\OT1/cmr/m/n/12 ,
+ []
+
+
+Overfull \hbox (3.25233pt too wide) in paragraph at lines 1969--1974
+[]\OT1/cmr/m/n/12 Priority: 32767, Se-lec-tor: match any-thing, Ac-tion: lookup
+ rout-ing ta-ble []\OT1/cmtt/m/n/12 default
+ []
+
+[36] [37] [38] [39] [40] [41] [42] [43] [44] [45] [46] [47] [48] [49] [50]
+Overfull \hbox (32.75024pt too wide) in paragraph at lines 2814--2817
+ \OT1/cmr/m/n/10 NB.  By the way, you may also want to look at http://www.csn.t
+u-chemnitz.de/HyperNews/get/linux-
+ []
+
+
+Overfull \hbox (23.18915pt too wide) in paragraph at lines 2858--2863
+\OT1/cmr/m/n/12 This rule says that the source ad-dress 193.233.7.83 should be 
+trans-lated into 192.203.80.144
+ []
+
+[51] [52] [53] [54] [55] [56] [57] [58] [59] [60] (./ip-cref.aux) ) 
+Here is how much of TeX's memory you used:
+ 592 strings out of 25847
+ 6671 string characters out of 195960
+ 51290 words of memory out of 384000
+ 3534 multiletter control sequences out of 10000+15000
+ 26349 words of font info for 98 fonts, out of 400000 for 1000
+ 14 hyphenation exceptions out of 1000
+ 25i,6n,22p,301b,376s stack positions out of 300i,100n,500p,50000b,4000s
+
+Output written on ip-cref.dvi (60 pages, 148524 bytes).

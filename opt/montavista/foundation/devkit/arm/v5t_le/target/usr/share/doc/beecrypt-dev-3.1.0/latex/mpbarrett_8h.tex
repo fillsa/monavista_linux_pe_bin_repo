@@ -1,0 +1,289 @@
+\hypertarget{mpbarrett_8h}{
+\section{mpbarrett.h File Reference}
+\label{mpbarrett_8h}\index{mpbarrett.h@{mpbarrett.h}}
+}
+Multi-precision integer routines using Barrett modular reduction, headers. 
+
+{\tt \#include \char`\"{}beecrypt.h\char`\"{}}\par
+{\tt \#include \char`\"{}mpnumber.h\char`\"{}}\par
+\subsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \hyperlink{structmpbarrett}{mpbarrett}
+\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \hyperlink{mpbarrett_8h_a0}{mpbzero} (\hyperlink{structmpbarrett}{mpbarrett} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a1}{mpbinit} (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t)
+\item 
+void \hyperlink{mpbarrett_8h_a2}{mpbfree} (\hyperlink{structmpbarrett}{mpbarrett} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a3}{mpbcopy} (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a4}{mpbwipe} (\hyperlink{structmpbarrett}{mpbarrett} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a5}{mpbset} (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a6}{mpbsethex} (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, const char $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a7}{mpbsubone} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a8}{mpbmu\_\-w} (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a9}{mpbrnd\_\-w} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a10}{mpbrndodd\_\-w} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a11}{mpbrndinv\_\-w} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a12}{mpbneg\_\-w} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a13}{mpbmod\_\-w} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a14}{mpbaddmod\_\-w} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a15}{mpbsubmod\_\-w} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a16}{mpbmulmod\_\-w} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a17}{mpbsqrmod\_\-w} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a18}{mpbpowmod\_\-w} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a19}{mpbpowmodsld\_\-w} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a20}{mpbtwopowmod\_\-w} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a21}{mpbsm2powmod} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a22}{mpbsm3powmod} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+int \hyperlink{mpbarrett_8h_a23}{mpbpprime\_\-w} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, int, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a24}{mpbnrnd} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a25}{mpbnmulmod} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a26}{mpbnsqrmod} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a27}{mpbnpowmod} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+void \hyperlink{mpbarrett_8h_a28}{mpbnpowmodsld} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Multi-precision integer routines using Barrett modular reduction, headers. 
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{mpbarrett_8h-source}{mpbarrett.h}.
+
+\subsection{Function Documentation}
+\hypertarget{mpbarrett_8h_a14}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbaddmod_w@{mpbaddmod\_\-w}}
+\index{mpbaddmod_w@{mpbaddmod\_\-w}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbaddmod\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpbaddmod\_\-w (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a14}
+
+
+\hypertarget{mpbarrett_8h_a3}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbcopy@{mpbcopy}}
+\index{mpbcopy@{mpbcopy}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbcopy]{\setlength{\rightskip}{0pt plus 5cm}void mpbcopy (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$)}}
+\label{mpbarrett_8h_a3}
+
+
+\hypertarget{mpbarrett_8h_a2}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbfree@{mpbfree}}
+\index{mpbfree@{mpbfree}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbfree]{\setlength{\rightskip}{0pt plus 5cm}void mpbfree (\hyperlink{structmpbarrett}{mpbarrett} $\ast$)}}
+\label{mpbarrett_8h_a2}
+
+
+\hypertarget{mpbarrett_8h_a1}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbinit@{mpbinit}}
+\index{mpbinit@{mpbinit}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbinit]{\setlength{\rightskip}{0pt plus 5cm}void mpbinit (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t)}}
+\label{mpbarrett_8h_a1}
+
+
+\hypertarget{mpbarrett_8h_a13}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbmod_w@{mpbmod\_\-w}}
+\index{mpbmod_w@{mpbmod\_\-w}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbmod\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpbmod\_\-w (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a13}
+
+
+\hypertarget{mpbarrett_8h_a8}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbmu_w@{mpbmu\_\-w}}
+\index{mpbmu_w@{mpbmu\_\-w}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbmu\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpbmu\_\-w (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a8}
+
+
+\hypertarget{mpbarrett_8h_a16}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbmulmod_w@{mpbmulmod\_\-w}}
+\index{mpbmulmod_w@{mpbmulmod\_\-w}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbmulmod\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpbmulmod\_\-w (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a16}
+
+
+\hypertarget{mpbarrett_8h_a12}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbneg_w@{mpbneg\_\-w}}
+\index{mpbneg_w@{mpbneg\_\-w}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbneg\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpbneg\_\-w (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a12}
+
+
+\hypertarget{mpbarrett_8h_a25}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbnmulmod@{mpbnmulmod}}
+\index{mpbnmulmod@{mpbnmulmod}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbnmulmod]{\setlength{\rightskip}{0pt plus 5cm}void mpbnmulmod (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{mpbarrett_8h_a25}
+
+
+\hypertarget{mpbarrett_8h_a27}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbnpowmod@{mpbnpowmod}}
+\index{mpbnpowmod@{mpbnpowmod}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbnpowmod]{\setlength{\rightskip}{0pt plus 5cm}void mpbnpowmod (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{mpbarrett_8h_a27}
+
+
+\hypertarget{mpbarrett_8h_a28}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbnpowmodsld@{mpbnpowmodsld}}
+\index{mpbnpowmodsld@{mpbnpowmodsld}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbnpowmodsld]{\setlength{\rightskip}{0pt plus 5cm}void mpbnpowmodsld (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{mpbarrett_8h_a28}
+
+
+\hypertarget{mpbarrett_8h_a24}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbnrnd@{mpbnrnd}}
+\index{mpbnrnd@{mpbnrnd}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbnrnd]{\setlength{\rightskip}{0pt plus 5cm}void mpbnrnd (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{mpbarrett_8h_a24}
+
+
+\hypertarget{mpbarrett_8h_a26}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbnsqrmod@{mpbnsqrmod}}
+\index{mpbnsqrmod@{mpbnsqrmod}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbnsqrmod]{\setlength{\rightskip}{0pt plus 5cm}void mpbnsqrmod (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{mpbarrett_8h_a26}
+
+
+\hypertarget{mpbarrett_8h_a18}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbpowmod_w@{mpbpowmod\_\-w}}
+\index{mpbpowmod_w@{mpbpowmod\_\-w}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbpowmod\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpbpowmod\_\-w (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a18}
+
+
+\hypertarget{mpbarrett_8h_a19}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbpowmodsld_w@{mpbpowmodsld\_\-w}}
+\index{mpbpowmodsld_w@{mpbpowmodsld\_\-w}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbpowmodsld\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpbpowmodsld\_\-w (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a19}
+
+
+\hypertarget{mpbarrett_8h_a23}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbpprime_w@{mpbpprime\_\-w}}
+\index{mpbpprime_w@{mpbpprime\_\-w}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbpprime\_\-w]{\setlength{\rightskip}{0pt plus 5cm}int mpbpprime\_\-w (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, int, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a23}
+
+
+\hypertarget{mpbarrett_8h_a9}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbrnd_w@{mpbrnd\_\-w}}
+\index{mpbrnd_w@{mpbrnd\_\-w}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbrnd\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpbrnd\_\-w (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a9}
+
+
+\hypertarget{mpbarrett_8h_a11}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbrndinv_w@{mpbrndinv\_\-w}}
+\index{mpbrndinv_w@{mpbrndinv\_\-w}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbrndinv\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpbrndinv\_\-w (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a11}
+
+
+\hypertarget{mpbarrett_8h_a10}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbrndodd_w@{mpbrndodd\_\-w}}
+\index{mpbrndodd_w@{mpbrndodd\_\-w}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbrndodd\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpbrndodd\_\-w (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a10}
+
+
+\hypertarget{mpbarrett_8h_a5}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbset@{mpbset}}
+\index{mpbset@{mpbset}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbset]{\setlength{\rightskip}{0pt plus 5cm}void mpbset (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a5}
+
+
+\hypertarget{mpbarrett_8h_a6}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbsethex@{mpbsethex}}
+\index{mpbsethex@{mpbsethex}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbsethex]{\setlength{\rightskip}{0pt plus 5cm}void mpbsethex (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, const char $\ast$)}}
+\label{mpbarrett_8h_a6}
+
+
+\hypertarget{mpbarrett_8h_a21}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbsm2powmod@{mpbsm2powmod}}
+\index{mpbsm2powmod@{mpbsm2powmod}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbsm2powmod]{\setlength{\rightskip}{0pt plus 5cm}void mpbsm2powmod (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a21}
+
+
+\hypertarget{mpbarrett_8h_a22}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbsm3powmod@{mpbsm3powmod}}
+\index{mpbsm3powmod@{mpbsm3powmod}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbsm3powmod]{\setlength{\rightskip}{0pt plus 5cm}void mpbsm3powmod (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a22}
+
+
+\hypertarget{mpbarrett_8h_a17}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbsqrmod_w@{mpbsqrmod\_\-w}}
+\index{mpbsqrmod_w@{mpbsqrmod\_\-w}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbsqrmod\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpbsqrmod\_\-w (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a17}
+
+
+\hypertarget{mpbarrett_8h_a15}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbsubmod_w@{mpbsubmod\_\-w}}
+\index{mpbsubmod_w@{mpbsubmod\_\-w}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbsubmod\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpbsubmod\_\-w (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a15}
+
+
+\hypertarget{mpbarrett_8h_a7}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbsubone@{mpbsubone}}
+\index{mpbsubone@{mpbsubone}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbsubone]{\setlength{\rightskip}{0pt plus 5cm}void mpbsubone (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a7}
+
+
+\hypertarget{mpbarrett_8h_a20}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbtwopowmod_w@{mpbtwopowmod\_\-w}}
+\index{mpbtwopowmod_w@{mpbtwopowmod\_\-w}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbtwopowmod\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpbtwopowmod\_\-w (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, size\_\-t, const \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpbarrett_8h_a20}
+
+
+\hypertarget{mpbarrett_8h_a4}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbwipe@{mpbwipe}}
+\index{mpbwipe@{mpbwipe}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbwipe]{\setlength{\rightskip}{0pt plus 5cm}void mpbwipe (\hyperlink{structmpbarrett}{mpbarrett} $\ast$)}}
+\label{mpbarrett_8h_a4}
+
+
+\hypertarget{mpbarrett_8h_a0}{
+\index{mpbarrett.h@{mpbarrett.h}!mpbzero@{mpbzero}}
+\index{mpbzero@{mpbzero}!mpbarrett.h@{mpbarrett.h}}
+\subsubsection[mpbzero]{\setlength{\rightskip}{0pt plus 5cm}void mpbzero (\hyperlink{structmpbarrett}{mpbarrett} $\ast$)}}
+\label{mpbarrett_8h_a0}
+
+

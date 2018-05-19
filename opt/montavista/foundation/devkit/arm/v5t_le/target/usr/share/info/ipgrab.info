@@ -1,0 +1,1111 @@
+This is ipgrab.info, produced by makeinfo version 4.2 from ipgrab.texi.
+
+INFO-DIR-SECTION Networking
+START-INFO-DIR-ENTRY
+* IPgrab: (ipgrab).         Verbose Packet Sniffer
+END-INFO-DIR-ENTRY
+
+   IPgrab, verbose packet sniffer, by Mike Borella
+
+   This file documents the IPgrab packet sniffer.
+
+   Copyright (C) 1997-2002, Mike Borella
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided that
+the entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be stated in a
+translation approved by the Author.
+
+
+File: ipgrab.info,  Node: Top,  Next: Introduction,  Prev: (dir),  Up: (dir)
+
+   This file documents IPgrab, a packet sniffer that allows rather
+verbose description of network packets. This is edition 0.9.9, for
+IPgrab version 0.9.9.
+
+* Menu:
+
+* Introduction::                Overview of IPgrab
+* Guidelines for Use::          How to get the most out of IPgrab
+* Status::
+* History::                     History of the project
+* Index::
+
+
+File: ipgrab.info,  Node: Introduction,  Next: Guidelines for Use,  Prev: Top,  Up: Top
+
+Introduction
+************
+
+   You don't really understand networks until you've watched traffic on
+the wire.  I believe strongly in this statement.  In fact, I believe in
+it so strongly that I've been devleoping a packet sniffer so that all
+of us can learn about networking this way.
+
+   A packet sniffer is an application layer program that interacts with
+one or more layer two or layer three kernel modules or device drivers to
+capture packets on a network.  The lower-layer pieces read the packet
+off the wire, copy it into memory, and provide an API for an application
+to read it.  An application, such as IPgrab, can do whatever it likes
+with the resulting image of a packet.  Packet sniffers have been used
+for many years to detect network problems, troubleshoot protocols, and
+detect intruders.
+
+   Traditionally, packet sniffers have displayed the captured packets in
+brief, rather cryptic formats.
+
+   IPgrab is my humble attempt to make most, and eventually all, network
+protocols readable.  It currently supports a wide variety of IP-related
+protocols, including some of the newer IP telephony protocols such as
+SIP and MGCP, as well as IPv6.  IPgrab also decodes basic IPX and
+NETBIOS packets.
+
+   The center of all IPgrab development, testing, and communication is
+hosted on SourceForge at `http://ipgrab.sourceforge.net/'.  You may
+mail suggestions and bug reports for to me at <mike@borella.net>.
+
+
+File: ipgrab.info,  Node: Guidelines for Use,  Next: Status,  Prev: Introduction,  Up: Top
+
+Guidelines for Use
+******************
+
+   IPgrab can be used in a number of ways, for a number of purposes.  In
+this section we provide a brief overview of IPgrab's two modes and its
+command-line options.
+
+Main Mode
+=========
+
+   Main mode is the default mode for IPgrab output.  It is extremely
+verbose, displaying each field from all packet headers and protocols
+that it understands across a separate line of text.  Banners separate
+different layers of protocol output.  Single packets may require more
+than 100 lines in order to be displayed.  Main mode is most useful if
+you need to know why or when a certain field or fields take on certain
+values.  Below is an example of main mode formatting of a TCP packet.
+
+     **************************************************************************
+                             Ethernet (990036574.132701)
+     --------------------------------------------------------------------------
+     Hardware source:        00:80:3e:57:b4:cf
+     Hardware destination:   01:00:5e:00:01:16
+     Type / Length:          0x800 (IP)
+     Media length:           192
+     --------------------------------------------------------------------------
+                             IP Header
+     --------------------------------------------------------------------------
+     Version:                4
+     Header length:          5 (20 bytes)
+     TOS:                    0x00
+     Total length:           178
+     Identification:         16
+     Fragmentation offset:   0
+     Unused bit:             0
+     Don't fragment bit:     0
+     More fragments bit:     0
+     Time to live:           29
+     Protocol:               17 (UDP)
+     Header checksum:        33315
+     Source address:         149.112.164.129
+     Destination address:    224.0.1.22
+     --------------------------------------------------------------------------
+                             UDP Header
+     --------------------------------------------------------------------------
+     Source port:            1026 (unknown)
+     Destination port:       427 (SLP)
+     Length:                 158
+     Checksum:               17593
+     --------------------------------------------------------------------------
+                             SLPv1 Header
+     --------------------------------------------------------------------------
+     Version:                1
+     Operation:              1 (service request)
+     Length:                 150
+     Flags/Reserved:         0x00
+     Dialect:                0
+     Language code:          en
+     Character encoding:     1000
+     XID:                    6365
+
+   In general, IPgrab does not attempt to "interpret" the values of a
+packet.  For example, the IP TOS field is displayed in its raw value of
+0x00.  If there is an interpretation or further explanation of a field,
+IPgrab puts it in parenthesis following the raw value.  For example, the
+IP header lenght field is displayed in its raw form of 5 followed by an
+interpretation of the number of bytes that this value represents.
+Likewise, the TCP source port is 23, which IPgrab recognizes as the
+telnet port.
+
+   Note that IPgrab adds a timestamp to the banner for each link layer
+packet.
+
+Minimal Mode
+============
+
+   IPgrab also supports a minimal mode in which all information about
+all parts of a packet are displayed in a single line of text.  This
+line may be longer than 80 characters and thus wrap around a standard
+terminal window one or more times.  Below is an example of minimal mode
+formatting of a TCP packet.
+
+     1 990038240.206509 | ETH 00:b0:d0:11:a4:d0->ff:ff:ff:ff:ff:ff | IP
+     149.112.90.171->149.112.90.255 (len:78,id:29629,frag:0) | UDP 137->137
+     | NETBIOS NS query 3-COM
+
+   Minimal mode begins with a number (in this case, the number 1
+indicates that this packet is the first one read) and a timestamp, and
+then parses the packet from link layer to application layer.  Each
+layer begins with an abbreviation of the protocol being displayed (such
+as ETH, IP, and UDP, above).  These abbreviations are followed by only
+the most relevant fields of the protocol.  For example, IP source and
+destination addresses are shown, along with the total length field and
+the DF bit (if set) in parentheses.  Likewise, UDP source and
+destination ports are shown.
+
+Command Line Options
+====================
+
+   Both main mode and minimal mode output can be adjusted by specifying
+one or more commend line options.  In this section, we provide a
+complete list of IPgrab's command line options and their use.
+
+   The usage of IPgrab is briefly described as follows.
+
+   `ipgrab [-blmnPprTtwx] [-c|--count n] [-h|--help] [-i|--interface
+if] [BPF expr]'
+
+   The BPF expression is a string of terms that is acceptable to the
+Berkeley Packet Filter.  For more details on the BPF expression grammar,
+see the tcpdump manual page.
+
+   * `-a'. Don't display application layer data.
+
+   * `-b'. Turn off buffering of standard output (stdout) so that all
+     displaying occurs as soon as possible.  Useful when IPgrab output
+     is being re-directed to a file.
+
+   * `-c n / --count n'. Terminate after reading and displaying the
+     first n packets.
+
+   * `-C proto / --CCP proto'. Assume a particular CCP protocol, such as
+     MPPC.  MPPC is the only one supported today.
+
+   * `-d'. Dump extra padding in packets.  For example, according to an
+     IP header, the packet ends at a certain point, but the link layer
+     may have padded it beyond that.  This option displays the padding.
+     Not valid in minimal mode.
+
+   * `-h / --help'. Display usage screen with a brief description of
+     the command line options.
+
+   * `-i if / --interface if'.  Makes IPgrab listen to packets on
+     interface if.  If this option is not used, the default interface
+     will be assumed.
+
+   * `-l'. Don't display link layer headers.  The following protocols
+     are considered to be link layer: ARP, CHAP, Ethernet, IPCP, LCP,
+     LLC, Loopback, PPP, PPPoE, Raw, Slip, .
+
+   * `-m'. Minimal mode output.
+
+   * `-n'. Don't display network layer headers. The following protocols
+     are considered to be network layer: AH, ESP, GRE, ICMP, ICMPv6,
+     IGMP, IP, IPv6, IPX, IPXRIP.
+
+   * `-P'. Initiate a dynamic port mapping.  This option must be
+     followed by a string of the form `<protocol>=<port>', such as
+     `rtp=6569'.
+
+   * `-p'. Dump packet payloads beyond what IPgrab parses.  In other
+     words, if IPgrab doesn't parse a particular application, this
+     option will dump the application data in hex and text format.
+
+   * `-r'. Read packets from a file, rather than an interface.  The
+     file should be created in "raw" format, such as with `-w' option.
+
+   * `-T'. Don't display timestamps in minimal mode.
+
+   * `-t'. Don't display transport layer headers.  The following
+     protocols are considered to be transport layer: SPX, TCP, UDP.
+
+   * `-v'. Display version number then quit.
+
+   * `-w'. Write the raw packets to a file, rather than the screen.
+     The packets will not be parsed.  The file can be read with the `-r'
+     option.
+
+   * `-x'. Hex dump mode.  After processing each layer, dump out the
+     contents of that layer in hex and text.  Only valid in main mode.
+
+Examples
+========
+
+   * Only ICMP packets will be displayed using main mode without link
+     layer headers.
+
+     Command: `ipgrab -l icmp'
+
+     Output:
+          **************************************************************************
+                                  IP Header
+          --------------------------------------------------------------------------
+          Version:                4
+          Header length:          5 (20 bytes)
+          TOS:                    0x00
+          Total length:           84
+          Identification:         0
+          Fragmentation offset:   0
+          Unused bit:             0
+          Don't fragment bit:     1
+          More fragments bit:     0
+          Time to live:           64
+          Protocol:               1 (ICMP)
+          Header checksum:        42625
+          Source address:         149.112.90.225
+          Destination address:    198.147.221.66
+          --------------------------------------------------------------------------
+                                  ICMP Header
+          --------------------------------------------------------------------------
+          Type:                   8 (echo request)
+          Code:                   0
+          Checksum:               43361
+          Identifier:             15353
+          Sequence number:        0
+
+   * Only packets arriving on interface eth1 with a source port of 21
+     (FTP) will be displayed in minimal mode.
+
+     Command: `ipgrab -i eth1 -m src port 21'
+
+     Output:
+          1 990038936.642292 | ETH 00:80:3e:57:b4:cf->00:50:04:32:0e:8f | IP
+          198.147.221.66->149.112.90.225 (len:64,id:18353,DF,frag:0) | TCP 21->1047
+          (SA,3123051349,2290714856,9856) <timestamp 873976824 43310056><window
+          scale 0><SACK permitted><maximum segment size 1420>
+
+
+
+File: ipgrab.info,  Node: Status,  Next: History,  Prev: Guidelines for Use,  Up: Top
+
+Status of Protocol Modules
+**************************
+
+   In this section we discuss the status of each of the protocol
+modules.  While some protocols may be fully supported and well tested,
+other modules may only have partial support or may not have been tested
+fully.
+
+Authentication Header (AH)
+==========================
+
+   * Module: `ah.c'
+
+   * Support: Full.
+
+   * Maturity: Not tested.
+
+   * Notes: AH typically appears between IP and TCP/UDP headers in order
+     to apply IPsec-based authentication.
+
+Address Resolution Protocol (ARP)
+=================================
+
+   * Module: `arp.c'
+
+   * Support: Partial (only supports IP over Ethernet).
+
+   * Maturity: Well tested.
+
+   * Notes: Originally, ARP was defined to support address resolution of
+     network layer protocol x over link layer protocol y.  Currently,
+     IP over Ethernet is by far the most used mode of ARP, and thus is
+     the only one supported.
+
+Callback Control Protocol (CBCP)
+================================
+
+   * Module: `cbcp.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: This protocol runs over PPP and allows a client to request
+     that the server calls back.  We only support very basic
+     negotiation that is seen in the Windows 2000 VPN client.
+
+Compression Control Protocol (CBCP)
+===================================
+
+   * Module: `ccp.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: CCP negotiates a compression algorithm for PPP and its
+     associated parameters.  Since the protocol used is stateful, we
+     need a hint in order to decode the header portion.  Such a hint
+     can be provided the -C option (see above).  However, this limits
+     us to decoding only one CCP-negotiated protocol at a time.
+
+Challenge Handshake Authentication Protocol (CHAP)
+==================================================
+
+   * Module: `chap.c'
+
+   * Support: Full.
+
+   * Maturity: Well tested.
+
+   * Notes: CHAP authenticates the ends of a PPP session to one another.
+
+Dynamic Host Configuration Protocol (DHCP)
+==========================================
+
+   * Module: `dhcp.c'
+
+   * Support: Partial (doesn't support all options).
+
+   * Maturity: Well tested.
+
+   * Notes: DHCP is an extensibly protocol with a large number of
+     officially sanctioned options, and a number of de facto options.
+     Currently we support many of the most common, but not all, of these
+     options.
+
+Domain Name System (DNS)
+========================
+
+   * Module: `dns.c'
+
+   * Support: Partial (doesn't support all record types).
+
+   * Maturity: Well tested.
+
+   * Notes: Currently, we support records of type A, AAAA, CNAME, NS,
+     SOA, and PTR.  Other record types, such as A6, MX, and SRV, are not
+     supported.
+
+Encapsulating Security Payload (ESP)
+====================================
+
+   * Module: `esp.c'
+
+   * Support: Partial (doesn't decrypt packets nor decode ESP trailer).
+
+   * Maturity: Not tested.
+
+   * Notes: ESP typically appears between IP and TCP/UDP headers in
+     order to apply IPsec-based encryption and/or authentication.  We
+     do not attempt to decode encrypted packets because this would
+     require adding state to IPgrab, which is something that we'd
+     rather not do.  This prevents us from displaying the ESP trailer
+     as well. As soon as an ESP header is read and the plaintext
+     portion is displayed, we halt processing of the rest of the packet.
+
+Ethernet
+========
+
+   * Module: `ethernet.c'
+
+   * Support: Full, expcept that not all Ethernet types are recognized,
+     and 802.1p and VLANs are not supported.
+
+   * Maturity: Well tested.
+
+   * Notes: Supported Ethernet types include IP, IPv6, PPP, ARP, RARP,
+     and IPX.  LLC encapsulation is supported in the LLC module.
+
+File Transfer Protocol (FTP): Control
+=====================================
+
+   * Module: `ftpctrl.c'
+
+   * Support: Full.
+
+   * Maturity: Well tested.
+
+   * Notes:
+
+Generic Routing Encapsulation
+=============================
+
+   * Module: `gre.c'
+
+   * Support: Full for versions 0 and 1.
+
+   * Maturity: Well tested.
+
+   * Notes: Version 1 is defined in the PPTP RFC.
+
+Hypertext Transfer Protocol
+===========================
+
+   * Module: `http.c'
+
+   * Support: Full (displays only headers).
+
+   * Maturity: Well tested.
+
+   * Notes: Parses and displays HTTP headers only.  The rest of the
+     payload is skipped.
+
+Internet Control Message Protocol
+=================================
+
+   * Module: `icmp.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Displays all ICMP types and codes, but does not parse
+     specific payloads for some lesser-used ICMP types, such as source
+     quench, and redirect.  Also does not handle Mobile IP extensions
+     (yet).
+
+Internet Control Message Protocol Version 6
+===========================================
+
+   * Module: `icmpv6.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Not all types and codes are explicitly parsed.
+
+Internet Group Message Protocol
+===============================
+
+   * Module: `igmp.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: IGMPv1 and v2 are supported.  IGMPv3 is not tested and may
+     not be cleanly supported.
+
+Internet Protocol
+=================
+
+   * Module: `ip.c'
+
+   * Support: Full.
+
+   * Maturity: Well tested.
+
+   * Notes: Full support for the IP header and options.  TOS/DS byte is
+     not interpreted in any particular fashion.
+
+Internet Protocol Control Protocol
+==================================
+
+   * Module: `ipcp.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Full support for common messages and options.  Some options
+     may not be supported.
+
+Internet Protocol Version 6
+===========================
+
+   * Module: `ipv6.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Full support for the IPv6 header, except that IPv6 addresses
+     are not displayed in the proper shorthand.
+
+Internet Packet Exchange
+========================
+
+   * Module: `ipx.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Full support for the IPX header, but not all transport
+     protocols and applications are supported, nor are the header
+     fields interpretated as well as they could be.
+
+Internet Packet Exchange Routing Information Protocol
+=====================================================
+
+   * Module: `ipxrip.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Basic listing of the routes.
+
+Internet Key Exchange
+=====================
+
+   See Internet Security Association and Key Management Protocol.
+
+Internet Security Association and Key Management Protocol
+=========================================================
+
+   * Module: `isakmp.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested against Windows 2000 only.
+
+   * Notes: Only the following ISAKMP headers are supported: delete, SA,
+     vendor ID, proposal, transform.
+
+Layer 2 Tunneling Protocol
+==========================
+
+   * Module: `l2tp.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Only the most common message types are supported.
+
+Link Control Protocol
+=====================
+
+   * Module: `lcp.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Not all NCPs are tested for.
+
+Logical Link Control
+====================
+
+   * Module: `llc.c'
+
+   * Support: Partial.
+
+   * Maturity: Partially tested.
+
+   * Notes: Some basic cases such as IP and IPX encapsulation work
+     reasonably well, but other common cases are not supported.
+     Basically, this module needs a re-write.
+
+Loopback
+========
+
+   * Module: `loopback.c'
+
+   * Support: Full.
+
+   * Maturity: Fully tested.
+
+   * Notes: Some loopback interfaces, Redhat Linux 6.2 for example,
+     present themselves as Ethernet interfaces, where all Ethernet
+     addresses are zeroed out.  Strange but true.
+
+Media Gateway Control Protocol
+==============================
+
+   * Module: `mgcp.c'
+
+   * Support: Partial.
+
+   * Maturity: Not tested.
+
+   * Notes: Use at your own risk.
+
+Mobile IP
+=========
+
+   * Module: `mobileip.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Not all extensions are supported.  Support for the CDMA2000
+     A11 interface is also in this module.  We support registration
+     update and registration acknowledgement, as well as some of the
+     extensions.
+
+Microsoft Point-to-Point Compression Protocol (MPPC)
+====================================================
+
+   * Module: `mppc.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Since we are not guaranteed to know the compression state,
+     we are not able to decode the compressed section.  We only decode
+     the header.  In order to decode MPPC packets, "-C MPPC" must be
+     specified on the command line.
+
+NETBIOS Name Service
+====================
+
+   * Module: `netbios_ns.c'
+
+   * Support: Full.
+
+   * Maturity: Well tested.
+
+   * Notes: DNS-like protocol for NETBIOS.
+
+Network News Transfer Protocol (NNTP)
+=====================================
+
+   * Module: `nntp.c'
+
+   * Support: Full.
+
+   * Maturity: Well tested.
+
+   * Notes: Just dumps the raw text of the messages, as that's all
+     there is.
+
+Open Shortest Path First
+========================
+
+   * Module: `ospf.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Only hello messages are supported.
+
+Point to Point Protocol
+=======================
+
+   * Module: `ppp.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Most systems will not let you sniff native PPP packets, as
+     their headers are usually stripped off before the kernel gives the
+     packet to the sniffer.  However, when you use PPTP or L2TP, PPP is
+     avilable to a sniffer.  Thus all testing was done using tunneling
+     modes, rather than native mode.  Note that some tunnel
+     configurations may fragment a single incoming PPP frame into
+     multiple tunneled packets.  In this case, it is not clear what
+     ipgrab will do (probably something strange).  We currently do not
+     decode HDLC-mode (control escape) PPP packets.
+
+PPP Over Ethernet
+=================
+
+   * Module: `pppoe.c'
+
+   * Support: Full.
+
+   * Maturity: Not tested.
+
+   * Notes: This is a contributed module.  I have not tested it, but the
+     contributor has.
+
+Point to Point Tunneling Protocol
+=================================
+
+   * Module: `pptp.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Not all message types are supported, but the most common
+     ones are.
+
+RADIUS
+======
+
+   * Module: `radius.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Most attributes from RFC 2865 and RFC 2866 are supported.
+     Additionally, most 3GPP2 vendor-specific attributes are supported.
+
+Raw IP
+======
+
+   * Module: `raw.c'
+
+   * Support: Full.
+
+   * Maturity: Well tested.
+
+   * Notes: This is a default datalink type for native IP.  Since most
+     kernel don't let us look at native PPP frames, most packets on a
+     PPP interface will be interpreted as raw.
+
+Routing Information Protocol
+============================
+
+   * Module: `rip.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: RIPv1 was tested extensively.  RIPv2 was not tested.
+
+Routing Information Protocol (Next Generation)
+==============================================
+
+   * Module: `ripng.c'
+
+   * Support: Full.
+
+   * Maturity: Well tested.
+
+   * Notes:
+
+Real Time Control Protocol (RTP)
+================================
+
+   * Module: `rtcp.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: In order to use this module, you'll need to notify IPgrab of
+     proper port number on which to expect the RTP traffic.  Use the
+     `-P' option to do this.  IPgrab will assume that the next highest
+     port belongs to RTCP.  Only sender reports, receiver reports and
+     source description packets.
+
+Real Time Protocol (RTP)
+========================
+
+   * Module: `rtp.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: In order to use this module, you'll need to notify IPgrab of
+     proper port number on which to expect the RTP traffic.  Use the
+     `-P' option to do this.
+
+Session Description Protocol
+============================
+
+   * Module: `sdp.c'
+
+   * Support: Full.
+
+   * Maturity: Well tested.
+
+   * Notes: Displays the headers in plain format with no interpretation.
+     Does not display anything in minimal mode.
+
+Session Initiation Protocol
+===========================
+
+   * Module: `sip.c'
+
+   * Support: Full.
+
+   * Maturity: Well tested.
+
+   * Notes: Displays the headers in plain format with no interpretation.
+
+Serial Line IP
+==============
+
+   * Module: `slip.c'
+
+   * Support: Full.
+
+   * Maturity: Not tested.
+
+   * Notes:
+
+Service Location Protocol
+=========================
+
+   * Module: `slp.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Only basic forms of version 1 are supported.
+
+Simple Network Management Protocol
+==================================
+
+   * Module: `snmp.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: This module only displays the most basic information about
+     captured SNMP packets.  Very little functionality is supported.
+
+Sequenced Packet Exchange
+=========================
+
+   * Module: `spx.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Not all applications are supported.
+
+Secure Shell
+============
+
+   * Module: `ssh.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Only the initial version number exchange is supported.
+
+Transmission Control Protocol
+=============================
+
+   * Module: `tcp.c'
+
+   * Support: Partial.
+
+   * Maturity: Well tested.
+
+   * Notes: Not all options are well supported.  Program might crash on
+     assorted nastygrams. In the minimal mode output, there are four
+     parameters following the port numbers.  They are, in order: a list
+     of all flags that are set, the sequence number, the
+     acknowledgement number, and the advertized window size.
+
+Trivial File Transfer Protocol (TFTP)
+=====================================
+
+   * Module: `tftp.c'
+
+   * Support: Full.
+
+   * Maturity: Well tested.
+
+   * Notes: Displays all associated parameters.  Figures out port number
+     of transfer on the fly.
+
+User Datagram Protocol
+======================
+
+   * Module: `udp.c'
+
+   * Support: Full.
+
+   * Maturity: Fully tested.
+
+   * Notes:
+
+
+File: ipgrab.info,  Node: History,  Next: Index,  Prev: Status,  Up: Top
+
+History
+*******
+
+   Like many other folks, I started using `tcpdump' after reading Rich
+Stevens' wonderful book, _TCP/IP Illustrated Vol. 1_.  Each packet is
+summarized in a single compact, but slightly cryptic, line of output.
+While `tcpdump' remained a classic, around 1997 development had slowed
+quite a bit.  Support for new protocols was not being added to the
+official distribution, and understanding and modifying the existing
+code could be trying. I felt the need to provide a more general packet
+sniffer that not only displayed _all_ of a packet's fields, but was
+written in a way that could easily be read, understood, and modified.
+
+   In Fall 1997 I developed the first few versions of IPgrab.  They were
+very tentative, just displaying Ethernet, IP, TCP, and UDP fields.  For
+the most part, they only compiled on Linux.  But I had gotten a taste of
+how useful such a tool could be.  I used IPgrab to find out that Windows
+NT 4.0 incremented IP identification fields by 256 instead of 1, and to
+find out that a LAN router wasn't proxy ARPing correctly.
+
+   Over the next two years I added features to IPgrab.  Most of the work
+was done in my spare time, and progress was slow.  Occasionally I
+received a very useful patch from a user.  I also worked on porting it
+to other systems besides Linux - in particular, FreeBSD and Solaris.
+By mid-1999, IPgrab was stable (version 0.8.2) and supported a number of
+rather complex protocol suites, such as IPsec, L2TP and some VoIP
+protocols.  I didn't do much work until April 2000, when I decided to
+host it on Sourceforge.net.
+
+   It was time for a massive overhaul.  Development took three major
+angles: (1) New APIs for safe reading from a packet and displaying to an
+output device, (2) a line-based minimal output mode comparable to
+`tcpdump', and (3) more protocol support.  In particular, the APIs took
+a while to get right, but now they're in place and work really well.
+This required a re-write of every module, resulted in an overall
+cleanup of the code. Release 0.9 was the first official release with
+these new features.  The releases since 0.9 have added support for more
+protocols, cleaned up the architecture, and fixed bugs.
+
+   `tcpdump' development is once again underway and there are many
+freeware and open source packet sniffers available that do much of what
+IPgrab does.  However, I've continued to develop IPgrab for a number of
+reasons.  In particular, new protocols are being designed so quickly by
+the IETF and other organizations that it becomes very useful to be able
+to add these protocols quickly to a sniffer.  Some of the extensions to
+IETF protocols that are defined by other Standards Development
+Organizations are typically not supported in sniffers.  Also, developing
+IPgrab gives me a reason to stay on top of protocol developments and
+keep my hands dirty with coding.
+
+
+File: ipgrab.info,  Node: Index,  Prev: History,  Up: Top
+
+Index
+*****
+
+* Menu:
+
+* Address Resolution Protocol:           Status.
+* AH:                                    Status.
+* ARP:                                   Status.
+* Authentication Header:                 Status.
+* Callback Control Protocol:             Status.
+* CBCP:                                  Status.
+* CCP:                                   Status.
+* Challenge Handshake Authentication Protocol: Status.
+* CHAP:                                  Status.
+* Command line options:                  Guidelines for Use.
+* Compression Control Protocol:          Status.
+* Contact info:                          Introduction.
+* DHCP:                                  Status.
+* DNS:                                   Status.
+* Domain Name System:                    Status.
+* Dynamic Host Configuration Protocol:   Status.
+* Encapsulating Security Payload:        Status.
+* ESP:                                   Status.
+* Ethernet:                              Status.
+* File Transfer Protocol: Control:       Status.
+* FTP:                                   Status.
+* Generic Routing Encapsulation:         Status.
+* GRE:                                   Status.
+* History:                               History.
+* HTTP:                                  Status.
+* Hypertext Transfer Protocol:           Status.
+* ICMP:                                  Status.
+* ICMPv6:                                Status.
+* IGMP:                                  Status.
+* IKE:                                   Status.
+* Internet Control Message Protocol:     Status.
+* Internet Control Message Protocol Version 6: Status.
+* Internet Group Message Protocol:       Status.
+* Internet Key Exchange:                 Status.
+* Internet Packet Exchange:              Status.
+* Internet Packet Exchange Routing Information Protocol: Status.
+* Internet Protocol:                     Status.
+* Internet Protocol Control Protocol:    Status.
+* Internet Protocol Version 6:           Status.
+* Internet Security Association and Key Management Protocol: Status.
+* IP:                                    Status.
+* IPv6:                                  Status.
+* IPX:                                   Status.
+* IPXRIP:                                Status.
+* ISAKMP:                                Status.
+* L2TP:                                  Status.
+* Layer 2 Tunneling Protocol:            Status.
+* LCP:                                   Status.
+* Link Control Protocol:                 Status.
+* LLC:                                   Status.
+* Logical Link Control:                  Status.
+* Loopback:                              Status.
+* Main mode:                             Guidelines for Use.
+* Media Gateway Control Protocol:        Status.
+* MGCP:                                  Status.
+* Microsoft Point-to-Point Compression Protocol: Status.
+* Minimal mode:                          Guidelines for Use.
+* MIP:                                   Status.
+* Mobile IP:                             Status.
+* MPPC:                                  Status.
+* NETBIOS:                               Status.
+* NETBIOS Name Service:                  Status.
+* Network News Transfer Protocol:        Status.
+* NNTP:                                  Status.
+* Open Shortest Path First:              Status.
+* OSPF:                                  Status.
+* Point to Point Protocol:               Status.
+* Point to Point Tunneling Protocol:     Status.
+* PPP:                                   Status.
+* PPP Over Ethernet:                     Status.
+* PPPOE:                                 Status.
+* PPTP:                                  Status.
+* RADIUS:                                Status.
+* RARP:                                  Status.
+* Raw IP:                                Status.
+* Real Time Control Protocol:            Status.
+* Real Time Protocol:                    Status.
+* Reverse Address Resolution Protocol:   Status.
+* RIP:                                   Status.
+* RIPng:                                 Status.
+* RIPv6:                                 Status.
+* Routing Information Protocol:          Status.
+* Routing Information Protocol (Next Generation): Status.
+* RTCP:                                  Status.
+* RTP:                                   Status.
+* SDP:                                   Status.
+* Secure Shell:                          Status.
+* Sequenced Packet Exchange:             Status.
+* Serial Line IP:                        Status.
+* Service Location Protocol:             Status.
+* Session Description Protocol:          Status.
+* Session Initiation Protocol:           Status.
+* Simple Network Management Protocol:    Status.
+* SIP:                                   Status.
+* SLIP:                                  Status.
+* SLP:                                   Status.
+* SNMP:                                  Status.
+* SPX:                                   Status.
+* SSH:                                   Status.
+* TCP:                                   Status.
+* TFTP:                                  Status.
+* Transmission Control Protocol:         Status.
+* Trivial File Transfer Protocol:        Status.
+* UDP:                                   Status.
+* User Datagram Protocol:                Status.
+
+
+
+Tag Table:
+Node: Top994
+Node: Introduction1434
+Node: Guidelines for Use2938
+Node: Status12088
+Node: History26612
+Node: Index29549
+
+End Tag Table

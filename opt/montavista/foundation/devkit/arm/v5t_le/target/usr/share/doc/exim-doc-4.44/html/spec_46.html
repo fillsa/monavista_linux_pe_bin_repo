@@ -1,0 +1,1035 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 46</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_45.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_47.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2700"></a>
+<h1>
+<a name="CHAP46" href="spec_toc.html#TOC383">
+46. Exim utilities
+</a></h1>
+<p>
+A number of utility scripts and programs are supplied with Exim and are
+described in this chapter. There is also the Exim Monitor, which is covered in
+the next chapter. The utilities described here are:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<a href="spec_46.html#SECT46.1">46.1</a>  <i>exiwhat</i>&nbsp;&nbsp;</td><td>list what Exim processes are doing</td></tr>
+<tr><td>&nbsp;&nbsp;<a href="spec_46.html#SECT46.2">46.2</a>  <i>exiqgrep</i>&nbsp;&nbsp;</td><td>grep the queue</td></tr>
+<tr><td>&nbsp;&nbsp;<a href="spec_46.html#SECT46.3">46.3</a>  <i>exiqsumm</i>&nbsp;&nbsp;</td><td>summarize the queue</td></tr>
+<tr><td>&nbsp;&nbsp;<a href="spec_46.html#SECT46.4">46.4</a>  <i>exigrep</i>&nbsp;&nbsp;</td><td>search the main log</td></tr>
+<font color=green><tr><td>&nbsp;&nbsp;<a href="spec_46.html#SECT46.5">46.5</a>  <i>exipick</i>&nbsp;&nbsp;</td><td>select messages on various criteria</td></tr>
+</font><tr><td>&nbsp;&nbsp;<a href="spec_46.html#SECT46.6">46.6</a>  <i>exicyclog</i>&nbsp;&nbsp;</td><td>cycle (rotate) log files</td></tr>
+<tr><td>&nbsp;&nbsp;<a href="spec_46.html#SECT46.7">46.7</a>  <i>eximstats</i>&nbsp;&nbsp;</td><td>extract statistics from the log</td></tr>
+<tr><td>&nbsp;&nbsp;<a href="spec_46.html#SECT46.8">46.8</a>  <i>exim&#095;checkaccess</i>&nbsp;&nbsp;</td><td>check address acceptance from given IP</td></tr>
+<tr><td>&nbsp;&nbsp;<a href="spec_46.html#SECT46.9">46.9</a>  <i>exim&#095;dbmbuild</i>&nbsp;&nbsp;</td><td>build a DBM file</td></tr>
+<tr><td>&nbsp;&nbsp;<a href="spec_46.html#SECT46.10">46.10</a>  <i>exinext</i>&nbsp;&nbsp;</td><td>extract retry information</td></tr>
+<tr><td>&nbsp;&nbsp;<a href="spec_46.html#SECT46.11">46.11</a>  <i>exim&#095;dumpdb</i>&nbsp;&nbsp;</td><td>dump a hints database</td></tr>
+<tr><td>&nbsp;&nbsp;<a href="spec_46.html#SECT46.11">46.11</a>  <i>exim&#095;tidydb</i>&nbsp;&nbsp;</td><td>clean up a hints database</td></tr>
+<tr><td>&nbsp;&nbsp;<a href="spec_46.html#SECT46.11">46.11</a>  <i>exim&#095;fixdb</i>&nbsp;&nbsp;</td><td>patch a hints database</td></tr>
+<tr><td>&nbsp;&nbsp;<a href="spec_46.html#SECT46.12">46.12</a>  <i>exim&#095;lock</i>&nbsp;&nbsp;</td><td>lock a mailbox file</td></tr>
+</table>
+</p>
+<a name="IX2701"></a>
+<a name="IX2702"></a>
+<a name="IX2703"></a>
+<h2>
+<a name="SECT46.1" href="spec_toc.html#TOC384">
+46.1. Finding out what Exim processes are doing (exiwhat)
+</a></h2>
+<p>
+On operating systems that can restart a system call after receiving a signal
+(most modern OS), an Exim process responds to the <font size=-1>SIGUSR1</font> signal by writing
+a line describing what it is doing to the file <i>exim-process.info</i> in the
+Exim spool directory. The <i>exiwhat</i> script sends the signal to all Exim
+processes it can find, having first emptied the file. It then waits for one
+second to allow the Exim processes to react before displaying the results.
+In order to run <i>exiwhat</i> successfully you have to have sufficient privilege to
+send the signal to the Exim processes, so it is normally run as root.
+</p>
+<p>
+Unfortunately, the <i>ps</i> command which <i>exiwhat</i> uses to find Exim processes
+varies in different operating systems. Not only are different options used,
+but the format of the output is different. For this reason, there are some
+system configuration options that configure exactly how <i>exiwhat</i> works. If it
+doesn't seem to be working for you, check the following compile-time options:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>EXIWHAT&#095;PS&#095;CMD     </tt>the command for running <i>ps</i><br>
+<tt>&nbsp;&nbsp;</tt><tt>EXIWHAT&#095;PS&#095;ARG     </tt>the argument for <i>ps</i><br>
+<tt>&nbsp;&nbsp;</tt><tt>EXIWHAT&#095;EGREP&#095;ARG  </tt>the argument for <i>egrep</i> to select from <i>ps</i> output<br>
+<tt>&nbsp;&nbsp;</tt><tt>EXIWHAT&#095;KILL&#095;ARG   </tt>the argument for the <i>kill</i> command<br>
+</p>
+<p>
+An example of typical output from <i>exiwhat</i> is
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>  164 daemon: -q1h, listening on port 25</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>10483 running queue: waiting for 0tAycK-0002ij-00 (10492)</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>10492 delivering 0tAycK-0002ij-00 to mail.ref.example [10.19.42.42]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>  (editor&#064;ref.example)</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>10592 handling incoming call from [192.168.243.242]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>10628 accepting a local non-SMTP message</tt><br>
+</p>
+<p>
+The first number in the output line is the process number. The third line has
+been split here, in order to fit it on the page.
+</p>
+<a name="IX2704"></a>
+<a name="IX2705"></a>
+<h2>
+<a name="SECT46.2" href="spec_toc.html#TOC385">
+46.2. Selective queue listing (exiqgrep)
+</a></h2>
+<p>
+This utility is a Perl script contributed by Matt Hubbard. It runs
+<pre>
+&nbsp;&nbsp;exim -bpu
+</pre>
+</p>
+<p>
+to obtain a queue listing with undelivered recipients only, and then greps the 
+output to select messages that match given criteria. The following selection 
+options are available:
+<hr></p>
+<a name="IX2706"></a>
+<h3>-f &#060;<em>regex</em>&#062;</h3>
+<p>
+Match the sender address. The field that is tested is enclosed in angle 
+brackets, so you can test for bounce messages with 
+<pre>
+&nbsp;&nbsp;exiqgrep -f '^&#060;&#062;$'
+</pre>
+<hr></p>
+<a name="IX2707"></a>
+<h3>-r &#060;<em>regex</em>&#062;</h3>
+<p>
+Match a recipient address. The field that is tested is not enclosed in angle 
+brackets.
+<hr></p>
+<a name="IX2708"></a>
+<h3>-s &#060;<em>regex</em>&#062;</h3>
+<p>
+Match against the size field.
+<hr></p>
+<a name="IX2709"></a>
+<h3>-y &#060;<em>seconds</em>&#062;</h3>
+<p>
+Match messages that are younger than the given time.
+<hr></p>
+<a name="IX2710"></a>
+<h3>-o &#060;<em>seconds</em>&#062;</h3>
+<p>
+Match messages that are older than the given time.
+<hr></p>
+<a name="IX2711"></a>
+<h3>-z</h3>
+<p>
+Match only frozen messages.
+<hr></p>
+<a name="IX2712"></a>
+<h3>-x</h3>
+<p>
+Match only non-frozen messages.
+<hr><br>
+</p>
+<p>
+The following options control the format of the output:
+<hr></p>
+<a name="IX2713"></a>
+<h3>-c</h3>
+<p>
+Display only the count of matching messages.
+<hr></p>
+<a name="IX2714"></a>
+<h3>-l</h3>
+<p>
+Long format &#150; display the full message information as output by Exim. This is
+the default.
+<hr></p>
+<a name="IX2715"></a>
+<h3>-i</h3>
+<p>
+Display message ids only.
+<hr></p>
+<a name="IX2716"></a>
+<h3>-b</h3>
+<p>
+Brief format &#150; one line per message.
+<hr></p>
+<a name="IX2717"></a>
+<h3>-R</h3>
+<p>
+Display messages in reverse order.
+<hr><br>
+</p>
+<p>
+There is one more option, <i>-h</i>, which outputs a list of options.
+</p>
+<a name="IX2718"></a>
+<a name="IX2719"></a>
+<h2>
+<a name="SECT46.3" href="spec_toc.html#TOC386">
+46.3. Summarising the queue (exiqsumm)
+</a></h2>
+<p>
+The <i>exiqsumm</i> utility is a Perl script which reads the output of <i>exim
+-bp</i> and produces a summary of the messages on the queue. Thus, you use it by
+running a command such as
+<pre>
+&nbsp;&nbsp;exim -bp | exiqsumm
+</pre>
+</p>
+<p>
+The output consists of one line for each domain that has messages waiting for
+it, as in the following example:
+<pre>
+&nbsp;&nbsp;  3   2322   74m   66m  msn.com.example
+</pre>
+</p>
+<p>
+Each line lists the number of 
+pending deliveries for a domain, their total volume, and the length of time
+that the oldest and the newest messages have been waiting. Note that the number 
+of pending deliveries is greater than the number of messages when messages 
+have more than one recipient.
+</p>
+<p>
+A summary line is output at the end. By default the output is sorted on the
+domain name, but <i>exiqsumm</i> has the options <i>-a</i> and <i>-c</i>, which cause the
+output to be sorted by oldest message and by count of messages, respectively.
+</p>
+<p>
+The output of <i>exim -bp</i> contains the original addresses in the message, so
+this also applies to the output from <i>exiqsumm</i>. No domains from addresses
+generated by aliasing or forwarding are included (unless the <tt>one&#095;time</tt> option
+of the <b>redirect</b> router has been used to convert them into &#147;top level&#148;
+addresses).
+</p>
+<a name="IX2720"></a>
+<a name="IX2721"></a>
+<h2>
+<a name="SECT46.4" href="spec_toc.html#TOC387">
+46.4. Extracting specific information from the log (exigrep)
+</a></h2>
+<p>
+The <i>exigrep</i> utility is a Perl script that searches one or more main log
+files for entries that match a given pattern. When it finds a match, it
+extracts all the log entries for the relevant message, not just those that
+match the pattern. Thus, <i>exigrep</i> can extract complete log entries for a
+given message, or all mail for a given user, or for a given host, for example.
+</p>
+<p>
+<font color=green>
+If a matching log line is not associated with a specific message, it is always
+included in <i>exigrep</i>'s output.
+</font>
+The usage is:
+<pre>
+&nbsp;&nbsp;exigrep [-l] [-t&#060;n&#062;] &#060;pattern&#062; [&#060;log file&#062;] ...
+</pre>
+</p>
+<p>
+The <i>-t</i> argument specifies a number of seconds. It adds an additional 
+condition for message selection. Messages that are complete are shown only if 
+they spent more than &#060;<em>n</em>&#062; seconds on the queue.
+</p>
+<p>
+The <i>-l</i> flag means &#147;literal&#148;, that is, treat all characters in the
+pattern as standing for themselves. Otherwise the pattern must be a Perl
+regular expression. The pattern match is case-insensitive. If no file names are
+given on the command line, the standard input is read.
+</p>
+<p>
+If the location of a <i>zcat</i> command is known from the definition of
+<font size=-1>ZCAT&#095;COMMAND</font> in <i>Local/Makefile</i>, <i>exigrep</i> automatically passes any
+file whose name ends in <font size=-1>COMPRESS&#095;SUFFIX</font> through <i>zcat</i> as it searches
+it.
+<font color=green></p>
+<a name="IX2722"></a>
+<h2>
+<a name="SECT46.5" href="spec_toc.html#TOC388">
+46.5. Selecting messages by various criteria (exipick)
+</a></h2>
+<p>
+John Jetmore's <i>exipick</i> utility is included in the Exim distribution. It
+lists messages from the queue according to a variety of criteria. For details,
+run:
+<pre>
+&nbsp;&nbsp;exipick --help
+</pre>
+</p>
+<a name="IX2723"></a>
+<a name="IX2724"></a>
+<a name="IX2725"></a>
+</font><h2>
+<a name="SECT46.6" href="spec_toc.html#TOC389">
+46.6. Cycling log files (exicyclog)
+</a></h2>
+<p>
+The <i>exicyclog</i> script can be used to cycle (rotate) <i>mainlog</i> and
+<i>rejectlog</i> files. This is not necessary if only syslog is being used,
+or if you are using log files with datestamps in their names (see section
+<a href="spec_45.html#SECT45.3">45.3</a>).
+Some operating systems have their own standard mechanisms for log cycling, and
+these can be used instead of <i>exicyclog</i> if preferred.
+</p>
+<p>
+Each time <i>exicyclog</i> is run the file names get &#147;shuffled down&#148; by one. If the
+main log file name is <i>mainlog</i> (the default) then when <i>exicyclog</i> is run
+<i>mainlog</i> becomes <i>mainlog.01</i>, the previous <i>mainlog.01</i> becomes
+<i>mainlog.02</i> and so on, up to a limit which is set in the script, and which
+defaults to 10. Reject logs are handled similarly.
+</p>
+<p>
+If no <i>mainlog</i> file exists, the script does nothing. Files that &#147;drop off&#148;
+the end are deleted. All files with numbers greater than 01 are compressed,
+using a compression command which is configured by the <font size=-1>COMPRESS&#095;COMMAND</font>
+setting in <i>Local/Makefile</i>. It is usual to run <i>exicyclog</i> daily from a
+root <tt>crontab</tt> entry of the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>1 0 * * * su exim -c /usr/exim/bin/exicyclog</tt><br>
+</p>
+<p>
+assuming you have used the name &#147;exim&#148; for the Exim user. You can run
+<i>exicyclog</i> as root if you wish, but there is no need.
+</p>
+<a name="IX2726"></a>
+<a name="IX2727"></a>
+<h2>
+<a name="SECT46.7" href="spec_toc.html#TOC390">
+46.7. Mail statistics (eximstats)
+</a></h2>
+<p>
+A Perl script called <i>eximstats</i> is provided for extracting statistical
+information from log files. The output is either plain text, or HTML.
+Exim log files are also suported by the <i>Lire</i> system produced by the 
+LogReport Foundation (<a href="http://www.logreport.org">http://www.logreport.org</a>).
+</p>
+<p>
+The <i>eximstats</i> script has been hacked about quite a bit over time. The
+latest version is the result of some extensive revision by Steve Campbell. A
+lot of information is given by default, but there are options for suppressing
+various parts of it. Following any options, the arguments to the script are a
+list of files, which should be main log files. For example:
+<pre>
+&nbsp;&nbsp;eximstats -nr /var/spool/exim/log/mainlog.01
+</pre>
+</p>
+<p>
+By default, <i>eximstats</i> extracts information about the number and volume of
+messages received from or delivered to various hosts. The information is sorted
+both by message count and by volume, and the top fifty hosts in each category
+are listed on the standard output. Similar information, based on email
+addresses or domains instead of hosts can be requested by means of various
+options. For messages delivered and received locally, similar statistics are
+also produced per user.
+</p>
+<p>
+The output also includes total counts and statistics about delivery errors, and
+histograms showing the number of messages received and deliveries made in each
+hour of the day. A delivery with more than one address in its envelope (for
+example, an SMTP transaction with more than one <font size=-1>RCPT</font> command) is counted
+as a single delivery by <i>eximstats</i>.
+</p>
+<p>
+Though normally more deliveries than receipts are reported (as messages may
+have multiple recipients), it is possible for <i>eximstats</i> to report more
+messages received than delivered, even though the queue is empty at the start
+and end of the period in question. If an incoming message contains no valid
+recipients, no deliveries are recorded for it. A bounce message is handled as
+an entirely separate message.
+</p>
+<p>
+<i>eximstats</i> always outputs a grand total summary giving the volume and number
+of messages received and deliveries made, and the number of hosts involved in
+each case. It also outputs the number of messages that were delayed (that is,
+not completely delivered at the first attempt), and the number that had at
+least one address that failed.
+</p>
+<p>
+The remainder of the output is in sections that can be independently disabled
+or modified by various options. It consists of a summary of deliveries by
+transport, histograms of messages received and delivered per time interval
+(default per hour), information about the time messages spent on the queue,
+a list of relayed messages, lists of the top fifty sending hosts, local
+senders, destination hosts, and destination local users by count and by volume,
+and a list of delivery errors that occurred.
+</p>
+<p>
+The relay information lists messages that were actually relayed, that is, they
+came from a remote host and were directly delivered to some other remote host,
+without being processed (for example, for aliasing or forwarding) locally.
+</p>
+<p>
+The options for <i>eximstats</i> are as follows:
+<a name="IX2728"></a>
+<hr></p>
+<a name="IX2729"></a>
+<h3>-bydomain</h3>
+<p>
+The &#147;league tables&#148; are computed on the basis of the superior domains of the
+sending hosts instead of the sending and receiving hosts. This option may be
+combined with <i>-byhost</i> and/or <i>-byemail</i>.
+<hr></p>
+<a name="IX2730"></a>
+<h3>-byedomain</h3>
+<p>
+This is a synonym for <i>-byemaildomain</i>.
+<hr></p>
+<a name="IX2731"></a>
+<h3>-byemail</h3>
+<p>
+The &#147;league tables&#148; are computed on the basis of complete email addresses,
+instead of sending and receiving hosts. This option may be combined with
+<i>-byhost</i> and/or <i>-bydomain</i>.
+<hr></p>
+<a name="IX2732"></a>
+<h3>-byemaildomain</h3>
+<p>
+The &#147;league tables&#148; are computed on the basis of the sender's email domain 
+instead of the sending and receiving hosts. This option may be combined with
+<i>-byhost</i>, <i>-bydomain</i>, or <i>-byemail</i>.
+<hr></p>
+<a name="IX2733"></a>
+<h3>-byhost</h3>
+<p>
+The &#147;league tables&#148; are computed on the basis of sending and receiving hosts.
+This is the default option. It may be combined with <i>-bydomain</i> and/or
+<i>-byemail</i>.
+<hr></p>
+<a name="IX2734"></a>
+<h3>-cache</h3>
+<p>
+Cache results of <i>timegm()</i> lookups. This results in a significant speedup
+when processing hundreds of thousands of messages, at a cost of increasing the
+memory utilisation.
+<hr></p>
+<a name="IX2735"></a>
+<h3>-chartdir &#060;<em>dir</em>&#062;</h3>
+<p>
+When <i>-charts</i> is specified, create the charts in the directory &#060;<em>dir</em>&#062;.
+<hr></p>
+<a name="IX2736"></a>
+<h3>-chartrel &#060;<em>dir</em>&#062;</h3>
+<p>
+When <i>-charts</i> is specified, this option specifies the relative directory for
+the <tt>img src=</tt> tags from where to include the charts.
+<hr></p>
+<a name="IX2737"></a>
+<h3>-charts</h3>
+<p>
+Create graphical charts to be displayed in HTML output. This requires the
+<tt>GD</tt>, <tt>GDTextUtil</tt>, and <tt>GDGraph</tt> Perl modules, which can be obtained
+from <a href="http://www.cpan.org/modules/01modules.index.html">http://www.cpan.org/modules/01modules.index.html</a>.
+</p>
+<p>
+To install these, download and unpack them, then use the normal Perl
+installation procedure:
+<pre>
+&nbsp;&nbsp;perl Makefile.PL
+&nbsp;&nbsp;make
+&nbsp;&nbsp;make test
+&nbsp;&nbsp;make install
+</pre>
+<hr></p>
+<a name="IX2738"></a>
+<h3>-d</h3>
+<p>
+This is a debug flag. It causes <i>eximstats</i> to output the <i>eval()</i>'d parser
+to the standard output, which makes it easier to trap errors in the eval
+section. Remember to add one to the line numbers to allow for the title.
+<hr></p>
+<a name="IX2739"></a>
+<h3>-help</h3>
+<p>
+Show help information about <i>eximstats</i>' options.
+<hr></p>
+<a name="IX2740"></a>
+<h3>-h &#060;<em>n</em>&#062;</h3>
+<p>
+This option controls the histograms of messages received and deliveries per
+time interval. By default the time interval is one hour. If <i>-h0</i> is given,
+the histograms are suppressed; otherwise the value of &#060;<em>n</em>&#062; gives the number of
+divisions per hour. Valid values are 0, 1, 2, 3, 5, 10, 15, 20, 30 or 60, so
+<i>-h2</i> sets an interval of 30 minutes, and the default is equivalent to <i>-h1</i>.
+<hr></p>
+<a name="IX2741"></a>
+<h3>-html</h3>
+<p>
+Output the results in HTML instead of plain text.
+<hr></p>
+<a name="IX2742"></a>
+<h3>-merge</h3>
+<p>
+This option causes <i>eximstats</i> to merge old reports into a combined report.
+When this option is used, the input files must be outputs from previous calls 
+to <i>eximstats</i>, not raw log files. For example, you could produce a set of
+daily reports and a weekly report by commands such as
+<pre>
+&nbsp;&nbsp;eximstats mainlog.sun &#062; report.sun.txt
+&nbsp;&nbsp;eximstats mainlog.mon &#062; report.mon.txt
+&nbsp;&nbsp;eximstats mainlog.tue &#062; report.tue.txt
+&nbsp;&nbsp;eximstats mainlog.wed &#062; report.wed.txt
+&nbsp;&nbsp;eximstats mainlog.thu &#062; report.thu.txt
+&nbsp;&nbsp;eximstats mainlog.fri &#062; report.fri.txt
+&nbsp;&nbsp;eximstats mainlog.sat &#062; report.sat.txt
+&nbsp;&nbsp;eximstats -merge -html report.*.txt &#062; weekly_report.html
+</pre>
+</p>
+<p>
+You can merge text or html reports and output the results as text or html. You
+can use all the normal <i>eximstats</i> output options, but only data included in
+the original reports can be shown. When merging reports, some loss of accuracy
+may occur in the &#147;league tables&#148;, towards the ends of the lists. The order of
+items in the &#147;league tables&#148; may vary when the data volumes round to the same
+value.
+<hr></p>
+<a name="IX2743"></a>
+<h3>-ne</h3>
+<p>
+Suppress the display of information about failed deliveries (errors).
+<hr></p>
+<a name="IX2744"></a>
+<h3>-nr</h3>
+<p>
+Suppress information about messages relayed through this host.
+<hr></p>
+<a name="IX2745"></a>
+<h3>-nr /pattern/</h3>
+<p>
+Suppress information about relayed messages that match the pattern, which is
+matched against a string of the following form (split over two lines here in
+order to fit it on the page):
+<pre>
+&nbsp;&nbsp;H=&#060;host&#062; [&#060;ip address&#062;] A=&#060;sender address&#062; =&#062;
+&nbsp;&nbsp;  H=&#060;host&#062; A=&#060;recipient address&#062;
+</pre>
+</p>
+<p>
+for example
+<pre>
+&nbsp;&nbsp;H=in.host [1.2.3.4] A=from@some.where.example =&#062;
+&nbsp;&nbsp;  H=out.host A=to@else.where.example
+</pre>
+</p>
+<p>
+The sending host name appears in parentheses if it has not been verified as
+matching the IP address. The mail addresses are taken from the envelope, not
+the headers. This option allows you to screen out hosts whom you are happy to
+have using your host as a relay.
+<hr></p>
+<a name="IX2746"></a>
+<h3>-nt</h3>
+<p>
+Suppress the statistics about delivery by transport.
+<hr></p>
+<a name="IX2747"></a>
+<h3>-nt/&#060;<em>pattern</em>&#062;/</h3>
+<p>
+Suppress the statistics about delivery by any transport whose name matches the 
+pattern. If you are using one transport to send all messages to a scanning 
+mechanism before doing the real delivery, this feature can be used to omit that 
+transport from your normal statistics (on the grounds that it is of no
+interest).
+<hr></p>
+<a name="IX2748"></a>
+<h3>-pattern" "&nbsp;&#060;<em>description</em>&#062;&nbsp;/&#060;<em>pattern</em>&#062;/</h3>
+<p>
+Count lines matching specified patterns and show them in
+the results. For example:
+<pre>
+&nbsp;&nbsp;-pattern 'Refused connections' '/refused connection/'
+</pre>
+</p>
+<p>
+This option can be specified multiple times. 
+<hr></p>
+<a name="IX2749"></a>
+<h3>-q0</h3>
+<p>
+Suppress information about times messages spend on the queue.
+<hr></p>
+<a name="IX2750"></a>
+<h3>-q &#060;<em>n1</em>&#062;...</h3>
+<p>
+This option sets an alternative list of time intervals for the queueing
+information. The values are separated by commas and are in seconds, but can
+involve arithmetic multipliers, so for example you can set 3*60 to specify 3
+minutes. A setting such as
+<pre>
+&nbsp;&nbsp;-q60,5*60,10*60
+</pre>
+</p>
+<p>
+causes <i>eximstats</i> to give counts of messages that stayed on the queue for less
+than one minute, less than five minutes, less than ten minutes, and over ten
+minutes.
+<hr></p>
+<a name="IX2751"></a>
+<h3>-t &#060;<em>n</em>&#062;</h3>
+<p>
+Sets the &#147;top&#148; count to &#060;<em>n</em>&#062;. This controls the listings of the &#147;top &#060;<em>n</em>&#062;&#148;
+hosts and users by count and volume. The default is 50, and setting 0
+suppresses the output altogether.
+<hr></p>
+<a name="IX2752"></a>
+<h3>-tnl</h3>
+<p>
+Omit local information from the &#147;top&#148; listings.
+<hr></p>
+<a name="IX2753"></a>
+<h3>-t&#095;remote&#095;users</h3>
+<p>
+Include remote users in the &#147;top&#148; listings.
+<hr><br>
+</p>
+<a name="IX2754"></a>
+<a name="IX2755"></a>
+<a name="IX2756"></a>
+<h2>
+<a name="SECT46.8" href="spec_toc.html#TOC391">
+46.8. Checking access policy (exim&#095;checkaccess)
+</a></h2>
+<p>
+The <i>-bh</i> command line argument allows you to run a fake SMTP session with
+debugging output, in order to check what Exim is doing when it is applying
+policy controls to incoming SMTP mail. However, not everybody is sufficiently
+familiar with the SMTP protocol to be able to make full use of <i>-bh</i>, and
+sometimes you just want to answer the question <i>Does this address have
+access?</i> without bothering with any further details.
+</p>
+<p>
+The <i>exim&#095;checkaccess</i> utility is a &#147;packaged&#148; version of <i>-bh</i>. It takes
+two arguments, an IP address and an email address:
+<pre>
+&nbsp;&nbsp;exim_checkaccess 10.9.8.7 A.User@a.domain.example
+</pre>
+</p>
+<p>
+The utility runs a call to Exim with the <i>-bh</i> option, to test whether the
+given email address would be accepted in a <font size=-1>RCPT</font> command in a TCP/IP
+connection from the host with the given IP address. The output of the utility
+is either the word &#147;accepted&#148;, or the SMTP error response, for example:
+<pre>
+&nbsp;&nbsp;Rejected:
+&nbsp;&nbsp;  550 Relay not permitted
+</pre>
+</p>
+<p>
+When running this test, the utility uses <tt>&#060;&#062;</tt> as the envelope sender address
+for the <font size=-1>MAIL</font> command, but you can change this by providing additional
+options. These are passed directly to the Exim command. For example, to specify
+that the test is to be run with the sender address <i>himself&#064;there.example</i>
+you can use:
+<pre>
+&nbsp;&nbsp;exim_checkaccess 10.9.8.7 A.User@a.domain.example \
+&nbsp;&nbsp;                 -f himself@there.example
+</pre>
+</p>
+<p>
+Note that these additional Exim command line items must be given after the two
+mandatory arguments.
+</p>
+<p>
+Because the <tt>exim&#095;checkaccess</tt> uses <i>-bh</i>, it does not perform callouts while
+running its checks. You can run checks that include callouts by using <i>-bhc</i>, 
+but this is not yet available in a &#147;packaged&#148; form.
+</p>
+<a name="IX2757"></a>
+<a name="IX2758"></a>
+<a name="IX2759"></a>
+<a name="IX2760"></a>
+<a name="IX2761"></a>
+<h2>
+<a name="SECT46.9" href="spec_toc.html#TOC392">
+46.9. Making DBM files (exim&#095;dbmbuild)
+</a></h2>
+<p>
+The <i>exim&#095;dbmbuild</i> program reads an input file containing keys and data in
+the format used by the <b>lsearch</b> lookup (see section <a href="spec_9.html#SECT9.2">9.2</a>).
+It writes a DBM file using the lower-cased alias names as keys and the
+remainder of the information as data. The lower-casing can be prevented by
+calling the program with the <i>-nolc</i> option.
+</p>
+<p>
+A terminating zero is included as part of the key string. This is expected by
+the <b>dbm</b> lookup type. However, if the option <i>-nozero</i> is given,
+<i>exim&#095;dbmbuild</i> creates files without terminating zeroes in either the key
+strings or the data strings. The <b>dbmnz</b> lookup type can be used with such
+files.
+</p>
+<p>
+<a name="IX2762"></a>
+The program requires two arguments: the name of the input file (which can be a
+single hyphen to indicate the standard input), and the name of the output file.
+It creates the output under a temporary name, and then renames it if all went
+well.
+If the native DB interface is in use (<font size=-1>USE&#095;DB</font> is set in a compile-time
+configuration file &#150; this is common in free versions of Unix) the two file
+names must be different, because in this mode the Berkeley DB functions create
+a single output file using exactly the name given. For example,
+<pre>
+&nbsp;&nbsp;exim_dbmbuild /etc/aliases /etc/aliases.db
+</pre>
+</p>
+<p>
+reads the system alias file and creates a DBM version of it in
+<i>/etc/aliases.db</i>.
+</p>
+<p>
+In systems that use the <i>ndbm</i> routines (mostly proprietary versions of Unix),
+two files are used, with the suffixes <i>.dir</i> and <i>.pag</i>. In this
+environment, the suffixes are added to the second argument of
+<i>exim&#095;dbmbuild</i>, so it can be the same as the first. This is also the case
+when the Berkeley functions are used in compatibility mode (though this is not
+recommended), because in that case it adds a <i>.db</i> suffix to the file name.
+</p>
+<p>
+If a duplicate key is encountered, the program outputs a warning, and when it
+finishes, its return code is 1 rather than zero, unless the <i>-noduperr</i> option
+is used. By default, only the first of a set of duplicates is used &#150; this
+makes it compatible with <b>lsearch</b> lookups. There is an option <i>-lastdup</i>
+which causes it to use the data for the last duplicate instead. There is also
+an option <i>-nowarn</i>, which stops it listing duplicate keys to <tt>stderr</tt>. For
+other errors, where it doesn't actually make a new file, the return code is 2.
+</p>
+<a name="IX2763"></a>
+<a name="IX2764"></a>
+<h2>
+<a name="SECT46.10" href="spec_toc.html#TOC393">
+46.10. Finding individual retry times (exinext)
+</a></h2>
+<p>
+A utility called <i>exinext</i> (mostly a Perl script) provides the ability to fish
+specific information out of the retry database. Given a mail domain (or a
+complete address), it looks up the hosts for that domain, and outputs any retry
+information for the hosts or for the domain. At present, the retry information
+is obtained by running <i>exim&#095;dumpdb</i> (see below) and post-processing the
+output. For example:
+<pre>
+&nbsp;&nbsp;$ exinext piglet@milne.fict.example
+&nbsp;&nbsp;kanga.milne.fict.example:192.168.8.1 error 146: Connection refused
+&nbsp;&nbsp;  first failed: 21-Feb-1996 14:57:34
+&nbsp;&nbsp;  last tried:   21-Feb-1996 14:57:34
+&nbsp;&nbsp;  next try at:  21-Feb-1996 15:02:34
+&nbsp;&nbsp;roo.milne.fict.example:192.168.8.3 error 146: Connection refused
+&nbsp;&nbsp;  first failed: 20-Jan-1996 13:12:08
+&nbsp;&nbsp;  last tried:   21-Feb-1996 11:42:03
+&nbsp;&nbsp;  next try at:  21-Feb-1996 19:42:03
+&nbsp;&nbsp;  past final cutoff time
+</pre>
+</p>
+<p>
+You can also give <i>exinext</i> a local part, without a domain, and it
+will give any retry information for that local part in your default domain.
+A message id can be used to obtain retry information pertaining to a specific
+message. This exists only when an attempt to deliver a message to a remote host
+suffers a message-specific error (see section <a href="spec_43.html#SECT43.2">43.2</a>). <i>exinext</i> is
+not particularly efficient, but then it isn't expected to be run very often.
+</p>
+<p>
+<font color=green>
+The <i>exinext</i> utility calls Exim to find out information such as the location
+of the spool directory. The utility has <i>-C</i> and <i>-D</i> options, which are
+passed on to the <i>exim</i> commands. The first specifies an alternate Exim
+configuration file, and the second sets macros for use within the configuration
+file. These features are mainly to help in testing, but might also be useful in
+environments where more than one configuration file is in use.
+</font>
+</p>
+<a name="IX2765"></a>
+<a name="IX2766"></a>
+<h2>
+<a name="SECT46.11" href="spec_toc.html#TOC394">
+46.11. Hints database maintenance (exim&#095;dumpdb, exim&#095;fixdb, exim&#095;tidydb)
+</a></h2>
+<p>
+Three utility programs are provided for maintaining the DBM files that Exim
+uses to contain its delivery hint information. Each program requires two
+arguments. The first specifies the name of Exim's spool directory, and the
+second is the name of the database it is to operate on. These are as
+follows:
+</p>
+<ul>
+<li><p>
+<i>retry</i>: the database of retry information
+</p>
+</li>
+<li><p>
+<i>wait-</i>&#060;<em>transport name</em>&#062;: databases of information about messages waiting
+for remote hosts
+</p>
+</li>
+<li><p>
+<font color=green>
+<i>callout</i>: the callout cache
+</font>
+</p>
+</li>
+<li><p>
+<i>misc</i>: other hints data 
+</p>
+</li>
+</ul>
+<p>
+<font color=green>
+The <i>misc</i> database is used for
+</p>
+<ol>
+<li TYPE="1"><p>
+Serializing <font size=-1>ETRN</font> runs (when <tt>smtp&#095;etrn&#095;serialize</tt> is set)
+</p>
+</li>
+<li TYPE="1"><p>
+Serializing delivery to a specific host (when <tt>serialize&#095;hosts</tt> is set in an 
+<b>smtp</b> transport)
+</p>
+</li>
+</ol>
+</font><a name="IX2767"></a>
+<p>
+The entire contents of a database are written to the standard output by the
+<i>exim&#095;dumpdb</i> program, which has no options or arguments other than the
+spool and database names. For example, to dump the retry database:
+<pre>
+&nbsp;&nbsp;exim_dumpdb /var/spool/exim retry
+</pre>
+</p>
+<p>
+Two lines of output are produced for each entry:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>  T:mail.ref.example:192.168.242.242 146 77 Connection refused</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>31-Oct-1995 12:00:12  02-Nov-1995 12:21:39  02-Nov-1995 20:21:39 *</tt><br>
+</p>
+<p>
+The first item on the first line is the key of the record. It starts with one
+of the letters R, or T, depending on whether it refers to a routing or
+transport retry. For a local delivery, the next part is the local address; for
+a remote delivery it is the name of the remote host, followed by its failing IP
+address (unless <tt>no&#095;retry&#095;include&#095;ip&#095;address</tt> is set on the <b>smtp</b>
+transport). 
+<font color=green>
+If the remote port is not the standard one (port 25), it is added to the IP 
+address.
+</font>
+Then there follows an error code, an additional error code, and a
+textual description of the error.
+</p>
+<p>
+The three times on the second line are the time of first failure, the time of
+the last delivery attempt, and the computed time for the next attempt. The line
+ends with an asterisk if the cutoff time for the last retry rule has been
+exceeded.
+</p>
+<p>
+Each output line from <i>exim&#095;dumpdb</i> for the <i>wait-</i><em>xxx</em> databases
+consists of a host name followed by a list of ids for messages that are or were
+waiting to be delivered to that host. If there are a very large number for any
+one host, continuation records, with a sequence number added to the host name,
+may be seen. The data in these records is often out of date, because a message
+may be routed to several alternative hosts, and Exim makes no effort to keep
+cross-references.
+<a name="IX2768"></a>
+</p>
+<p>
+The <i>exim&#095;tidydb</i> utility program is used to tidy up the contents of the
+hints databases. If run with no options, it removes all records from a database
+that are more than 30 days old. The cutoff date can be altered by means of the
+<i>-t</i> option, which must be followed by a time. For example, to remove all
+records older than a week from the retry database:
+<pre>
+&nbsp;&nbsp;exim_tidydb -t 7d /var/spool/exim retry
+</pre>
+</p>
+<p>
+Both the <i>wait-</i><em>xxx</em> and <i>retry</i> databases contain items that involve
+message ids. In the former these appear as data in records keyed by host &#150;
+they were messages that were waiting for that host &#150; and in the latter they
+are the keys for retry information for messages that have suffered certain
+types of error. When <i>exim&#095;tidydb</i> is run, a check is made to ensure that
+message ids in database records are those of messages that are still on the
+queue. Message ids for messages that no longer exist are removed from
+<i>wait-</i><em>xxx</em> records, and if this leaves any records empty, they are
+deleted. For the <i>retry</i> database, records whose keys are non-existent message
+ids are removed. The <i>exim&#095;tidydb</i> utility outputs comments on the standard
+output whenever it removes information from the database.
+</p>
+<p>
+Removing records from a DBM file does not normally make the file smaller, but
+all the common DBM libraries are able to re-use the space that is released.
+It is therefore suggested that <i>exim&#095;tidydb</i> be run periodically on all the
+hints databases, but at a quiet time of day, because it requires a database to
+be locked (and therefore inaccessible to Exim) while it does its work.
+<a name="IX2769"></a>
+</p>
+<p>
+The <i>exim&#095;fixdb</i> program is a utility for interactively modifying databases.
+Its main use is for testing Exim, but it might also be occasionally useful for
+getting round problems in a live system. It has no options, and its interface
+is somewhat crude. On entry, it prompts for input with a right angle-bracket. A
+key of a database record can then be entered, and the data for that record is
+displayed.
+</p>
+<p>
+If &#147;d&#148; is typed at the next prompt, the entire record is deleted. For all
+except the <i>retry</i> database, that is the only operation that can be carried
+out. For the <i>retry</i> database, each field is output preceded by a number, and
+data for individual fields can be changed by typing the field number followed
+by new data, for example:
+<pre>
+&nbsp;&nbsp;&#062; 4 951102:1000
+</pre>
+</p>
+<p>
+resets the time of the next delivery attempt. Time values are given as a
+sequence of digit pairs for year, month, day, hour, and minute. Colons can be
+used as optional separators.
+</p>
+<a name="IX2770"></a>
+<a name="IX2771"></a>
+<a name="IX2772"></a>
+<h2>
+<a name="SECT46.12" href="spec_toc.html#TOC395">
+46.12. Mailbox maintenance (exim&#095;lock)
+</a></h2>
+<p>
+The <i>exim&#095;lock</i> utility locks a mailbox file using the same algorithm as
+Exim. For a discussion of locking issues, see section <a href="spec_26.html#SECT26.3">26.3</a>.
+<i>Exim&#095;lock</i> can be used to prevent any modification of a mailbox by Exim or
+a user agent while investigating a problem. The utility requires the name of
+the file as its first argument. If the locking is successful, the second
+argument is run as a command (using C's <i>system()</i> function); if there is no
+second argument, the value of the SHELL environment variable is used; if this
+is unset or empty, <i>/bin/sh</i> is run. When the command finishes, the mailbox
+is unlocked and the utility ends. The following options are available:
+<hr></p>
+<a name="IX2773"></a>
+<h3>-fcntl</h3>
+<p>
+Use <i>fcntl()</i> locking on the open mailbox.
+<hr></p>
+<a name="IX2774"></a>
+<h3>-flock</h3>
+<p>
+Use <i>flock()</i> locking on the open mailbox, provided the operating system 
+supports it.
+<hr></p>
+<a name="IX2775"></a>
+<h3>-interval</h3>
+<p>
+This must be followed by a number, which is a number of seconds; it sets the
+interval to sleep between retries (default 3).
+<hr></p>
+<a name="IX2776"></a>
+<h3>-lockfile</h3>
+<p>
+Create a lock file before opening the mailbox.
+<hr></p>
+<a name="IX2777"></a>
+<h3>-mbx</h3>
+<p>
+Lock the mailbox using MBX rules.
+<hr></p>
+<a name="IX2778"></a>
+<h3>-q</h3>
+<p>
+Suppress verification output.
+<hr></p>
+<a name="IX2779"></a>
+<h3>-retries</h3>
+<p>
+This must be followed by a number; it sets the number of times to try to get
+the lock (default 10).
+<hr></p>
+<a name="IX2780"></a>
+<h3>-restore&#095;time</h3>
+<p>
+This option causes <tt>exim&#095;lock</tt> to restore the modified and read times to the
+locked file before exiting. This allows you to access a locked mailbox (for
+example, to take a backup copy) without disturbing the times that the user
+subsequently sees.
+<hr></p>
+<a name="IX2781"></a>
+<h3>-timeout</h3>
+<p>
+This must be followed by a number, which is a number of seconds; it sets a
+timeout to be used with a blocking <i>fcntl()</i> lock. If it is not set (the
+default), a non-blocking call is used.
+<hr></p>
+<a name="IX2782"></a>
+<h3>-v</h3>
+<p>
+Generate verbose output.
+<hr><br>
+</p>
+<p>
+If none of <i>-fcntl</i>, 
+<i>-flock</i>,
+<i>-lockfile</i> or <i>-mbx</i> are given, the default is to create a lock file and
+also to use <i>fcntl()</i> locking on the mailbox, which is the same as Exim's
+default. The use of 
+<i>-flock</i> 
+or <i>-fcntl</i> requires that the file be writeable; the use of
+<i>-lockfile</i> requires that the directory containing the file be writeable.
+Locking by lock file does not last for ever; Exim assumes that a lock file is
+expired if it is more than 30 minutes old.
+</p>
+<p>
+The <i>-mbx</i> option can be used with either or both of <i>-fcntl</i> or <i>-flock</i>. 
+It assumes <i>-fcntl</i> by default.
+MBX locking causes a shared lock to be taken out on the open mailbox, and an
+exclusive lock on the file <i>/tmp/.<em>n</em>.<em>m</em></i> where <em>n</em> and <em>m</em> are
+the device number and inode number of the mailbox file. When the locking is
+released, if an exclusive lock can be obtained for the mailbox, the file in
+<i>/tmp</i> is deleted.
+</p>
+<p>
+The default output contains verification of the locking that takes place. The
+<i>-v</i> option causes some additional information to be given. The <i>-q</i> option
+suppresses all output except error messages.
+</p>
+<p>
+A command such as
+<pre>
+&nbsp;&nbsp;exim_lock /var/spool/mail/spqr
+</pre>
+</p>
+<p>
+runs an interactive shell while the file is locked, whereas
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>exim&#095;lock -q /var/spool/mail/spqr &#060;&#060;End</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>&#060;<em>some commands</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>End</tt><br>
+</p>
+<p>
+runs a specific non-interactive sequence of commands while the file is locked,
+suppressing all verification output. A single command can be run by a command
+such as
+<pre>
+&nbsp;&nbsp;exim_lock -q /var/spool/mail/spqr \
+&nbsp;&nbsp;  "cp /var/spool/mail/spqr /some/where"
+</pre>
+</p>
+<p>
+Note that if a command is supplied, it must be entirely contained within the
+second argument &#150; hence the quotes.
+<hr>
+</p>
+<font size=2>
+<a href="spec_45.html">Previous</a>&nbsp;&nbsp;<a href="spec_47.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

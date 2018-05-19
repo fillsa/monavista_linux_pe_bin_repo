@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 19</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_18.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_20.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX1676"></a>
+<a name="IX1677"></a>
+<h1>
+<a name="CHAP19" href="spec_toc.html#TOC170">
+19. The iplookup router
+</a></h1>
+<p>
+The <b>iplookup</b> router was written to fulfil a specific requirement in
+Cambridge University. For this reason, it is not included in the binary of Exim
+by default. If you want to include it, you must set
+<pre>
+&nbsp;&nbsp;ROUTER_IPLOOKUP=yes
+</pre>
+</p>
+<p>
+in your <i>Local/Makefile</i> configuration file.
+</p>
+<p>
+The <b>iplookup</b> router routes an address by sending it over a TCP or UDP
+connection to one or more specific hosts. The host can then return the same or
+a different address &#150; in effect rewriting the recipient address in the
+message's envelope. The new address is then passed on to subsequent routers.
+</p>
+<p>
+If this process fails, the address can be passed on to
+other routers, or delivery can be deferred.
+</p>
+<p>
+Background, for those that are interested: We have an Oracle database of all
+Cambridge users, and one of the items of data it maintains for each user is
+where to send mail addressed to <i>user&#064;cam.ac.uk</i>. The MX records for
+<i>cam.ac.uk</i> point to a central machine that has a large alias list that is
+abstracted from the database. Mail from outside is switched by this system, and
+originally internal mail was also done this way. However, this resulted in a
+fair number of messages travelling from some of our larger systems to the
+switch and back again. The Oracle machine now runs a UDP service that can be
+called by the <b>iplookup</b> router in Exim to find out where <i>user&#064;cam.ac.uk</i>
+addresses really have to go; this saves passing through the central switch, and
+in many cases saves doing any remote delivery at all.
+</p>
+<p>
+Since <b>iplookup</b> is just a rewriting router, a transport must not be
+specified for it.
+<a name="IX1678"></a>
+<hr></p>
+<a name="IX1679"></a>
+<h3>hosts</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option must be supplied. Its value is a colon-separated list of host
+names. The hosts are looked up using <i>gethostbyname()</i> 
+(or <i>getipnodebyname()</i> when available)
+and are tried in order until one responds to the query. If none respond, what
+happens is controlled by <tt>optional</tt>.
+<hr></p>
+<a name="IX1680"></a>
+<h3>optional</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If <tt>optional</tt> is true, if no response is obtained from any host, the address is
+passed to the next router, overriding <tt>no&#095;more</tt>. If <tt>optional</tt> is false,
+delivery to the address is deferred.
+<hr></p>
+<a name="IX1681"></a>
+<a name="IX1682"></a>
+<h3>port</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 0<br>
+<p>
+This option must be supplied. It specifies the port number for the TCP or UDP
+call.
+<hr></p>
+<a name="IX1683"></a>
+<h3>protocol</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; udp<br>
+<p>
+This option can be set to &#147;udp&#148; or &#147;tcp&#148; to specify which of the two protocols
+is to be used.
+<hr></p>
+<a name="IX1684"></a>
+<h3>query</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; <tt>&#036;local&#095;part&#064;&#036;domain &#036;local&#095;part&#064;&#036;domain</tt><br>
+<p>
+This defines the content of the query that is sent to the remote hosts. The
+repetition serves as a way of checking that a response is to the correct query
+in the default case (see <tt>response&#095;pattern</tt> below).
+<hr></p>
+<a name="IX1685"></a>
+<h3>reroute</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If this option is not set, the rerouted address is precisely the byte string
+returned by the remote host, up to the first white space, if any. If set, the
+string is expanded to form the rerouted address. It can include parts matched
+in the response by <tt>response&#095;pattern</tt> by means of numeric variables such as
+<tt>$1</tt>, <tt>$2</tt>, etc. The variable <tt>$0</tt> refers to the entire input string,
+whether or not a pattern is in use. In all cases, the rerouted address must end
+up in the form <i>local&#095;part&#064;domain</i>.
+<hr></p>
+<a name="IX1686"></a>
+<h3>response_pattern</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option can be set to a regular expression that is applied to the string
+returned from the remote host. If the pattern does not match the response, the
+router declines. If <tt>response&#095;pattern</tt> is not set, no checking of the response
+is done, unless the query was defaulted, in which case there is a check that
+the text returned after the first white space is the original address. This
+checks that the answer that has been received is in response to the correct
+question. For example, if the response is just a new domain, the following
+could be used:
+<pre>
+&nbsp;&nbsp;response_pattern = ^([^@]+)$
+&nbsp;&nbsp;reroute = $local_part@$1
+</pre>
+<hr></p>
+<a name="IX1687"></a>
+<h3>timeout</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 5s<br>
+<p>
+This specifies the amount of time to wait for a response from the remote
+machine. The same timeout is used for the <i>connect()</i> function for a TCP
+call. It does not apply to UDP.
+<hr><br>
+<hr>
+</p>
+<font size=2>
+<a href="spec_18.html">Previous</a>&nbsp;&nbsp;<a href="spec_20.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

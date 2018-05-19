@@ -1,0 +1,97 @@
+\hypertarget{dhaes_8h}{
+\section{dhaes.h File Reference}
+\label{dhaes_8h}\index{dhaes.h@{dhaes.h}}
+}
+DHAES encryption scheme. 
+
+{\tt \#include \char`\"{}beecrypt.h\char`\"{}}\par
+{\tt \#include \char`\"{}dldp.h\char`\"{}}\par
+\subsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \hyperlink{structdhaes__pParameters}{dhaes\_\-p\-Parameters}
+\item 
+struct \hyperlink{structdhaes__pContext}{dhaes\_\-p\-Context}
+\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{dhaes_8h_a0}{dhaes\_\-p\-Usable} (const \hyperlink{structdhaes__pParameters}{dhaes\_\-p\-Parameters} $\ast$)
+\item 
+int \hyperlink{dhaes_8h_a1}{dhaes\_\-p\-Context\-Init} (\hyperlink{structdhaes__pContext}{dhaes\_\-p\-Context} $\ast$, const \hyperlink{structdhaes__pParameters}{dhaes\_\-p\-Parameters} $\ast$)
+\item 
+int \hyperlink{dhaes_8h_a2}{dhaes\_\-p\-Context\-Init\-Decrypt} (\hyperlink{structdhaes__pContext}{dhaes\_\-p\-Context} $\ast$, const \hyperlink{structdhaes__pParameters}{dhaes\_\-p\-Parameters} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+int \hyperlink{dhaes_8h_a3}{dhaes\_\-p\-Context\-Init\-Encrypt} (\hyperlink{structdhaes__pContext}{dhaes\_\-p\-Context} $\ast$, const \hyperlink{structdhaes__pParameters}{dhaes\_\-p\-Parameters} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)
+\item 
+int \hyperlink{dhaes_8h_a4}{dhaes\_\-p\-Context\-Free} (\hyperlink{structdhaes__pContext}{dhaes\_\-p\-Context} $\ast$)
+\item 
+\hyperlink{structmemchunk}{memchunk} $\ast$ \hyperlink{dhaes_8h_a5}{dhaes\_\-p\-Context\-Encrypt} (\hyperlink{structdhaes__pContext}{dhaes\_\-p\-Context} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmemchunk}{memchunk} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$)
+\item 
+\hyperlink{structmemchunk}{memchunk} $\ast$ \hyperlink{dhaes_8h_a6}{dhaes\_\-p\-Context\-Decrypt} (\hyperlink{structdhaes__pContext}{dhaes\_\-p\-Context} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmemchunk}{memchunk} $\ast$)
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+DHAES encryption scheme. 
+
+This code implements the encryption scheme from the paper:
+
+\char`\"{}DHAES: An Encryption Scheme Based on the Diffie-Hellman Problem\char`\"{} Michel Abdalla, Mihir Bellare, Phillip Rogaway September 1998
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{dhaes_8h-source}{dhaes.h}.
+
+\subsection{Function Documentation}
+\hypertarget{dhaes_8h_a6}{
+\index{dhaes.h@{dhaes.h}!dhaes_pContextDecrypt@{dhaes\_\-pContextDecrypt}}
+\index{dhaes_pContextDecrypt@{dhaes\_\-pContextDecrypt}!dhaes.h@{dhaes.h}}
+\subsubsection[dhaes\_\-pContextDecrypt]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structmemchunk}{memchunk}$\ast$ dhaes\_\-p\-Context\-Decrypt (\hyperlink{structdhaes__pContext}{dhaes\_\-p\-Context} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmemchunk}{memchunk} $\ast$)}}
+\label{dhaes_8h_a6}
+
+
+\hypertarget{dhaes_8h_a5}{
+\index{dhaes.h@{dhaes.h}!dhaes_pContextEncrypt@{dhaes\_\-pContextEncrypt}}
+\index{dhaes_pContextEncrypt@{dhaes\_\-pContextEncrypt}!dhaes.h@{dhaes.h}}
+\subsubsection[dhaes\_\-pContextEncrypt]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structmemchunk}{memchunk}$\ast$ dhaes\_\-p\-Context\-Encrypt (\hyperlink{structdhaes__pContext}{dhaes\_\-p\-Context} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmemchunk}{memchunk} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$)}}
+\label{dhaes_8h_a5}
+
+
+\hypertarget{dhaes_8h_a4}{
+\index{dhaes.h@{dhaes.h}!dhaes_pContextFree@{dhaes\_\-pContextFree}}
+\index{dhaes_pContextFree@{dhaes\_\-pContextFree}!dhaes.h@{dhaes.h}}
+\subsubsection[dhaes\_\-pContextFree]{\setlength{\rightskip}{0pt plus 5cm}int dhaes\_\-p\-Context\-Free (\hyperlink{structdhaes__pContext}{dhaes\_\-p\-Context} $\ast$)}}
+\label{dhaes_8h_a4}
+
+
+\hypertarget{dhaes_8h_a1}{
+\index{dhaes.h@{dhaes.h}!dhaes_pContextInit@{dhaes\_\-pContextInit}}
+\index{dhaes_pContextInit@{dhaes\_\-pContextInit}!dhaes.h@{dhaes.h}}
+\subsubsection[dhaes\_\-pContextInit]{\setlength{\rightskip}{0pt plus 5cm}int dhaes\_\-p\-Context\-Init (\hyperlink{structdhaes__pContext}{dhaes\_\-p\-Context} $\ast$, const \hyperlink{structdhaes__pParameters}{dhaes\_\-p\-Parameters} $\ast$)}}
+\label{dhaes_8h_a1}
+
+
+\hypertarget{dhaes_8h_a2}{
+\index{dhaes.h@{dhaes.h}!dhaes_pContextInitDecrypt@{dhaes\_\-pContextInitDecrypt}}
+\index{dhaes_pContextInitDecrypt@{dhaes\_\-pContextInitDecrypt}!dhaes.h@{dhaes.h}}
+\subsubsection[dhaes\_\-pContextInitDecrypt]{\setlength{\rightskip}{0pt plus 5cm}int dhaes\_\-p\-Context\-Init\-Decrypt (\hyperlink{structdhaes__pContext}{dhaes\_\-p\-Context} $\ast$, const \hyperlink{structdhaes__pParameters}{dhaes\_\-p\-Parameters} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{dhaes_8h_a2}
+
+
+\hypertarget{dhaes_8h_a3}{
+\index{dhaes.h@{dhaes.h}!dhaes_pContextInitEncrypt@{dhaes\_\-pContextInitEncrypt}}
+\index{dhaes_pContextInitEncrypt@{dhaes\_\-pContextInitEncrypt}!dhaes.h@{dhaes.h}}
+\subsubsection[dhaes\_\-pContextInitEncrypt]{\setlength{\rightskip}{0pt plus 5cm}int dhaes\_\-p\-Context\-Init\-Encrypt (\hyperlink{structdhaes__pContext}{dhaes\_\-p\-Context} $\ast$, const \hyperlink{structdhaes__pParameters}{dhaes\_\-p\-Parameters} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$)}}
+\label{dhaes_8h_a3}
+
+
+\hypertarget{dhaes_8h_a0}{
+\index{dhaes.h@{dhaes.h}!dhaes_pUsable@{dhaes\_\-pUsable}}
+\index{dhaes_pUsable@{dhaes\_\-pUsable}!dhaes.h@{dhaes.h}}
+\subsubsection[dhaes\_\-pUsable]{\setlength{\rightskip}{0pt plus 5cm}int dhaes\_\-p\-Usable (const \hyperlink{structdhaes__pParameters}{dhaes\_\-p\-Parameters} $\ast$)}}
+\label{dhaes_8h_a0}
+
+

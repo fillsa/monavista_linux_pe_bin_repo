@@ -1,0 +1,49 @@
+Linux Wind River VxWorks (R) Virtual Machine Readme
+
+The accompanying GNU gzipped tar archive contains the following components:
+   o  source code for an introductory level Linux-based simulator
+      for a Wind River VxWorks (R) environment.
+   o  source code for a VxWorks (R) application which functions as a validation
+      test for the above
+   o  source code for a VxWorks (R) demo program for the simulator
+   o  makefiles for the validation test (Makefile) and the demo (Makedemo)
+   o  executables for the validation test (validate) and the demo (demo)
+      for an intel-based PC Linux platform
+
+NOTE: VxWorks is a registered trademark of Wind River Systems, Inc.
+
+This package is best if accompanied by an associated white paper,
+also available from MontaVista Software.
+
+The package was developed on an 'out of the box' RedHat 6.2 Linux system,
+and the Makefile paths, etc. reflect that environment.  For an actual
+embedded Linux target, you will be better advised to start with a functioning
+Hard Hat Linux cross-development environment from MontaVista Software.
+MontaVista also has several kernel patches, etc. to improve the performance
+of the VxWorks Virtual Machine and other embedded Linux applications.
+
+The command 'tar tvzf v2linux.tgz' will produce a listing of the contents
+without actually extracting them.  'tar xzf v2linux.tgz' will create a
+'v2pthreads' subdirectory in the current working directory and will extract all
+archived files into the 'v2pthreads' subdirectory.
+
+To install the package, select a directory and copy the tar file into it.
+The archive will be extracted into a subdirectory called 'v2pthreads'.
+In case you are unfamiliar with Linux and the GNU tar utility, the command is:
+tar -xzf v2linux.tgz
+
+To run either of the executables you must be logged in as 'root'.  From
+the v2pthreads directory, type either 'demo' or 'validate'.  Both
+programs may be terminated by entering 'q' followed by the <Enter> key.
+It may be helpful to redirect the programs' output to a file for later
+examination.
+
+The supplied makefiles may be used as examples for creating executables from
+your own VxWorks (R) source code.  Note the compiler flags used.  These specify
+linking with the pthreads library and the use of thread-safe REENTRANT
+versions of C library functions where those are available. 
+
+Note that this code is still largely experimental and is supplied on an
+'as-is' basis with no guarantee of suitability or functionality for any
+specific purpose or application.  With that in mind, please feel free to
+experiment!

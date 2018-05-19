@@ -1,0 +1,72 @@
+The MontaVista Linux password and group files attempt to conform to the 
+LSB, FHS requirements and informal Linux standards.
+
+Before modifying the passwd and group files, you should not arbitrarily 
+remove entries unless you are sure they will no longer be used.  Also 
+changing the ID number of an entry is forbidden.  Reusing previously 
+registered IDs should be avoided as well.
+
+The LSB (LSB-Core-generic 3.0rc3) section 21.2 requires the following user 
+and group names to exist on the system.  It does not specify an 
+associated number, except that root shall equal 0.  However, User IDs 0 
+to 99 should be statically allocated by the system, while 100 to 499 are 
+reserved for dynamic allocation by applications.
+
+  Table 21-1. Required User & Group Names
+  _User_  _Group_ _Comments_
+  root	  root    Administrative user with all appropriate privileges
+  bin     bin     Legacy User ID/Group ID[a]
+  daemon  daemon  Legacy User ID/Group ID[b]
+
+  a. The bin User ID/Group ID is included for compatibility with legacy 
+  applications. New applications should no longer use the bin User 
+  ID/Group ID.
+
+  b. The daemon User ID/Group ID was used as an unprivileged User ID/Group 
+  ID for daemons to execute under in order to limit their access to the 
+  system. Generally daemons should now run under individual User ID/Group 
+  IDs in order to further partition daemons from one another.
+
+  Table 21-2. Optional User & Group Names
+  _User_   _Group_  _Comments_
+  adm      adm      Administrative special privileges
+  lp       lp       Printer special privileges
+  sync     sync     Login to sync the system
+  shutdown shutdown Login to shutdown the system
+  halt     halt     Login to halt the system
+  mail     mail     Mail special privileges
+  news     news     News special privileges
+  uucp     uucp     UUCP special privileges
+  operator root     Operator special privileges
+  man      man      Man special privileges
+  nobody   nobody   Used by NFS
+
+In addition to the above required items, the following additional user and 
+group names have been added:
+
+  _User_  _Group_ _Comments_
+  games   games   Games subsystem owner
+  www     www     WWW data files owner (for use by web server)
+  sshd    sshd    sshd for privledge seperation
+  proxy   proxy   Proxy servers, such as squid
+  backup  backup  For backup applications
+
+The following groups also exist:
+  _Group_ _Comments_
+  tty      All tty devices must belong to the tty group
+  disk     All block storage devices should belong to the disk group
+  kmem     Legacy support to access kernel memory
+  utmp     Group to allow access to utmp/wtmp files
+  shadow   Group to allow access to /etc/shadow and /etc/gshadow
+  sudo     Group to allow sudo privleges
+  operator Operator group
+  src      Group to control /usr/src code
+  staff    Staff Group
+  users    Generic Users Group
+  nogroup  Generic way to specify no group assigned
+
+The following items are edition specific until they can be dynamically 
+added at install time:
+
+  _User_  _Group_  _Edition_  _Comment_
+  ais     ais      CGE        OpenAIS requires an "ais" user/group

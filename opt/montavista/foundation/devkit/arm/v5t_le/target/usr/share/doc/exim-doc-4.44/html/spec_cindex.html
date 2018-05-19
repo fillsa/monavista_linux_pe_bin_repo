@@ -1,0 +1,1961 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification Concepts</title>
+<base target="body">
+</head>
+<body bgcolor="#FFFFDF" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h3>Concepts</h3>
+<p>
+&nbsp;<a href="#A" target="index">A</a>
+&nbsp;<a href="#B" target="index">B</a>
+&nbsp;<a href="#C" target="index">C</a>
+&nbsp;<a href="#D" target="index">D</a>
+&nbsp;<a href="#E" target="index">E</a>
+&nbsp;<a href="#F" target="index">F</a>
+&nbsp;<a href="#G" target="index">G</a>
+&nbsp;<a href="#H" target="index">H</a>
+&nbsp;<a href="#I" target="index">I</a>
+&nbsp;<a href="#J" target="index">J</a>
+&nbsp;<a href="#K" target="index">K</a>
+&nbsp;<a href="#L" target="index">L</a>
+&nbsp;<a href="#M" target="index">M</a>
+&nbsp;<a href="#N" target="index">N</a>
+&nbsp;<a href="#O" target="index">O</a>
+&nbsp;<a href="#P" target="index">P</a>
+&nbsp;<a href="#Q" target="index">Q</a>
+&nbsp;<a href="#R" target="index">R</a>
+&nbsp;<a href="#S" target="index">S</a>
+&nbsp;<a href="#T" target="index">T</a>
+&nbsp;<a href="#U" target="index">U</a>
+&nbsp;<a href="#V" target="index">V</a>
+&nbsp;<a href="#W" target="index">W</a>
+&nbsp;<a href="#X" target="index">X</a>
+&nbsp;<a href="#Z" target="index">Z</a>
+&nbsp;<a href="#“" target="index">“</a>
+<hr></p>
+<p>
+<a href="spec_14.html#IX1139"></a><br>
+&#036;1,&nbsp;&#036;2,&nbsp;etc.&nbsp;<em>see&nbsp;numerical&nbsp;variables</em><br>
+<a href="spec_11.html#IX812"><tt>$bheader&#095;</tt></a><br>
+<a href="spec_11.html#IX811"><tt>$header&#095;</tt></a><br>
+<a href="spec_24.html#IX1905"><tt>$host</tt></a> &nbsp;<a href="spec_30.html#IX2129">[2]</a><br>
+<a href="spec_24.html#IX1906"><tt>$host&#095;address</tt></a> &nbsp;<a href="spec_30.html#IX2130">[2]</a><br>
+<a href="spec_11.html#IX813"><tt>$rheader&#095;</tt></a><br>
+<a href="spec_11.html#IX825"><tt>$value</tt></a> &nbsp;<a href="spec_11.html#IX1002">[2]</a> &nbsp;<a href="spec_20.html#IX1702">[3]</a><br>
+<a href="spec_9.html#IX676">&#042;&#064;&nbsp;with&nbsp;single-key&nbsp;lookup</a> &nbsp;<a href="spec_10.html#IX788">[2]</a><br>
+<a href="spec_10.html#IX794"><tt>+caseful</tt></a> &nbsp;<a href="spec_11.html#IX934">[2]</a><br>
+<a href="spec_38.html#IX2433"><tt>+defer&#095;unknown</tt></a><br>
+<a href="spec_38.html#IX2432"><tt>+exclude&#095;unknown</tt></a><br>
+<a href="spec_10.html#IX771"><tt>+ignore&#095;unknown</tt></a><br>
+<a href="spec_10.html#IX770"><tt>+include&#095;unknown</tt></a> &nbsp;<a href="spec_38.html#IX2431">[2]</a><br>
+<a href="spec_11.html#IX803"><i>-be</i>&nbsp;option</a> &nbsp;<a href="spec_48.html#IX2809">[2]</a><br>
+<a href="spec_48.html#IX2811"><i>-bF</i>&nbsp;option</a><br>
+<a href="spec_48.html#IX2810"><i>-bf</i>&nbsp;option</a><br>
+<a href="spec_38.html#IX2379"><i>-bh</i>&nbsp;option</a> &nbsp;<a href="spec_48.html#IX2813">[2]</a><br>
+<a href="spec_14.html#IX1065"><i>-bi</i>&nbsp;option</a><br>
+<a href="spec_14.html#IX1291"><i>-bp</i>&nbsp;option</a><br>
+<a href="spec_15.html#IX1525"><i>-bt</i>&nbsp;option</a><br>
+<a href="spec_15.html#IX1641"><i>-bv</i>&nbsp;option</a> &nbsp;<a href="spec_48.html#IX2812">[2]</a><br>
+<a href="spec_48.html#IX2807"><i>-C</i>&nbsp;option</a><br>
+<a href="spec_48.html#IX2808"><i>-D</i>&nbsp;option</a><br>
+<a href="spec_48.html#IX2824"><i>-f</i>&nbsp;option</a><br>
+<a href="spec_5.html#IX307"><i>-f</i>&nbsp;option:for&nbsp;address&nbsp;testing</a><br>
+<a href="spec_5.html#IX243"><i>-f</i>&nbsp;option:for&nbsp;filter&nbsp;testing</a><br>
+<a href="spec_5.html#IX265"><i>-f</i>&nbsp;option:overriding&nbsp;&#147;From&#148;&nbsp;line</a><br>
+<a href="spec_14.html#IX1279"><i>-M</i>&nbsp;option</a> &nbsp;<a href="spec_48.html#IX2825">[2]</a><br>
+<a href="spec_14.html#IX1419"><i>-os</i>&nbsp;option</a><br>
+<a href="spec_14.html#IX1281"><i>-q</i>&nbsp;option</a> &nbsp;<a href="spec_48.html#IX2826">[2]</a><br>
+<a href="spec_14.html#IX1280"><i>-R</i>&nbsp;option</a><br>
+<a href="spec_14.html#IX1141"><i>-t</i>&nbsp;option</a><br>
+<a href="spec_6.html#IX559">.ifdef</a><br>
+<a href="spec_6.html#IX554">.include&nbsp;in&nbsp;configuration&nbsp;file</a><br>
+<a href="spec_6.html#IX555">.include&#095;if&#095;exists&nbsp;in&nbsp;configuration&nbsp;file</a><br>
+<a href="spec_22.html#IX1738"><i>/dev/null</i></a><br>
+<a href="spec_4.html#IX180"><i>/etc/aliases</i></a><br>
+<a href="spec_4.html#IX194"><i>/etc/mail/mailer.conf</i></a><br>
+<a href="spec_9.html#IX633"><i>/etc/userdbshadow.dat</i></a><br>
+<a href="spec_5.html#IX219">8-bit&nbsp;characters</a> &nbsp;<a href="spec_14.html#IX1019">[2]</a> &nbsp;<a href="spec_14.html#IX1273">[3]</a><br>
+<a href="spec_14.html#IX1018"><font size=-1>8BITMIME</font></a><br>
+<a href="spec_7.html#IX594">&#064;&nbsp;in&nbsp;a&nbsp;domain&nbsp;list</a> &nbsp;<a href="spec_10.html#IX731">[2]</a><br>
+<a href="spec_10.html#IX755">&#064;&nbsp;in&nbsp;a&nbsp;host&nbsp;list</a><br>
+<a href="spec_10.html#IX781">&#064;&#064;&nbsp;with&nbsp;single-key&nbsp;lookup</a><br>
+<a href="spec_10.html#IX732">&#064;[]&nbsp;in&nbsp;a&nbsp;domain&nbsp;list</a><br>
+<a href="spec_10.html#IX756">&#064;[]&nbsp;in&nbsp;a&nbsp;host&nbsp;list</a><br>
+<a href="spec_10.html#IX735">&#064;mx&#095;any</a><br>
+<a href="spec_10.html#IX736">&#064;mx&#095;primary</a><br>
+<a href="spec_10.html#IX737">&#064;mx&#095;secondary</a><br>
+<br>
+<a name="A"></a>
+<font size="+1">A</font><br>
+<a href="spec_5.html#IX385">abandoning&nbsp;mail</a> &nbsp;<a href="spec_22.html#IX1743">[2]</a><br>
+<a href="spec_16.html#IX1645"><b>accept</b>&nbsp;router</a><br>
+<a href="spec_38.html#IX2407">ACL:certificate&nbsp;verification</a><br>
+<a href="spec_38.html#IX2381">ACL:conditions,&nbsp;list&nbsp;of</a><br>
+<a href="spec_38.html#IX2375">ACL:conditions,&nbsp;processing</a><br>
+<a href="spec_38.html#IX2387">ACL:customized&nbsp;test</a><br>
+<a href="spec_38.html#IX2369">ACL:data&nbsp;for&nbsp;message&nbsp;ACL</a><br>
+<a href="spec_38.html#IX2370">ACL:data&nbsp;for&nbsp;non-message&nbsp;ACL</a><br>
+<a href="spec_7.html#IX597">ACL:default&nbsp;configuration</a><br>
+<a href="spec_38.html#IX2352">ACL:description</a><br>
+<a href="spec_14.html#IX1021">ACL:for&nbsp;non-SMTP&nbsp;messages</a><br>
+<a href="spec_38.html#IX2372">ACL:format&nbsp;of</a><br>
+<a href="spec_38.html#IX2383">ACL:indirect</a><br>
+<a href="spec_3.html#IX60">ACL:introduction</a><br>
+<a href="spec_38.html#IX2377">ACL:modifiers,&nbsp;list&nbsp;of</a><br>
+<a href="spec_38.html#IX2376">ACL:modifiers,&nbsp;processing</a><br>
+<a href="spec_38.html#IX2382">ACL:nested</a><br>
+<a href="spec_14.html#IX1024">ACL:on&nbsp;SMTP&nbsp;connection&nbsp;</a><br>
+<a href="spec_38.html#IX2356">ACL:options&nbsp;for&nbsp;specifying</a><br>
+<a href="spec_38.html#IX2452">ACL:relay&nbsp;control</a><br>
+<a href="spec_38.html#IX2367">ACL:return&nbsp;codes</a><br>
+<a href="spec_31.html#IX2226">ACL:rewriting&nbsp;addresses&nbsp;in</a><br>
+<a href="spec_14.html#IX1026">ACL:setting&nbsp;up&nbsp;for&nbsp;SMTP&nbsp;commands</a><br>
+<a href="spec_38.html#IX2371">ACL:specifying&nbsp;which&nbsp;to&nbsp;use</a><br>
+<a href="spec_38.html#IX2390">ACL:testing&nbsp;a&nbsp;DNS&nbsp;list</a> &nbsp;<a href="spec_38.html#IX2430">[2]</a><br>
+<a href="spec_38.html#IX2398">ACL:testing&nbsp;a&nbsp;local&nbsp;part</a><br>
+<a href="spec_38.html#IX2400">ACL:testing&nbsp;a&nbsp;recipient</a><br>
+<a href="spec_38.html#IX2392">ACL:testing&nbsp;a&nbsp;recipient&nbsp;domain</a><br>
+<a href="spec_38.html#IX2404">ACL:testing&nbsp;a&nbsp;sender</a><br>
+<a href="spec_38.html#IX2402">ACL:testing&nbsp;a&nbsp;sender&nbsp;domain</a><br>
+<a href="spec_38.html#IX2385">ACL:testing&nbsp;for&nbsp;authentication</a><br>
+<a href="spec_38.html#IX2394">ACL:testing&nbsp;for&nbsp;encryption</a><br>
+<a href="spec_38.html#IX2396">ACL:testing&nbsp;the&nbsp;client&nbsp;host</a><br>
+<a href="spec_38.html#IX2368">ACL:unset&nbsp;options</a><br>
+<a href="spec_38.html#IX2374">ACL:variables</a><br>
+<a href="spec_38.html#IX2373">ACL:verbs,&nbsp;definition&nbsp;of</a><br>
+<a href="spec_38.html#IX2412">ACL:verifying&nbsp;header&nbsp;syntax</a><br>
+<a href="spec_38.html#IX2415">ACL:verifying&nbsp;HELO/EHLO</a><br>
+<a href="spec_38.html#IX2423">ACL:verifying&nbsp;host&nbsp;reverse&nbsp;lookup</a><br>
+<a href="spec_38.html#IX2420">ACL:verifying&nbsp;recipient</a><br>
+<a href="spec_38.html#IX2425">ACL:verifying&nbsp;sender</a><br>
+<a href="spec_38.html#IX2408">ACL:verifying&nbsp;sender&nbsp;in&nbsp;the&nbsp;header</a><br>
+<a href="spec_50.html#IX2838">adding&nbsp;drivers</a><br>
+<a href="spec_15.html#IX1573">additional&nbsp;groups</a> &nbsp;<a href="spec_24.html#IX1876">[2]</a><br>
+<a href="spec_10.html#IX782">address&nbsp;list:&#064;&#064;&nbsp;lookup&nbsp;type</a><br>
+<a href="spec_10.html#IX792">address&nbsp;list:case&nbsp;forcing</a><br>
+<a href="spec_10.html#IX777">address&nbsp;list:empty&nbsp;item</a><br>
+<a href="spec_31.html#IX2234">address&nbsp;list:in&nbsp;a&nbsp;rewriting&nbsp;pattern</a><br>
+<a href="spec_11.html#IX932">address&nbsp;list:in&nbsp;expansion&nbsp;condition</a><br>
+<a href="spec_10.html#IX790">address&nbsp;list:local&nbsp;part&nbsp;starting&nbsp;with&nbsp;!</a><br>
+<a href="spec_10.html#IX787">address&nbsp;list:lookup&nbsp;for&nbsp;complete&nbsp;address</a><br>
+<a href="spec_10.html#IX778">address&nbsp;list:patterns</a><br>
+<a href="spec_10.html#IX780">address&nbsp;list:regular&nbsp;expression&nbsp;in</a><br>
+<a href="spec_10.html#IX783">address&nbsp;list:split&nbsp;local&nbsp;part&nbsp;and&nbsp;domain</a><br>
+<a href="spec_22.html#IX1822">address&nbsp;redirection:broken&nbsp;files</a><br>
+<a href="spec_22.html#IX1819">address&nbsp;redirection:disabling&nbsp;rewriting</a><br>
+<a href="spec_22.html#IX1815">address&nbsp;redirection:domain,&nbsp;preserving</a><br>
+<a href="spec_22.html#IX1755">address&nbsp;redirection:errors</a><br>
+<a href="spec_22.html#IX1740">address&nbsp;redirection:included&nbsp;external&nbsp;list</a><br>
+<a href="spec_22.html#IX1731">address&nbsp;redirection:local&nbsp;part&nbsp;without&nbsp;domain</a><br>
+<a href="spec_22.html#IX1727">address&nbsp;redirection:non-filter&nbsp;list&nbsp;items</a><br>
+<a href="spec_22.html#IX1803">address&nbsp;redirection:one-time&nbsp;expansion</a><br>
+<a href="spec_22.html#IX1723">address&nbsp;redirection:<b>redirect</b>&nbsp;router</a><br>
+<a href="spec_22.html#IX1754">address&nbsp;redirection:repeated&nbsp;for&nbsp;each&nbsp;delivery&nbsp;attempt</a><br>
+<a href="spec_22.html#IX1741">address&nbsp;redirection:to&nbsp;black&nbsp;hole</a><br>
+<a href="spec_22.html#IX1737">address&nbsp;redirection:to&nbsp;file</a><br>
+<a href="spec_22.html#IX1730">address&nbsp;redirection:to&nbsp;local&nbsp;mailbox</a><br>
+<a href="spec_22.html#IX1735">address&nbsp;redirection:to&nbsp;pipe</a><br>
+<a href="spec_22.html#IX1724">address&nbsp;redirection:while&nbsp;verifying</a> &nbsp;<a href="spec_38.html#IX2451">[2]</a><br>
+<a href="spec_44.html#IX2595">address:constructed</a><br>
+<a href="spec_17.html#IX1667">address:copying&nbsp;routing</a> &nbsp;<a href="spec_20.html#IX1700">[2]</a><br>
+<a href="spec_3.html#IX102">address:duplicate,&nbsp;discarding</a> &nbsp;<a href="spec_22.html#IX1751">[2]</a><br>
+<a href="spec_14.html#IX1284">address:qualification</a> &nbsp;<a href="spec_44.html#IX2567">[2]</a><br>
+<a href="spec_5.html#IX267">address:qualification,&nbsp;suppressing</a><br>
+<a href="spec_5.html#IX335">address:sender</a><br>
+<a href="spec_14.html#IX1255">address:source-routed</a><br>
+<a href="spec_5.html#IX305">address:testing</a> &nbsp;<a href="spec_15.html#IX1548">[2]</a><br>
+<a href="spec_5.html#IX312">address:verification</a><br>
+<a href="spec_1.html#IX26">address:without&nbsp;domain</a><br>
+address||rewriting&nbsp;<em>see&nbsp;rewriting</em><br>
+<a href="spec_14.html#IX1049">admin&nbsp;user</a> &nbsp;<a href="spec_47.html#IX2789">[2]</a> &nbsp;<a href="spec_48.html#IX2820">[3]</a><br>
+<a href="spec_5.html#IX214">admin&nbsp;user:definition&nbsp;of</a><br>
+<a href="spec_22.html#IX1733">alias&nbsp;file:backslash&nbsp;in</a><br>
+<a href="spec_22.html#IX1823">alias&nbsp;file:broken</a><br>
+<a href="spec_5.html#IX205">alias&nbsp;file:building</a> &nbsp;<a href="spec_5.html#IX254">[2]</a><br>
+<a href="spec_22.html#IX1749">alias&nbsp;file:exception&nbsp;to&nbsp;default</a><br>
+<a href="spec_22.html#IX1722">alias&nbsp;file:in&nbsp;a&nbsp;<b>redirect</b>&nbsp;router</a><br>
+<a href="spec_22.html#IX1800">alias&nbsp;file:one-time&nbsp;expansion</a><br>
+<a href="spec_22.html#IX1807">alias&nbsp;file:ownership</a><br>
+<a href="spec_9.html#IX678">alias&nbsp;file:per-domain&nbsp;default</a><br>
+<a href="spec_10.html#IX765">alias&nbsp;for&nbsp;host</a><br>
+<a href="spec_5.html#IX318">alternate&nbsp;configuration&nbsp;file</a><br>
+<a href="spec_14.html#IX1431">angle&nbsp;brackets,&nbsp;excess</a><br>
+<a href="spec_26.html#IX1920"><b>appendfile</b>&nbsp;transport</a><br>
+<a href="spec_26.html#IX2015">appending&nbsp;to&nbsp;a&nbsp;file</a><br>
+<a href="spec_43.html#IX2528">asterisk:after&nbsp;IP&nbsp;address</a><br>
+<a href="spec_10.html#IX784">asterisk:in&nbsp;address&nbsp;list</a><br>
+<a href="spec_10.html#IX740">asterisk:in&nbsp;domain&nbsp;list</a><br>
+<a href="spec_10.html#IX753">asterisk:in&nbsp;host&nbsp;list</a> &nbsp;<a href="spec_10.html#IX766">[2]</a><br>
+<a href="spec_10.html#IX747">asterisk:in&nbsp;lookup&nbsp;type</a><br>
+<a href="spec_9.html#IX683">asterisk:in&nbsp;search&nbsp;type</a><br>
+<a href="spec_2.html#IX57">Athena</a><br>
+<a href="spec_14.html#IX1027"><font size=-1>AUTH</font>:ACL&nbsp;for</a> &nbsp;<a href="spec_38.html#IX2357">[2]</a><br>
+<a href="spec_14.html#IX1059"><font size=-1>AUTH</font>:advertising</a><br>
+<a href="spec_14.html#IX1060"><font size=-1>AUTH</font>:advertising&nbsp;when&nbsp;encrypted</a><br>
+<a href="spec_11.html#IX998"><font size=-1>AUTH</font>:argument</a><br>
+<a href="spec_6.html#IX551"><font size=-1>AUTH</font>:configuration</a> &nbsp;<a href="spec_7.html#IX608">[2]</a><br>
+<a href="spec_33.html#IX2270"><font size=-1>AUTH</font>:description&nbsp;of</a><br>
+<a href="spec_34.html#IX2293"><font size=-1>AUTH</font>:in&nbsp;<b>plaintext</b>&nbsp;authenticator</a><br>
+<a href="spec_45.html#IX2623"><font size=-1>AUTH</font>:logging</a><br>
+<a href="spec_14.html#IX1080"><font size=-1>AUTH</font>:on&nbsp;bounce&nbsp;message</a><br>
+<a href="spec_11.html#IX960"><font size=-1>AUTH</font>:on&nbsp;<font size=-1>MAIL</font>&nbsp;command</a> &nbsp;<a href="spec_14.html#IX1040">[2]</a> &nbsp;<a href="spec_33.html#IX2280">[3]</a> &nbsp;<a href="spec_33.html#IX2287">[4]</a><br>
+<a href="spec_33.html#IX2283"><font size=-1>AUTH</font>:testing&nbsp;a&nbsp;server</a><br>
+<a href="spec_11.html#IX936"><font size=-1>AUTH</font>:with&nbsp;PAM</a><br>
+<a href="spec_33.html#IX2269">authentication</a><br>
+<a href="spec_38.html#IX2384">authentication:ACL&nbsp;checking</a><br>
+<a href="spec_14.html#IX1058">authentication:advertising</a><br>
+<a href="spec_14.html#IX1079">authentication:bounce&nbsp;message</a><br>
+<a href="spec_35.html#IX2307">authentication:CRAM-MD5&nbsp;mechanism</a><br>
+<a href="spec_11.html#IX961">authentication:failure</a><br>
+<a href="spec_33.html#IX2271">authentication:generic&nbsp;options</a><br>
+<a href="spec_11.html#IX957">authentication:id</a><br>
+<a href="spec_5.html#IX449">authentication:id,&nbsp;specifying&nbsp;for&nbsp;local&nbsp;message</a><br>
+<a href="spec_45.html#IX2622">authentication:logging</a><br>
+<a href="spec_34.html#IX2301">authentication:LOGIN&nbsp;mechanism</a><br>
+<a href="spec_36.html#IX2316">authentication:Microsoft&nbsp;Secure&nbsp;Password</a><br>
+<a href="spec_5.html#IX447">authentication:name,&nbsp;specifying&nbsp;for&nbsp;local&nbsp;message</a><br>
+<a href="spec_36.html#IX2317">authentication:NTLM</a><br>
+<a href="spec_33.html#IX2286">authentication:on&nbsp;an&nbsp;Exim&nbsp;client</a><br>
+<a href="spec_33.html#IX2281">authentication:on&nbsp;an&nbsp;Exim&nbsp;server</a><br>
+<a href="spec_30.html#IX2181">authentication:optional&nbsp;in&nbsp;client</a><br>
+<a href="spec_34.html#IX2298">authentication:PLAIN&nbsp;mechanism</a><br>
+<a href="spec_30.html#IX2177">authentication:required&nbsp;by&nbsp;client</a><br>
+<a href="spec_11.html#IX959">authentication:sender</a><br>
+<a href="spec_33.html#IX2279">authentication:sender,&nbsp;authenticated</a><br>
+<a href="spec_5.html#IX451">authentication:sender,&nbsp;specifying&nbsp;for&nbsp;local&nbsp;message</a><br>
+<a href="spec_33.html#IX2282">authentication:testing&nbsp;a&nbsp;server</a><br>
+<a href="spec_35.html#IX2305">authenticators:<b>cram&#095;md5</b></a><br>
+<a href="spec_34.html#IX2289">authenticators:<b>plaintext</b></a><br>
+<a href="spec_36.html#IX2315">authenticators:<b>spa</b></a><br>
+<a href="spec_3.html#IX84"><tt>auto&#095;thaw</tt></a><br>
+<a href="spec_27.html#IX2038"><b>autoreply</b>&nbsp;transport</a><br>
+<a href="spec_14.html#IX1455"><b>autoreply</b>&nbsp;transport:for&nbsp;system&nbsp;filter</a><br>
+<br>
+<a name="B"></a>
+<font size="+1">B</font><br>
+<a href="spec_5.html#IX416">background&nbsp;delivery</a><br>
+<a href="spec_14.html#IX1393">backlog&nbsp;of&nbsp;connections</a><br>
+<a href="spec_22.html#IX1732">backslash&nbsp;in&nbsp;alias&nbsp;file</a><br>
+<a href="spec_1.html#IX24">bang&nbsp;paths:not&nbsp;handled&nbsp;by&nbsp;Exim</a><br>
+<a href="spec_31.html#IX2243">bang&nbsp;paths:rewriting</a><br>
+<a href="spec_14.html#IX1383">banner&nbsp;for&nbsp;SMTP</a><br>
+<a href="spec_3.html#IX67">base36</a><br>
+<a href="spec_3.html#IX66">base62</a> &nbsp;<a href="spec_11.html#IX844">[2]</a> &nbsp;<a href="spec_11.html#IX846">[3]</a> &nbsp;<a href="spec_26.html#IX1948">[4]</a><br>
+<a href="spec_11.html#IX859">base64&nbsp;encoding:conversion&nbsp;from&nbsp;hex</a><br>
+<a href="spec_33.html#IX2284">base64&nbsp;encoding:creating&nbsp;authentication&nbsp;test&nbsp;data</a><br>
+<a href="spec_39.html#IX2468">base64&nbsp;encoding:functions&nbsp;for&nbsp;<i>local&#095;scan()</i>&nbsp;use</a><br>
+<a href="spec_11.html#IX903">base64&nbsp;encoding:in&nbsp;encrypted&nbsp;password</a><br>
+<a href="spec_11.html#IX817">base64&nbsp;encoding:in&nbsp;header&nbsp;lines</a><br>
+<a href="spec_34.html#IX2296">base64&nbsp;encoding:in&nbsp;<b>plaintext</b>&nbsp;authenticator</a><br>
+<a href="spec_25.html#IX1916"><tt>batch&#095;id</tt></a><br>
+<a href="spec_25.html#IX1915"><tt>batch&#095;max</tt></a><br>
+<a href="spec_25.html#IX1914">batched&nbsp;local&nbsp;delivery</a><br>
+<a href="spec_5.html#IX296">batched&nbsp;SMTP&nbsp;input</a> &nbsp;<a href="spec_43.html#IX2560">[2]</a><br>
+<a href="spec_43.html#IX2558">batched&nbsp;SMTP&nbsp;output</a><br>
+<a href="spec_20.html#IX1706">batched&nbsp;SMTP&nbsp;output&nbsp;example</a><br>
+<a href="spec_5.html#IX525"><i>Bcc:</i>&nbsp;header&nbsp;line</a> &nbsp;<a href="spec_44.html#IX2579">[2]</a><br>
+<a href="spec_4.html#IX134">Berkeley&nbsp;DB&nbsp;library</a><br>
+<a href="spec_9.html#IX628">Berkeley&nbsp;DB&nbsp;library:file&nbsp;format</a><br>
+<a href="spec_4.html#IX177"><font size=-1>BIN&#095;DIRECTORY</font></a><br>
+<a href="spec_33.html#IX2285">binary&nbsp;zero:in&nbsp;authentication&nbsp;data</a><br>
+<a href="spec_11.html#IX818">binary&nbsp;zero:in&nbsp;header&nbsp;line</a><br>
+<a href="spec_9.html#IX624">binary&nbsp;zero:in&nbsp;lookup&nbsp;key</a> &nbsp;<a href="spec_9.html#IX627">[2]</a> &nbsp;<a href="spec_9.html#IX631">[3]</a> &nbsp;<a href="spec_9.html#IX645">[4]</a> &nbsp;<a href="spec_46.html#IX2761">[5]</a><br>
+<a href="spec_11.html#IX966">binary&nbsp;zero:in&nbsp;message&nbsp;body</a> &nbsp;<a href="spec_11.html#IX979">[2]</a><br>
+<a href="spec_34.html#IX2294">binary&nbsp;zero:in&nbsp;<b>plaintext</b>&nbsp;authenticator</a> &nbsp;<a href="spec_34.html#IX2299">[2]</a><br>
+<a href="spec_39.html#IX2469">binary&nbsp;zero:in&nbsp;RFC&nbsp;2047&nbsp;decoding</a><br>
+<a href="spec_30.html#IX2183">bind&nbsp;IP&nbsp;address</a><br>
+<a href="spec_22.html#IX1742">black&nbsp;hole</a><br>
+<a href="spec_11.html#IX969">black&nbsp;list&nbsp;(DNS)</a> &nbsp;<a href="spec_38.html#IX2389">[2]</a> &nbsp;<a href="spec_38.html#IX2429">[3]</a> &nbsp;<a href="spec_45.html#IX2649">[4]</a><br>
+<a href="spec_11.html#IX965">body&nbsp;of&nbsp;message:binary&nbsp;zero&nbsp;count</a><br>
+<a href="spec_1.html#IX31">body&nbsp;of&nbsp;message:definition&nbsp;of</a><br>
+<a href="spec_11.html#IX977">body&nbsp;of&nbsp;message:expansion&nbsp;variable</a> &nbsp;<a href="spec_11.html#IX980">[2]</a><br>
+<a href="spec_11.html#IX963">body&nbsp;of&nbsp;message:line&nbsp;count</a><br>
+<a href="spec_11.html#IX982">body&nbsp;of&nbsp;message:size</a><br>
+<a href="spec_24.html#IX1848">body&nbsp;of&nbsp;message:transporting</a><br>
+<a href="spec_14.html#IX1233">body&nbsp;of&nbsp;message:visible&nbsp;size</a><br>
+<a href="spec_1.html#IX2">books&nbsp;about&nbsp;Exim</a><br>
+<a href="spec_6.html#IX564">boolean&nbsp;configuration&nbsp;values</a><br>
+<a href="spec_14.html#IX1125">bounce&nbsp;message:copy&nbsp;to&nbsp;other&nbsp;address</a><br>
+<a href="spec_14.html#IX1067">bounce&nbsp;message:customizing</a> &nbsp;<a href="spec_41.html#IX2491">[2]</a><br>
+<a href="spec_1.html#IX32">bounce&nbsp;message:definition&nbsp;of</a><br>
+<a href="spec_14.html#IX1190">bounce&nbsp;message:discarding</a><br>
+<a href="spec_3.html#IX122">bounce&nbsp;message:failure&nbsp;to&nbsp;deliver</a><br>
+<a href="spec_5.html#IX328">bounce&nbsp;message:generating</a><br>
+<a href="spec_14.html#IX1070">bounce&nbsp;message:including&nbsp;body</a><br>
+<a href="spec_14.html#IX1072">bounce&nbsp;message:including&nbsp;original</a><br>
+<a href="spec_3.html#IX121">bounce&nbsp;message:recipient&nbsp;of</a><br>
+<a href="spec_22.html#IX1791">bounce&nbsp;message:redirection&nbsp;details,&nbsp;suppressing</a><br>
+<a href="spec_14.html#IX1129">bounce&nbsp;message:<i>Reply-to:</i>&nbsp;in</a><br>
+<a href="spec_14.html#IX1078">bounce&nbsp;message:sender&nbsp;authentication</a><br>
+<a href="spec_14.html#IX1076">bounce&nbsp;message:size&nbsp;limit</a><br>
+<a href="spec_3.html#IX119">bounce&nbsp;message:when&nbsp;generated</a><br>
+<a href="spec_22.html#IX1824">broken&nbsp;alias&nbsp;or&nbsp;forward&nbsp;files</a><br>
+<a href="spec_4.html#IX130">BSD,&nbsp;DBM&nbsp;library&nbsp;for</a><br>
+<a href="spec_1.html#IX12">bug&nbsp;reports</a><br>
+<a href="spec_4.html#IX154">build&nbsp;directory</a><br>
+<a href="spec_4.html#IX156">build-time&nbsp;options,&nbsp;overriding</a><br>
+<a href="spec_5.html#IX255">building&nbsp;alias&nbsp;file</a><br>
+<a href="spec_46.html#IX2758">building&nbsp;DBM&nbsp;files</a><br>
+<a href="spec_4.html#IX123">building&nbsp;Exim</a><br>
+<a href="spec_4.html#IX159">building&nbsp;Exim:architecture&nbsp;type</a><br>
+<a href="spec_4.html#IX124">building&nbsp;Exim:multiple&nbsp;OS/architectures</a><br>
+<a href="spec_4.html#IX158">building&nbsp;Exim:operating&nbsp;system&nbsp;type</a><br>
+<a href="spec_4.html#IX173">building&nbsp;Exim:OS-specific&nbsp;C&nbsp;header&nbsp;files</a><br>
+<a href="spec_4.html#IX160">building&nbsp;Exim:overriding&nbsp;default&nbsp;settings</a><br>
+<a href="spec_4.html#IX138">building&nbsp;Exim:pre-building&nbsp;configuration</a><br>
+<a href="spec_4.html#IX174">building&nbsp;Eximon:overriding&nbsp;default&nbsp;options</a><br>
+<br>
+<a name="C"></a>
+<font size="+1">C</font><br>
+<a href="spec_38.html#IX2448">caching:callout</a><br>
+<a href="spec_38.html#IX2442">caching:callout,&nbsp;suppressing</a><br>
+<a href="spec_14.html#IX1082">caching:callout,&nbsp;timeouts</a><br>
+<a href="spec_9.html#IX687">caching:lookup&nbsp;data</a><br>
+<a href="spec_10.html#IX724">caching:named&nbsp;lists</a><br>
+<a href="spec_38.html#IX2441">callout:cache,&nbsp;suppressing</a><br>
+<a href="spec_38.html#IX2447">callout:caching</a><br>
+<a href="spec_14.html#IX1083">callout:caching&nbsp;timeouts</a><br>
+<a href="spec_38.html#IX2440">callout:defer,&nbsp;action&nbsp;on</a><br>
+<a href="spec_38.html#IX2443">callout:postmaster,&nbsp;checking</a><br>
+<a href="spec_38.html#IX2445">callout:sender&nbsp;for&nbsp;recipient&nbsp;check</a><br>
+<a href="spec_38.html#IX2439">callout:timeout,&nbsp;specifying</a><br>
+<a href="spec_38.html#IX2437">callout:verification</a><br>
+<a href="spec_38.html#IX2444">callout:&#147;random&#148;&nbsp;check</a><br>
+<a href="spec_26.html#IX2007">carriage&nbsp;return</a> &nbsp;<a href="spec_29.html#IX2117">[2]</a> &nbsp;<a href="spec_43.html#IX2523">[3]</a> &nbsp;<a href="spec_43.html#IX2541">[4]</a> &nbsp;<a href="spec_44.html#IX2564">[5]</a><br>
+<a href="spec_10.html#IX793">case&nbsp;forcing&nbsp;in&nbsp;address&nbsp;lists</a><br>
+<a href="spec_11.html#IX861">case&nbsp;forcing&nbsp;in&nbsp;strings</a> &nbsp;<a href="spec_11.html#IX892">[2]</a><br>
+<a href="spec_3.html#IX101">case&nbsp;of&nbsp;local&nbsp;parts</a> &nbsp;<a href="spec_10.html#IX791">[2]</a> &nbsp;<a href="spec_15.html#IX1531">[3]</a> &nbsp;<a href="spec_44.html#IX2597">[4]</a><br>
+<a href="spec_5.html#IX526"><i>Cc:</i>&nbsp;header&nbsp;line</a><br>
+<a href="spec_2.html#IX48">cdb:acknowledgement</a><br>
+<a href="spec_9.html#IX622">cdb:description&nbsp;of</a><br>
+<a href="spec_4.html#IX166">cdb:including&nbsp;support&nbsp;for</a><br>
+<a href="spec_30.html#IX2209">certificate:for&nbsp;client,&nbsp;location&nbsp;of</a><br>
+<a href="spec_14.html#IX1473">certificate:for&nbsp;server,&nbsp;location&nbsp;of</a><br>
+<a href="spec_37.html#IX2350">certificate:references&nbsp;to&nbsp;discussion</a><br>
+<a href="spec_37.html#IX2343">certificate:revocation&nbsp;list</a><br>
+<a href="spec_30.html#IX2212">certificate:revocation&nbsp;list&nbsp;for&nbsp;client</a><br>
+<a href="spec_14.html#IX1476">certificate:revocation&nbsp;list&nbsp;for&nbsp;server</a><br>
+<a href="spec_37.html#IX2351">certificate:self-signed</a><br>
+<a href="spec_14.html#IX1489">certificate:verification&nbsp;of&nbsp;client</a> &nbsp;<a href="spec_14.html#IX1492">[2]</a> &nbsp;<a href="spec_14.html#IX1495">[3]</a> &nbsp;<a href="spec_37.html#IX2338">[4]</a> &nbsp;<a href="spec_38.html#IX2406">[5]</a><br>
+<a href="spec_30.html#IX2221">certificate:verification&nbsp;of&nbsp;server</a><br>
+<a href="spec_1.html#IX5">change&nbsp;log</a><br>
+<a href="spec_46.html#IX2756">checking&nbsp;access</a><br>
+<a href="spec_14.html#IX1093">checking&nbsp;disk&nbsp;space</a> &nbsp;<a href="spec_14.html#IX1387">[2]</a><br>
+<a href="spec_11.html#IX869">CIDR&nbsp;notation</a><br>
+<a href="spec_10.html#IX757">CIDR&nbsp;notation&nbsp;</a><br>
+<a href="spec_37.html#IX2336">cipher:logging</a> &nbsp;<a href="spec_37.html#IX2344">[2]</a><br>
+<a href="spec_14.html#IX1486">cipher:requiring&nbsp;specific</a> &nbsp;<a href="spec_30.html#IX2217">[2]</a><br>
+<a href="spec_14.html#IX1142">command&nbsp;line:addresses&nbsp;with&nbsp;<i>-t</i></a><br>
+<a href="spec_5.html#IX197">command&nbsp;line:options</a><br>
+<a href="spec_6.html#IX560">common&nbsp;option&nbsp;syntax</a><br>
+<a href="spec_5.html#IX316">configuration&nbsp;file:alternate</a> &nbsp;<a href="spec_6.html#IX548">[2]</a><br>
+<a href="spec_6.html#IX562">configuration&nbsp;file:common&nbsp;option&nbsp;syntax</a><br>
+<a href="spec_6.html#IX558">configuration&nbsp;file:conditional&nbsp;skips</a><br>
+<a href="spec_7.html#IX592">configuration&nbsp;file:default,&nbsp;&#147;walk&nbsp;through&#148;</a><br>
+<a href="spec_4.html#IX171">configuration&nbsp;file:editing</a><br>
+<a href="spec_6.html#IX545">configuration&nbsp;file:errors&nbsp;in</a><br>
+<a href="spec_6.html#IX549">configuration&nbsp;file:format&nbsp;of</a><br>
+<a href="spec_6.html#IX539">configuration&nbsp;file:general&nbsp;description</a><br>
+<a href="spec_6.html#IX553">configuration&nbsp;file:including&nbsp;other&nbsp;files</a><br>
+<a href="spec_6.html#IX557">configuration&nbsp;file:macros</a><br>
+<a href="spec_14.html#IX1016">configuration&nbsp;file:main&nbsp;section</a><br>
+<a href="spec_6.html#IX543">configuration&nbsp;file:ownership</a><br>
+<a href="spec_32.html#IX2245">configuration&nbsp;file:retry&nbsp;section</a><br>
+<a href="spec_4.html#IX139">configuration&nbsp;for&nbsp;building&nbsp;Exim</a><br>
+<a href="spec_5.html#IX269">configuration&nbsp;options,&nbsp;extracting</a><br>
+<a href="spec_4.html#IX178"><font size=-1>CONFIGURE&#095;FILE</font></a> &nbsp;<a href="spec_5.html#IX317">[2]</a> &nbsp;<a href="spec_6.html#IX540">[3]</a><br>
+<a href="spec_14.html#IX1391">connection&nbsp;backlog</a><br>
+<a href="spec_44.html#IX2596">constructed&nbsp;address</a><br>
+<a href="spec_1.html#IX22">contributed&nbsp;material</a><br>
+<a href="spec_38.html#IX2353">control&nbsp;of&nbsp;incoming&nbsp;mail</a><br>
+<a href="spec_14.html#IX1126">copy&nbsp;of&nbsp;bounce&nbsp;message</a><br>
+<a href="spec_15.html#IX1631">copy&nbsp;of&nbsp;message&nbsp;(<tt>unseen</tt>&nbsp;option)</a><br>
+<a href="spec_9.html#IX632">Courier</a><br>
+CR&nbsp;character&nbsp;<em>see&nbsp;carriage&nbsp;return</em><br>
+<a href="spec_35.html#IX2306">CRAM-MD5&nbsp;authentication&nbsp;mechanism</a><br>
+<a href="spec_35.html#IX2304"><b>cram&#095;md5</b>&nbsp;authenticator</a><br>
+<a href="spec_26.html#IX1923">creating&nbsp;directories</a><br>
+CRL&nbsp;<em>see&nbsp;certificate&nbsp;revocation&nbsp;list</em><br>
+<a href="spec_11.html#IX905"><i>crypt()</i></a><br>
+<a href="spec_11.html#IX906"><i>crypt16()</i></a><br>
+<a href="spec_15.html#IX1626">current&nbsp;directory&nbsp;for&nbsp;local&nbsp;transport</a> &nbsp;<a href="spec_23.html#IX1838">[2]</a><br>
+<a href="spec_14.html#IX1313">customizing:&nbsp;<i>Received:</i>&nbsp;header</a><br>
+<a href="spec_38.html#IX2386">customizing:ACL&nbsp;condition</a><br>
+<a href="spec_7.html#IX599">customizing:ACL&nbsp;failure&nbsp;message</a><br>
+<a href="spec_25.html#IX1917">customizing:batching&nbsp;condition</a><br>
+<a href="spec_14.html#IX1068">customizing:bounce&nbsp;message</a> &nbsp;<a href="spec_41.html#IX2490">[2]</a><br>
+<a href="spec_22.html#IX1748">customizing:failure&nbsp;message</a><br>
+<a href="spec_39.html#IX2458">customizing:input&nbsp;scan&nbsp;using&nbsp;C&nbsp;function</a><br>
+<a href="spec_3.html#IX105">customizing:precondition</a><br>
+<a href="spec_14.html#IX1385">customizing:SMTP&nbsp;banner</a><br>
+<a href="spec_14.html#IX1517">customizing:warning&nbsp;message</a> &nbsp;<a href="spec_41.html#IX2492">[2]</a><br>
+<a href="spec_15.html#IX1529">customizing:&#147;cannot&nbsp;route&#148;&nbsp;message</a><br>
+<a href="spec_45.html#IX2614">cycling&nbsp;logs</a> &nbsp;<a href="spec_46.html#IX2724">[2]</a><br>
+<a href="spec_3.html#IX69">Cygwin</a><br>
+<a href="spec_2.html#IX52">Cyrus</a> &nbsp;<a href="spec_11.html#IX940">[2]</a> &nbsp;<a href="spec_11.html#IX947">[3]</a> &nbsp;<a href="spec_29.html#IX2100">[4]</a> &nbsp;<a href="spec_29.html#IX2125">[5]</a> &nbsp;<a href="spec_30.html#IX2136">[6]</a><br>
+<br>
+<a name="D"></a>
+<font size="+1">D</font><br>
+<a href="spec_5.html#IX222">daemon</a> &nbsp;<a href="spec_43.html#IX2540">[2]</a><br>
+<a href="spec_13.html#IX1013">daemon:listening&nbsp;IP&nbsp;addresses</a><br>
+<a href="spec_14.html#IX1261">daemon:pid&nbsp;file&nbsp;path</a><br>
+<a href="spec_5.html#IX225">daemon:process&nbsp;id&nbsp;(pid)</a> &nbsp;<a href="spec_5.html#IX271">[2]</a> &nbsp;<a href="spec_5.html#IX466">[3]</a><br>
+<a href="spec_13.html#IX1008">daemon:starting</a><br>
+<a href="spec_14.html#IX1459">daemon:<font size=-1>TCP&#095;NODELAY</font>&nbsp;on&nbsp;sockets</a><br>
+<a href="spec_3.html#IX68">Darwin</a><br>
+<a href="spec_14.html#IX1029"><font size=-1>DATA</font>,&nbsp;ACL&nbsp;for</a> &nbsp;<a href="spec_38.html#IX2358">[2]</a><br>
+<a href="spec_9.html#IX615">database&nbsp;lookups</a><br>
+<a href="spec_44.html#IX2580"><i>Date:</i>&nbsp;header&nbsp;line</a><br>
+<a href="spec_46.html#IX2757">DBM:building&nbsp;dbm&nbsp;files</a><br>
+<a href="spec_4.html#IX137">DBM:libraries,&nbsp;configuration&nbsp;for&nbsp;building</a> &nbsp;<a href="spec_4.html#IX170">[2]</a><br>
+<a href="spec_4.html#IX126">DBM:libraries,&nbsp;discussion&nbsp;of</a><br>
+<a href="spec_9.html#IX625">DBM:lookup&nbsp;type</a><br>
+<a href="spec_5.html#IX250">debugging:<i>-bh</i>&nbsp;option</a><br>
+<a href="spec_5.html#IX323">debugging:<i>-d</i>&nbsp;option</a><br>
+<a href="spec_5.html#IX404">debugging:<i>-N</i>&nbsp;option</a><br>
+<a href="spec_12.html#IX1006">debugging:from&nbsp;embedded&nbsp;Perl</a><br>
+<a href="spec_5.html#IX322">debugging:list&nbsp;of&nbsp;selectors</a><br>
+<a href="spec_5.html#IX405">debugging:suppressing&nbsp;delivery</a><br>
+<a href="spec_7.html#IX596">default:ACLs</a><br>
+<a href="spec_7.html#IX593">default:configuration&nbsp;file&nbsp;&#147;walk&nbsp;through&#148;</a><br>
+<a href="spec_9.html#IX675">default:in&nbsp;single-key&nbsp;lookups</a><br>
+<a href="spec_7.html#IX607">default:retry&nbsp;rule</a><br>
+<a href="spec_7.html#IX600">default:routers</a><br>
+<a href="spec_7.html#IX604">default:transports</a><br>
+<a href="spec_40.html#IX2482"><tt>defer</tt>&nbsp;in&nbsp;system&nbsp;filter</a><br>
+<a href="spec_22.html#IX1747">deferred&nbsp;delivery,&nbsp;forcing</a><br>
+<a href="spec_14.html#IX1101">delay&nbsp;warning,&nbsp;specifying</a><br>
+<a href="spec_32.html#IX2266"><tt>delay&#095;after&#095;cutoff</tt></a><br>
+<a href="spec_11.html#IX970"><tt>delay&#095;warning&#095;condition</tt></a><br>
+<a href="spec_45.html#IX2643">delayed&nbsp;delivery,&nbsp;logging</a><br>
+<a href="spec_14.html#IX1110"><i>Delivery-date:</i>&nbsp;header&nbsp;line</a> &nbsp;<a href="spec_24.html#IX1855">[2]</a> &nbsp;<a href="spec_44.html#IX2581">[3]</a><br>
+<a href="spec_5.html#IX376">delivery:abandoning&nbsp;further&nbsp;attempts</a><br>
+<a href="spec_29.html#IX2124">delivery:by&nbsp;external&nbsp;agent</a><br>
+<a href="spec_5.html#IX378">delivery:cancelling&nbsp;all</a><br>
+<a href="spec_5.html#IX380">delivery:cancelling&nbsp;by&nbsp;address</a><br>
+<a href="spec_3.html#IX112">delivery:deferral</a><br>
+<a href="spec_14.html#IX1180">delivery:delaying&nbsp;certain&nbsp;domains</a><br>
+<a href="spec_45.html#IX2628">delivery:discarded,&nbsp;logging</a><br>
+<a href="spec_45.html#IX2629">delivery:failure,&nbsp;logging</a><br>
+<a href="spec_32.html#IX2264">delivery:failure,&nbsp;long-term</a><br>
+<a href="spec_45.html#IX2630">delivery:fake,&nbsp;logging</a><br>
+<a href="spec_11.html#IX913">delivery:first</a><br>
+<a href="spec_5.html#IX349">delivery:forcing&nbsp;attempt</a><br>
+<a href="spec_22.html#IX1745">delivery:forcing&nbsp;deferral</a><br>
+<a href="spec_22.html#IX1744">delivery:forcing&nbsp;failure</a> &nbsp;<a href="spec_47.html#IX2802">[2]</a><br>
+<a href="spec_5.html#IX501">delivery:forcing&nbsp;in&nbsp;queue&nbsp;run</a><br>
+<a href="spec_5.html#IX519">delivery:from&nbsp;given&nbsp;sender</a><br>
+<a href="spec_3.html#IX106">delivery:in&nbsp;detail</a><br>
+<a href="spec_5.html#IX417">delivery:in&nbsp;the&nbsp;background</a><br>
+<a href="spec_5.html#IX420">delivery:in&nbsp;the&nbsp;foreground</a><br>
+<a href="spec_15.html#IX1593">delivery:log&nbsp;line&nbsp;format</a><br>
+<a href="spec_5.html#IX366">delivery:manually&nbsp;started,&nbsp;not&nbsp;forced</a><br>
+<a href="spec_14.html#IX1331">delivery:maximum&nbsp;number&nbsp;of</a><br>
+<a href="spec_14.html#IX1329">delivery:parallelism&nbsp;for&nbsp;remote</a><br>
+<a href="spec_3.html#IX118">delivery:permanent&nbsp;failure</a><br>
+<a href="spec_4.html#IX188">delivery:problems&nbsp;with</a><br>
+<a href="spec_29.html#IX2123">delivery:<i>procmail</i></a><br>
+<a href="spec_3.html#IX111">delivery:retry&nbsp;in&nbsp;remote&nbsp;transports</a><br>
+<a href="spec_3.html#IX113">delivery:retry&nbsp;mechanism</a><br>
+<a href="spec_14.html#IX1334">delivery:sorting&nbsp;remote</a><br>
+<a href="spec_5.html#IX424">delivery:suppressing&nbsp;immediate</a><br>
+<a href="spec_3.html#IX116">delivery:temporary&nbsp;failure</a><br>
+<a href="spec_22.html#IX1775">delivery:to&nbsp;file,&nbsp;forbidding</a><br>
+<a href="spec_5.html#IX515">delivery:to&nbsp;given&nbsp;domain</a><br>
+<a href="spec_22.html#IX1789">delivery:to&nbsp;pipe,&nbsp;forbidding</a><br>
+<a href="spec_26.html#IX2026">delivery:to&nbsp;single&nbsp;file</a><br>
+<a href="spec_14.html#IX1104">delivery:unprivileged</a><br>
+<a href="spec_44.html#IX2582"><tt>delivery&#095;date&#095;remove</tt></a><br>
+delivery||failure&nbsp;report&nbsp;<em>see&nbsp;bounce&nbsp;message</em><br>
+<a href="spec_3.html#IX58">design&nbsp;philosophy</a><br>
+dialup&nbsp;<em>see&nbsp;intermittently&nbsp;connected&nbsp;hosts</em><br>
+<a href="spec_14.html#IX1427">directories,&nbsp;multiple</a><br>
+<a href="spec_26.html#IX1922">directory&nbsp;creation</a> &nbsp;<a href="spec_26.html#IX1943">[2]</a> &nbsp;<a href="spec_26.html#IX2017">[3]</a> &nbsp;<a href="spec_26.html#IX2030">[4]</a><br>
+<a href="spec_45.html#IX2626">discarded&nbsp;messages</a><br>
+<a href="spec_14.html#IX1191">discarding&nbsp;bounce&nbsp;message</a><br>
+<a href="spec_14.html#IX1094">disk&nbsp;space,&nbsp;checking</a> &nbsp;<a href="spec_14.html#IX1388">[2]</a><br>
+<a href="spec_1.html#IX15">distribution:ftp&nbsp;site</a><br>
+<a href="spec_1.html#IX17">distribution:public&nbsp;key</a><br>
+<a href="spec_1.html#IX16">distribution:signing&nbsp;details</a><br>
+<a href="spec_9.html#IX634">dmbnz&nbsp;lookup&nbsp;type</a><br>
+<a href="spec_38.html#IX2388">DNS&nbsp;list:in&nbsp;ACL</a> &nbsp;<a href="spec_38.html#IX2428">[2]</a><br>
+<a href="spec_45.html#IX2648">DNS&nbsp;list:logging&nbsp;defer</a><br>
+<a href="spec_9.html#IX652">DNS:as&nbsp;a&nbsp;lookup&nbsp;type</a> &nbsp;<a href="spec_9.html#IX692">[2]</a><br>
+<a href="spec_14.html#IX1117">DNS:IPv6&nbsp;lookup&nbsp;for&nbsp;AAAA&nbsp;records</a><br>
+<a href="spec_14.html#IX1113">DNS:pre-check&nbsp;of&nbsp;name&nbsp;syntax</a><br>
+<a href="spec_17.html#IX1662">DNS:qualifying&nbsp;single-component&nbsp;names</a><br>
+<a href="spec_14.html#IX1119">DNS:resolver&nbsp;options</a> &nbsp;<a href="spec_17.html#IX1661">[2]</a> &nbsp;<a href="spec_17.html#IX1669">[3]</a><br>
+<a href="spec_5.html#IX325">DNS:resolver,&nbsp;debugging&nbsp;output</a><br>
+<a href="spec_11.html#IX996">DNS:reverse&nbsp;lookup</a> &nbsp;<a href="spec_14.html#IX1173">[2]</a> &nbsp;<a href="spec_49.html#IX2836">[3]</a><br>
+<a href="spec_14.html#IX1111">DNS:&#147;try&nbsp;again&#148;&nbsp;response,&nbsp;overriding</a><br>
+<a href="spec_9.html#IX690">dnsdb&nbsp;lookup</a><br>
+<a href="spec_17.html#IX1647"><b>dnslookup</b>&nbsp;router</a><br>
+<a href="spec_1.html#IX4"><i>doc/ChangeLog</i></a><br>
+<a href="spec_1.html#IX3"><i>doc/NewStuff</i></a><br>
+<a href="spec_1.html#IX6"><i>doc/spec.txt</i></a><br>
+<a href="spec_1.html#IX1">documentation</a><br>
+<a href="spec_1.html#IX19">documentation:available&nbsp;formats</a><br>
+<a href="spec_10.html#IX741">domain&nbsp;list:asterisk&nbsp;in</a><br>
+<a href="spec_11.html#IX931">domain&nbsp;list:in&nbsp;expansion&nbsp;condition</a><br>
+<a href="spec_10.html#IX746">domain&nbsp;list:matching&nbsp;by&nbsp;lookup</a><br>
+<a href="spec_10.html#IX748">domain&nbsp;list:matching&nbsp;literal&nbsp;domain&nbsp;name</a><br>
+<a href="spec_10.html#IX733">domain&nbsp;list:matching&nbsp;local&nbsp;IP&nbsp;interfaces</a><br>
+<a href="spec_10.html#IX738">domain&nbsp;list:matching&nbsp;MX&nbsp;pointers&nbsp;to&nbsp;local&nbsp;host</a><br>
+<a href="spec_10.html#IX730">domain&nbsp;list:matching&nbsp;primary&nbsp;host&nbsp;name</a><br>
+<a href="spec_10.html#IX744">domain&nbsp;list:matching&nbsp;regular&nbsp;expression</a><br>
+<a href="spec_10.html#IX742">domain&nbsp;list:matching&nbsp;&#147;ends&nbsp;with&#148;</a><br>
+<a href="spec_10.html#IX725">domain&nbsp;list:patterns&nbsp;for</a><br>
+<a href="spec_10.html#IX734">domain&nbsp;literal</a> &nbsp;<a href="spec_14.html#IX1051">[2]</a><br>
+<a href="spec_7.html#IX602">domain&nbsp;literal:default&nbsp;router</a><br>
+<a href="spec_7.html#IX595">domain&nbsp;literal:recognizing&nbsp;format</a><br>
+<a href="spec_18.html#IX1673">domain&nbsp;literal:routing&nbsp;</a><br>
+<a href="spec_38.html#IX2391">domain:ACL&nbsp;checking</a><br>
+<a href="spec_1.html#IX38">domain:definition&nbsp;of</a><br>
+<a href="spec_14.html#IX1179">domain:delaying&nbsp;delivery</a><br>
+<a href="spec_5.html#IX516">domain:delivery&nbsp;to</a><br>
+<a href="spec_11.html#IX848">domain:extraction</a><br>
+<a href="spec_14.html#IX1283">domain:for&nbsp;qualifying&nbsp;addresses</a><br>
+<a href="spec_22.html#IX1813">domain:in&nbsp;redirection,&nbsp;preserving</a><br>
+<a href="spec_20.html#IX1690">domain:manually&nbsp;routing</a><br>
+<a href="spec_17.html#IX1671">domain:partial,&nbsp;widening</a><br>
+<a href="spec_14.html#IX1287">domain:specifying&nbsp;non-immediate&nbsp;delivery</a><br>
+<a href="spec_14.html#IX1054">domain:UTF-8&nbsp;characters&nbsp;in</a><br>
+<a href="spec_42.html#IX2501">domain:virtual</a><br>
+<a href="spec_1.html#IX25">domainless&nbsp;addresses</a><br>
+<a href="spec_5.html#IX346">dot:in&nbsp;incoming,&nbsp;non-SMTP&nbsp;message</a> &nbsp;<a href="spec_5.html#IX442">[2]</a><br>
+<a href="spec_44.html#IX2600">dot:in&nbsp;local&nbsp;part</a><br>
+<a href="spec_14.html#IX1434">dot:trailing&nbsp;on&nbsp;domain</a><br>
+<a href="spec_50.html#IX2840">drivers:adding&nbsp;new</a><br>
+<a href="spec_6.html#IX588">drivers:configuration&nbsp;format</a><br>
+<a href="spec_3.html#IX90">drivers:definition&nbsp;of</a><br>
+<a href="spec_3.html#IX93">drivers:instance&nbsp;definition</a><br>
+<a href="spec_9.html#IX636">dsearch&nbsp;lookup&nbsp;type</a><br>
+<a href="spec_22.html#IX1750">duplicate&nbsp;addresses</a><br>
+<br>
+<a name="E"></a>
+<font size="+1">E</font><br>
+<a href="spec_22.html#IX1793"><font size=-1>EACCES</font></a><br>
+<a href="spec_43.html#IX2518"><font size=-1>EHLO</font></a> &nbsp;<a href="spec_45.html#IX2621">[2]</a><br>
+<a href="spec_14.html#IX1162"><font size=-1>EHLO</font>:accepting&nbsp;junk&nbsp;data</a><br>
+<a href="spec_14.html#IX1035"><font size=-1>EHLO</font>:ACL&nbsp;for</a> &nbsp;<a href="spec_38.html#IX2362">[2]</a><br>
+<a href="spec_30.html#IX2153"><font size=-1>EHLO</font>:argument,&nbsp;setting</a><br>
+<a href="spec_30.html#IX2159"><font size=-1>EHLO</font>:avoiding&nbsp;use&nbsp;of</a><br>
+<a href="spec_14.html#IX1169"><font size=-1>EHLO</font>:forcing&nbsp;reverse&nbsp;lookup</a><br>
+<a href="spec_43.html#IX2543"><font size=-1>EHLO</font>:invalid&nbsp;data</a><br>
+<a href="spec_14.html#IX1165"><font size=-1>EHLO</font>:underscores&nbsp;in</a><br>
+<a href="spec_38.html#IX2417"><font size=-1>EHLO</font>:verifying</a><br>
+<a href="spec_14.html#IX1177"><font size=-1>EHLO</font>:verifying,&nbsp;mandatory</a><br>
+<a href="spec_14.html#IX1172"><font size=-1>EHLO</font>:verifying,&nbsp;optional</a><br>
+<a href="spec_10.html#IX751">empty&nbsp;item&nbsp;in&nbsp;hosts&nbsp;list</a><br>
+<a href="spec_11.html#IX901">encrypted&nbsp;strings,&nbsp;comparing</a><br>
+<a href="spec_38.html#IX2393">encryption:checking&nbsp;in&nbsp;an&nbsp;ACL</a><br>
+<a href="spec_4.html#IX146">encryption:including&nbsp;support&nbsp;for</a><br>
+<a href="spec_14.html#IX1469">encryption:on&nbsp;SMTP&nbsp;connection</a> &nbsp;<a href="spec_37.html#IX2327">[2]</a><br>
+<a href="spec_22.html#IX1795"><font size=-1>ENOTDIR</font></a><br>
+<a href="spec_5.html#IX210">envelope&nbsp;sender</a> &nbsp;<a href="spec_5.html#IX242">[2]</a> &nbsp;<a href="spec_5.html#IX337">[3]</a> &nbsp;<a href="spec_14.html#IX1204">[4]</a> &nbsp;<a href="spec_14.html#IX1510">[5]</a> &nbsp;<a href="spec_15.html#IX1545">[6]</a> &nbsp;<a href="spec_24.html#IX1892">[7]</a> &nbsp;<a href="spec_26.html#IX2005">[8]</a> &nbsp;<a href="spec_29.html#IX2115">[9]</a> &nbsp;<a href="spec_40.html#IX2489">[10]</a> &nbsp;<a href="spec_43.html#IX2536">[11]</a> &nbsp;<a href="spec_44.html#IX2575">[12]</a><br>
+<a href="spec_31.html#IX2228">envelope&nbsp;sender,&nbsp;rewriting</a><br>
+<a href="spec_1.html#IX33">envelope,&nbsp;definition&nbsp;of</a><br>
+<a href="spec_14.html#IX1123"><i>Envelope-to:</i>&nbsp;header&nbsp;line</a> &nbsp;<a href="spec_24.html#IX1858">[2]</a> &nbsp;<a href="spec_25.html#IX1918">[3]</a> &nbsp;<a href="spec_44.html#IX2583">[4]</a><br>
+<a href="spec_44.html#IX2584"><tt>envelope&#095;to&#095;remove</tt></a><br>
+<a href="spec_23.html#IX1832">environment&nbsp;for&nbsp;local&nbsp;transports</a><br>
+<a href="spec_29.html#IX2075">environment&nbsp;for&nbsp;pipe&nbsp;transport</a> &nbsp;<a href="spec_29.html#IX2087">[2]</a><br>
+<a href="spec_45.html#IX2634">error:ignored</a><br>
+<a href="spec_6.html#IX546">error:in&nbsp;configuration&nbsp;file</a><br>
+<a href="spec_43.html#IX2529">error:in&nbsp;outgoing&nbsp;SMTP</a><br>
+<a href="spec_5.html#IX429">error:reporting</a> &nbsp;<a href="spec_5.html#IX432">[2]</a> &nbsp;<a href="spec_5.html#IX435">[3]</a> &nbsp;<a href="spec_5.html#IX438">[4]</a> &nbsp;<a href="spec_5.html#IX440">[5]</a><br>
+<a href="spec_22.html#IX1827">error:skipping&nbsp;bad&nbsp;syntax</a><br>
+<a href="spec_42.html#IX2496"><tt>errors&#095;to</tt></a><br>
+<a href="spec_6.html#IX576">escape&nbsp;characters&nbsp;in&nbsp;quoted&nbsp;strings</a><br>
+<a href="spec_30.html#IX2157">ESMTP,&nbsp;avoiding&nbsp;use&nbsp;of</a><br>
+<a href="spec_14.html#IX1031"><font size=-1>ETRN</font>:ACL&nbsp;for</a> &nbsp;<a href="spec_38.html#IX2359">[2]</a><br>
+<a href="spec_11.html#IX1000"><font size=-1>ETRN</font>:argument</a><br>
+<a href="spec_14.html#IX1398"><font size=-1>ETRN</font>:command&nbsp;to&nbsp;be&nbsp;run</a><br>
+<a href="spec_45.html#IX2651"><font size=-1>ETRN</font>:logging</a><br>
+<a href="spec_43.html#IX2553"><font size=-1>ETRN</font>:processing</a><br>
+<a href="spec_14.html#IX1400"><font size=-1>ETRN</font>:serializing</a><br>
+<a href="spec_11.html#IX971"><font size=-1>ETRN</font>:value&nbsp;of&nbsp;<tt>$domain</tt></a><br>
+<a href="spec_29.html#IX2090">exec&nbsp;failure</a><br>
+<a href="spec_45.html#IX2615"><i>exicyclog</i></a> &nbsp;<a href="spec_46.html#IX2725">[2]</a><br>
+<a href="spec_46.html#IX2720"><i>exigrep</i></a><br>
+<a href="spec_45.html#IX2640">Exim&nbsp;arguments,&nbsp;logging</a><br>
+<a href="spec_14.html#IX1134">Exim&nbsp;binary,&nbsp;path&nbsp;name</a><br>
+<a href="spec_14.html#IX1132">Exim&nbsp;group</a><br>
+<a href="spec_47.html#IX2784">Exim&nbsp;monitor</a><br>
+<a href="spec_14.html#IX1137">Exim&nbsp;user</a><br>
+<a href="spec_46.html#IX2754"><i>exim&#095;checkaccess</i></a><br>
+<a href="spec_46.html#IX2759"><i>exim&#095;dbmbuild</i></a><br>
+<a href="spec_46.html#IX2767"><i>exim&#095;dumpdb</i></a><br>
+<a href="spec_46.html#IX2769"><i>exim&#095;fixdb</i></a><br>
+<a href="spec_6.html#IX542"><font size=-1>EXIM&#095;GROUP</font></a><br>
+<a href="spec_46.html#IX2771"><i>exim&#095;lock</i></a><br>
+<a href="spec_4.html#IX143"><i>exim&#095;monitor/EDITME</i></a> &nbsp;<a href="spec_47.html#IX2788">[2]</a><br>
+<a href="spec_46.html#IX2768"><i>exim&#095;tidydb</i></a><br>
+<a href="spec_6.html#IX541"><font size=-1>EXIM&#095;USER</font></a><br>
+<a href="spec_47.html#IX2786"><i>eximon</i></a><br>
+<a href="spec_46.html#IX2727"><i>eximstats</i></a><br>
+<a href="spec_46.html#IX2728"><i>eximstats</i>:options</a><br>
+<a href="spec_46.html#IX2764"><i>exinext</i></a><br>
+<a href="spec_46.html#IX2722"><i>exipick</i></a><br>
+<a href="spec_46.html#IX2704"><i>exiqgrep</i></a><br>
+<a href="spec_46.html#IX2718"><i>exiqsumm</i></a><br>
+<a href="spec_39.html#IX2460"><tt>exiscan</tt></a><br>
+<a href="spec_14.html#IX1277"><i>exiwhat</i></a> &nbsp;<a href="spec_46.html#IX2701">[2]</a><br>
+<a href="spec_11.html#IX852">expansion:arithmetic&nbsp;expression</a><br>
+<a href="spec_11.html#IX830">expansion:calling&nbsp;Perl&nbsp;from</a><br>
+<a href="spec_11.html#IX864">expansion:case&nbsp;forcing</a> &nbsp;<a href="spec_11.html#IX895">[2]</a><br>
+<a href="spec_11.html#IX841">expansion:character&nbsp;translation</a><br>
+<a href="spec_11.html#IX907">expansion:checking&nbsp;for&nbsp;empty&nbsp;variable</a><br>
+<a href="spec_11.html#IX908">expansion:checking&nbsp;header&nbsp;line&nbsp;existence</a><br>
+<a href="spec_11.html#IX949">expansion:combining&nbsp;conditions</a><br>
+<a href="spec_11.html#IX820">expansion:conditional</a><br>
+<a href="spec_11.html#IX896">expansion:conditions</a><br>
+<a href="spec_11.html#IX845">expansion:conversion&nbsp;to&nbsp;base&nbsp;62</a> &nbsp;<a href="spec_11.html#IX847">[2]</a><br>
+<a href="spec_6.html#IX578">expansion:definition&nbsp;of</a><br>
+<a href="spec_11.html#IX849">expansion:domain&nbsp;extraction</a><br>
+<a href="spec_11.html#IX900">expansion:encrypted&nbsp;comparison</a><br>
+<a href="spec_11.html#IX800">expansion:escape&nbsp;sequences</a><br>
+<a href="spec_11.html#IX850">expansion:escaping&nbsp;non-printing&nbsp;characters</a><br>
+<a href="spec_11.html#IX851">expansion:expression&nbsp;evaluation</a><br>
+<a href="spec_11.html#IX806">expansion:extracting&nbsp;substrings&nbsp;by&nbsp;key</a><br>
+<a href="spec_11.html#IX807">expansion:extracting&nbsp;substrings&nbsp;by&nbsp;number</a><br>
+<a href="spec_11.html#IX911">expansion:file&nbsp;existence&nbsp;test</a><br>
+<a href="spec_11.html#IX915">expansion:first&nbsp;delivery&nbsp;test</a><br>
+<a href="spec_11.html#IX810">expansion:header&nbsp;insertion</a><br>
+<a href="spec_11.html#IX860">expansion:hex&nbsp;to&nbsp;base64</a><br>
+<a href="spec_11.html#IX819">expansion:hmac&nbsp;hashing</a><br>
+<a href="spec_11.html#IX798">expansion:including&nbsp;literal&nbsp;text</a><br>
+<a href="spec_11.html#IX831">expansion:inserting&nbsp;an&nbsp;entire&nbsp;file</a><br>
+<a href="spec_11.html#IX833">expansion:inserting&nbsp;from&nbsp;a&nbsp;socket</a><br>
+<a href="spec_11.html#IX870">expansion:IP&nbsp;address&nbsp;masking</a><br>
+<a href="spec_11.html#IX923">expansion:LDAP&nbsp;authentication&nbsp;test</a><br>
+<a href="spec_11.html#IX866">expansion:local&nbsp;part&nbsp;extraction</a><br>
+<a href="spec_11.html#IX822">expansion:lookup&nbsp;in</a><br>
+<a href="spec_11.html#IX872">expansion:MD5&nbsp;hash</a><br>
+<a href="spec_11.html#IX897">expansion:negating&nbsp;a&nbsp;condition</a><br>
+<a href="spec_11.html#IX799">expansion:non-expandable&nbsp;substrings</a><br>
+<a href="spec_11.html#IX899">expansion:numeric&nbsp;comparison</a><br>
+<a href="spec_11.html#IX827">expansion:numeric&nbsp;hash</a> &nbsp;<a href="spec_11.html#IX873">[2]</a><br>
+<a href="spec_10.html#IX715">expansion:of&nbsp;lists</a><br>
+<a href="spec_11.html#IX797">expansion:of&nbsp;strings</a><br>
+<a href="spec_11.html#IX805">expansion:operators</a> &nbsp;<a href="spec_11.html#IX842">[2]</a><br>
+<a href="spec_11.html#IX938">expansion:PAM&nbsp;authentication&nbsp;test</a><br>
+<a href="spec_11.html#IX941">expansion:<i>pwcheck</i>&nbsp;authentication&nbsp;test</a><br>
+<a href="spec_11.html#IX943">expansion:queue&nbsp;runner&nbsp;test</a><br>
+<a href="spec_11.html#IX876">expansion:quoting</a><br>
+<a href="spec_11.html#IX945">expansion:Radius&nbsp;authentication</a><br>
+<a href="spec_11.html#IX853">expansion:re-expansion&nbsp;of&nbsp;substring</a><br>
+<a href="spec_11.html#IX928">expansion:regular&nbsp;expression&nbsp;comparison</a><br>
+<a href="spec_11.html#IX880">expansion:RFC&nbsp;2047</a><br>
+<a href="spec_11.html#IX843">expansion:RFC&nbsp;2822&nbsp;address&nbsp;handling</a><br>
+<a href="spec_11.html#IX835">expansion:running&nbsp;a&nbsp;command</a><br>
+<a href="spec_11.html#IX948">expansion:<i>saslauthd</i>&nbsp;authentication&nbsp;test</a><br>
+<a href="spec_11.html#IX882">expansion:SHA-1&nbsp;hashing</a><br>
+<a href="spec_11.html#IX883">expansion:statting&nbsp;a&nbsp;file</a><br>
+<a href="spec_11.html#IX910">expansion:string&nbsp;comparison</a> &nbsp;<a href="spec_11.html#IX917">[2]</a> &nbsp;<a href="spec_11.html#IX919">[3]</a> &nbsp;<a href="spec_11.html#IX925">[4]</a> &nbsp;<a href="spec_11.html#IX927">[5]</a><br>
+<a href="spec_11.html#IX885">expansion:string&nbsp;length</a><br>
+<a href="spec_11.html#IX837">expansion:string&nbsp;substitution</a><br>
+<a href="spec_11.html#IX821">expansion:string&nbsp;truncation</a> &nbsp;<a href="spec_11.html#IX865">[2]</a><br>
+<a href="spec_11.html#IX889">expansion:substring&nbsp;expansion</a><br>
+<a href="spec_11.html#IX840">expansion:substring&nbsp;extraction</a><br>
+<a href="spec_5.html#IX231">expansion:testing</a> &nbsp;<a href="spec_11.html#IX801">[2]</a><br>
+<a href="spec_11.html#IX809">expansion:textual&nbsp;hash</a> &nbsp;<a href="spec_11.html#IX858">[2]</a><br>
+<a href="spec_11.html#IX856">expansion:UTF-8&nbsp;conversion</a><br>
+<a href="spec_11.html#IX804">expansion:variables</a><br>
+<a href="spec_11.html#IX954">expansion:variables,&nbsp;list&nbsp;of</a><br>
+<a href="spec_11.html#IX953">expansion:&#147;and&#148;&nbsp;of&nbsp;conditions</a><br>
+<a href="spec_11.html#IX951">expansion:&#147;or&#148;&nbsp;of&nbsp;conditions</a><br>
+<a href="spec_14.html#IX1033"><font size=-1>EXPN</font>:ACL&nbsp;for</a> &nbsp;<a href="spec_38.html#IX2360">[2]</a><br>
+<a href="spec_11.html#IX999"><font size=-1>EXPN</font>:argument</a><br>
+<a href="spec_43.html#IX2552"><font size=-1>EXPN</font>:processing</a><br>
+<a href="spec_15.html#IX1550"><font size=-1>EXPN</font>:router&nbsp;skipping</a><br>
+<a href="spec_15.html#IX1640"><font size=-1>EXPN</font>:with&nbsp;<tt>verify&#095;only</tt></a><br>
+<a href="spec_29.html#IX2122">external&nbsp;local&nbsp;delivery</a><br>
+<a href="spec_1.html#IX28">external&nbsp;transports</a><br>
+<a href="spec_4.html#IX169"><font size=-1>EXTRALIBS</font></a><br>
+<br>
+<a name="F"></a>
+<font size="+1">F</font><br>
+<a href="spec_40.html#IX2480"><tt>fail</tt>:in&nbsp;system&nbsp;filter</a><br>
+<a href="spec_40.html#IX2484"><tt>fail</tt>:log&nbsp;line,&nbsp;reducing</a><br>
+<a href="spec_22.html#IX1746">failing&nbsp;delivery:forcing</a><br>
+<a href="spec_22.html#IX1759">failing&nbsp;delivery:from&nbsp;filter</a><br>
+failover&nbsp;<em>see&nbsp;fallback</em><br>
+<a href="spec_29.html#IX2091">failure&nbsp;of&nbsp;exec</a><br>
+<a href="spec_15.html#IX1558">fallback:hosts&nbsp;specified&nbsp;on&nbsp;router</a><br>
+<a href="spec_30.html#IX2134">fallback:hosts&nbsp;specified&nbsp;on&nbsp;transport</a> &nbsp;<a href="spec_30.html#IX2149">[2]</a><br>
+<a href="spec_30.html#IX2176">fallback:randomized&nbsp;hosts</a><br>
+fallover&nbsp;<em>see&nbsp;fallback</em><br>
+<a href="spec_1.html#IX9">FAQ<A HREF="FAQ.html"></a> &nbsp;<a href="spec_1.html#IX20">[2]</a><br>
+<a href="spec_26.html#IX1929">fifo&nbsp;(named&nbsp;pipe)</a><br>
+<a href="spec_26.html#IX2016">file:appending</a><br>
+<a href="spec_11.html#IX912">file:existence&nbsp;test</a><br>
+<a href="spec_11.html#IX884">file:extracting&nbsp;characteristics</a><br>
+<a href="spec_3.html#IX77">file:how&nbsp;a&nbsp;message&nbsp;is&nbsp;held</a><br>
+<a href="spec_22.html#IX1736">file:in&nbsp;redirection&nbsp;list</a><br>
+<a href="spec_11.html#IX832">file:inserting&nbsp;into&nbsp;expansion</a><br>
+<a href="spec_3.html#IX89">file:journal</a><br>
+<a href="spec_26.html#IX1984">file:locking</a> &nbsp;<a href="spec_26.html#IX2018">[2]</a> &nbsp;<a href="spec_26.html#IX2024">[3]</a><br>
+<a href="spec_9.html#IX614">file:lookup</a> &nbsp;<a href="spec_11.html#IX823">[2]</a><br>
+<a href="spec_26.html#IX1957">file:mailbox,&nbsp;checking&nbsp;existing&nbsp;format</a><br>
+<a href="spec_26.html#IX1985">file:MBX&nbsp;format</a><br>
+<a href="spec_15.html#IX1604">file:requiring&nbsp;for&nbsp;router</a><br>
+<a href="spec_14.html#IX1225">file:too&nbsp;many&nbsp;open</a><br>
+<a href="spec_14.html#IX1449">file:transport&nbsp;for&nbsp;system&nbsp;filter</a><br>
+<a href="spec_22.html#IX1761">filter:enabling&nbsp;use&nbsp;of</a><br>
+<a href="spec_40.html#IX2488">filter:header&nbsp;lines,&nbsp;adding/removing</a><br>
+<a href="spec_3.html#IX61">filter:introduction</a><br>
+<a href="spec_22.html#IX1779">filter:locking&nbsp;out&nbsp;certain&nbsp;features</a><br>
+<a href="spec_22.html#IX1726">filter:specifying&nbsp;in&nbsp;redirection&nbsp;data</a><br>
+<a href="spec_14.html#IX1444">filter:system&nbsp;filter</a> &nbsp;<a href="spec_40.html#IX2471">[2]</a><br>
+<a href="spec_5.html#IX236">filter:testing</a><br>
+<a href="spec_11.html#IX974">filter:transport&nbsp;filter</a> &nbsp;<a href="spec_11.html#IX992">[2]</a> &nbsp;<a href="spec_24.html#IX1903">[3]</a> &nbsp;<a href="spec_29.html#IX2073">[4]</a> &nbsp;<a href="spec_30.html#IX2206">[5]</a> &nbsp;<a href="spec_43.html#IX2522">[6]</a><br>
+<a href="spec_15.html#IX1637">filter:user&nbsp;for&nbsp;processing</a><br>
+<a href="spec_40.html#IX2472">filtering&nbsp;all&nbsp;mail</a><br>
+filter||Sieve&nbsp;<em>see&nbsp;Sieve&nbsp;filter</em><br>
+<a href="spec_11.html#IX914">first&nbsp;delivery</a><br>
+<a href="spec_6.html#IX569">fixed&nbsp;point&nbsp;configuration&nbsp;values</a><br>
+<a href="spec_5.html#IX348">forcing&nbsp;delivery</a><br>
+<a href="spec_5.html#IX419">foreground&nbsp;delivery</a><br>
+<a href="spec_6.html#IX563">format:boolean</a><br>
+<a href="spec_6.html#IX550">format:configuration&nbsp;file</a><br>
+<a href="spec_6.html#IX570">format:fixed&nbsp;point</a><br>
+<a href="spec_6.html#IX582">format:group&nbsp;name</a><br>
+<a href="spec_6.html#IX566">format:integer</a><br>
+<a href="spec_6.html#IX584">format:list&nbsp;item&nbsp;in&nbsp;configuration</a><br>
+<a href="spec_5.html#IX261">format:message</a><br>
+<a href="spec_6.html#IX568">format:octal&nbsp;integer</a><br>
+<a href="spec_3.html#IX64">format:of&nbsp;message&nbsp;id</a><br>
+<a href="spec_49.html#IX2829">format:spool&nbsp;files</a><br>
+<a href="spec_6.html#IX574">format:string</a><br>
+<a href="spec_6.html#IX572">format:time&nbsp;interval</a><br>
+<a href="spec_6.html#IX580">format:user&nbsp;name</a><br>
+<a href="spec_22.html#IX1821">forward&nbsp;file:broken</a><br>
+<a href="spec_22.html#IX1801">forward&nbsp;file:one-time&nbsp;expansion</a><br>
+<a href="spec_22.html#IX1808">forward&nbsp;file:ownership</a><br>
+<a href="spec_5.html#IX238">forward&nbsp;file:testing</a><br>
+<a href="spec_4.html#IX193">FreeBSD,&nbsp;MTA&nbsp;indirection</a><br>
+<a href="spec_40.html#IX2481"><tt>freeze</tt>&nbsp;in&nbsp;system&nbsp;filter</a><br>
+<a href="spec_5.html#IX371">freezing&nbsp;messages</a> &nbsp;<a href="spec_40.html#IX2477">[2]</a><br>
+<a href="spec_22.html#IX1764">freezing&nbsp;messages:allowing&nbsp;in&nbsp;filter</a><br>
+<a href="spec_14.html#IX1147">freezing&nbsp;messages:sending&nbsp;a&nbsp;message&nbsp;when&nbsp;freezing</a><br>
+<a href="spec_5.html#IX211"><i>From:</i>&nbsp;header&nbsp;line</a> &nbsp;<a href="spec_44.html#IX2585">[2]</a><br>
+<a href="spec_14.html#IX1203"><i>From:</i>&nbsp;header&nbsp;line:disabling&nbsp;checking&nbsp;of</a><br>
+<a href="spec_47.html#IX2797">frozen&nbsp;messages:display</a><br>
+<a href="spec_5.html#IX350">frozen&nbsp;messages:forcing&nbsp;delivery</a> &nbsp;<a href="spec_5.html#IX503">[2]</a> &nbsp;<a href="spec_5.html#IX517">[3]</a><br>
+<a href="spec_5.html#IX280">frozen&nbsp;messages:in&nbsp;queue&nbsp;listing</a><br>
+<a href="spec_45.html#IX2675">frozen&nbsp;messages:logging&nbsp;skipping</a><br>
+<a href="spec_40.html#IX2476">frozen&nbsp;messages:manual&nbsp;thaw,&nbsp;testing&nbsp;in&nbsp;filter</a><br>
+<a href="spec_14.html#IX1246">frozen&nbsp;messages:moving</a><br>
+<a href="spec_49.html#IX2835">frozen&nbsp;messages:spool&nbsp;data</a><br>
+<a href="spec_3.html#IX82">frozen&nbsp;messages:thawing</a> &nbsp;<a href="spec_5.html#IX390">[2]</a> &nbsp;<a href="spec_47.html#IX2801">[3]</a><br>
+<a href="spec_14.html#IX1463">frozen&nbsp;messages:timing&nbsp;out</a><br>
+<a href="spec_1.html#IX8">FTP&nbsp;site</a> &nbsp;<a href="spec_1.html#IX14">[2]</a><br>
+<br>
+<a name="G"></a>
+<font size="+1">G</font><br>
+<a href="spec_4.html#IX133"><i>gdbm</i>&nbsp;DBM&nbsp;library</a><br>
+<a href="spec_6.html#IX589">generic&nbsp;options</a><br>
+<a href="spec_15.html#IX1521">generic&nbsp;options:router</a><br>
+<a href="spec_24.html#IX1842">generic&nbsp;options:transport</a><br>
+<a href="spec_11.html#IX967">gid&nbsp;(group&nbsp;id):caller</a><br>
+<a href="spec_14.html#IX1131">gid&nbsp;(group&nbsp;id):Exim's&nbsp;own</a><br>
+<a href="spec_21.html#IX1715">gid&nbsp;(group&nbsp;id):in&nbsp;<b>queryprogram</b>&nbsp;router</a><br>
+<a href="spec_49.html#IX2834">gid&nbsp;(group&nbsp;id):in&nbsp;spool&nbsp;file</a><br>
+<a href="spec_15.html#IX1560">gid&nbsp;(group&nbsp;id):local&nbsp;delivery</a><br>
+<a href="spec_11.html#IX987">gid&nbsp;(group&nbsp;id):of&nbsp;originating&nbsp;user</a><br>
+<a href="spec_14.html#IX1450">gid&nbsp;(group&nbsp;id):system&nbsp;filter</a> &nbsp;<a href="spec_40.html#IX2475">[2]</a><br>
+<a href="spec_5.html#IX374">giving&nbsp;up&nbsp;on&nbsp;messages</a><br>
+<a href="spec_37.html#IX2331">GnuTLS</a><br>
+<a href="spec_4.html#IX149">GnuTLS:building&nbsp;Exim&nbsp;with</a><br>
+<a href="spec_6.html#IX581">group:name&nbsp;format</a><br>
+<a href="spec_14.html#IX1498">group:trusted</a><br>
+<a href="spec_15.html#IX1574">groups,&nbsp;additional</a> &nbsp;<a href="spec_24.html#IX1877">[2]</a><br>
+<br>
+<a name="H"></a>
+<font size="+1">H</font><br>
+<a href="spec_11.html#IX828">hash&nbsp;function:numeric</a> &nbsp;<a href="spec_11.html#IX874">[2]</a><br>
+<a href="spec_11.html#IX808">hash&nbsp;function:textual</a> &nbsp;<a href="spec_11.html#IX857">[2]</a><br>
+<a href="spec_15.html#IX1565">header&nbsp;lines:adding</a> &nbsp;<a href="spec_44.html#IX2593">[2]</a><br>
+<a href="spec_40.html#IX2486">header&nbsp;lines:adding&nbsp;in&nbsp;system&nbsp;filter</a><br>
+<a href="spec_24.html#IX1862">header&nbsp;lines:adding&nbsp;in&nbsp;transport</a><br>
+<a href="spec_11.html#IX815">header&nbsp;lines:character&nbsp;sets</a><br>
+<a href="spec_11.html#IX816">header&nbsp;lines:decoding</a><br>
+<a href="spec_11.html#IX814">header&nbsp;lines:in&nbsp;expansion&nbsp;strings</a><br>
+<a href="spec_5.html#IX397">header&nbsp;lines:listing</a><br>
+<a href="spec_14.html#IX1158">header&nbsp;lines:maximum&nbsp;size&nbsp;of&nbsp;</a><br>
+<a href="spec_15.html#IX1568">header&nbsp;lines:removing</a> &nbsp;<a href="spec_24.html#IX1869">[2]</a> &nbsp;<a href="spec_44.html#IX2594">[3]</a><br>
+<a href="spec_40.html#IX2487">header&nbsp;lines:removing&nbsp;in&nbsp;system&nbsp;filter</a><br>
+<a href="spec_17.html#IX1665">header&nbsp;lines:rewriting</a><br>
+<a href="spec_24.html#IX1867">header&nbsp;lines:transporting</a><br>
+<a href="spec_38.html#IX2413">header&nbsp;lines:verifying&nbsp;syntax</a><br>
+<a href="spec_38.html#IX2409">header&nbsp;lines:verifying&nbsp;the&nbsp;sender&nbsp;in</a><br>
+<a href="spec_1.html#IX36">header&nbsp;section:definition&nbsp;of</a><br>
+<a href="spec_14.html#IX1155">header&nbsp;section:maximum&nbsp;size&nbsp;of</a><br>
+<a href="spec_43.html#IX2519"><font size=-1>HELO</font></a> &nbsp;<a href="spec_45.html#IX2620">[2]</a><br>
+<a href="spec_14.html#IX1161"><font size=-1>HELO</font>:accepting&nbsp;junk&nbsp;data</a><br>
+<a href="spec_14.html#IX1036"><font size=-1>HELO</font>:ACL&nbsp;for</a> &nbsp;<a href="spec_38.html#IX2361">[2]</a><br>
+<a href="spec_30.html#IX2152"><font size=-1>HELO</font>:argument,&nbsp;setting</a><br>
+<a href="spec_14.html#IX1168"><font size=-1>HELO</font>:forcing&nbsp;reverse&nbsp;lookup</a><br>
+<a href="spec_30.html#IX2158"><font size=-1>HELO</font>:forcing&nbsp;use&nbsp;of</a><br>
+<a href="spec_43.html#IX2544"><font size=-1>HELO</font>:invalid&nbsp;data</a><br>
+<a href="spec_14.html#IX1164"><font size=-1>HELO</font>:underscores&nbsp;in</a><br>
+<a href="spec_38.html#IX2416"><font size=-1>HELO</font>:verifying</a><br>
+<a href="spec_14.html#IX1176"><font size=-1>HELO</font>:verifying,&nbsp;mandatory</a><br>
+<a href="spec_14.html#IX1171"><font size=-1>HELO</font>:verifying,&nbsp;optional</a><br>
+<a href="spec_3.html#IX117">hints&nbsp;database</a><br>
+<a href="spec_24.html#IX1912">hints&nbsp;database:access&nbsp;by&nbsp;remote&nbsp;transport</a><br>
+<a href="spec_38.html#IX2446">hints&nbsp;database:callout&nbsp;cache</a><br>
+<a href="spec_14.html#IX1336">hints&nbsp;database:data&nbsp;expiry</a> &nbsp;<a href="spec_32.html#IX2262">[2]</a><br>
+<a href="spec_4.html#IX127">hints&nbsp;database:DBM&nbsp;files&nbsp;used&nbsp;for</a><br>
+<a href="spec_43.html#IX2554">hints&nbsp;database:<font size=-1>ETRN</font>&nbsp;serialization</a><br>
+<a href="spec_46.html#IX2765">hints&nbsp;database:maintenance</a><br>
+<a href="spec_5.html#IX365">hints&nbsp;database:not&nbsp;overridden&nbsp;by&nbsp;<i>-Mc</i></a><br>
+<a href="spec_5.html#IX351">hints&nbsp;database:overriding&nbsp;retry&nbsp;hints</a><br>
+<a href="spec_5.html#IX493">hints&nbsp;database:remembering&nbsp;routing</a> &nbsp;<a href="spec_30.html#IX2128">[2]</a><br>
+<a href="spec_15.html#IX1608">hints&nbsp;database:retry&nbsp;keys</a> &nbsp;<a href="spec_24.html#IX1890">[2]</a> &nbsp;<a href="spec_43.html#IX2525">[3]</a><br>
+<a href="spec_30.html#IX2200">hints&nbsp;database:serializing&nbsp;deliveries&nbsp;to&nbsp;a&nbsp;host</a><br>
+<a href="spec_32.html#IX2259">hints&nbsp;database:use&nbsp;for&nbsp;retrying</a><br>
+<a href="spec_29.html#IX2077"><font size=-1>HOME</font></a><br>
+<a href="spec_15.html#IX1628">home&nbsp;directory:for&nbsp;local&nbsp;transport</a> &nbsp;<a href="spec_23.html#IX1839">[2]</a><br>
+<a href="spec_15.html#IX1612">home&nbsp;directory:for&nbsp;router</a><br>
+<a href="spec_29.html#IX2076"><font size=-1>HOST</font></a><br>
+<a href="spec_10.html#IX752">host&nbsp;list:empty&nbsp;string&nbsp;in</a><br>
+<a href="spec_10.html#IX758">host&nbsp;list:lookup&nbsp;of&nbsp;IP&nbsp;address</a><br>
+<a href="spec_10.html#IX760">host&nbsp;list:masked&nbsp;IP&nbsp;address</a><br>
+<a href="spec_10.html#IX774">host&nbsp;list:matching&nbsp;host&nbsp;name</a><br>
+<a href="spec_10.html#IX763">host&nbsp;list:matching&nbsp;host&nbsp;name&nbsp;</a><br>
+<a href="spec_10.html#IX754">host&nbsp;list:matching&nbsp;IP&nbsp;addresses</a><br>
+<a href="spec_10.html#IX775">host&nbsp;list:mixing&nbsp;names&nbsp;and&nbsp;addresses&nbsp;in</a><br>
+<a href="spec_10.html#IX749">host&nbsp;list:patterns&nbsp;in</a><br>
+<a href="spec_10.html#IX768">host&nbsp;list:regular&nbsp;expression&nbsp;in</a><br>
+<a href="spec_38.html#IX2395">host:ACL&nbsp;checking</a><br>
+<a href="spec_10.html#IX764">host:alias&nbsp;for</a><br>
+<a href="spec_43.html#IX2531">host:error</a><br>
+<a href="spec_14.html#IX1345">host:for&nbsp;RFC&nbsp;1413&nbsp;calls</a><br>
+<a href="spec_14.html#IX1367">host:limiting&nbsp;SMTP&nbsp;connections&nbsp;from</a><br>
+<a href="spec_20.html#IX1696">host:list&nbsp;of,&nbsp;randomized</a> &nbsp;<a href="spec_30.html#IX2175">[2]</a><br>
+<a href="spec_14.html#IX1214">host:locally&nbsp;unique&nbsp;number&nbsp;for</a><br>
+<a href="spec_10.html#IX761">host:lookup&nbsp;failures</a> &nbsp;<a href="spec_10.html#IX769">[2]</a> &nbsp;<a href="spec_10.html#IX772">[3]</a><br>
+<a href="spec_30.html#IX2164">host:maximum&nbsp;number&nbsp;to&nbsp;try</a> &nbsp;<a href="spec_30.html#IX2222">[2]</a><br>
+<a href="spec_14.html#IX1379">host:name&nbsp;in&nbsp;SMTP&nbsp;responses</a><br>
+<a href="spec_11.html#IX975">host:name&nbsp;lookup,&nbsp;failure&nbsp;of</a><br>
+<a href="spec_14.html#IX1182">host:name&nbsp;lookup,&nbsp;forcing</a><br>
+<a href="spec_14.html#IX1269">host:name&nbsp;of&nbsp;local</a><br>
+<a href="spec_10.html#IX728">host:name,&nbsp;matched&nbsp;in&nbsp;domain&nbsp;list&nbsp;</a><br>
+<a href="spec_14.html#IX1185">host:rejecting&nbsp;connections&nbsp;from</a><br>
+<a href="spec_14.html#IX1377">host:reserved</a><br>
+<a href="spec_30.html#IX2199">host:serializing&nbsp;connections</a><br>
+<a href="spec_14.html#IX1188">host:treated&nbsp;as&nbsp;local</a><br>
+<a href="spec_14.html#IX1322">host:unqualified&nbsp;addresses&nbsp;from</a> &nbsp;<a href="spec_14.html#IX1351">[2]</a><br>
+<a href="spec_38.html#IX2424">host:verifying&nbsp;reverse&nbsp;lookup</a><br>
+<a href="spec_10.html#IX739"><tt>hosts&#095;treat&#095;as&#095;local</tt></a><br>
+<a href="spec_14.html#IX1149">HP-UX</a><br>
+<br>
+<a name="I"></a>
+<font size="+1">I</font><br>
+<a href="spec_4.html#IX144"><i>iconv()</i>&nbsp;support</a><br>
+<a href="spec_3.html#IX65">id&nbsp;of&nbsp;message</a><br>
+ident&nbsp;<em>see&nbsp;RFC&nbsp;1413</em><br>
+<a href="spec_22.html#IX1825">ignoring&nbsp;faulty&nbsp;addresses</a><br>
+<a href="spec_22.html#IX1739">included&nbsp;address&nbsp;list</a><br>
+<a href="spec_6.html#IX552">inclusions&nbsp;in&nbsp;configuration&nbsp;file</a><br>
+<a href="spec_43.html#IX2538">incoming&nbsp;SMTP&nbsp;over&nbsp;TCP/IP</a><br>
+<a href="spec_2.html#IX45">incorporated&nbsp;code</a><br>
+<a href="spec_5.html#IX302">inetd</a> &nbsp;<a href="spec_14.html#IX1357">[2]</a> &nbsp;<a href="spec_43.html#IX2539">[3]</a><br>
+<a href="spec_23.html#IX1836"><tt>initgroups</tt>&nbsp;option</a><br>
+<a href="spec_4.html#IX176">installing&nbsp;Exim</a><br>
+<a href="spec_4.html#IX185">installing&nbsp;Exim:<i>info</i>&nbsp;documentation</a><br>
+<a href="spec_4.html#IX184">installing&nbsp;Exim:install&nbsp;script&nbsp;options</a><br>
+<a href="spec_4.html#IX183">installing&nbsp;Exim:testing&nbsp;the&nbsp;script</a><br>
+<a href="spec_4.html#IX182">installing&nbsp;Exim:what&nbsp;is&nbsp;not&nbsp;installed</a><br>
+<a href="spec_6.html#IX565">integer&nbsp;configuration&nbsp;values</a><br>
+<a href="spec_6.html#IX567">integer&nbsp;format</a><br>
+<a href="spec_9.html#IX654">Interbase&nbsp;lookup&nbsp;type</a> &nbsp;<a href="spec_9.html#IX712">[2]</a><br>
+<a href="spec_5.html#IX453">interface:address,&nbsp;specifying&nbsp;for&nbsp;local&nbsp;message</a><br>
+<a href="spec_13.html#IX1009">interface:listening</a><br>
+<a href="spec_45.html#IX2656">interface:logging</a><br>
+<a href="spec_13.html#IX1011">interface:network</a><br>
+<a href="spec_42.html#IX2508">intermittently&nbsp;connected&nbsp;hosts</a><br>
+<a href="spec_30.html#IX2184">IP&nbsp;address:binding</a><br>
+<a href="spec_15.html#IX1571">IP&nbsp;address:discarding</a><br>
+<a href="spec_13.html#IX1012">IP&nbsp;address:for&nbsp;listening</a><br>
+<a href="spec_10.html#IX759">IP&nbsp;address:masking</a> &nbsp;<a href="spec_11.html#IX868">[2]</a><br>
+<a href="spec_11.html#IX920">IP&nbsp;address:testing&nbsp;string&nbsp;format</a><br>
+<a href="spec_15.html#IX1621">IP&nbsp;address:translating</a><br>
+<a href="spec_48.html#IX2818">IP&nbsp;source&nbsp;routing</a><br>
+<a href="spec_18.html#IX1672"><b>ipliteral</b>&nbsp;router</a><br>
+<a href="spec_19.html#IX1676"><b>iplookup</b>&nbsp;router</a><br>
+<a href="spec_9.html#IX638">iplsearch&nbsp;lookup&nbsp;type</a><br>
+<a href="spec_6.html#IX587">IPv6:addresses&nbsp;in&nbsp;lists</a><br>
+<a href="spec_14.html#IX1116">IPv6:DNS&nbsp;lookup&nbsp;for&nbsp;AAAA&nbsp;records</a><br>
+<a href="spec_4.html#IX153">IPv6:including&nbsp;support&nbsp;for</a><br>
+<a href="spec_4.html#IX129">IRIX,&nbsp;DBM&nbsp;library&nbsp;for</a><br>
+<br>
+<a name="J"></a>
+<font size="+1">J</font><br>
+<a href="spec_3.html#IX88">journal&nbsp;file</a><br>
+<br>
+<a name="K"></a>
+<font size="+1">K</font><br>
+<a href="spec_14.html#IX1353">keepalive:on&nbsp;incoming&nbsp;connection</a><br>
+<a href="spec_30.html#IX2187">keepalive:on&nbsp;outgoing&nbsp;connection</a><br>
+<br>
+<a name="L"></a>
+<font size="+1">L</font><br>
+<a href="spec_9.html#IX695">LDAP&nbsp;lookup</a><br>
+<a href="spec_9.html#IX702">LDAP:authentication</a><br>
+<a href="spec_9.html#IX701">LDAP:connections</a><br>
+<a href="spec_14.html#IX1198">LDAP:default&nbsp;servers</a><br>
+<a href="spec_4.html#IX164">LDAP:including&nbsp;support&nbsp;for</a><br>
+<a href="spec_9.html#IX656">LDAP:lookup&nbsp;type</a><br>
+<a href="spec_14.html#IX1200">LDAP:protocol&nbsp;version,&nbsp;forcing</a><br>
+<a href="spec_9.html#IX698">LDAP:query&nbsp;format</a><br>
+<a href="spec_9.html#IX700">LDAP:quoting</a><br>
+<a href="spec_9.html#IX703">LDAP:returned&nbsp;data&nbsp;formats</a><br>
+<a href="spec_11.html#IX922">LDAP:use&nbsp;for&nbsp;authentication</a><br>
+<a href="spec_9.html#IX699">LDAP:with&nbsp;TLS</a><br>
+<a href="spec_14.html#IX1229">length&nbsp;of&nbsp;login&nbsp;name</a><br>
+LF&nbsp;character&nbsp;<em>see&nbsp;linefeed</em><br>
+<a href="spec_14.html#IX1077">limit:bounce&nbsp;message&nbsp;size</a><br>
+<a href="spec_30.html#IX2223">limit:hosts,&nbsp;maximum&nbsp;number&nbsp;tried</a><br>
+<a href="spec_14.html#IX1355">limit:incoming&nbsp;SMTP&nbsp;connections</a><br>
+<a href="spec_14.html#IX1243">limit:message&nbsp;size</a><br>
+<a href="spec_24.html#IX1881">limit:message&nbsp;size&nbsp;per&nbsp;transport</a><br>
+<a href="spec_14.html#IX1364">limit:messages&nbsp;per&nbsp;SMTP&nbsp;connection</a><br>
+<a href="spec_14.html#IX1359">limit:non-mail&nbsp;SMTP&nbsp;commands</a><br>
+<a href="spec_30.html#IX2165">limit:number&nbsp;of&nbsp;hosts&nbsp;tried</a><br>
+<a href="spec_30.html#IX2166">limit:number&nbsp;of&nbsp;MX&nbsp;tried</a><br>
+<a href="spec_14.html#IX1324">limit:number&nbsp;of&nbsp;recipients</a><br>
+<a href="spec_14.html#IX1339">limit:on&nbsp;retry&nbsp;interval</a><br>
+<a href="spec_14.html#IX1227">limit:open&nbsp;files&nbsp;for&nbsp;lookups</a><br>
+<a href="spec_14.html#IX1412">limit:rate&nbsp;of&nbsp;message&nbsp;arrival</a><br>
+<a href="spec_32.html#IX2256">limit:retry&nbsp;interval</a><br>
+<a href="spec_14.html#IX1156">limit:size&nbsp;of&nbsp;message&nbsp;header&nbsp;section</a><br>
+<a href="spec_14.html#IX1159">limit:size&nbsp;of&nbsp;one&nbsp;header&nbsp;line</a><br>
+<a href="spec_14.html#IX1366">limit:SMTP&nbsp;connections&nbsp;from&nbsp;one&nbsp;host</a><br>
+<a href="spec_14.html#IX1405">limit:SMTP&nbsp;syntax&nbsp;and&nbsp;protocol&nbsp;errors</a><br>
+<a href="spec_14.html#IX1409">limit:unknown&nbsp;SMTP&nbsp;commands</a><br>
+<a href="spec_14.html#IX1231">limit:user&nbsp;name&nbsp;length</a><br>
+<a href="spec_1.html#IX23">limitations&nbsp;of&nbsp;Exim</a><br>
+<a href="spec_44.html#IX2563">line&nbsp;endings</a><br>
+<a href="spec_9.html#IX639">linear&nbsp;search</a><br>
+<a href="spec_26.html#IX2008">linefeed</a> &nbsp;<a href="spec_29.html#IX2118">[2]</a> &nbsp;<a href="spec_43.html#IX2524">[3]</a> &nbsp;<a href="spec_43.html#IX2542">[4]</a> &nbsp;<a href="spec_44.html#IX2565">[5]</a><br>
+<a href="spec_4.html#IX131">Linux,&nbsp;DBM&nbsp;library&nbsp;for</a><br>
+<a href="spec_10.html#IX776">list:address&nbsp;list</a><br>
+<a href="spec_10.html#IX723">list:caching&nbsp;of&nbsp;named</a><br>
+<a href="spec_10.html#IX726">list:domain&nbsp;list</a><br>
+<a href="spec_10.html#IX718">list:file&nbsp;name&nbsp;in</a><br>
+<a href="spec_10.html#IX750">list:host&nbsp;list</a><br>
+<a href="spec_10.html#IX795">list:local&nbsp;part&nbsp;list</a><br>
+<a href="spec_10.html#IX720">list:named</a><br>
+<a href="spec_10.html#IX721">list:named&nbsp;compared&nbsp;with&nbsp;macro</a><br>
+<a href="spec_10.html#IX716">list:negation</a><br>
+<a href="spec_10.html#IX714">list:of&nbsp;domains,&nbsp;hosts,&nbsp;etc.</a><br>
+<a href="spec_6.html#IX586">list:separator,&nbsp;changing</a><br>
+<a href="spec_6.html#IX583">list:syntax&nbsp;of&nbsp;in&nbsp;configuration</a><br>
+<a href="spec_5.html#IX393">listing:message&nbsp;body</a><br>
+<a href="spec_5.html#IX396">listing:message&nbsp;headers</a><br>
+<a href="spec_5.html#IX400">listing:message&nbsp;log</a><br>
+<a href="spec_5.html#IX277">listing:messages&nbsp;on&nbsp;the&nbsp;queue</a><br>
+<a href="spec_28.html#IX2058"><b>lmtp</b>&nbsp;transport</a><br>
+<a href="spec_28.html#IX2059">LMTP:over&nbsp;a&nbsp;pipe</a><br>
+<a href="spec_28.html#IX2060">LMTP:over&nbsp;a&nbsp;socket</a><br>
+<a href="spec_30.html#IX2195">LMTP:over&nbsp;TCP/IP</a> &nbsp;<a href="spec_43.html#IX2516">[2]</a><br>
+<a href="spec_43.html#IX2513">LMTP:processing&nbsp;details</a><br>
+<a href="spec_14.html#IX1106">load&nbsp;average</a> &nbsp;<a href="spec_14.html#IX1299">[2]</a> &nbsp;<a href="spec_14.html#IX1402">[3]</a><br>
+<a href="spec_1.html#IX39">local&nbsp;delivery:definition&nbsp;of</a><br>
+<a href="spec_29.html#IX2120">local&nbsp;delivery:using&nbsp;an&nbsp;external&nbsp;agent</a><br>
+<a href="spec_14.html#IX1187">local&nbsp;host:domains&nbsp;treated&nbsp;as</a><br>
+<a href="spec_15.html#IX1615">local&nbsp;host:MX&nbsp;pointing&nbsp;to</a> &nbsp;<a href="spec_17.html#IX1650">[2]</a><br>
+<a href="spec_14.html#IX1270">local&nbsp;host:name&nbsp;of</a><br>
+<a href="spec_15.html#IX1617">local&nbsp;host:sending&nbsp;to</a> &nbsp;<a href="spec_30.html#IX2133">[2]</a><br>
+<a href="spec_5.html#IX258">local&nbsp;message&nbsp;reception</a><br>
+<a href="spec_11.html#IX933">local&nbsp;part&nbsp;list:in&nbsp;expansion&nbsp;condition</a><br>
+<a href="spec_38.html#IX2397">local&nbsp;part:ACL&nbsp;checking</a><br>
+<a href="spec_44.html#IX2598">local&nbsp;part:case&nbsp;of</a><br>
+<a href="spec_15.html#IX1590">local&nbsp;part:checking&nbsp;in&nbsp;router</a><br>
+<a href="spec_1.html#IX37">local&nbsp;part:definition&nbsp;of</a><br>
+<a href="spec_44.html#IX2601">local&nbsp;part:dots&nbsp;in</a><br>
+<a href="spec_15.html#IX1609">local&nbsp;part:in&nbsp;retry&nbsp;keys</a><br>
+<a href="spec_10.html#IX796">local&nbsp;part:list</a><br>
+<a href="spec_24.html#IX1887">local&nbsp;part:prefix</a> &nbsp;<a href="spec_42.html#IX2504">[2]</a><br>
+<a href="spec_10.html#IX785">local&nbsp;part:starting&nbsp;with&nbsp;!</a> &nbsp;<a href="spec_10.html#IX789">[2]</a><br>
+<a href="spec_24.html#IX1888">local&nbsp;part:suffix</a> &nbsp;<a href="spec_42.html#IX2505">[2]</a><br>
+<a href="spec_5.html#IX300">local&nbsp;SMTP&nbsp;input</a><br>
+<a href="spec_23.html#IX1831">local&nbsp;transports:environment&nbsp;for</a><br>
+<a href="spec_15.html#IX1561">local&nbsp;transports:uid&nbsp;and&nbsp;gid</a> &nbsp;<a href="spec_15.html#IX1575">[2]</a> &nbsp;<a href="spec_15.html#IX1634">[3]</a> &nbsp;<a href="spec_23.html#IX1834">[4]</a><br>
+<a href="spec_15.html#IX1534">local&nbsp;user,&nbsp;checking&nbsp;in&nbsp;router</a><br>
+<a href="spec_4.html#IX142"><i>Local/eximon.conf</i></a> &nbsp;<a href="spec_4.html#IX175">[2]</a> &nbsp;<a href="spec_47.html#IX2787">[3]</a><br>
+<a href="spec_4.html#IX140"><i>Local/Makefile</i></a> &nbsp;<a href="spec_4.html#IX157">[2]</a><br>
+<a href="spec_31.html#IX2227"><i>local&#095;scan()</i>&nbsp;function:address&nbsp;rewriting,&nbsp;timing&nbsp;of</a><br>
+<a href="spec_39.html#IX2462"><i>local&#095;scan()</i>&nbsp;function:API&nbsp;description</a><br>
+<a href="spec_39.html#IX2467"><i>local&#095;scan()</i>&nbsp;function:available&nbsp;Exim&nbsp;functions</a><br>
+<a href="spec_39.html#IX2464"><i>local&#095;scan()</i>&nbsp;function:available&nbsp;Exim&nbsp;variables</a><br>
+<a href="spec_39.html#IX2461"><i>local&#095;scan()</i>&nbsp;function:building&nbsp;Exim&nbsp;to&nbsp;use</a><br>
+<a href="spec_39.html#IX2463"><i>local&#095;scan()</i>&nbsp;function:configuration&nbsp;options</a><br>
+<a href="spec_39.html#IX2457"><i>local&#095;scan()</i>&nbsp;function:description&nbsp;of</a><br>
+<a href="spec_39.html#IX2470"><i>local&#095;scan()</i>&nbsp;function:memory&nbsp;handling</a><br>
+<a href="spec_14.html#IX1210"><i>local&#095;scan()</i>&nbsp;function:timeout</a><br>
+<a href="spec_3.html#IX71"><tt>localhost&#095;number</tt></a><br>
+<a href="spec_4.html#IX190">lock&nbsp;files</a> &nbsp;<a href="spec_26.html#IX1954">[2]</a><br>
+<a href="spec_26.html#IX1953">locking&nbsp;files</a> &nbsp;<a href="spec_26.html#IX1962">[2]</a> &nbsp;<a href="spec_26.html#IX1983">[3]</a> &nbsp;<a href="spec_26.html#IX2019">[4]</a> &nbsp;<a href="spec_26.html#IX2025">[5]</a><br>
+<a href="spec_46.html#IX2772">locking&nbsp;mailboxes</a><br>
+<a href="spec_45.html#IX2691">log:certificate&nbsp;verification</a><br>
+<a href="spec_45.html#IX2641">log:connection&nbsp;rejections</a><br>
+<a href="spec_45.html#IX2613">log:cycling&nbsp;local&nbsp;files</a> &nbsp;<a href="spec_46.html#IX2723">[2]</a><br>
+<a href="spec_45.html#IX2617">log:datestamped&nbsp;files</a><br>
+<a href="spec_45.html#IX2642">log:delayed&nbsp;delivery</a><br>
+<a href="spec_45.html#IX2644">log:delivery&nbsp;duration</a><br>
+<a href="spec_15.html#IX1592">log:delivery&nbsp;line</a> &nbsp;<a href="spec_45.html#IX2625">[2]</a><br>
+<a href="spec_45.html#IX2609">log:destination</a><br>
+<a href="spec_37.html#IX2340">log:distinguished&nbsp;name</a> &nbsp;<a href="spec_37.html#IX2346">[2]</a><br>
+<a href="spec_45.html#IX2647">log:dnslist&nbsp;defer</a><br>
+<a href="spec_45.html#IX2660">log:dropped&nbsp;connection</a><br>
+<a href="spec_45.html#IX2650">log:ETRN&nbsp;commands</a><br>
+<a href="spec_45.html#IX2639">log:Exim&nbsp;arguments</a><br>
+<a href="spec_46.html#IX2721">log:extracts,&nbsp;grepping&nbsp;for</a><br>
+<a href="spec_40.html#IX2483">log:<tt>fail</tt>&nbsp;command&nbsp;log&nbsp;line</a><br>
+<a href="spec_3.html#IX87">log:file&nbsp;for&nbsp;each&nbsp;message</a><br>
+<a href="spec_14.html#IX1217">log:file&nbsp;path&nbsp;for</a><br>
+<a href="spec_45.html#IX2674">log:frozen&nbsp;messages,&nbsp;skipped</a><br>
+<a href="spec_45.html#IX2638">log:full&nbsp;parentage</a><br>
+<a href="spec_45.html#IX2604">log:general&nbsp;description</a><br>
+<a href="spec_45.html#IX2669">log:header&nbsp;lines&nbsp;for&nbsp;rejection</a><br>
+<a href="spec_45.html#IX2652">log:host&nbsp;lookup&nbsp;failure</a><br>
+<a href="spec_45.html#IX2653">log:ident&nbsp;timeout</a><br>
+<a href="spec_38.html#IX2380">log:in&nbsp;ACL,&nbsp;immediate</a><br>
+<a href="spec_45.html#IX2655">log:incoming&nbsp;interface</a><br>
+<a href="spec_45.html#IX2657">log:incoming&nbsp;remote&nbsp;port</a><br>
+<a href="spec_45.html#IX2616">log:local&nbsp;files,&nbsp;writing&nbsp;to</a><br>
+<a href="spec_45.html#IX2697">log:message&nbsp;log,&nbsp;description&nbsp;of&nbsp;</a><br>
+<a href="spec_14.html#IX1240">log:message&nbsp;log,&nbsp;disabling</a><br>
+<a href="spec_45.html#IX2645">log:message&nbsp;size&nbsp;on&nbsp;delivery</a><br>
+<a href="spec_45.html#IX2661">log:outgoing&nbsp;remote&nbsp;port</a><br>
+<a href="spec_14.html#IX1276">log:process&nbsp;log&nbsp;</a><br>
+<a href="spec_45.html#IX2664">log:queue&nbsp;run</a><br>
+<a href="spec_45.html#IX2666">log:queue&nbsp;time</a><br>
+<a href="spec_45.html#IX2619">log:reception&nbsp;line</a><br>
+<a href="spec_45.html#IX2667">log:recipients</a><br>
+<a href="spec_45.html#IX2670">log:retry&nbsp;defer</a><br>
+<a href="spec_45.html#IX2671">log:return&nbsp;path</a><br>
+<a href="spec_45.html#IX2636">log:rewriting</a><br>
+<a href="spec_14.html#IX1219">log:selectors</a> &nbsp;<a href="spec_45.html#IX2635">[2]</a><br>
+<a href="spec_45.html#IX2672">log:sender&nbsp;on&nbsp;delivery</a><br>
+<a href="spec_45.html#IX2668">log:sender&nbsp;reception</a><br>
+<a href="spec_45.html#IX2673">log:size&nbsp;rejection</a><br>
+<a href="spec_45.html#IX2676">log:smtp&nbsp;confirmation</a><br>
+<a href="spec_45.html#IX2678">log:SMTP&nbsp;connections</a><br>
+<a href="spec_45.html#IX2682">log:SMTP&nbsp;protocol&nbsp;error</a><br>
+<a href="spec_45.html#IX2688">log:SMTP&nbsp;syntax&nbsp;error</a><br>
+<a href="spec_45.html#IX2680">log:SMTP&nbsp;transaction,&nbsp;incomplete</a><br>
+<a href="spec_45.html#IX2689">log:subject</a><br>
+<a href="spec_45.html#IX2631">log:summary&nbsp;of&nbsp;fields</a><br>
+<a href="spec_45.html#IX2618">log:syslog,&nbsp;writing&nbsp;to</a><br>
+<a href="spec_47.html#IX2795">log:tail&nbsp;of,&nbsp;in&nbsp;monitor</a><br>
+<a href="spec_14.html#IX1221">log:timezone&nbsp;for&nbsp;entries</a><br>
+<a href="spec_37.html#IX2337">log:TLS&nbsp;cipher</a> &nbsp;<a href="spec_37.html#IX2345">[2]</a> &nbsp;<a href="spec_45.html#IX2692">[3]</a><br>
+<a href="spec_45.html#IX2694">log:TLS&nbsp;peer&nbsp;DN</a><br>
+<a href="spec_45.html#IX2610">log:to&nbsp;file</a><br>
+<a href="spec_45.html#IX2611">log:to&nbsp;syslog</a><br>
+<a href="spec_45.html#IX2603">log:types&nbsp;of</a><br>
+<a href="spec_45.html#IX2687">log:unknown&nbsp;SMTP&nbsp;command</a><br>
+<a href="spec_12.html#IX1007">log:writing&nbsp;from&nbsp;embedded&nbsp;Perl</a><br>
+<a href="spec_34.html#IX2300">LOGIN&nbsp;authentication&nbsp;mechanism</a><br>
+<a href="spec_9.html#IX674">lookup:*&nbsp;added&nbsp;to&nbsp;type</a><br>
+<a href="spec_9.html#IX677">lookup:*&#064;&nbsp;added&nbsp;to&nbsp;type</a><br>
+<a href="spec_9.html#IX686">lookup:caching&nbsp;</a><br>
+<a href="spec_9.html#IX623">lookup:cdb</a><br>
+<a href="spec_9.html#IX626">lookup:dbm</a><br>
+<a href="spec_9.html#IX630">lookup:dbm,&nbsp;terminating&nbsp;zero</a><br>
+<a href="spec_9.html#IX629">lookup:dbmnz</a><br>
+<a href="spec_9.html#IX672">lookup:default&nbsp;values</a><br>
+<a href="spec_9.html#IX616">lookup:description&nbsp;of</a><br>
+<a href="spec_9.html#IX653">lookup:DNS</a><br>
+<a href="spec_9.html#IX691">lookup:dnsdb</a><br>
+<a href="spec_9.html#IX635">lookup:dsearch</a><br>
+<a href="spec_10.html#IX745">lookup:in&nbsp;domain&nbsp;list</a><br>
+<a href="spec_11.html#IX824">lookup:in&nbsp;expanded&nbsp;string</a><br>
+<a href="spec_4.html#IX165">lookup:inclusion&nbsp;in&nbsp;binary</a><br>
+<a href="spec_9.html#IX655">lookup:Interbase</a> &nbsp;<a href="spec_9.html#IX713">[2]</a><br>
+<a href="spec_9.html#IX637">lookup:iplsearch</a><br>
+<a href="spec_9.html#IX657">lookup:LDAP</a> &nbsp;<a href="spec_9.html#IX696">[2]</a><br>
+<a href="spec_9.html#IX640">lookup:lsearch</a><br>
+<a href="spec_9.html#IX642">lookup:lsearch,&nbsp;colons&nbsp;in&nbsp;keys</a><br>
+<a href="spec_14.html#IX1226">lookup:maximum&nbsp;open&nbsp;files</a><br>
+<a href="spec_9.html#IX659">lookup:MySQL</a> &nbsp;<a href="spec_9.html#IX708">[2]</a><br>
+<a href="spec_9.html#IX644">lookup:NIS</a><br>
+<a href="spec_9.html#IX661">lookup:NIS+</a> &nbsp;<a href="spec_9.html#IX705">[2]</a><br>
+<a href="spec_9.html#IX649">lookup:nwildlsearch</a><br>
+<a href="spec_9.html#IX663">lookup:Oracle</a> &nbsp;<a href="spec_9.html#IX711">[2]</a><br>
+<a href="spec_9.html#IX681">lookup:partial&nbsp;matching</a><br>
+<a href="spec_9.html#IX684">lookup:partial&nbsp;matching,&nbsp;changing&nbsp;prefix</a><br>
+<a href="spec_9.html#IX664">lookup:passwd</a><br>
+<a href="spec_9.html#IX667">lookup:PostgreSQL</a> &nbsp;<a href="spec_9.html#IX709">[2]</a><br>
+<a href="spec_9.html#IX650">lookup:query-style&nbsp;types</a><br>
+<a href="spec_9.html#IX688">lookup:quoting</a><br>
+<a href="spec_9.html#IX620">lookup:single-key&nbsp;types</a><br>
+<a href="spec_9.html#IX670">lookup:temporary&nbsp;error&nbsp;in</a><br>
+<a href="spec_9.html#IX617">lookup:types&nbsp;of</a><br>
+<a href="spec_9.html#IX669">lookup:whoson</a><br>
+<a href="spec_9.html#IX673">lookup:wildcard</a> &nbsp;<a href="spec_9.html#IX682">[2]</a><br>
+<a href="spec_9.html#IX647">lookup:wildlsearch</a><br>
+<a href="spec_40.html#IX2485">loop:caused&nbsp;by&nbsp;<tt>fail</tt></a><br>
+<a href="spec_10.html#IX786">loop:in&nbsp;lookups</a><br>
+<a href="spec_14.html#IX1317">loop:prevention</a><br>
+<a href="spec_26.html#IX2023">loop:while&nbsp;file&nbsp;testing</a><br>
+<a href="spec_3.html#IX109">loop:while&nbsp;routing</a><br>
+<a href="spec_22.html#IX1729">loop:while&nbsp;routing,&nbsp;avoidance&nbsp;of</a><br>
+<a href="spec_11.html#IX863">lower&nbsp;casing</a> &nbsp;<a href="spec_46.html#IX2760">[2]</a><br>
+<a href="spec_9.html#IX641">lsearch&nbsp;lookup&nbsp;type</a><br>
+<br>
+<a name="M"></a>
+<font size="+1">M</font><br>
+<a href="spec_10.html#IX722">macro:compared&nbsp;with&nbsp;named&nbsp;list</a><br>
+<a href="spec_6.html#IX556">macro:description&nbsp;of</a><br>
+<a href="spec_5.html#IX320">macro:setting&nbsp;on&nbsp;command&nbsp;line</a><br>
+<a href="spec_20.html#IX1705">mail&nbsp;hub&nbsp;example</a><br>
+<a href="spec_14.html#IX1318">mail&nbsp;loop&nbsp;prevention</a><br>
+<a href="spec_14.html#IX1038"><font size=-1>MAIL</font>:ACL&nbsp;for</a> &nbsp;<a href="spec_38.html#IX2363">[2]</a><br>
+<a href="spec_31.html#IX2240"><font size=-1>MAIL</font>:rewriting&nbsp;argument&nbsp;of</a><br>
+<a href="spec_43.html#IX2546"><font size=-1>MAIL</font>:<font size=-1>SIZE</font>&nbsp;option</a><br>
+<a href="spec_26.html#IX1961">mailbox&nbsp;locking:blocking&nbsp;and&nbsp;non-blocking</a><br>
+<a href="spec_46.html#IX2770">mailbox:maintenance</a><br>
+<a href="spec_26.html#IX1942">mailbox:MMDF&nbsp;format</a><br>
+<a href="spec_15.html#IX1582">mailbox:multiple</a> &nbsp;<a href="spec_42.html#IX2503">[2]</a><br>
+<a href="spec_26.html#IX2002">mailbox:size&nbsp;warning</a><br>
+<a href="spec_26.html#IX1934">mailbox:symbolic&nbsp;link</a> &nbsp;<a href="spec_26.html#IX2022">[2]</a><br>
+<a href="spec_32.html#IX2252">mailbox:time&nbsp;of&nbsp;last&nbsp;read</a><br>
+<a href="spec_26.html#IX2028">maildir&nbsp;format</a><br>
+<a href="spec_26.html#IX2031">maildir&nbsp;format:description&nbsp;of</a><br>
+<a href="spec_26.html#IX1977">maildir&nbsp;format:<i>maildirsize</i>&nbsp;file</a> &nbsp;<a href="spec_26.html#IX2035">[2]</a><br>
+<a href="spec_26.html#IX1972">maildir&nbsp;format:quota,&nbsp;directories&nbsp;included&nbsp;in</a><br>
+<a href="spec_26.html#IX1970">maildir&nbsp;format:specifying</a><br>
+<a href="spec_32.html#IX2253">maildir&nbsp;format:time&nbsp;of&nbsp;last&nbsp;read</a><br>
+<a href="spec_26.html#IX2033">maildir++</a><br>
+<a href="spec_42.html#IX2495">mailing&nbsp;lists</a><br>
+<a href="spec_42.html#IX2499">mailing&nbsp;lists:closed</a><br>
+<a href="spec_1.html#IX10">mailing&nbsp;lists:for&nbsp;Exim&nbsp;users</a><br>
+<a href="spec_22.html#IX1802">mailing&nbsp;lists:one-time&nbsp;expansion</a><br>
+<a href="spec_42.html#IX2498">mailing&nbsp;lists:re-expansion&nbsp;of</a><br>
+<a href="spec_42.html#IX2497">mailing&nbsp;lists:syntax&nbsp;errors&nbsp;in</a><br>
+<a href="spec_5.html#IX199"><i>mailq</i></a><br>
+<a href="spec_26.html#IX2029">mailstore&nbsp;format</a><br>
+<a href="spec_26.html#IX2036">mailstore&nbsp;format:description&nbsp;of</a><br>
+<a href="spec_26.html#IX1979">mailstore&nbsp;format:specifying</a><br>
+<a href="spec_14.html#IX1017">main&nbsp;configuration</a><br>
+<a href="spec_45.html#IX2605">main&nbsp;log</a><br>
+<a href="spec_46.html#IX2766">maintaining&nbsp;Exim's&nbsp;hints&nbsp;database</a><br>
+<a href="spec_20.html#IX1688"><b>manualroute</b>&nbsp;router</a><br>
+<a href="spec_11.html#IX867">masked&nbsp;IP&nbsp;address</a><br>
+maximum&nbsp;<em>see&nbsp;limit</em><br>
+<a href="spec_26.html#IX1986">MBX&nbsp;format,&nbsp;specifying</a><br>
+<a href="spec_11.html#IX871">MD5&nbsp;hash</a> &nbsp;<a href="spec_11.html#IX902">[2]</a><br>
+<a href="spec_14.html#IX1266">message&nbsp;logs,&nbsp;preserving</a><br>
+<a href="spec_14.html#IX1236"><i>Message-ID:</i>&nbsp;header&nbsp;line</a> &nbsp;<a href="spec_44.html#IX2587">[2]</a><br>
+<a href="spec_5.html#IX375">message:abandoning&nbsp;delivery&nbsp;attempts</a><br>
+<a href="spec_5.html#IX353">message:adding&nbsp;recipients</a><br>
+<a href="spec_11.html#IX976">message:age&nbsp;of</a><br>
+<a href="spec_11.html#IX964">message:body,&nbsp;binary&nbsp;zero&nbsp;count</a><br>
+<a href="spec_11.html#IX978">message:body,&nbsp;in&nbsp;expansion</a> &nbsp;<a href="spec_11.html#IX981">[2]</a><br>
+<a href="spec_11.html#IX962">message:body,&nbsp;line&nbsp;count</a><br>
+<a href="spec_11.html#IX983">message:body,&nbsp;size</a><br>
+<a href="spec_14.html#IX1234">message:body,&nbsp;visible&nbsp;size</a><br>
+<a href="spec_5.html#IX368">message:changing&nbsp;sender</a><br>
+<a href="spec_38.html#IX2354">message:controlling&nbsp;incoming</a><br>
+<a href="spec_42.html#IX2507">message:copying&nbsp;every</a><br>
+<a href="spec_45.html#IX2627">message:discarded</a><br>
+<a href="spec_43.html#IX2532">message:error</a><br>
+<a href="spec_40.html#IX2479">message:forced&nbsp;failure</a><br>
+<a href="spec_5.html#IX260">message:format</a><br>
+<a href="spec_40.html#IX2478">message:freezing</a><br>
+<a href="spec_3.html#IX81">message:frozen</a><br>
+<a href="spec_44.html#IX2561">message:general&nbsp;processing</a><br>
+<a href="spec_1.html#IX35">message:header,&nbsp;definition&nbsp;of</a><br>
+<a href="spec_3.html#IX63">message:ids,&nbsp;details&nbsp;of&nbsp;format</a><br>
+<a href="spec_14.html#IX1215">message:ids,&nbsp;with&nbsp;multiple&nbsp;hosts</a><br>
+<a href="spec_3.html#IX80">message:life&nbsp;of</a><br>
+<a href="spec_5.html#IX394">message:listing&nbsp;body&nbsp;of</a><br>
+<a href="spec_5.html#IX398">message:listing&nbsp;header&nbsp;lines</a><br>
+<a href="spec_5.html#IX401">message:listing&nbsp;message&nbsp;log</a><br>
+<a href="spec_3.html#IX86">message:log&nbsp;file&nbsp;for</a> &nbsp;<a href="spec_45.html#IX2696">[2]</a><br>
+<a href="spec_14.html#IX1239">message:log,&nbsp;disabling</a><br>
+<a href="spec_5.html#IX386">message:manually&nbsp;discarding</a><br>
+<a href="spec_5.html#IX372">message:manually&nbsp;freezing</a><br>
+<a href="spec_14.html#IX1297">message:queueing&nbsp;by&nbsp;file&nbsp;existence</a><br>
+<a href="spec_14.html#IX1301">message:queueing&nbsp;by&nbsp;load</a><br>
+<a href="spec_14.html#IX1374">message:queueing&nbsp;by&nbsp;message&nbsp;count</a><br>
+<a href="spec_14.html#IX1371">message:queueing&nbsp;by&nbsp;SMTP&nbsp;connection&nbsp;count</a><br>
+<a href="spec_14.html#IX1289">message:queueing&nbsp;certain&nbsp;domains</a><br>
+<a href="spec_14.html#IX1310">message:queueing&nbsp;remote&nbsp;deliveries</a><br>
+<a href="spec_14.html#IX1294">message:queueing&nbsp;unconditionally</a><br>
+<a href="spec_3.html#IX73">message:reception</a><br>
+<a href="spec_3.html#IX74">message:sender,&nbsp;constructed&nbsp;by&nbsp;Exim</a><br>
+<a href="spec_11.html#IX985">message:size</a><br>
+<a href="spec_5.html#IX278">message:size&nbsp;in&nbsp;queue&nbsp;listing</a><br>
+<a href="spec_30.html#IX2203">message:size&nbsp;issue&nbsp;for&nbsp;transport&nbsp;filter</a><br>
+<a href="spec_14.html#IX1242">message:size&nbsp;limit</a><br>
+<a href="spec_38.html#IX2378">message:submission</a> &nbsp;<a href="spec_44.html#IX2562">[2]</a><br>
+<a href="spec_3.html#IX83">message:thawing&nbsp;frozen</a> &nbsp;<a href="spec_5.html#IX391">[2]</a><br>
+<a href="spec_24.html#IX1847">message:transporting&nbsp;body&nbsp;only</a><br>
+<a href="spec_24.html#IX1866">message:transporting&nbsp;headers&nbsp;only</a><br>
+<a href="spec_44.html#IX2588"><tt>message&#095;id&#095;header&#095;text</tt></a><br>
+<a href="spec_2.html#IX51">Microsoft&nbsp;Secure&nbsp;Password&nbsp;Authentication</a> &nbsp;<a href="spec_36.html#IX2318">[2]</a><br>
+<a href="spec_44.html#IX2599">mixed-case&nbsp;login&nbsp;names</a><br>
+<a href="spec_26.html#IX1941">MMDF&nbsp;format&nbsp;mailbox</a><br>
+<a href="spec_2.html#IX55">monitor</a> &nbsp;<a href="spec_47.html#IX2783">[2]</a><br>
+<a href="spec_47.html#IX2793">monitor&nbsp;window&nbsp;size</a><br>
+<a href="spec_15.html#IX1616"><tt>more</tt>&nbsp;option</a> &nbsp;<a href="spec_20.html#IX1693">[2]</a><br>
+<a href="spec_45.html#IX2698"><i>msglog</i>&nbsp;directory</a><br>
+<a href="spec_15.html#IX1581">multiple&nbsp;mailboxes</a> &nbsp;<a href="spec_42.html#IX2502">[2]</a><br>
+<a href="spec_5.html#IX357">multiple&nbsp;SMTP&nbsp;deliveries</a> &nbsp;<a href="spec_5.html#IX414">[2]</a> &nbsp;<a href="spec_5.html#IX487">[3]</a> &nbsp;<a href="spec_5.html#IX496">[4]</a> &nbsp;<a href="spec_30.html#IX2141">[5]</a> &nbsp;<a href="spec_30.html#IX2170">[6]</a> &nbsp;<a href="spec_42.html#IX2511">[7]</a><br>
+<a href="spec_37.html#IX2348">multiple&nbsp;SMTP&nbsp;deliveries&nbsp;with&nbsp;TLS</a><br>
+<a href="spec_14.html#IX1425">multiple&nbsp;spool&nbsp;directories</a><br>
+<a href="spec_17.html#IX1654">MX&nbsp;record:checking&nbsp;for&nbsp;secondary</a><br>
+<a href="spec_9.html#IX693">MX&nbsp;record:in&nbsp;<b>dnsdb</b>&nbsp;lookup</a><br>
+<a href="spec_30.html#IX2167">MX&nbsp;record:maximum&nbsp;tried</a><br>
+<a href="spec_14.html#IX1053">MX&nbsp;record:pointing&nbsp;to&nbsp;IP&nbsp;address</a><br>
+<a href="spec_15.html#IX1614">MX&nbsp;record:pointing&nbsp;to&nbsp;local&nbsp;host</a> &nbsp;<a href="spec_17.html#IX1649">[2]</a><br>
+<a href="spec_17.html#IX1658">MX&nbsp;record:required&nbsp;to&nbsp;exist</a><br>
+<a href="spec_9.html#IX658">MySQL:lookup&nbsp;type</a> &nbsp;<a href="spec_9.html#IX706">[2]</a><br>
+<a href="spec_14.html#IX1248">MySQL:server&nbsp;list</a><br>
+<br>
+<a name="N"></a>
+<font size="+1">N</font><br>
+<a href="spec_14.html#IX1460">Nagle&nbsp;algorithm</a><br>
+<a href="spec_14.html#IX1268">name:of&nbsp;local&nbsp;host</a><br>
+<a href="spec_5.html#IX332">name:of&nbsp;sender</a><br>
+<a href="spec_10.html#IX719">named&nbsp;lists</a><br>
+<a href="spec_26.html#IX1930">named&nbsp;pipe&nbsp;(fifo)</a><br>
+<a href="spec_4.html#IX132"><i>ndbm</i>&nbsp;DBM&nbsp;library</a><br>
+<a href="spec_10.html#IX717">negation&nbsp;in&nbsp;lists</a><br>
+<a href="spec_13.html#IX1010">network&nbsp;interface</a><br>
+<a href="spec_50.html#IX2839">new&nbsp;drivers,&nbsp;adding</a><br>
+<a href="spec_5.html#IX204"><i>newaliases</i></a><br>
+<a href="spec_15.html#IX1606">NFS</a><br>
+<a href="spec_22.html#IX1771">NFS:checking&nbsp;for&nbsp;file&nbsp;existence</a><br>
+<a href="spec_26.html#IX1952">NFS:lock&nbsp;file</a> &nbsp;<a href="spec_26.html#IX2013">[2]</a> &nbsp;<a href="spec_26.html#IX2020">[3]</a><br>
+<a href="spec_9.html#IX643">NIS&nbsp;lookup&nbsp;type</a><br>
+<a href="spec_4.html#IX162">NIS&nbsp;lookup&nbsp;type:including&nbsp;support&nbsp;for</a><br>
+<a href="spec_9.html#IX660">NIS&#043;&nbsp;lookup&nbsp;type</a> &nbsp;<a href="spec_9.html#IX704">[2]</a><br>
+<a href="spec_4.html#IX163">NIS&#043;&nbsp;lookup&nbsp;type:including&nbsp;support&nbsp;for</a><br>
+<a href="spec_14.html#IX1145">NIS,&nbsp;looking&nbsp;up&nbsp;users,&nbsp;retrying</a><br>
+<a href="spec_5.html#IX423">non-immediate&nbsp;delivery</a><br>
+<a href="spec_14.html#IX1022">non-SMTP&nbsp;messages,&nbsp;ACL&nbsp;for</a><br>
+<a href="spec_36.html#IX2319">NTLM&nbsp;authentication</a><br>
+NUL&nbsp;<em>see&nbsp;binary&nbsp;zero</em><br>
+<a href="spec_14.html#IX1330">number&nbsp;of&nbsp;deliveries</a><br>
+<a href="spec_11.html#IX898">numeric&nbsp;comparison</a><br>
+<a href="spec_11.html#IX955">numerical&nbsp;variables&nbsp;(<tt>$1</tt>,&nbsp;<tt>$2</tt>,&nbsp;etc)</a><br>
+<a href="spec_35.html#IX2310">numerical&nbsp;variables&nbsp;(<tt>$1</tt>,&nbsp;<tt>$2</tt>,&nbsp;etc):in&nbsp;<b>cram&#095;md5</b>&nbsp;authenticator</a><br>
+<a href="spec_14.html#IX1127">numerical&nbsp;variables&nbsp;(<tt>$1</tt>,&nbsp;<tt>$2</tt>,&nbsp;etc):in&nbsp;<tt>errors&#095;copy</tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a><br>
+<a href="spec_14.html#IX1151">numerical&nbsp;variables&nbsp;(<tt>$1</tt>,&nbsp;<tt>$2</tt>,&nbsp;etc):in&nbsp;<tt>gecos&#095;name</tt>&nbsp;&nbsp;</a><br>
+<a href="spec_11.html#IX930">numerical&nbsp;variables&nbsp;(<tt>$1</tt>,&nbsp;<tt>$2</tt>,&nbsp;etc):in&nbsp;<tt>if</tt>&nbsp;expansion</a><br>
+<a href="spec_11.html#IX826">numerical&nbsp;variables&nbsp;(<tt>$1</tt>,&nbsp;<tt>$2</tt>,&nbsp;etc):in&nbsp;lookup&nbsp;expansion</a><br>
+<a href="spec_20.html#IX1701">numerical&nbsp;variables&nbsp;(<tt>$1</tt>,&nbsp;<tt>$2</tt>,&nbsp;etc):in&nbsp;<b>manualroute</b>&nbsp;router</a><br>
+<a href="spec_34.html#IX2295">numerical&nbsp;variables&nbsp;(<tt>$1</tt>,&nbsp;<tt>$2</tt>,&nbsp;etc):in&nbsp;<b>plaintext</b>&nbsp;authenticator</a><br>
+<a href="spec_31.html#IX2235">numerical&nbsp;variables&nbsp;(<tt>$1</tt>,&nbsp;<tt>$2</tt>,&nbsp;etc):in&nbsp;rewriting&nbsp;rules</a><br>
+<a href="spec_36.html#IX2322">numerical&nbsp;variables&nbsp;(<tt>$1</tt>,&nbsp;<tt>$2</tt>,&nbsp;etc):in&nbsp;<b>spa</b>&nbsp;authenticator</a><br>
+<a href="spec_44.html#IX2577">numerical&nbsp;variables&nbsp;(<tt>$1</tt>,&nbsp;<tt>$2</tt>,&nbsp;etc):in&nbsp;&#147;From&nbsp;&#148;&nbsp;line&nbsp;handling</a><br>
+<a href="spec_9.html#IX648">nwildlsearch&nbsp;lookup&nbsp;type</a><br>
+<br>
+<a name="O"></a>
+<font size="+1">O</font><br>
+<a href="spec_22.html#IX1799">one-time&nbsp;aliasing/forwarding&nbsp;expansion</a><br>
+<a href="spec_14.html#IX1224">open&nbsp;files,&nbsp;too&nbsp;many</a><br>
+<a href="spec_37.html#IX2330">OpenSSL</a><br>
+<a href="spec_4.html#IX148">OpenSSL:building&nbsp;Exim&nbsp;with</a><br>
+<a href="spec_26.html#IX1927">options:<b>appendfile</b>&nbsp;transport</a><br>
+<a href="spec_27.html#IX2039">options:<b>autoreply</b>&nbsp;transport</a><br>
+<a href="spec_5.html#IX198">options:command&nbsp;line</a><br>
+<a href="spec_5.html#IX216">options:command&nbsp;line,&nbsp;terminating</a><br>
+<a href="spec_5.html#IX270">options:configuration,&nbsp;extracting</a><br>
+<a href="spec_35.html#IX2311">options:<b>cram&#095;md5</b>&nbsp;authenticator&nbsp;(client)</a><br>
+<a href="spec_35.html#IX2308">options:<b>cram&#095;md5</b>&nbsp;authenticator&nbsp;(server)</a><br>
+<a href="spec_17.html#IX1652">options:<b>dnslookup</b>&nbsp;router</a><br>
+<a href="spec_6.html#IX590">options:generic,&nbsp;definition&nbsp;of</a><br>
+<a href="spec_33.html#IX2272">options:generic,&nbsp;for&nbsp;authenticators</a><br>
+<a href="spec_15.html#IX1520">options:generic,&nbsp;for&nbsp;routers</a><br>
+<a href="spec_24.html#IX1843">options:generic,&nbsp;for&nbsp;transports</a><br>
+<a href="spec_19.html#IX1678">options:<b>iplookup</b>&nbsp;router</a><br>
+<a href="spec_28.html#IX2061">options:<b>lmtp</b>&nbsp;transport</a><br>
+<a href="spec_20.html#IX1691">options:<b>manualroute</b>&nbsp;router</a><br>
+<a href="spec_29.html#IX2078">options:<b>pipe</b>&nbsp;transport</a><br>
+<a href="spec_34.html#IX2302">options:<b>plaintext</b>&nbsp;authenticator&nbsp;(client)</a><br>
+<a href="spec_34.html#IX2290">options:<b>plaintext</b>&nbsp;authenticator&nbsp;(server)</a><br>
+<a href="spec_21.html#IX1712">options:<b>queryprogram</b>&nbsp;router</a><br>
+<a href="spec_22.html#IX1756">options:<b>redirect</b>&nbsp;router</a><br>
+<a href="spec_5.html#IX273">options:router,&nbsp;extracting</a><br>
+<a href="spec_30.html#IX2131">options:<b>smtp</b>&nbsp;transport</a><br>
+<a href="spec_36.html#IX2323">options:<b>spa</b>&nbsp;authenticator&nbsp;(client)</a><br>
+<a href="spec_36.html#IX2320">options:<b>spa</b>&nbsp;authenticator&nbsp;(server)</a><br>
+<a href="spec_5.html#IX274">options:transport,&nbsp;extracting</a><br>
+<a href="spec_9.html#IX662">Oracle:lookup&nbsp;type</a> &nbsp;<a href="spec_9.html#IX710">[2]</a><br>
+<a href="spec_14.html#IX1251">Oracle:server&nbsp;list</a><br>
+<a href="spec_4.html#IX172"><i>os.h</i></a><br>
+<a href="spec_43.html#IX2517">outgoing&nbsp;LMTP&nbsp;over&nbsp;TCP/IP</a><br>
+<a href="spec_43.html#IX2515">outgoing&nbsp;SMTP&nbsp;over&nbsp;TCP/IP</a><br>
+<a href="spec_22.html#IX1805">ownership:alias&nbsp;file</a><br>
+<a href="spec_6.html#IX544">ownership:configuration&nbsp;file</a><br>
+<a href="spec_22.html#IX1806">ownership:forward&nbsp;file</a><br>
+<br>
+<a name="P"></a>
+<font size="+1">P</font><br>
+<a href="spec_15.html#IX1622">packet&nbsp;radio</a><br>
+<a href="spec_11.html#IX935">PAM&nbsp;authentication</a><br>
+<a href="spec_45.html#IX2607">panic&nbsp;log</a><br>
+<a href="spec_9.html#IX679">partial&nbsp;matching</a><br>
+<a href="spec_9.html#IX665">passwd&nbsp;lookup&nbsp;type</a><br>
+<a href="spec_2.html#IX47">PCRE</a> &nbsp;<a href="spec_8.html#IX610">[2]</a><br>
+<a href="spec_8.html#IX613"><i>pcretest</i></a><br>
+<a href="spec_5.html#IX510">periodic&nbsp;queue&nbsp;running</a><br>
+<a href="spec_12.html#IX1003">Perl:calling&nbsp;from&nbsp;Exim</a><br>
+<a href="spec_4.html#IX167">Perl:including&nbsp;support&nbsp;for</a><br>
+<a href="spec_5.html#IX478">Perl:starting&nbsp;the&nbsp;interpreter</a> &nbsp;<a href="spec_5.html#IX480">[2]</a><br>
+<a href="spec_11.html#IX829">Perl:use&nbsp;in&nbsp;expanded&nbsp;string</a><br>
+<a href="spec_12.html#IX1005"><tt>perl&#095;at&#095;start</tt></a><br>
+<a href="spec_12.html#IX1004"><tt>perl&#095;startup</tt></a><br>
+<a href="spec_11.html#IX991">pid&nbsp;(process&nbsp;id):of&nbsp;current&nbsp;process</a><br>
+<a href="spec_5.html#IX226">pid&nbsp;(process&nbsp;id):of&nbsp;daemon</a> &nbsp;<a href="spec_5.html#IX272">[2]</a> &nbsp;<a href="spec_5.html#IX465">[3]</a><br>
+<a href="spec_3.html#IX70">pid&nbsp;(process&nbsp;id):re-use&nbsp;of</a><br>
+<a href="spec_14.html#IX1262">pid&nbsp;file,&nbsp;path&nbsp;for</a><br>
+<a href="spec_29.html#IX2068"><b>pipe</b>&nbsp;transport</a><br>
+<a href="spec_29.html#IX2074"><b>pipe</b>&nbsp;transport:environment&nbsp;for&nbsp;command</a> &nbsp;<a href="spec_29.html#IX2086">[2]</a><br>
+<a href="spec_29.html#IX2092"><b>pipe</b>&nbsp;transport:failure&nbsp;of&nbsp;exec</a><br>
+<a href="spec_14.html#IX1453"><b>pipe</b>&nbsp;transport:for&nbsp;system&nbsp;filter</a><br>
+<a href="spec_29.html#IX2095"><b>pipe</b>&nbsp;transport:logging&nbsp;output</a><br>
+<a href="spec_29.html#IX2070"><b>pipe</b>&nbsp;transport:path&nbsp;for&nbsp;command</a><br>
+<a href="spec_29.html#IX2080"><b>pipe</b>&nbsp;transport:permitted&nbsp;commands</a><br>
+<a href="spec_29.html#IX2069"><b>pipe</b>&nbsp;transport:returned&nbsp;data</a><br>
+<a href="spec_29.html#IX2111"><b>pipe</b>&nbsp;transport:temporary&nbsp;failure</a><br>
+<a href="spec_23.html#IX1837"><b>pipe</b>&nbsp;transport:uid&nbsp;for</a><br>
+<a href="spec_25.html#IX1919"><b>pipe</b>&nbsp;transport:with&nbsp;multiple&nbsp;addresses</a><br>
+<a href="spec_22.html#IX1752">pipe:duplicated</a><br>
+<a href="spec_22.html#IX1734">pipe:in&nbsp;redirection&nbsp;list</a><br>
+<a href="spec_26.html#IX1931">pipe:named&nbsp;(fifo)</a><br>
+<a href="spec_14.html#IX1264"><font size=-1>PIPELINING</font>:advertising,&nbsp;suppressing</a><br>
+<a href="spec_30.html#IX2160"><font size=-1>PIPELINING</font>:avoiding&nbsp;the&nbsp;use&nbsp;of</a><br>
+<a href="spec_14.html#IX1406"><font size=-1>PIPELINING</font>:expected&nbsp;errors</a><br>
+<a href="spec_34.html#IX2297">PLAIN&nbsp;authentication&nbsp;mechanism</a><br>
+<a href="spec_34.html#IX2288"><b>plaintext</b>&nbsp;authenticator</a><br>
+<a href="spec_38.html#IX2355">policy&nbsp;control:access&nbsp;control&nbsp;lists</a><br>
+<a href="spec_38.html#IX2435">policy&nbsp;control:address&nbsp;verification</a><br>
+<a href="spec_39.html#IX2459">policy&nbsp;control:by&nbsp;local&nbsp;scan&nbsp;function</a><br>
+<a href="spec_46.html#IX2755">policy&nbsp;control:checking&nbsp;access</a><br>
+<a href="spec_3.html#IX59">policy&nbsp;control:overview</a><br>
+<a href="spec_14.html#IX1423">policy&nbsp;control:rejection,&nbsp;returning&nbsp;details</a><br>
+<a href="spec_38.html#IX2454">policy&nbsp;control:relay&nbsp;control</a><br>
+<a href="spec_5.html#IX249">policy&nbsp;control:testing</a><br>
+<a href="spec_14.html#IX1096">port:for&nbsp;daemon</a><br>
+<a href="spec_19.html#IX1682">port:<b>iplookup</b>&nbsp;router</a><br>
+<a href="spec_45.html#IX2662">port:logging&nbsp;outgoint&nbsp;remote</a><br>
+<a href="spec_45.html#IX2658">port:logging&nbsp;remote</a><br>
+<a href="spec_5.html#IX476">port:receiving&nbsp;TCP/IP</a><br>
+<a href="spec_30.html#IX2192">port:sending&nbsp;TCP/IP</a><br>
+<a href="spec_9.html#IX666">PostgreSQL&nbsp;lookup&nbsp;type</a> &nbsp;<a href="spec_9.html#IX707">[2]</a><br>
+<a href="spec_14.html#IX1259">PostgreSQL&nbsp;lookup&nbsp;type:server&nbsp;list</a><br>
+<a href="spec_3.html#IX98">preconditions:checking</a><br>
+<a href="spec_3.html#IX94">preconditions:definition&nbsp;of</a><br>
+<a href="spec_3.html#IX104">preconditions:order&nbsp;of&nbsp;processing</a><br>
+<a href="spec_24.html#IX1885">prefix:for&nbsp;local&nbsp;part,&nbsp;including&nbsp;in&nbsp;envelope</a><br>
+<a href="spec_15.html#IX1580">prefix:for&nbsp;local&nbsp;part,&nbsp;used&nbsp;in&nbsp;router</a><br>
+<a href="spec_9.html#IX685">prefix:for&nbsp;partial&nbsp;matching</a><br>
+<a href="spec_45.html#IX2699"><tt>preserve&#095;message&#095;logs</tt></a><br>
+<a href="spec_22.html#IX1814">preserving&nbsp;domain&nbsp;in&nbsp;redirection</a><br>
+<a href="spec_10.html#IX727">primary&nbsp;host&nbsp;name</a><br>
+<a href="spec_10.html#IX729"><tt>primary&#095;hostname</tt></a><br>
+<a href="spec_14.html#IX1272">printing&nbsp;characters</a><br>
+<a href="spec_6.html#IX591">private&nbsp;options</a><br>
+<a href="spec_48.html#IX2814">privilege,&nbsp;running&nbsp;without</a><br>
+<a href="spec_48.html#IX2821">privileged&nbsp;user</a><br>
+<a href="spec_14.html#IX1275">process&nbsp;log&nbsp;path</a><br>
+process&nbsp;id&nbsp;<em>see&nbsp;pid</em><br>
+<a href="spec_46.html#IX2702">process,&nbsp;querying</a><br>
+<a href="spec_29.html#IX2121"><i>procmail</i></a><br>
+<a href="spec_5.html#IX455">protocol:incoming,&nbsp;specifying&nbsp;for&nbsp;local&nbsp;message</a><br>
+<a href="spec_1.html#IX18">public&nbsp;key&nbsp;for&nbsp;signed&nbsp;distribution</a><br>
+<a href="spec_2.html#IX54"><i>pwauthd</i>&nbsp;daemon</a><br>
+<a href="spec_2.html#IX53"><i>pwcheck</i>&nbsp;daemon</a> &nbsp;<a href="spec_11.html#IX939">[2]</a><br>
+<br>
+<a name="Q"></a>
+<font size="+1">Q</font><br>
+<a href="spec_44.html#IX2568"><tt>qualify&#095;domain</tt></a><br>
+<a href="spec_44.html#IX2569"><tt>qualify&#095;recipient</tt></a><br>
+<a href="spec_9.html#IX619">query-style&nbsp;lookup:definition&nbsp;of</a><br>
+<a href="spec_9.html#IX651">query-style&nbsp;lookup:list&nbsp;of&nbsp;types</a><br>
+<a href="spec_21.html#IX1709"><b>queryprogram</b>&nbsp;router</a><br>
+<a href="spec_3.html#IX110">queue&nbsp;runner</a> &nbsp;<a href="spec_3.html#IX115">[2]</a> &nbsp;<a href="spec_5.html#IX203">[3]</a> &nbsp;<a href="spec_5.html#IX224">[4]</a><br>
+<a href="spec_14.html#IX1107">queue&nbsp;runner:abandoning</a><br>
+<a href="spec_1.html#IX43">queue&nbsp;runner:definition&nbsp;of</a><br>
+<a href="spec_5.html#IX484">queue&nbsp;runner:description&nbsp;of&nbsp;operation</a><br>
+<a href="spec_11.html#IX942">queue&nbsp;runner:detecting&nbsp;when&nbsp;delivering&nbsp;from</a><br>
+<a href="spec_5.html#IX514">queue&nbsp;runner:for&nbsp;specific&nbsp;recipients</a><br>
+<a href="spec_5.html#IX521">queue&nbsp;runner:for&nbsp;specific&nbsp;senders</a><br>
+<a href="spec_45.html#IX2665">queue&nbsp;runner:logging</a><br>
+<a href="spec_14.html#IX1307">queue&nbsp;runner:maximum&nbsp;number&nbsp;of</a><br>
+<a href="spec_14.html#IX1305">queue&nbsp;runner:processing&nbsp;messages&nbsp;in&nbsp;order</a><br>
+<a href="spec_5.html#IX483">queue&nbsp;runner:starting&nbsp;manually</a><br>
+<a href="spec_5.html#IX509">queue&nbsp;runner:starting&nbsp;periodically</a><br>
+<a href="spec_5.html#IX283">queue:count&nbsp;of&nbsp;messages&nbsp;on</a><br>
+<a href="spec_1.html#IX42">queue:definition&nbsp;of</a><br>
+<a href="spec_5.html#IX507">queue:delivering&nbsp;specific&nbsp;messages</a><br>
+<a href="spec_47.html#IX2796">queue:display&nbsp;in&nbsp;monitor</a><br>
+<a href="spec_5.html#IX490">queue:double&nbsp;scanning</a><br>
+<a href="spec_5.html#IX500">queue:forcing&nbsp;delivery&nbsp;</a><br>
+<a href="spec_46.html#IX2705">queue:grepping</a><br>
+<a href="spec_5.html#IX498">queue:initial&nbsp;delivery</a><br>
+<a href="spec_5.html#IX276">queue:listing&nbsp;messages&nbsp;on</a><br>
+<a href="spec_5.html#IX505">queue:local&nbsp;deliveries&nbsp;only</a><br>
+<a href="spec_47.html#IX2798">queue:menu&nbsp;in&nbsp;monitor</a><br>
+<a href="spec_5.html#IX491">queue:routing</a><br>
+<a href="spec_46.html#IX2719">queue:summary</a><br>
+<a href="spec_5.html#IX425">queueing&nbsp;incoming&nbsp;messages</a> &nbsp;<a href="spec_14.html#IX1288">[2]</a> &nbsp;<a href="spec_14.html#IX1293">[3]</a> &nbsp;<a href="spec_14.html#IX1296">[4]</a> &nbsp;<a href="spec_14.html#IX1300">[5]</a> &nbsp;<a href="spec_14.html#IX1303">[6]</a> &nbsp;<a href="spec_14.html#IX1309">[7]</a> &nbsp;<a href="spec_14.html#IX1370">[8]</a> &nbsp;<a href="spec_14.html#IX1373">[9]</a><br>
+<a href="spec_32.html#IX2250">quota:error&nbsp;testing&nbsp;in&nbsp;retry&nbsp;rule</a><br>
+<a href="spec_26.html#IX1994">quota:imposed&nbsp;by&nbsp;Exim</a><br>
+<a href="spec_26.html#IX2032">quota:in&nbsp;maildir&nbsp;delivery</a> &nbsp;<a href="spec_26.html#IX2034">[2]</a><br>
+<a href="spec_26.html#IX1973">quota:maildir,&nbsp;directories&nbsp;included&nbsp;in</a><br>
+<a href="spec_26.html#IX1924">quota:system</a><br>
+<a href="spec_26.html#IX2001">quota:warning&nbsp;threshold</a><br>
+<a href="spec_9.html#IX689">quoting:in&nbsp;lookups</a><br>
+<a href="spec_29.html#IX2071">quoting:in&nbsp;pipe&nbsp;command</a><br>
+<a href="spec_11.html#IX878">quoting:in&nbsp;regular&nbsp;expressions</a><br>
+<a href="spec_11.html#IX875">quoting:in&nbsp;string&nbsp;expansions</a><br>
+<a href="spec_11.html#IX877">quoting:lookup-specific</a><br>
+<br>
+<a name="R"></a>
+<font size="+1">R</font><br>
+<a href="spec_11.html#IX944">Radius</a><br>
+<a href="spec_20.html#IX1695">randomized&nbsp;host&nbsp;list</a> &nbsp;<a href="spec_30.html#IX2174">[2]</a><br>
+RBL&nbsp;<em>see&nbsp;DNS&nbsp;list</em><br>
+<a href="spec_7.html#IX598"><font size=-1>RCPT</font>:ACL&nbsp;for</a> &nbsp;<a href="spec_14.html#IX1042">[2]</a> &nbsp;<a href="spec_38.html#IX2364">[3]</a><br>
+<a href="spec_14.html#IX1326"><font size=-1>RCPT</font>:maximum&nbsp;number&nbsp;of&nbsp;incoming</a><br>
+<a href="spec_30.html#IX2189"><font size=-1>RCPT</font>:maximum&nbsp;number&nbsp;of&nbsp;outgoing</a><br>
+<a href="spec_14.html#IX1413"><font size=-1>RCPT</font>:rate&nbsp;limiting</a><br>
+<a href="spec_31.html#IX2239"><font size=-1>RCPT</font>:rewriting&nbsp;argument&nbsp;of</a><br>
+<a href="spec_11.html#IX986"><font size=-1>RCPT</font>:value&nbsp;of&nbsp;<tt>$message&#095;size</tt></a><br>
+<a href="spec_44.html#IX2589"><i>Received:</i>&nbsp;header&nbsp;line</a><br>
+<a href="spec_14.html#IX1319"><i>Received:</i>&nbsp;header&nbsp;line:counting</a><br>
+<a href="spec_14.html#IX1314"><i>Received:</i>&nbsp;header&nbsp;line:customizing</a><br>
+<a href="spec_3.html#IX72">receiving&nbsp;mail</a><br>
+<a href="spec_38.html#IX2399">recipient:ACL&nbsp;checking</a><br>
+<a href="spec_5.html#IX354">recipient:adding</a><br>
+<a href="spec_39.html#IX2465">recipient:adding&nbsp;in&nbsp;local&nbsp;scan</a><br>
+<a href="spec_43.html#IX2533">recipient:error</a><br>
+<a href="spec_5.html#IX524">recipient:extracting&nbsp;from&nbsp;header&nbsp;lines</a><br>
+<a href="spec_14.html#IX1325">recipient:maximum&nbsp;number&nbsp;</a><br>
+<a href="spec_5.html#IX381">recipient:removing</a><br>
+<a href="spec_39.html#IX2466">recipient:removing&nbsp;in&nbsp;local&nbsp;scan</a><br>
+<a href="spec_38.html#IX2421">recipient:verifying</a><br>
+<a href="spec_22.html#IX1720"><b>redirect</b>&nbsp;router</a><br>
+redirection&nbsp;<em>see&nbsp;address&nbsp;redirection</em><br>
+<a href="spec_10.html#IX779">regular&nbsp;expressions:in&nbsp;address&nbsp;list</a><br>
+<a href="spec_10.html#IX743">regular&nbsp;expressions:in&nbsp;domain&nbsp;list</a><br>
+<a href="spec_10.html#IX767">regular&nbsp;expressions:in&nbsp;host&nbsp;list</a><br>
+<a href="spec_32.html#IX2248">regular&nbsp;expressions:in&nbsp;retry&nbsp;rules</a><br>
+<a href="spec_2.html#IX46">regular&nbsp;expressions:library</a> &nbsp;<a href="spec_8.html#IX609">[2]</a><br>
+<a href="spec_11.html#IX929">regular&nbsp;expressions:match&nbsp;in&nbsp;expanded&nbsp;string</a><br>
+<a href="spec_11.html#IX879">regular&nbsp;expressions:quoting</a><br>
+<a href="spec_8.html#IX612">regular&nbsp;expressions:testing</a><br>
+<a href="spec_45.html#IX2606">reject&nbsp;log</a><br>
+<a href="spec_14.html#IX1519">reject&nbsp;log:disabling</a><br>
+<a href="spec_38.html#IX2456">relaying:checking&nbsp;control&nbsp;of</a><br>
+<a href="spec_38.html#IX2453">relaying:control&nbsp;by&nbsp;ACL</a><br>
+<a href="spec_5.html#IX248">relaying:testing&nbsp;configuration</a><br>
+<a href="spec_1.html#IX40">remote&nbsp;delivery,&nbsp;definition&nbsp;of</a><br>
+<a href="spec_5.html#IX384">removing&nbsp;messages</a><br>
+<a href="spec_5.html#IX382">removing&nbsp;recipients</a><br>
+<a href="spec_22.html#IX1753">repeated&nbsp;redirection&nbsp;expansion</a><br>
+<a href="spec_4.html#IX191">replacing&nbsp;another&nbsp;MTA</a><br>
+<a href="spec_1.html#IX13">reporting&nbsp;bugs</a><br>
+<a href="spec_44.html#IX2578"><tt>Resent&#045;</tt>&nbsp;header&nbsp;lines</a><br>
+<a href="spec_5.html#IX529"><tt>Resent&#045;</tt>&nbsp;header&nbsp;lines:with&nbsp;<i>-t</i></a><br>
+<a href="spec_5.html#IX324">resolver,&nbsp;debugging&nbsp;output</a><br>
+<a href="spec_32.html#IX2265">retry:after&nbsp;long-term&nbsp;failure</a><br>
+<a href="spec_32.html#IX2255">retry:algorithms</a><br>
+<a href="spec_5.html#IX290">retry:configuration&nbsp;testing</a><br>
+<a href="spec_32.html#IX2244">retry:configuration,&nbsp;description&nbsp;of</a><br>
+<a href="spec_7.html#IX606">retry:default&nbsp;rule</a><br>
+<a href="spec_3.html#IX114">retry:description&nbsp;of&nbsp;mechanism</a><br>
+<a href="spec_32.html#IX2257">retry:interval,&nbsp;maximum</a><br>
+<a href="spec_14.html#IX1338">retry:limit&nbsp;on&nbsp;interval</a><br>
+<a href="spec_32.html#IX2254">retry:parameters&nbsp;in&nbsp;rules</a><br>
+<a href="spec_32.html#IX2251">retry:quota&nbsp;error&nbsp;testing</a><br>
+<a href="spec_32.html#IX2247">retry:rules</a><br>
+<a href="spec_32.html#IX2249">retry:specific&nbsp;errors,&nbsp;specifying</a><br>
+<a href="spec_32.html#IX2246">retry:time&nbsp;not&nbsp;reached</a> &nbsp;<a href="spec_45.html#IX2632">[2]</a><br>
+<a href="spec_32.html#IX2263">retry:timeout&nbsp;of&nbsp;data</a><br>
+<a href="spec_46.html#IX2763">retry:times</a><br>
+<a href="spec_32.html#IX2267">retry:ultimate&nbsp;address&nbsp;timeout</a><br>
+<a href="spec_32.html#IX2261"><tt>retry&#095;data&#095;expire</tt></a><br>
+<a href="spec_32.html#IX2258"><tt>retry&#095;interval&#095;max</tt></a><br>
+<a href="spec_5.html#IX259">return&nbsp;code:for&nbsp;<i>-bm</i></a><br>
+<a href="spec_5.html#IX297">return&nbsp;code:for&nbsp;<i>-bS</i></a><br>
+<a href="spec_5.html#IX306">return&nbsp;code:for&nbsp;<i>-bt</i></a><br>
+<a href="spec_5.html#IX313">return&nbsp;code:for&nbsp;<i>-bv</i></a><br>
+<a href="spec_5.html#IX430">return&nbsp;code:for&nbsp;<i>-oee</i></a><br>
+<a href="spec_5.html#IX433">return&nbsp;code:for&nbsp;<i>-oem</i></a><br>
+<a href="spec_5.html#IX436">return&nbsp;code:for&nbsp;<i>-oep</i></a><br>
+<a href="spec_6.html#IX547">return&nbsp;code:for&nbsp;bad&nbsp;configuration</a><br>
+<a href="spec_11.html#IX836">return&nbsp;code:from&nbsp;<tt>run</tt>&nbsp;expansion</a> &nbsp;<a href="spec_11.html#IX994">[2]</a><br>
+<a href="spec_24.html#IX1894">return&nbsp;path:changing&nbsp;in&nbsp;transport</a><br>
+<a href="spec_1.html#IX41">return&nbsp;path:definition&nbsp;of</a><br>
+return&nbsp;path||<em>see&nbsp;also&nbsp;envelope&nbsp;sender</em><br>
+<a href="spec_24.html#IX1896"><i>Return-path:</i>&nbsp;header&nbsp;line</a> &nbsp;<a href="spec_44.html#IX2590">[2]</a><br>
+<a href="spec_14.html#IX1341"><i>Return-path:</i>&nbsp;header&nbsp;line:removing</a><br>
+<a href="spec_44.html#IX2591"><tt>return&#095;path&#095;remove</tt></a><br>
+<a href="spec_11.html#IX997">reverse&nbsp;DNS&nbsp;lookup</a> &nbsp;<a href="spec_14.html#IX1174">[2]</a> &nbsp;<a href="spec_49.html#IX2837">[3]</a><br>
+<a href="spec_37.html#IX2342">revocation&nbsp;list</a><br>
+<a href="spec_3.html#IX79">rewriting:addresses</a> &nbsp;<a href="spec_31.html#IX2224">[2]</a> &nbsp;<a href="spec_44.html#IX2602">[3]</a><br>
+<a href="spec_24.html#IX1873">rewriting:at&nbsp;transport&nbsp;time</a> &nbsp;<a href="spec_31.html#IX2229">[2]</a><br>
+<a href="spec_31.html#IX2242">rewriting:bang&nbsp;paths</a><br>
+<a href="spec_31.html#IX2237">rewriting:flags</a><br>
+<a href="spec_17.html#IX1664">rewriting:header&nbsp;lines</a><br>
+<a href="spec_45.html#IX2637">rewriting:logging</a><br>
+<a href="spec_31.html#IX2233">rewriting:patterns</a><br>
+<a href="spec_31.html#IX2236">rewriting:replacements</a><br>
+<a href="spec_31.html#IX2232">rewriting:rules</a><br>
+<a href="spec_5.html#IX293">rewriting:testing</a> &nbsp;<a href="spec_31.html#IX2230">[2]</a><br>
+<a href="spec_31.html#IX2225">rewriting:timing&nbsp;of</a><br>
+<a href="spec_31.html#IX2241">rewriting:whole&nbsp;addresses</a><br>
+<a href="spec_5.html#IX251">RFC&nbsp;1413</a> &nbsp;<a href="spec_14.html#IX1344">[2]</a><br>
+<a href="spec_45.html#IX2654">RFC&nbsp;1413:logging&nbsp;timeout</a><br>
+<a href="spec_14.html#IX1347">RFC&nbsp;1413:query&nbsp;timeout</a><br>
+<a href="spec_5.html#IX201"><i>rmail</i></a><br>
+<a href="spec_48.html#IX2806">root&nbsp;privilege</a><br>
+<a href="spec_48.html#IX2816">root&nbsp;privilege:running&nbsp;without</a><br>
+<a href="spec_15.html#IX1566">router:adding&nbsp;header&nbsp;lines</a><br>
+<a href="spec_15.html#IX1630">router:carrying&nbsp;on&nbsp;after&nbsp;success</a><br>
+<a href="spec_15.html#IX1532">router:case&nbsp;of&nbsp;local&nbsp;parts</a><br>
+<a href="spec_15.html#IX1546">router:changing&nbsp;address&nbsp;for&nbsp;errors</a><br>
+<a href="spec_15.html#IX1535">router:checking&nbsp;for&nbsp;local&nbsp;user</a><br>
+<a href="spec_15.html#IX1619">router:checking&nbsp;senders</a><br>
+<a href="spec_15.html#IX1537">router:customized&nbsp;precondition</a><br>
+<a href="spec_15.html#IX1528">router:customizing&nbsp;&#147;cannot&nbsp;route&#148;&nbsp;message</a><br>
+<a href="spec_15.html#IX1523">router:data&nbsp;attached&nbsp;to&nbsp;address</a><br>
+<a href="spec_3.html#IX91">router:definition&nbsp;of</a><br>
+<a href="spec_15.html#IX1572">router:discarding&nbsp;IP&nbsp;addresses</a><br>
+<a href="spec_15.html#IX1557">router:fallback&nbsp;hosts</a><br>
+<a href="spec_3.html#IX95">router:for&nbsp;verification</a><br>
+<a href="spec_15.html#IX1553">router:forcing&nbsp;verification&nbsp;failure</a><br>
+<a href="spec_15.html#IX1600">router:go&nbsp;to&nbsp;after&nbsp;&#147;pass&#148;</a><br>
+<a href="spec_15.html#IX1611">router:home&nbsp;directory&nbsp;for</a><br>
+<a href="spec_15.html#IX1623">router:IP&nbsp;address&nbsp;translation</a><br>
+<a href="spec_3.html#IX103">router:preconditions,&nbsp;order&nbsp;of&nbsp;processing</a><br>
+<a href="spec_15.html#IX1579">router:prefix&nbsp;for&nbsp;local&nbsp;part</a><br>
+<a href="spec_15.html#IX1569">router:removing&nbsp;header&nbsp;lines</a><br>
+<a href="spec_15.html#IX1605">router:requiring&nbsp;file&nbsp;existence</a><br>
+<a href="spec_15.html#IX1542">router:restricting&nbsp;to&nbsp;specific&nbsp;domains</a><br>
+<a href="spec_15.html#IX1589">router:restricting&nbsp;to&nbsp;specific&nbsp;local&nbsp;parts</a><br>
+<a href="spec_3.html#IX99">router:result&nbsp;of&nbsp;running</a><br>
+<a href="spec_3.html#IX97">router:running&nbsp;details</a><br>
+<a href="spec_15.html#IX1563">router:setting&nbsp;group</a><br>
+<a href="spec_15.html#IX1551">router:skipping&nbsp;for&nbsp;<font size=-1>EXPN</font></a><br>
+<a href="spec_15.html#IX1526">router:skipping&nbsp;when&nbsp;address&nbsp;testing</a><br>
+<a href="spec_15.html#IX1602">router:start&nbsp;at&nbsp;after&nbsp;redirection</a><br>
+<a href="spec_15.html#IX1585">router:suffix&nbsp;for&nbsp;local&nbsp;part</a><br>
+<a href="spec_15.html#IX1598">router:timeout</a><br>
+<a href="spec_15.html#IX1642">router:used&nbsp;only&nbsp;when&nbsp;verifying</a><br>
+<a href="spec_15.html#IX1636">router:user&nbsp;for&nbsp;filter&nbsp;processing</a><br>
+<a href="spec_16.html#IX1646">routers:<b>accept</b></a><br>
+<a href="spec_7.html#IX601">routers:default</a><br>
+<a href="spec_17.html#IX1648">routers:<b>dnslookup</b></a><br>
+<a href="spec_18.html#IX1674">routers:<b>ipliteral</b></a><br>
+<a href="spec_19.html#IX1677">routers:<b>iplookup</b></a><br>
+<a href="spec_20.html#IX1689">routers:<b>manualroute</b></a><br>
+<a href="spec_21.html#IX1710">routers:<b>queryprogram</b></a><br>
+<a href="spec_22.html#IX1721">routers:<b>redirect</b></a><br>
+<a href="spec_21.html#IX1711">routing:by&nbsp;external&nbsp;program</a><br>
+<a href="spec_3.html#IX108">routing:loops&nbsp;in</a> &nbsp;<a href="spec_22.html#IX1728">[2]</a><br>
+<a href="spec_5.html#IX492">routing:whole&nbsp;queue&nbsp;before&nbsp;delivery</a><br>
+<a href="spec_5.html#IX200"><i>rsmtp</i></a><br>
+<a href="spec_6.html#IX538">run&nbsp;time&nbsp;configuration</a><br>
+<a href="spec_5.html#IX202"><i>runq</i></a><br>
+<br>
+<a name="S"></a>
+<font size="+1">S</font><br>
+<a href="spec_2.html#IX50">Samba&nbsp;project</a><br>
+<a href="spec_11.html#IX946"><i>saslauthd</i>&nbsp;daemon</a><br>
+<a href="spec_30.html#IX2147"><tt>search&#095;parents</tt></a><br>
+<a href="spec_48.html#IX2803">security</a><br>
+<a href="spec_48.html#IX2804">security:build-time&nbsp;features</a><br>
+<a href="spec_15.html#IX1595"><tt>self</tt>&nbsp;option</a><br>
+<a href="spec_17.html#IX1651"><tt>self</tt>&nbsp;option:in&nbsp;<b>dnslookup</b>&nbsp;router</a><br>
+<a href="spec_18.html#IX1675"><tt>self</tt>&nbsp;option:in&nbsp;<b>ipliteral</b>&nbsp;router</a><br>
+<a href="spec_20.html#IX1703"><tt>self</tt>&nbsp;option:in&nbsp;<b>manualroute</b>&nbsp;router</a><br>
+<a href="spec_11.html#IX995"><tt>self</tt>&nbsp;option:value&nbsp;of&nbsp;host&nbsp;name</a><br>
+<a href="spec_5.html#IX212"><i>Sender:</i>&nbsp;header&nbsp;line</a> &nbsp;<a href="spec_44.html#IX2592">[2]</a><br>
+<a href="spec_14.html#IX1202"><i>Sender:</i>&nbsp;header&nbsp;line:disabling&nbsp;addition&nbsp;of</a><br>
+<a href="spec_14.html#IX1212"><i>Sender:</i>&nbsp;header&nbsp;line:retaining&nbsp;from&nbsp;local&nbsp;submission</a><br>
+<a href="spec_38.html#IX2401">sender:ACL&nbsp;checking</a> &nbsp;<a href="spec_38.html#IX2403">[2]</a><br>
+<a href="spec_5.html#IX334">sender:address</a> &nbsp;<a href="spec_44.html#IX2572">[2]</a><br>
+<a href="spec_11.html#IX958">sender:authenticated</a><br>
+<a href="spec_5.html#IX369">sender:changing</a><br>
+<a href="spec_3.html#IX75">sender:constructed&nbsp;by&nbsp;Exim</a><br>
+<a href="spec_1.html#IX34">sender:definition&nbsp;of</a><br>
+<a href="spec_11.html#IX988">sender:gid</a><br>
+<a href="spec_5.html#IX445">sender:host&nbsp;address,&nbsp;specifying&nbsp;for&nbsp;local&nbsp;message</a><br>
+<a href="spec_5.html#IX457">sender:host&nbsp;name,&nbsp;specifying&nbsp;for&nbsp;local&nbsp;message</a><br>
+<a href="spec_5.html#IX459">sender:ident&nbsp;string,&nbsp;specifying&nbsp;for&nbsp;local&nbsp;message</a><br>
+<a href="spec_5.html#IX331">sender:name</a><br>
+<a href="spec_14.html#IX1507">sender:setting&nbsp;by&nbsp;untrusted&nbsp;user</a><br>
+<a href="spec_5.html#IX301">sender:source&nbsp;of</a><br>
+<a href="spec_11.html#IX990">sender:uid</a><br>
+<a href="spec_38.html#IX2426">sender:verifying</a><br>
+<a href="spec_38.html#IX2410">sender:verifying&nbsp;in&nbsp;header</a><br>
+<a href="spec_5.html#IX256">Sendmail&nbsp;compatibility:<i>-bi</i>&nbsp;option</a><br>
+<a href="spec_5.html#IX341">Sendmail&nbsp;compatibility:<i>-G</i>&nbsp;option&nbsp;ignored</a><br>
+<a href="spec_5.html#IX343">Sendmail&nbsp;compatibility:<i>-h</i>&nbsp;option&nbsp;ignored</a><br>
+<a href="spec_5.html#IX407">Sendmail&nbsp;compatibility:<i>-n</i>&nbsp;option&nbsp;ignored</a><br>
+<a href="spec_5.html#IX410">Sendmail&nbsp;compatibility:<i>-oA</i>&nbsp;option</a><br>
+<a href="spec_5.html#IX461">Sendmail&nbsp;compatibility:<i>-om</i>&nbsp;option&nbsp;ignored</a><br>
+<a href="spec_5.html#IX463">Sendmail&nbsp;compatibility:<i>-oo</i>&nbsp;option&nbsp;ignored</a><br>
+<a href="spec_5.html#IX528">Sendmail&nbsp;compatibility:<i>-t</i>&nbsp;option</a> &nbsp;<a href="spec_14.html#IX1143">[2]</a><br>
+<a href="spec_5.html#IX535">Sendmail&nbsp;compatibility:<i>-U</i>&nbsp;option&nbsp;ignored</a><br>
+<a href="spec_5.html#IX220">Sendmail&nbsp;compatibility:8-bit&nbsp;characters</a><br>
+<a href="spec_5.html#IX206">Sendmail&nbsp;compatibility:calling&nbsp;Exim&nbsp;as&nbsp;<i>newaliases</i></a><br>
+<a href="spec_1.html#IX29">Sendmail&nbsp;compatibility:command&nbsp;line&nbsp;interface</a><br>
+<a href="spec_5.html#IX264">Sendmail&nbsp;compatibility:&#147;From&#148;&nbsp;line</a> &nbsp;<a href="spec_44.html#IX2576">[2]</a> &nbsp;<a href="spec_44.html#IX2586">[3]</a><br>
+<a href="spec_30.html#IX2198">serializing&nbsp;connections</a><br>
+<a href="spec_48.html#IX2805">setuid</a><br>
+<a href="spec_4.html#IX181">setuid:installing&nbsp;Exim&nbsp;with</a><br>
+<a href="spec_11.html#IX881">SHA-1&nbsp;hash</a> &nbsp;<a href="spec_11.html#IX904">[2]</a><br>
+<a href="spec_24.html#IX1899">shadow&nbsp;transport</a><br>
+<a href="spec_3.html#IX62">Sieve&nbsp;filter</a><br>
+<a href="spec_26.html#IX1925">Sieve&nbsp;filter:configuring&nbsp;<b>appendfile</b></a><br>
+<a href="spec_7.html#IX603">Sieve&nbsp;filter:enabling&nbsp;in&nbsp;default&nbsp;router</a><br>
+<a href="spec_22.html#IX1762">Sieve&nbsp;filter:enabling&nbsp;use&nbsp;of</a><br>
+<a href="spec_22.html#IX1776">Sieve&nbsp;filter:forbidding&nbsp;delivery&nbsp;to&nbsp;a&nbsp;file</a><br>
+<a href="spec_3.html#IX107">Sieve&nbsp;filter:not&nbsp;available&nbsp;for&nbsp;system&nbsp;filter</a> &nbsp;<a href="spec_14.html#IX1446">[2]</a><br>
+<a href="spec_26.html#IX1926">Sieve&nbsp;filter:relative&nbsp;mailbox&nbsp;path&nbsp;handling</a><br>
+<a href="spec_22.html#IX1725">Sieve&nbsp;filter:specifying&nbsp;in&nbsp;redirection&nbsp;data</a><br>
+<a href="spec_22.html#IX1828">Sieve&nbsp;filter:syntax&nbsp;errors&nbsp;in</a><br>
+<a href="spec_5.html#IX240">Sieve&nbsp;filter:testing</a><br>
+<a href="spec_11.html#IX956">Sieve&nbsp;filter:value&nbsp;of&nbsp;<tt>$address&#095;file</tt></a><br>
+<a href="spec_22.html#IX1777">Sieve&nbsp;filter:&#147;keep&#148;&nbsp;facility,&nbsp;disabling</a><br>
+<a href="spec_5.html#IX227"><font size=-1>SIGHUP</font></a><br>
+<a href="spec_46.html#IX2703"><font size=-1>SIGUSR1</font></a><br>
+<a href="spec_9.html#IX618">single-key&nbsp;lookup:definition&nbsp;of</a><br>
+<a href="spec_9.html#IX621">single-key&nbsp;lookup:list&nbsp;of&nbsp;types</a><br>
+<a href="spec_43.html#IX2520"><font size=-1>SIZE</font>&nbsp;option&nbsp;on&nbsp;<font size=-1>MAIL</font>&nbsp;command</a> &nbsp;<a href="spec_43.html#IX2545">[2]</a><br>
+<a href="spec_14.html#IX1075">size:of&nbsp;bounce,&nbsp;limit</a><br>
+<a href="spec_26.html#IX2003">size:of&nbsp;mailbox</a><br>
+<a href="spec_5.html#IX279">size:of&nbsp;message</a> &nbsp;<a href="spec_11.html#IX984">[2]</a> &nbsp;<a href="spec_30.html#IX2204">[3]</a> &nbsp;<a href="spec_45.html#IX2624">[4]</a> &nbsp;<a href="spec_45.html#IX2646">[5]</a><br>
+<a href="spec_14.html#IX1244">size:of&nbsp;message,&nbsp;limit</a> &nbsp;<a href="spec_24.html#IX1882">[2]</a><br>
+<a href="spec_47.html#IX2792">size:of&nbsp;monitor&nbsp;window</a><br>
+<a href="spec_22.html#IX1826">skipping&nbsp;faulty&nbsp;addresses</a><br>
+<a href="spec_20.html#IX1704">smart&nbsp;host:example&nbsp;router</a> &nbsp;<a href="spec_42.html#IX2494">[2]</a><br>
+<a href="spec_5.html#IX223">SMTP&nbsp;listener</a><br>
+<a href="spec_30.html#IX2127"><b>smtp</b>&nbsp;transport</a><br>
+<a href="spec_33.html#IX2268">SMTP:authentication&nbsp;configuration</a><br>
+<a href="spec_5.html#IX295">SMTP:batched&nbsp;incoming</a> &nbsp;<a href="spec_43.html#IX2559">[2]</a><br>
+<a href="spec_43.html#IX2557">SMTP:batched&nbsp;outgoing</a><br>
+<a href="spec_20.html#IX1707">SMTP:batched&nbsp;outgoing,&nbsp;example</a><br>
+<a href="spec_43.html#IX2527">SMTP:batching&nbsp;over&nbsp;TCP/IP</a><br>
+<a href="spec_38.html#IX2438">SMTP:callout&nbsp;verification</a><br>
+<a href="spec_14.html#IX1392">SMTP:connection&nbsp;backlog</a><br>
+<a href="spec_5.html#IX427">SMTP:delaying&nbsp;delivery</a><br>
+<a href="spec_14.html#IX1422">SMTP:details&nbsp;policy&nbsp;failures</a><br>
+<a href="spec_14.html#IX1470">SMTP:encrypted&nbsp;connection</a><br>
+<a href="spec_37.html#IX2328">SMTP:encryption</a><br>
+<a href="spec_43.html#IX2530">SMTP:errors&nbsp;in&nbsp;outgoing</a><br>
+<a href="spec_14.html#IX1380">SMTP:host&nbsp;name&nbsp;in&nbsp;responses</a><br>
+<a href="spec_14.html#IX1376">SMTP:incoming&nbsp;call&nbsp;count</a><br>
+<a href="spec_14.html#IX1356">SMTP:incoming&nbsp;connection&nbsp;count</a> &nbsp;<a href="spec_14.html#IX1369">[2]</a><br>
+<a href="spec_14.html#IX1363">SMTP:incoming&nbsp;message&nbsp;count,&nbsp;limiting</a><br>
+<a href="spec_43.html#IX2537">SMTP:incoming&nbsp;over&nbsp;TCP/IP</a><br>
+<a href="spec_14.html#IX1360">SMTP:limiting&nbsp;non-mail&nbsp;commands</a><br>
+<a href="spec_14.html#IX1404">SMTP:limiting&nbsp;syntax&nbsp;and&nbsp;protocol&nbsp;errors</a><br>
+<a href="spec_14.html#IX1408">SMTP:limiting&nbsp;unknown&nbsp;commands</a><br>
+<a href="spec_43.html#IX2556">SMTP:local&nbsp;incoming</a><br>
+<a href="spec_5.html#IX299">SMTP:local&nbsp;input</a><br>
+<a href="spec_45.html#IX2677">SMTP:logging&nbsp;confirmation</a><br>
+<a href="spec_45.html#IX2679">SMTP:logging&nbsp;connections</a><br>
+<a href="spec_45.html#IX2681">SMTP:logging&nbsp;incomplete&nbsp;transactions</a><br>
+<a href="spec_45.html#IX2683">SMTP:logging&nbsp;protocol&nbsp;error</a><br>
+<a href="spec_45.html#IX2684">SMTP:logging&nbsp;syntax&nbsp;errors</a><br>
+<a href="spec_5.html#IX356">SMTP:multiple&nbsp;deliveries</a> &nbsp;<a href="spec_5.html#IX413">[2]</a> &nbsp;<a href="spec_5.html#IX486">[3]</a> &nbsp;<a href="spec_5.html#IX495">[4]</a> &nbsp;<a href="spec_30.html#IX2140">[5]</a> &nbsp;<a href="spec_42.html#IX2510">[6]</a><br>
+<a href="spec_43.html#IX2550">SMTP:non-mail&nbsp;commands</a><br>
+<a href="spec_43.html#IX2514">SMTP:outgoing&nbsp;over&nbsp;TCP/IP</a><br>
+<a href="spec_5.html#IX355">SMTP:passed&nbsp;connection</a> &nbsp;<a href="spec_5.html#IX411">[2]</a> &nbsp;<a href="spec_5.html#IX485">[3]</a> &nbsp;<a href="spec_5.html#IX494">[4]</a> &nbsp;<a href="spec_30.html#IX2139">[5]</a> &nbsp;<a href="spec_42.html#IX2509">[6]</a> &nbsp;<a href="spec_43.html#IX2526">[7]</a><br>
+<a href="spec_43.html#IX2512">SMTP:processing&nbsp;details</a><br>
+<a href="spec_43.html#IX2549">SMTP:protocol&nbsp;errors</a><br>
+<a href="spec_14.html#IX1411">SMTP:rate&nbsp;limiting</a><br>
+<a href="spec_31.html#IX2238">SMTP:rewriting&nbsp;malformed&nbsp;addresses</a><br>
+<a href="spec_24.html#IX1904">SMTP:<font size=-1>SIZE</font></a> &nbsp;<a href="spec_30.html#IX2202">[2]</a><br>
+<a href="spec_14.html#IX1395">SMTP:synchronization&nbsp;checking</a><br>
+<a href="spec_43.html#IX2548">SMTP:syntax&nbsp;errors</a><br>
+<a href="spec_45.html#IX2685">SMTP:syntax&nbsp;errors,&nbsp;logging</a><br>
+<a href="spec_5.html#IX246">SMTP:testing&nbsp;incoming</a><br>
+<a href="spec_5.html#IX471">SMTP:timeout,&nbsp;input</a> &nbsp;<a href="spec_14.html#IX1418">[2]</a><br>
+<a href="spec_45.html#IX2686">SMTP:unknown&nbsp;command,&nbsp;logging</a><br>
+<a href="spec_43.html#IX2547">SMTP:unrecognized&nbsp;commands</a><br>
+<a href="spec_14.html#IX1382">SMTP:welcome&nbsp;banner</a><br>
+<a href="spec_11.html#IX972"><tt>smtp&#095;etrn&#095;command</tt></a> &nbsp;<a href="spec_43.html#IX2555">[2]</a><br>
+<a href="spec_11.html#IX834">socket,&nbsp;use&nbsp;of&nbsp;in&nbsp;expansion</a><br>
+<a href="spec_4.html#IX128">Solaris:DBM&nbsp;library&nbsp;for</a><br>
+<a href="spec_26.html#IX2011">Solaris:<i>flock()</i>&nbsp;support</a><br>
+<a href="spec_9.html#IX697">Solaris:LDAP</a><br>
+<a href="spec_5.html#IX345">Solaris:<i>mail</i>&nbsp;command</a><br>
+<a href="spec_11.html#IX937">Solaris:PAM&nbsp;support</a><br>
+<a href="spec_4.html#IX196">Solaris:stopping&nbsp;Exim&nbsp;on</a><br>
+<a href="spec_14.html#IX1333">sorting&nbsp;remote&nbsp;deliveries</a><br>
+<a href="spec_14.html#IX1254">source&nbsp;routing:in&nbsp;email&nbsp;address</a><br>
+<a href="spec_48.html#IX2817">source&nbsp;routing:in&nbsp;IP&nbsp;packets</a><br>
+<a href="spec_2.html#IX49">SPA&nbsp;authentication</a><br>
+<a href="spec_36.html#IX2314"><b>spa</b>&nbsp;authenticator</a><br>
+<a href="spec_14.html#IX1095">spool&nbsp;directory:checking&nbsp;space</a> &nbsp;<a href="spec_14.html#IX1389">[2]</a><br>
+<a href="spec_4.html#IX186">spool&nbsp;directory:creating</a><br>
+<a href="spec_1.html#IX44">spool&nbsp;directory:definition&nbsp;of</a><br>
+<a href="spec_45.html#IX2633">spool&nbsp;directory:file&nbsp;locked</a><br>
+<a href="spec_48.html#IX2827">spool&nbsp;directory:files</a><br>
+<a href="spec_3.html#IX76">spool&nbsp;directory:files&nbsp;that&nbsp;hold&nbsp;a&nbsp;message</a><br>
+<a href="spec_49.html#IX2830">spool&nbsp;directory:format&nbsp;of&nbsp;files</a><br>
+<a href="spec_3.html#IX78">spool&nbsp;directory:<i>input</i>&nbsp;sub-directory</a><br>
+<a href="spec_14.html#IX1429">spool&nbsp;directory:path&nbsp;to</a><br>
+<a href="spec_14.html#IX1426">spool&nbsp;directory:split</a><br>
+<a href="spec_49.html#IX2832">spool:files,&nbsp;editing</a><br>
+<a href="spec_49.html#IX2831">spool:files,&nbsp;format&nbsp;of</a><br>
+<a href="spec_48.html#IX2828"><i>sprintf()</i></a><br>
+<a href="spec_4.html#IX141"><i>src/EDITME</i></a><br>
+<a href="spec_17.html#IX1656">SRV&nbsp;record:enabling&nbsp;use&nbsp;of</a><br>
+<a href="spec_9.html#IX694">SRV&nbsp;record:in&nbsp;<b>dnsdb</b>&nbsp;lookup</a><br>
+<a href="spec_17.html#IX1659">SRV&nbsp;record:required&nbsp;to&nbsp;exist</a><br>
+SSL&nbsp;<em>see&nbsp;TLS</em><br>
+<a href="spec_14.html#IX1044"><font size=-1>STARTTLS</font>,&nbsp;ACL&nbsp;for</a> &nbsp;<a href="spec_38.html#IX2365">[2]</a><br>
+<a href="spec_46.html#IX2726">statistics</a><br>
+<a href="spec_47.html#IX2791"><tt>statvfs</tt>&nbsp;function</a><br>
+<a href="spec_6.html#IX585">string&nbsp;list,&nbsp;definition</a><br>
+<a href="spec_11.html#IX862">string:case&nbsp;forcing</a> &nbsp;<a href="spec_11.html#IX893">[2]</a><br>
+<a href="spec_11.html#IX909">string:comparison</a> &nbsp;<a href="spec_11.html#IX916">[2]</a> &nbsp;<a href="spec_11.html#IX918">[3]</a> &nbsp;<a href="spec_11.html#IX924">[4]</a> &nbsp;<a href="spec_11.html#IX926">[5]</a><br>
+<a href="spec_6.html#IX577">string:expansion,&nbsp;definition&nbsp;of</a><br>
+<a href="spec_6.html#IX573">string:format&nbsp;of&nbsp;configuration&nbsp;values</a><br>
+<a href="spec_11.html#IX886">string:length&nbsp;in&nbsp;expansion</a><br>
+<a href="spec_6.html#IX575">string:quoted</a><br>
+<a href="spec_11.html#IX921">string:testing&nbsp;for&nbsp;IP&nbsp;address</a><br>
+string||expansion&nbsp;<em>see&nbsp;expansion</em><br>
+<a href="spec_47.html#IX2790">stripchart</a><br>
+<a href="spec_45.html#IX2690">subject,&nbsp;logging</a><br>
+<a href="spec_11.html#IX838"><tt>substr</tt></a> &nbsp;<a href="spec_11.html#IX887">[2]</a><br>
+<a href="spec_11.html#IX839">substring&nbsp;extraction</a> &nbsp;<a href="spec_11.html#IX888">[2]</a><br>
+<a href="spec_15.html#IX1586">suffix&nbsp;for&nbsp;local&nbsp;part,&nbsp;used&nbsp;in&nbsp;router</a><br>
+<a href="spec_24.html#IX1886">suffix:for&nbsp;local&nbsp;part,&nbsp;including&nbsp;in&nbsp;envelope</a><br>
+<a href="spec_4.html#IX147"><font size=-1>SUPPORT&#095;TLS</font></a><br>
+<a href="spec_4.html#IX125">symbolic&nbsp;link:to&nbsp;build&nbsp;directory</a><br>
+<a href="spec_4.html#IX192">symbolic&nbsp;link:to&nbsp;<i>exim</i>&nbsp;binary</a><br>
+<a href="spec_26.html#IX1933">symbolic&nbsp;link:to&nbsp;mailbox</a> &nbsp;<a href="spec_26.html#IX2021">[2]</a><br>
+<a href="spec_4.html#IX155">symbolic&nbsp;link:to&nbsp;source&nbsp;files</a><br>
+<a href="spec_14.html#IX1396">synchronization&nbsp;checking&nbsp;in&nbsp;SMTP</a><br>
+<a href="spec_6.html#IX561">syntax&nbsp;of&nbsp;common&nbsp;options</a><br>
+<a href="spec_45.html#IX2612">syslog</a><br>
+<a href="spec_14.html#IX1436">syslog:duplicate&nbsp;log&nbsp;lines,&nbsp;suppressing</a><br>
+<a href="spec_14.html#IX1438">syslog:facility,&nbsp;setting</a><br>
+<a href="spec_14.html#IX1440">syslog:process&nbsp;name,&nbsp;setting</a><br>
+<a href="spec_14.html#IX1442">syslog:timestamps</a><br>
+<a href="spec_4.html#IX179">system&nbsp;aliases&nbsp;file</a><br>
+<a href="spec_40.html#IX2473">system&nbsp;filter</a><br>
+<a href="spec_14.html#IX1445">system&nbsp;filter:specifying</a><br>
+<a href="spec_5.html#IX233">system&nbsp;filter:testing</a><br>
+<a href="spec_45.html#IX2608">system&nbsp;log</a><br>
+<br>
+<a name="T"></a>
+<font size="+1">T</font><br>
+<a href="spec_45.html#IX2659">TCP/IP:logging&nbsp;incoming&nbsp;remote&nbsp;port</a><br>
+<a href="spec_45.html#IX2663">TCP/IP:logging&nbsp;ougtoing&nbsp;remote&nbsp;port</a><br>
+<a href="spec_5.html#IX475">TCP/IP:setting&nbsp;listening&nbsp;interfaces</a> &nbsp;<a href="spec_13.html#IX1014">[2]</a><br>
+<a href="spec_5.html#IX474">TCP/IP:setting&nbsp;listening&nbsp;ports</a> &nbsp;<a href="spec_13.html#IX1015">[2]</a> &nbsp;<a href="spec_14.html#IX1097">[3]</a><br>
+<a href="spec_30.html#IX2193">TCP/IP:setting&nbsp;outgoing&nbsp;port</a><br>
+<a href="spec_14.html#IX1461"><font size=-1>TCP&#095;NODELAY</font>&nbsp;on&nbsp;listening&nbsp;sockets</a><br>
+<a href="spec_4.html#IX151">tcpwrappers,&nbsp;building&nbsp;Exim&nbsp;to&nbsp;support</a><br>
+<a href="spec_4.html#IX135"><i>tdb</i>&nbsp;DBM&nbsp;library</a><br>
+<a href="spec_1.html#IX30">terminology&nbsp;definitions</a><br>
+<a href="spec_5.html#IX304">testing:addresses</a> &nbsp;<a href="spec_15.html#IX1549">[2]</a><br>
+<a href="spec_5.html#IX237">testing:filter&nbsp;file</a><br>
+<a href="spec_5.html#IX239">testing:forward&nbsp;file</a><br>
+<a href="spec_5.html#IX245">testing:incoming&nbsp;SMTP</a><br>
+<a href="spec_4.html#IX187">testing:installation</a><br>
+<a href="spec_8.html#IX611">testing:regular&nbsp;expressions</a><br>
+<a href="spec_5.html#IX247">testing:relay&nbsp;control</a><br>
+<a href="spec_5.html#IX289">testing:retry&nbsp;configuration</a><br>
+<a href="spec_5.html#IX292">testing:rewriting</a> &nbsp;<a href="spec_31.html#IX2231">[2]</a><br>
+<a href="spec_5.html#IX230">testing:string&nbsp;expansion</a> &nbsp;<a href="spec_11.html#IX802">[2]</a><br>
+<a href="spec_5.html#IX234">testing:system&nbsp;filter</a><br>
+<a href="spec_15.html#IX1539">testing:variables&nbsp;in&nbsp;drivers</a> &nbsp;<a href="spec_24.html#IX1853">[2]</a><br>
+<a href="spec_5.html#IX388">thawing&nbsp;messages</a> &nbsp;<a href="spec_14.html#IX1062">[2]</a> &nbsp;<a href="spec_47.html#IX2799">[3]</a><br>
+<a href="spec_11.html#IX891">time&nbsp;interval:formatting</a><br>
+<a href="spec_6.html#IX571">time&nbsp;interval:specifying&nbsp;in&nbsp;configuration</a><br>
+<a href="spec_11.html#IX890"><tt>time&#095;interval</tt></a><br>
+<a href="spec_14.html#IX1209">timeout:for&nbsp;<i>local&#095;scan()</i>&nbsp;function</a><br>
+<a href="spec_5.html#IX468">timeout:for&nbsp;non-SMTP&nbsp;input</a> &nbsp;<a href="spec_14.html#IX1312">[2]</a><br>
+<a href="spec_14.html#IX1348">timeout:for&nbsp;RFC&nbsp;1413&nbsp;call</a><br>
+<a href="spec_5.html#IX470">timeout:for&nbsp;SMTP&nbsp;input</a> &nbsp;<a href="spec_14.html#IX1417">[2]</a><br>
+<a href="spec_14.html#IX1464">timeout:frozen&nbsp;messages</a><br>
+<a href="spec_26.html#IX1960">timeout:mailbox&nbsp;locking</a> &nbsp;<a href="spec_26.html#IX1968">[2]</a><br>
+<a href="spec_32.html#IX2260">timeout:of&nbsp;retry&nbsp;data</a><br>
+<a href="spec_15.html#IX1597">timeout:of&nbsp;router</a><br>
+<a href="spec_3.html#IX85"><tt>timeout&#095;frozen&#095;after</tt></a><br>
+<a href="spec_14.html#IX1466">timezone,&nbsp;setting</a><br>
+<a href="spec_14.html#IX1468">TLS:advertising</a><br>
+<a href="spec_5.html#IX533">TLS:automatic&nbsp;start</a><br>
+<a href="spec_30.html#IX2162">TLS:avoiding&nbsp;for&nbsp;certain&nbsp;hosts</a><br>
+<a href="spec_14.html#IX1483">TLS:broken&nbsp;clients</a><br>
+<a href="spec_30.html#IX2211">TLS:client&nbsp;certificate&nbsp;revocation&nbsp;list</a><br>
+<a href="spec_14.html#IX1488">TLS:client&nbsp;certificate&nbsp;verification</a> &nbsp;<a href="spec_14.html#IX1491">[2]</a> &nbsp;<a href="spec_14.html#IX1494">[3]</a> &nbsp;<a href="spec_37.html#IX2339">[4]</a> &nbsp;<a href="spec_38.html#IX2405">[5]</a><br>
+<a href="spec_30.html#IX2208">TLS:client&nbsp;certificate,&nbsp;location&nbsp;of</a><br>
+<a href="spec_30.html#IX2214">TLS:client&nbsp;private&nbsp;key,&nbsp;location&nbsp;of</a><br>
+<a href="spec_37.html#IX2347">TLS:configuring&nbsp;an&nbsp;Exim&nbsp;client</a><br>
+<a href="spec_37.html#IX2335">TLS:configuring&nbsp;an&nbsp;Exim&nbsp;server</a><br>
+<a href="spec_14.html#IX1478">TLS:D-H&nbsp;parameters&nbsp;for&nbsp;server</a><br>
+<a href="spec_14.html#IX1482">TLS:esmtp&nbsp;state,&nbsp;remembering</a><br>
+<a href="spec_4.html#IX145">TLS:including&nbsp;support&nbsp;for&nbsp;TLS</a><br>
+<a href="spec_45.html#IX2693">TLS:logging&nbsp;cipher</a><br>
+<a href="spec_45.html#IX2695">TLS:logging&nbsp;peer&nbsp;DN</a><br>
+<a href="spec_30.html#IX2171">TLS:multiple&nbsp;message&nbsp;deliveries</a> &nbsp;<a href="spec_37.html#IX2349">[2]</a><br>
+<a href="spec_37.html#IX2329">TLS:on&nbsp;SMTP&nbsp;connection</a><br>
+<a href="spec_37.html#IX2332">TLS:OpenSSL&nbsp;<i>vs</i>&nbsp;GnuTLS</a><br>
+<a href="spec_30.html#IX2169">TLS:passing&nbsp;connection</a><br>
+<a href="spec_30.html#IX2180">TLS:requiring&nbsp;for&nbsp;certain&nbsp;servers</a><br>
+<a href="spec_14.html#IX1485">TLS:requiring&nbsp;specific&nbsp;ciphers</a> &nbsp;<a href="spec_30.html#IX2216">[2]</a> &nbsp;<a href="spec_37.html#IX2333">[3]</a><br>
+<a href="spec_37.html#IX2341">TLS:revoked&nbsp;certificates</a><br>
+<a href="spec_14.html#IX1475">TLS:server&nbsp;certificate&nbsp;revocation&nbsp;list</a><br>
+<a href="spec_30.html#IX2220">TLS:server&nbsp;certificate&nbsp;verification</a><br>
+<a href="spec_14.html#IX1472">TLS:server&nbsp;certificate,&nbsp;location&nbsp;of</a><br>
+<a href="spec_14.html#IX1480">TLS:server&nbsp;private&nbsp;key,&nbsp;location&nbsp;of</a><br>
+<a href="spec_5.html#IX532">TLS:use&nbsp;without&nbsp;STARTTLS</a><br>
+<a href="spec_37.html#IX2334"><tt>tls&#095;require&#095;ciphers</tt>:OpenSSL&nbsp;<i>vs</i>&nbsp;GnuTLS</a><br>
+<a href="spec_29.html#IX2101"><tt>tmail</tt></a><br>
+<a href="spec_5.html#IX527"><i>To:</i>&nbsp;header&nbsp;line</a><br>
+<a href="spec_14.html#IX1223">too&nbsp;many&nbsp;open&nbsp;files</a><br>
+top&nbsp;bit&nbsp;<em>see&nbsp;8-bit&nbsp;characters</em><br>
+<a href="spec_14.html#IX1433">trailing&nbsp;dot&nbsp;on&nbsp;domain</a><br>
+<a href="spec_1.html#IX11">training&nbsp;courses</a><br>
+<a href="spec_24.html#IX1846">transport:body&nbsp;only</a><br>
+<a href="spec_24.html#IX1850">transport:current&nbsp;directory&nbsp;for</a><br>
+<a href="spec_3.html#IX92">transport:definition&nbsp;of</a><br>
+<a href="spec_1.html#IX27">transport:external</a><br>
+<a href="spec_11.html#IX973">transport:filter</a> &nbsp;<a href="spec_11.html#IX993">[2]</a> &nbsp;<a href="spec_24.html#IX1902">[3]</a> &nbsp;<a href="spec_29.html#IX2072">[4]</a> &nbsp;<a href="spec_30.html#IX2205">[5]</a> &nbsp;<a href="spec_43.html#IX2521">[6]</a><br>
+<a href="spec_24.html#IX1908">transport:filter,&nbsp;timeout</a><br>
+<a href="spec_24.html#IX1844">transport:generic&nbsp;options&nbsp;for</a><br>
+<a href="spec_24.html#IX1878">transport:group,&nbsp;additional</a><br>
+<a href="spec_24.html#IX1860">transport:group,&nbsp;specifying</a><br>
+<a href="spec_24.html#IX1865">transport:header&nbsp;lines&nbsp;only</a><br>
+<a href="spec_24.html#IX1863">transport:header&nbsp;lines,&nbsp;adding</a><br>
+<a href="spec_24.html#IX1870">transport:header&nbsp;lines,&nbsp;removing</a><br>
+<a href="spec_24.html#IX1872">transport:header&nbsp;lines,&nbsp;rewriting</a><br>
+<a href="spec_24.html#IX1875">transport:home&nbsp;directory&nbsp;for</a><br>
+<a href="spec_15.html#IX1562">transport:local</a> &nbsp;<a href="spec_15.html#IX1576">[2]</a> &nbsp;<a href="spec_15.html#IX1635">[3]</a><br>
+<a href="spec_25.html#IX1913">transport:local,&nbsp;address&nbsp;batching&nbsp;in</a><br>
+<a href="spec_23.html#IX1841">transport:local,&nbsp;current&nbsp;directory&nbsp;for</a><br>
+<a href="spec_23.html#IX1833">transport:local,&nbsp;environment&nbsp;for</a><br>
+<a href="spec_23.html#IX1840">transport:local,&nbsp;home&nbsp;directory&nbsp;for</a><br>
+<a href="spec_23.html#IX1835">transport:local,&nbsp;uid&nbsp;and&nbsp;gid</a><br>
+<a href="spec_24.html#IX1883">transport:message&nbsp;size,&nbsp;limiting</a><br>
+<a href="spec_24.html#IX1893">transport:return&nbsp;path,&nbsp;changing</a><br>
+<a href="spec_24.html#IX1900">transport:shadow</a><br>
+<a href="spec_24.html#IX1911">transport:user,&nbsp;specifying</a><br>
+<a href="spec_26.html#IX1921">transports:<b>appendfile</b></a><br>
+<a href="spec_27.html#IX2037">transports:<b>autoreply</b></a><br>
+<a href="spec_7.html#IX605">transports:default</a><br>
+<a href="spec_28.html#IX2057">transports:<b>lmtp</b></a><br>
+<a href="spec_29.html#IX2067">transports:<b>pipe</b></a><br>
+<a href="spec_30.html#IX2126">transports:<b>smtp</b></a><br>
+<a href="spec_4.html#IX161">Tru64-Unix&nbsp;build-time&nbsp;settings</a><br>
+<a href="spec_14.html#IX1497">trusted&nbsp;group</a><br>
+<a href="spec_5.html#IX336">trusted&nbsp;user</a> &nbsp;<a href="spec_14.html#IX1500">[2]</a> &nbsp;<a href="spec_14.html#IX1506">[3]</a> &nbsp;<a href="spec_48.html#IX2819">[4]</a><br>
+<a href="spec_5.html#IX207">trusted&nbsp;user:definition&nbsp;of</a><br>
+<br>
+<a name="U"></a>
+<font size="+1">U</font><br>
+<a href="spec_11.html#IX968">uid&nbsp;(user&nbsp;id):caller</a><br>
+<a href="spec_14.html#IX1136">uid&nbsp;(user&nbsp;id):Exim's&nbsp;own</a><br>
+<a href="spec_21.html#IX1717">uid&nbsp;(user&nbsp;id):for&nbsp;<b>queryprogram</b></a><br>
+<a href="spec_49.html#IX2833">uid&nbsp;(user&nbsp;id):in&nbsp;spool&nbsp;file</a><br>
+<a href="spec_15.html#IX1633">uid&nbsp;(user&nbsp;id):local&nbsp;delivery</a> &nbsp;<a href="spec_24.html#IX1910">[2]</a> &nbsp;<a href="spec_29.html#IX2106">[3]</a><br>
+<a href="spec_11.html#IX989">uid&nbsp;(user&nbsp;id):of&nbsp;originating&nbsp;user</a><br>
+<a href="spec_14.html#IX1456">uid&nbsp;(user&nbsp;id):system&nbsp;filter</a> &nbsp;<a href="spec_40.html#IX2474">[2]</a><br>
+<a href="spec_14.html#IX1502">uid&nbsp;(user&nbsp;id):unknown&nbsp;caller</a><br>
+<a href="spec_14.html#IX1166">underscore&nbsp;in&nbsp;<font size=-1>EHLO</font>/<font size=-1>HELO</font></a><br>
+<a href="spec_5.html#IX389">unfreezing&nbsp;messages</a> &nbsp;<a href="spec_14.html#IX1063">[2]</a> &nbsp;<a href="spec_47.html#IX2800">[3]</a><br>
+<a href="spec_11.html#IX854">Unicode</a><br>
+<a href="spec_10.html#IX762">unknown&nbsp;host&nbsp;name</a> &nbsp;<a href="spec_10.html#IX773">[2]</a><br>
+<a href="spec_14.html#IX1103">unprivileged&nbsp;delivery</a><br>
+<a href="spec_48.html#IX2815">unprivileged&nbsp;running</a><br>
+<a href="spec_14.html#IX1321">unqualified&nbsp;addresses</a> &nbsp;<a href="spec_14.html#IX1350">[2]</a> &nbsp;<a href="spec_44.html#IX2566">[3]</a><br>
+<a href="spec_3.html#IX100"><tt>unseen</tt>&nbsp;option</a><br>
+<a href="spec_14.html#IX1508">untrusted&nbsp;user,&nbsp;setting&nbsp;sender</a><br>
+<a href="spec_4.html#IX195">upgrading&nbsp;Exim</a><br>
+<a href="spec_11.html#IX894">upper&nbsp;casing</a><br>
+<a href="spec_4.html#IX136"><font size=-1>USE&#095;DB</font></a> &nbsp;<a href="spec_46.html#IX2762">[2]</a><br>
+<a href="spec_4.html#IX150"><font size=-1>USE&#095;GNUTLS</font></a><br>
+<a href="spec_4.html#IX152"><font size=-1>USE&#095;TCP&#095;WRAPPERS</font></a><br>
+<a href="spec_6.html#IX579">user&nbsp;name:format&nbsp;of</a><br>
+<a href="spec_14.html#IX1230">user&nbsp;name:maximum&nbsp;length</a><br>
+<a href="spec_48.html#IX2823">user:admin</a><br>
+<a href="spec_5.html#IX213">user:admin,&nbsp;definition&nbsp;of</a><br>
+<a href="spec_5.html#IX338">user:trusted</a> &nbsp;<a href="spec_14.html#IX1501">[2]</a> &nbsp;<a href="spec_48.html#IX2822">[3]</a><br>
+<a href="spec_5.html#IX208">user:trusted,&nbsp;definition&nbsp;of</a><br>
+<a href="spec_14.html#IX1509">user:untrusted&nbsp;setting&nbsp;sender</a><br>
+<a href="spec_11.html#IX855">UTF-8:conversion&nbsp;from</a><br>
+<a href="spec_14.html#IX1055">UTF-8:in&nbsp;domain&nbsp;name</a><br>
+<a href="spec_46.html#IX2700">utilities</a><br>
+<a href="spec_20.html#IX1708">UUCP:example&nbsp;of&nbsp;router&nbsp;for</a><br>
+<a href="spec_5.html#IX263">UUCP:&#147;From&#148;&nbsp;line</a> &nbsp;<a href="spec_14.html#IX1194">[2]</a> &nbsp;<a href="spec_14.html#IX1513">[3]</a> &nbsp;<a href="spec_44.html#IX2571">[4]</a><br>
+<a href="spec_44.html#IX2573"><tt>uucp&#095;from&#095;pattern</tt></a><br>
+<a href="spec_44.html#IX2574"><tt>uucp&#095;from&#095;sender</tt></a><br>
+<br>
+<a name="V"></a>
+<font size="+1">V</font><br>
+<a href="spec_42.html#IX2506">vacation&nbsp;processing</a><br>
+<a href="spec_43.html#IX2535">Variable&nbsp;Envelope&nbsp;Return&nbsp;Paths</a><br>
+variables&nbsp;<em>see&nbsp;expansion,&nbsp;variables</em><br>
+<a href="spec_38.html#IX2436">verifying:address,&nbsp;by&nbsp;callout</a><br>
+<a href="spec_38.html#IX2434">verifying:address,&nbsp;options&nbsp;for</a><br>
+<a href="spec_3.html#IX96">verifying:address,&nbsp;overview</a><br>
+<a href="spec_5.html#IX311">verifying:address,&nbsp;using&nbsp;<i>-bv</i></a><br>
+<a href="spec_38.html#IX2418">verifying:<font size=-1>EHLO</font></a><br>
+<a href="spec_38.html#IX2414">verifying:header&nbsp;syntax</a><br>
+<a href="spec_38.html#IX2419">verifying:<font size=-1>HELO</font></a><br>
+<a href="spec_38.html#IX2422">verifying:recipient</a><br>
+<a href="spec_38.html#IX2450">verifying:redirection&nbsp;while</a><br>
+<a href="spec_38.html#IX2427">verifying:sender</a><br>
+<a href="spec_38.html#IX2411">verifying:sender&nbsp;in&nbsp;header</a><br>
+<a href="spec_38.html#IX2449">verifying:suppressing&nbsp;error&nbsp;details</a><br>
+<a href="spec_43.html#IX2534">VERP</a><br>
+<a href="spec_5.html#IX309">version&nbsp;number&nbsp;of&nbsp;Exim,&nbsp;verifying</a><br>
+<a href="spec_42.html#IX2500">virtual&nbsp;domains</a><br>
+<a href="spec_14.html#IX1046"><font size=-1>VRFY</font>:ACL&nbsp;for</a> &nbsp;<a href="spec_38.html#IX2366">[2]</a><br>
+<a href="spec_11.html#IX1001"><font size=-1>VRFY</font>:argument</a><br>
+<a href="spec_43.html#IX2551"><font size=-1>VRFY</font>:processing</a><br>
+<br>
+<a name="W"></a>
+<font size="+1">W</font><br>
+<a href="spec_14.html#IX1100">warning&nbsp;of&nbsp;delay</a><br>
+<a href="spec_14.html#IX1516">warning&nbsp;of&nbsp;delay:customizing&nbsp;the&nbsp;message</a> &nbsp;<a href="spec_41.html#IX2493">[2]</a><br>
+<a href="spec_1.html#IX7">web&nbsp;site</a><br>
+<a href="spec_14.html#IX1384">welcome&nbsp;banner&nbsp;for&nbsp;SMTP</a><br>
+<a href="spec_9.html#IX668">whoson&nbsp;lookup&nbsp;type</a><br>
+<a href="spec_9.html#IX671">wildcard&nbsp;lookups</a> &nbsp;<a href="spec_9.html#IX680">[2]</a><br>
+<a href="spec_9.html#IX646">wildlsearch&nbsp;lookup&nbsp;type</a><br>
+<a href="spec_47.html#IX2794">window&nbsp;size</a><br>
+<a href="spec_1.html#IX21">wish&nbsp;list</a><br>
+<br>
+<a name="X"></a>
+<font size="+1">X</font><br>
+<a href="spec_3.html#IX120"><i>X-Failed-Recipients:</i>&nbsp;header&nbsp;line</a><br>
+<a href="spec_2.html#IX56">X-windows</a> &nbsp;<a href="spec_47.html#IX2785">[2]</a><br>
+<a href="spec_4.html#IX168">X11&nbsp;libraries,&nbsp;location&nbsp;of</a><br>
+<br>
+<a name="Z"></a>
+<font size="+1">Z</font><br>
+zero,&nbsp;binary&nbsp;<em>see&nbsp;binary&nbsp;zero</em><br>
+<br>
+<a name="“"></a>
+<font size="+1">“</font><br>
+<a href="spec_11.html#IX952">&#147;and&#148;&nbsp;expansion&nbsp;condition</a><br>
+<a href="spec_5.html#IX209">&#147;From&#148;&nbsp;line</a> &nbsp;<a href="spec_5.html#IX241">[2]</a> &nbsp;<a href="spec_5.html#IX262">[3]</a> &nbsp;<a href="spec_5.html#IX339">[4]</a> &nbsp;<a href="spec_14.html#IX1193">[5]</a> &nbsp;<a href="spec_14.html#IX1512">[6]</a> &nbsp;<a href="spec_26.html#IX1940">[7]</a> &nbsp;<a href="spec_26.html#IX1988">[8]</a> &nbsp;<a href="spec_26.html#IX2027">[9]</a> &nbsp;<a href="spec_29.html#IX2102">[10]</a> &nbsp;<a href="spec_44.html#IX2570">[11]</a><br>
+<a href="spec_14.html#IX1150">&#147;gecos&#148;&nbsp;field,&nbsp;parsing</a><br>
+<a href="spec_11.html#IX950">&#147;or&#148;&nbsp;expansion&nbsp;condition</a><br>
+<a href="spec_14.html#IX1253">&#147;percent&nbsp;hack&#148;</a> &nbsp;<a href="spec_38.html#IX2455">[2]</a><br>
+<a href="spec_4.html#IX189">&#147;sticky&#148;&nbsp;bit</a> &nbsp;<a href="spec_26.html#IX1955">[2]</a><br>
+</p>
+</body>
+</html>

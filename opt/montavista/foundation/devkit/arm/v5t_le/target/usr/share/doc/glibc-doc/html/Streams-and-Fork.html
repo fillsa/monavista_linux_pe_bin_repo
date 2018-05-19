@@ -1,0 +1,69 @@
+<html lang="en">
+<head>
+<title>Streams and Fork - The GNU C Library</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU C Library">
+<meta name="generator" content="makeinfo 4.7">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="POSIX-Threads.html#POSIX-Threads" title="POSIX Threads">
+<link rel="prev" href="Threads-and-Fork.html#Threads-and-Fork" title="Threads and Fork">
+<link rel="next" href="Miscellaneous-Thread-Functions.html#Miscellaneous-Thread-Functions" title="Miscellaneous Thread Functions">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc { font-variant:small-caps }
+  span.roman { font-family: serif; font-weight: normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Streams-and-Fork"></a>Next:&nbsp;<a rel="next" accesskey="n" href="Miscellaneous-Thread-Functions.html#Miscellaneous-Thread-Functions">Miscellaneous Thread Functions</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Threads-and-Fork.html#Threads-and-Fork">Threads and Fork</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="POSIX-Threads.html#POSIX-Threads">POSIX Threads</a>
+<hr><br>
+</div>
+
+<h3 class="section">34.11 Streams and Fork</h3>
+
+<p>The GNU standard I/O library has an internal mutex which guards the internal
+linked list of all standard C FILE objects. This mutex is properly taken care
+of during <code>fork</code> so that the child receives an intact copy of the list. 
+This allows the <code>fopen</code> function, and related stream-creating functions,
+to work correctly in the child process, since these functions need to insert
+into the list.
+
+   <p>However, the individual stream locks are not completely taken care of.  Thus
+unless the multithreaded application takes special precautions in its use of
+<code>fork</code>, the child process might not be able to safely use the streams that
+it inherited from the parent.   In general, for any given open stream in the
+parent that is to be used by the child process, the application must ensure
+that that stream is not in use by another thread when <code>fork</code> is called. 
+Otherwise an inconsistent copy of the stream object be produced. An easy way to
+ensure this is to use <code>flockfile</code> to lock the stream prior to calling
+<code>fork</code> and then unlock it with <code>funlockfile</code> inside the parent
+process, provided that the parent's threads properly honor these locks. 
+Nothing special needs to be done in the child process, since the library
+internally resets all stream locks.
+
+   <p>Note that the stream locks are not shared between the parent and child. 
+For example, even if you ensure that, say, the stream <code>stdout</code> is properly
+treated and can be safely used in the child, the stream locks do not provide
+an exclusion mechanism between the parent and child. If both processes write
+to <code>stdout</code>, strangely interleaved output may result regardless of
+the explicit use of <code>flockfile</code> or implicit locks.
+
+   <p>Also note that these provisions are a GNU extension; other systems might not
+provide any way for streams to be used in the child of a multithreaded process. 
+POSIX requires that such a child process confines itself to calling only
+asynchronous safe functions, which excludes much of the library, including
+standard I/O.
+
+   </body></html>
+

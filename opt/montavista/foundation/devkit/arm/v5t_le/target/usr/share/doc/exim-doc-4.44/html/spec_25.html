@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 25</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_24.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_26.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX1913"></a>
+<h1>
+<a name="CHAP25" href="spec_toc.html#TOC196">
+25. Address batching in local transports
+</a></h1>
+<p>
+The only remote transport (<b>smtp</b>) is normally configured to handle more than
+one address at a time, so that when several addresses are routed to the same
+remote host, just one copy of the message is sent. Local transports, however,
+normally handle one address at a time. That is, a separate instance of the
+transport is run for each address that is routed to the transport. A separate
+copy of the message is delivered each time.
+<a name="IX1914"></a>
+<a name="IX1915"></a>
+<a name="IX1916"></a>
+</p>
+<p>
+In special cases, it may be desirable to handle several addresses at once in a
+local transport, for example:
+</p>
+<ul>
+<li><p>
+In an <b>appendfile</b> transport, when storing messages in files for later
+delivery by some other means, a single copy of the message with multiple
+recipients saves space.
+</p>
+</li>
+<li><p>
+In an <b>lmtp</b> transport, when delivering over &#147;local SMTP&#148; to some process,
+a single copy saves time, and is the normal way LMTP is expected to work.
+</p>
+</li>
+<li><p>
+In a <b>pipe</b> transport, when passing the message 
+to a scanner program or 
+to some other delivery mechanism such as UUCP, multiple recipients may be
+acceptable.
+</p>
+</li>
+</ul>
+<p>
+The three local transports (<b>appendfile</b>, <b>lmtp</b>, and <b>pipe</b>) all have
+the same options for controlling multiple (&#147;batched&#148;) deliveries, namely
+<tt>batch&#095;max</tt> and <tt>batch&#095;id</tt>. To save repeating the information for each
+transport, these options are described here.
+</p>
+<p>
+The <tt>batch&#095;max</tt> option specifies the maximum number of addresses that can be
+delivered together in a single run of the transport. Its default value is one.
+When more than one address is routed to a transport that has a <tt>batch&#095;max</tt>
+value greater than one, the addresses are delivered in a batch (that is, in a
+single run of the transport), subject to certain conditions:
+</p>
+<ul>
+<li><p>
+If any of the transport's options contain a reference to <tt>$local&#095;part</tt>, no
+batching is possible.
+</p>
+</li>
+<li><p>
+If any of the transport's options contain a reference to <tt>$domain</tt>, only
+addresses with the same domain are batched.
+</p>
+</li>
+<li><a name="IX1917"></a>
+<p>
+If <tt>batch&#095;id</tt> is set, it is expanded for each address, and only those
+addresses with the same expanded value are batched. This allows you to specify
+customized batching conditions.
+Failure of the expansion for any reason, including forced failure, disables 
+batching, but it does not stop the delivery from taking place. 
+</p>
+</li>
+<li><p>
+Batched addresses must also have the same errors address (where to send
+delivery errors), the same header additions and removals, the same user and
+group for the transport, and if a host list is present, the first host must
+be the same.
+</p>
+</li>
+</ul>
+<a name="IX1918"></a>
+<p>
+If the generic <tt>envelope&#095;to&#095;add</tt> option is set for the transport, the
+<i>Envelope-to:</i> header that is added to the message contains all the addresses
+that are batched together.
+</p>
+<p>
+The <b>appendfile</b> and <b>pipe</b> transports have an option called <tt>use&#095;bsmtp</tt>,
+which causes them to deliver the message in &#147;batched SMTP&#148; format, with the
+envelope represented as SMTP commands. The <tt>check&#095;string</tt> and <tt>escape&#095;string</tt>
+options are forced to the values
+<pre>
+&nbsp;&nbsp;check_string = "."
+&nbsp;&nbsp;escape_string = ".."
+</pre>
+</p>
+<p>
+when batched SMTP is in use. A full description of the batch SMTP mechanism is
+given in section <a href="spec_43.html#SECT43.11">43.11</a>. The <b>lmtp</b> transport does not have a
+<tt>use&#095;bsmtp</tt> option, because it always delivers using the SMTP protocol.
+<a name="IX1919"></a>
+</p>
+<p>
+If you are not using BSMTP, but are using a <b>pipe</b> transport, you can include 
+<tt>$pipe&#095;addresses</tt> as part of the command. This is not a true variable; it is 
+a bit of magic that causes each of the recipient addresses to be inserted into 
+the command as a separate argument. This provides a way of accessing all the 
+addresses that are being delivered in the batch.
+</p>
+<p>
+If you are using a batching <b>appendfile</b> transport without <tt>use&#095;bsmtp</tt>, the
+only way to preserve the recipient addresses is to set the <tt>envelope&#095;to&#095;add</tt>
+option. This causes an <i>Envelope-to:</i> header line to be added to the message, 
+containing all the recipients.
+<hr>
+</p>
+<font size=2>
+<a href="spec_24.html">Previous</a>&nbsp;&nbsp;<a href="spec_26.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

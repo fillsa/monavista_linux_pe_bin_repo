@@ -1,0 +1,729 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 30</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_29.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_31.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2126"></a>
+<a name="IX2127"></a>
+<h1>
+<a name="CHAP30" href="spec_toc.html#TOC216">
+30. The smtp transport
+</a></h1>
+<p>
+The <b>smtp</b> transport delivers messages over TCP/IP connections using the SMTP
+or LMTP protocol. The list of hosts to try can either be taken from the address
+that is being processed (having been set up by the router), or specified
+explicitly for the transport. Timeout and retry processing (see chapter
+<a href="spec_32.html">32</a>) is applied to each IP address independently.
+</p>
+<h2>
+<a name="SECT30.1" href="spec_toc.html#TOC217">
+30.1. Multiple messages on a single connection
+</a></h2>
+<p>
+The sending of multiple messages over a single TCP/IP connection can arise in
+two ways:
+</p>
+<ul>
+<li><p>
+If a message contains more than <tt>max&#095;rcpt</tt> (see below) addresses that are
+routed to the same host, more than one copy of the message has to be sent to
+that host. In this situation, multiple copies may be sent in a single run of
+the <b>smtp</b> transport over a single TCP/IP connection. (What Exim actually does
+when it has too many addresses to send in one message also depends on the value
+of the global <tt>remote&#095;max&#095;parallel</tt> option. Details are given in section
+<a href="spec_43.html#SECT43.1">43.1</a>.)
+</p>
+</li>
+<li><a name="IX2128"></a>
+<p>
+When a message has been successfully delivered over a TCP/IP connection, Exim
+looks in its hints database to see if there are any other messages awaiting a
+connection to the same host. If there are, a new delivery process is started
+for one of them, and the current TCP/IP connection is passed on to it. The new
+process may in turn send multiple copies and possibly create yet another
+process.
+</p>
+</li>
+</ul>
+<p>
+For each copy sent over the same TCP/IP connection, a sequence counter is
+incremented, and if it ever gets to the value of <tt>connection&#095;max&#095;messages</tt>,
+no further messages are sent over that connection.
+</p>
+<a name="IX2129"></a>
+<a name="IX2130"></a>
+<h2>
+<a name="SECT30.2" href="spec_toc.html#TOC218">
+30.2. Use of the &#036;host variable
+</a></h2>
+<p>
+At the start of a run of the <b>smtp</b> transport, the values of <tt>$host</tt> and
+<tt>$host&#095;address</tt> are the name and IP address of the first host on the host list
+passed by the router. However, when the transport is about to connect to a
+specific host, and while it is connected to that host, <tt>$host</tt> and
+<tt>$host&#095;address</tt> are set to the values for that host. These are the values
+that are in force when the <tt>helo&#095;data</tt>, <tt>hosts&#095;try&#095;auth</tt>, <tt>interface</tt>,
+<tt>serialize&#095;hosts</tt>, and the various TLS options are expanded.
+</p>
+<h2>
+<a name="SECT30.3" href="spec_toc.html#TOC219">
+30.3. Private options for smtp
+</a></h2>
+<p>
+The private options of the <b>smtp</b> transport are as follows:
+<a name="IX2131"></a>
+<hr></p>
+<a name="IX2132"></a>
+<a name="IX2133"></a>
+<a name="IX2134"></a>
+<h3>allow_localhost</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+When a host specified in <tt>hosts</tt> or <tt>fallback&#095;hosts</tt> (see below) turns out to
+be the local host, or is listed in <tt>hosts&#095;treat&#095;as&#095;local</tt>, delivery is
+deferred by default. However, if <tt>allow&#095;localhost</tt> is set, Exim goes on to do
+the delivery anyway. This should be used only in special cases when the
+configuration ensures that no looping will result (for example, a differently
+configured Exim is listening on the port to which the message is sent).
+<hr></p>
+<a name="IX2135"></a>
+<a name="IX2136"></a>
+<h3>authenticated_sender</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+When Exim has authenticated as a client, this option sets a value for the
+<font size=-1>AUTH=</font> item on outgoing <font size=-1>MAIL</font> commands, overriding any existing
+authenticated sender value. If the string expansion is forced to fail, the
+option is ignored. Other expansion failures cause delivery to be deferred. If
+the result of expansion is an empty string, that is also ignored.
+</p>
+<p>
+If the SMTP session is not authenticated, the expansion of
+<tt>authenticated&#095;sender</tt> still happens (and can cause the delivery to be
+deferred if it fails), but no <font size=-1>AUTH=</font> item is added to <font size=-1>MAIL</font> commands.
+</p>
+<p>
+This option allows you to use the <b>smtp</b> transport in LMTP mode to
+deliver mail to Cyrus IMAP and provide the proper local part as the
+&#147;authenticated sender&#148;, via a setting such as:
+<pre>
+&nbsp;&nbsp;authenticated_sender = $local_part
+</pre>
+</p>
+<p>
+This removes the need for IMAP subfolders to be assigned special ACLs to
+allow direct delivery to those subfolders.
+</p>
+<p>
+Because of expected uses such as that just described for Cyrus (when no
+domain is involved), there is no checking on the syntax of the provided
+value.
+<hr></p>
+<a name="IX2137"></a>
+<h3>command_timeout</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 5m<br>
+<p>
+This sets a timeout for receiving a response to an SMTP command that has been
+sent out. It is also used when waiting for the initial banner line from the
+remote host. Its value must not be zero.
+<hr></p>
+<a name="IX2138"></a>
+<h3>connect_timeout</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 5m<br>
+<p>
+This sets a timeout for the <i>connect()</i> function, which sets up a TCP/IP call
+to a remote host. A setting of zero allows the system timeout (typically
+several minutes) to act. To have any effect, the value of this option must be
+less than the system timeout. However, it has been observed that on some
+systems there is no system timeout, which is why the default value for this
+option is 5 minutes, a value recommended by RFC 1123.
+<a name="IX2139"></a>
+<a name="IX2140"></a>
+<a name="IX2141"></a>
+<hr></p>
+<a name="IX2142"></a>
+<h3>connection_max_messages</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 500<br>
+<p>
+This controls the maximum number of separate message deliveries that are sent
+over a single TCP/IP connection. If the value is zero, there is no limit.
+For testing purposes, this value can be overridden by the <i>-oB</i> command line
+option.
+<hr></p>
+<a name="IX2143"></a>
+<h3>data_timeout</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 5m<br>
+<p>
+This sets a timeout for the transmission of each block in the data portion of
+the message. As a result, the overall timeout for a message depends on the size
+of the message. Its value must not be zero. See also <tt>final&#095;timeout</tt>.
+<hr></p>
+<a name="IX2144"></a>
+<h3>delay_after_cutoff</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+This option controls what happens when all remote IP addresses for a given
+domain have been inaccessible for so long that they have passed their retry
+cutoff times.
+</p>
+<p>
+In the default state, if the next retry time has not been reached for any of
+them, the address is bounced without trying any deliveries. In other words,
+Exim delays retrying an IP address after the final cutoff time until a new
+retry time is reached, and can therefore bounce an address without ever trying
+a delivery, when machines have been down for a long time. Some people are
+unhappy at this prospect, so...
+</p>
+<p>
+If <tt>delay&#095;after&#095;cutoff</tt> is set false, Exim behaves differently. If all IP
+addresses are past their final cutoff time, Exim tries to deliver to those
+IP addresses that have not been tried since the message arrived. If there are
+none, of if they all fail, the address is bounced. In other words, it does not
+delay when a new message arrives, but immediately tries those expired IP
+addresses that haven't been tried since the message arrived. If there is a
+continuous stream of messages for the dead hosts, unsetting
+<tt>delay&#095;after&#095;cutoff</tt> means that there will be many more attempts to deliver
+to them.
+<hr></p>
+<a name="IX2145"></a>
+<h3>dns_qualify_single</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+If the <tt>hosts</tt> or <tt>fallback&#095;hosts</tt> option is being used,
+and the <tt>gethostbyname</tt> option is false,
+the <font size=-1>RES&#095;DEFNAMES</font> resolver option is set. See the <tt>qualify&#095;single</tt> option
+in chapter <a href="spec_17.html">17</a> for more details.
+<hr></p>
+<a name="IX2146"></a>
+<a name="IX2147"></a>
+<h3>dns_search_parents</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If the <tt>hosts</tt> or <tt>fallback&#095;hosts</tt> option is being used, and the
+<tt>gethostbyname</tt> option is false, the <font size=-1>RES&#095;DNSRCH</font> resolver option is set.
+See the <tt>search&#095;parents</tt> option in chapter <a href="spec_17.html">17</a> for more details.
+<hr></p>
+<a name="IX2148"></a>
+<a name="IX2149"></a>
+<h3>fallback_hosts</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; unset<br>
+<p>
+String expansion is not applied to this option. The argument must be a
+colon-separated list of host names or IP addresses. Fallback hosts can also be
+specified on routers, which associate them with the addresses they process. As
+for the <tt>hosts</tt> option without <tt>hosts&#095;override</tt>, <tt>fallback&#095;hosts</tt> specified
+on the transport is used only if the address does not have its own associated
+fallback host list. Unlike <tt>hosts</tt>, a setting of <tt>fallback&#095;hosts</tt> on an
+address is not overridden by <tt>hosts&#095;override</tt>. However, <tt>hosts&#095;randomize</tt>
+does apply to fallback host lists.
+</p>
+<p>
+If Exim is unable to deliver to any of the hosts for a particular address, and
+the errors are not permanent rejections, the address is put on a separate
+transport queue with its host list replaced by the fallback hosts, unless the
+address was routed via MX records and the current host was in the original MX
+list. In that situation, the fallback host list is not used.
+</p>
+<p>
+Once normal deliveries are complete, the fallback queue is delivered by
+re-running the same transports with the new host lists. If several failing
+addresses have the same fallback hosts (and <tt>max&#095;rcpt</tt> permits it), a single
+copy of the message is sent.
+</p>
+<p>
+The resolution of the host names on the fallback list is controlled by the
+<tt>gethostbyname</tt> option, as for the <tt>hosts</tt> option. Fallback hosts apply
+both to cases when the host list comes with the address and when it is taken
+from <tt>hosts</tt>. This option provides a &#147;use a smart host only if delivery fails&#148;
+facility.
+<hr></p>
+<a name="IX2150"></a>
+<h3>final_timeout</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 10m<br>
+<p>
+This is the timeout that applies while waiting for the response to the final
+line containing just &#147;.&#148; that terminates a message. Its value must not be zero.
+<hr></p>
+<a name="IX2151"></a>
+<h3>gethostbyname</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true when the <tt>hosts</tt> and/or <tt>fallback&#095;hosts</tt> options are
+being used, names are looked up using <i>gethostbyname()</i> 
+(or <i>getipnodebyname()</i> when available)
+instead of using the DNS. Of course, that function may in fact use the DNS, but
+it may also consult other sources of information such as <i>/etc/hosts</i>.
+<a name="IX2152"></a>
+<a name="IX2153"></a>
+<hr></p>
+<a name="IX2154"></a>
+<h3>helo_data</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; <tt>&#036;primary&#095;hostname</tt><br>
+<p>
+The value of this option is expanded, and used as the argument for the <font size=-1>EHLO</font>
+or <font size=-1>HELO</font> command that starts the outgoing SMTP session.
+<hr></p>
+<a name="IX2155"></a>
+<h3>hosts</h3>
+<i>Type:</i>&nbsp; string list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+Hosts are associated with an address by a router such as <b>dnslookup</b>, which
+finds the hosts by looking up the address domain in the DNS. However, addresses
+can be passed to the <b>smtp</b> transport by any router, and not all of them can
+provide an associated host list. The <tt>hosts</tt> option specifies a list of hosts
+which are used if the address being processed does not have any hosts
+associated with it. The hosts specified by <tt>hosts</tt> are also used, whether or
+not the address has its own hosts, if <tt>hosts&#095;override</tt> is set.
+</p>
+<p>
+The string is first expanded, before being interpreted as a colon-separated
+list of host names or IP addresses. If the expansion fails, delivery is
+deferred. Unless the failure was caused by the inability to complete a lookup,
+the error is logged to the panic log as well as the main log. Host names are
+looked up either by searching directly for address records in the DNS or by
+calling <i>gethostbyname()</i>
+(or <i>getipnodebyname()</i> when available),
+depending on the setting of the <tt>gethostbyname</tt> option. When Exim is compiled
+with IPv6 support, if a host that is looked up in the DNS has both IPv4 and
+IPv6 addresses, both types of address are used.
+</p>
+<p>
+During delivery, the hosts are tried in order, subject to their retry status,
+unless <tt>hosts&#095;randomize</tt> is set.
+<hr></p>
+<a name="IX2156"></a>
+<a name="IX2157"></a>
+<a name="IX2158"></a>
+<a name="IX2159"></a>
+<a name="IX2160"></a>
+<h3>hosts_avoid_esmtp</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option is for use with broken hosts that announce ESMTP facilities (for
+example, <font size=-1>PIPELINING</font>) and then fail to implement them properly. When a host
+matches <tt>hosts&#095;avoid&#095;esmtp</tt>, Exim sends <font size=-1>HELO</font> rather than <font size=-1>EHLO</font> at the
+start of the SMTP session. This means that it cannot use any of the ESMTP
+facilities such as <font size=-1>AUTH</font>, <font size=-1>PIPELINING</font>, <font size=-1>SIZE</font>, and <font size=-1>STARTTLS</font>.
+<hr></p>
+<a name="IX2161"></a>
+<a name="IX2162"></a>
+<h3>hosts_avoid_tls</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+Exim will not try to start a TLS session when delivering to any host that
+matches this list. See chapter <a href="spec_37.html">37</a> for details of TLS.
+<hr></p>
+<a name="IX2163"></a>
+<a name="IX2164"></a>
+<a name="IX2165"></a>
+<a name="IX2166"></a>
+<a name="IX2167"></a>
+<h3>hosts_max_try</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 5<br>
+<p>
+This option limits the number of IP addresses that are tried for any one
+delivery
+<font color=green>
+in cases where there are temporary delivery errors.
+</font>
+Section <a href="spec_30.html#SECT30.4">30.4</a> describes in detail how the value of this option is
+used.
+<hr></p>
+<a name="IX2168"></a>
+<a name="IX2169"></a>
+<a name="IX2170"></a>
+<a name="IX2171"></a>
+<h3>hosts_nopass_tls</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+For any host that matches this list, a connection on which a TLS session has
+been started will not be passed to a new delivery process for sending another
+message on the same connection. See section <a href="spec_37.html#SECT37.7">37.7</a> for an explanation
+of when this might be needed.
+<hr></p>
+<a name="IX2172"></a>
+<h3>hosts_override</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set and the <tt>hosts</tt> option is also set, any hosts that are
+attached to the address are ignored, and instead the hosts specified by the
+<tt>hosts</tt> option are always used. This option does not apply to
+<tt>fallback&#095;hosts</tt>.
+<hr></p>
+<a name="IX2173"></a>
+<a name="IX2174"></a>
+<a name="IX2175"></a>
+<a name="IX2176"></a>
+<h3>hosts_randomize</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set, and either the list of hosts is taken from the
+<tt>hosts</tt> or the <tt>fallback&#095;hosts</tt> option, or the hosts supplied by the router
+were not obtained from MX records (this includes fallback hosts from the
+router), and were not randomizied by the router, the order of trying the hosts
+is randomized each time the transport runs. Randomizing the order of a host
+list can be used to do crude load sharing.
+</p>
+<p>
+When <tt>hosts&#095;randomize</tt> is true, a host list may be split into groups whose
+order is separately randomized. This makes it possible to set up MX-like
+behaviour. The boundaries between groups are indicated by an item that is just
+<tt>+</tt> in the host list. For example:
+<pre>
+&nbsp;&nbsp;hosts = host1:host2:host3:+:host4:host5
+</pre>
+</p>
+<p>
+The order of the first three hosts and the order of the last two hosts is
+randomized for each use, but the first three always end up before the last two.
+If <tt>hosts&#095;randomize</tt> is not set, a <tt>+</tt> item in the list is ignored.
+<a name="IX2177"></a>
+<hr></p>
+<a name="IX2178"></a>
+<h3>hosts_require_auth</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option provides a list of servers for which authentication must succeed
+before Exim will try to transfer a message. If authentication fails for
+servers which are not in this list, Exim tries to send unauthenticated. If
+authentication fails for one of these servers, delivery is deferred. This
+temporary error is detectable in the retry rules, so it can be turned into a
+hard failure if required. See also <tt>hosts&#095;try&#095;auth</tt>, and chapter
+<a href="spec_33.html">33</a> for details of authentication.
+<hr></p>
+<a name="IX2179"></a>
+<a name="IX2180"></a>
+<h3>hosts_require_tls</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+Exim will insist on using a TLS session when delivering to any host that
+matches this list. See chapter <a href="spec_37.html">37</a> for details of TLS.
+<b>Note</b>: This option affects outgoing mail only. To insist on TLS for 
+incoming messages, use an appropriate ACL.
+<a name="IX2181"></a>
+<hr></p>
+<a name="IX2182"></a>
+<h3>hosts_try_auth</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option provides a list of servers to which, provided they announce
+authentication support, Exim will attempt to authenticate as a client when it
+connects. If authentication fails, Exim will try to transfer the message
+unauthenticated. See also <tt>hosts&#095;require&#095;auth</tt>, and chapter <a href="spec_33.html">33</a>
+for details of authentication.
+<a name="IX2183"></a>
+<a name="IX2184"></a>
+<hr></p>
+<a name="IX2185"></a>
+<h3>interface</h3>
+<i>Type:</i>&nbsp; string list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option specifies which interface to bind to when making an outgoing SMTP
+call. The variables <tt>$host</tt> and <tt>$host&#095;address</tt> refer to the host to which a
+connection is about to be made during the expansion of the string. Forced
+expansion failure, or an empty string result causes the option to be ignored.
+Otherwise, after expansion, 
+<font color=green>
+the string must be a list of IP addresses, colon-separated by default, but the
+separator can be changed in the usual way.
+</font>
+For example:
+<pre>
+&nbsp;&nbsp;interface = &#060;; 192.168.123.123 ; 3ffe:ffff:836f::fe86:a061
+</pre>
+</p>
+<p>
+The first interface of the correct type (IPv4 or IPv6) is used for the outgoing
+connection. If none of them are the correct type, the option is ignored. If
+<tt>interface</tt> is not set, or is ignored, the system's IP functions choose which
+interface to use if the host has more than one.
+<hr></p>
+<a name="IX2186"></a>
+<a name="IX2187"></a>
+<h3>keepalive</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+This option controls the setting of <font size=-1>SO&#095;KEEPALIVE</font> on outgoing TCP/IP socket
+connections. When set, it causes the kernel to probe idle connections
+periodically, by sending packets with &#147;old&#148; sequence numbers. The other end of
+the connection should send a acknowledgement if the connection is still okay or
+a reset if the connection has been aborted. The reason for doing this is that
+it has the beneficial effect of freeing up certain types of connection that can
+get stuck when the remote host is disconnected without tidying up the TCP/IP
+call properly. The keepalive mechanism takes several hours to detect
+unreachable hosts.
+<hr></p>
+<a name="IX2188"></a>
+<a name="IX2189"></a>
+<h3>max_rcpt</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 100<br>
+<p>
+This option limits the number of <font size=-1>RCPT</font> commands that are sent in a single
+SMTP message transaction. Each set of addresses is treated independently, and
+so can cause parallel connections to the same host if <tt>remote&#095;max&#095;parallel</tt>
+permits this.
+<hr></p>
+<a name="IX2190"></a>
+<h3>multi_domain</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+When this option is set, the <b>smtp</b> transport can handle a number of addresses
+containing a mixture of different domains provided they all resolve to the same
+list of hosts. Turning the option off restricts the transport to handling only
+one domain at a time. This is useful if you want to use <tt>$domain</tt> in an
+expansion for the transport, because it is set only when there is a single
+domain involved in a remote delivery.
+<hr></p>
+<a name="IX2191"></a>
+<a name="IX2192"></a>
+<a name="IX2193"></a>
+<h3>port</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; see below<br>
+<p>
+This option specifies the TCP/IP port on the server to which Exim connects. If
+it begins with a digit it is taken as a port number; otherwise it is looked up
+using <i>getservbyname()</i>. The default value is normally &#147;smtp&#148;, but if
+<tt>protocol</tt> is set to &#147;lmtp&#148;, the default is &#147;lmtp&#148;.
+If the expansion fails, or if a port number cannot be found, delivery is 
+deferred.
+<hr></p>
+<a name="IX2194"></a>
+<a name="IX2195"></a>
+<h3>protocol</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; smtp<br>
+<p>
+If this option is set to &#147;lmtp&#148; instead of &#147;smtp&#148;, the default value for the
+<tt>port</tt> option changes to &#147;lmtp&#148;, and the transport operates the LMTP protocol
+(RFC 2033) instead of SMTP. This protocol is sometimes used for local
+deliveries into closed message stores. Exim also has support for running LMTP
+over a pipe to a local process &#150; see chapter <a href="spec_28.html">28</a>.
+<hr></p>
+<a name="IX2196"></a>
+<h3>retry_include_ip_address</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+Exim normally includes both the host name and the IP address in the key it
+constructs for indexing retry data after a temporary delivery failure. This
+means that when one of several IP addresses for a host is failing, it gets
+tried periodically (controlled by the retry rules), but use of the other IP
+addresses is not affected.
+</p>
+<p>
+However, in some dialup environments hosts are assigned a different IP address
+each time they connect. In this situation the use of the IP address as part of
+the retry key leads to undesirable behaviour. Setting this option false causes
+Exim to use only the host name. This should normally be done on a separate
+instance of the <b>smtp</b> transport, set up specially to handle the dialup hosts.
+<hr></p>
+<a name="IX2197"></a>
+<a name="IX2198"></a>
+<a name="IX2199"></a>
+<h3>serialize_hosts</h3>
+<i>Type:</i>&nbsp; host list, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+Because Exim operates in a distributed manner, if several messages for the same
+host arrive at around the same time, more than one simultaneous connection to
+the remote host can occur. This is not usually a problem except when there is a
+slow link between the hosts. In that situation it may be helpful to restrict
+Exim to one connection at a time. This can be done by setting
+<tt>serialize&#095;hosts</tt> to match the relevant hosts.
+<a name="IX2200"></a>
+</p>
+<p>
+Exim implements serialization by means of a hints database in which a record is
+written whenever a process connects to one of the restricted hosts. The record
+is deleted when the connection is completed. Obviously there is scope for
+records to get left lying around if there is a system or program crash. To
+guard against this, Exim ignores any records that are more than six hours old.
+</p>
+<p>
+If you set up this kind of serialization, you should also arrange to delete the
+relevant hints database whenever your system reboots. The names of the files
+start with <i>misc</i> and they are kept in the <i>spool/db</i> directory. There
+may be one or two files, depending on the type of DBM in use. The same files
+are used for ETRN serialization.
+<hr></p>
+<a name="IX2201"></a>
+<a name="IX2202"></a>
+<a name="IX2203"></a>
+<a name="IX2204"></a>
+<a name="IX2205"></a>
+<a name="IX2206"></a>
+<h3>size_addition</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 1024<br>
+<p>
+If a remote SMTP server indicates that it supports the <font size=-1>SIZE</font> option of the
+<font size=-1>MAIL</font> command, Exim uses this to pass over the message size at the start of
+an SMTP transaction. It adds the value of <tt>size&#095;addition</tt> to the value it
+sends, to allow for headers and other text that may be added during delivery by
+configuration options or in a transport filter. It may be necessary to increase
+this if a lot of text is added to messages.
+</p>
+<p>
+Alternatively, if the value of <tt>size&#095;addition</tt> is set negative, it disables
+the use of the <font size=-1>SIZE</font> option altogether.
+<hr></p>
+<a name="IX2207"></a>
+<a name="IX2208"></a>
+<a name="IX2209"></a>
+<h3>tls_certificate</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The value of this option must be the absolute path to a file which contains the
+client's certificate, for use when sending a message over an encrypted
+connection. The values of <tt>$host</tt> and <tt>$host&#095;address</tt> are set to the name
+and address of the server during the expansion. See chapter <a href="spec_37.html">37</a> for
+details of TLS.
+</p>
+<p>
+<b>Note</b>: This option must be set if you want Exim to use TLS when sending 
+messages as a client. The global option of the same name specifies the 
+certificate for Exim as a server; it is not automatically assumed that the same 
+certificate should be used when Exim is operating as a client.
+<font color=green><hr></p>
+<a name="IX2210"></a>
+<a name="IX2211"></a>
+<a name="IX2212"></a>
+<h3>tls_crl</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option specifies a certificate revocation list. The expanded value must
+be the name of a file that contains a CRL in PEM format.
+</font>
+<hr></p>
+<a name="IX2213"></a>
+<a name="IX2214"></a>
+<h3>tls_privatekey</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The value of this option must be the absolute path to a file which contains the
+client's private key, for use when sending a message over an encrypted
+connection. The values of <tt>$host</tt> and <tt>$host&#095;address</tt> are set to the name
+and address of the server during the expansion. 
+If this option is unset, the private key is assumed to be in the same file as 
+the certificate.
+See chapter <a href="spec_37.html">37</a> for details of TLS.
+<hr></p>
+<a name="IX2215"></a>
+<a name="IX2216"></a>
+<a name="IX2217"></a>
+<h3>tls_require_ciphers</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The value of this option must be a list of permitted cipher suites, for use
+when setting up an 
+<font color=green>
+outgoing encrypted connection. (There is a global option of the same name for 
+controlling incoming connections.)
+</font>
+The values of <tt>$host</tt> and <tt>$host&#095;address</tt> are set to the name and address of
+the server during the expansion. See chapter <a href="spec_37.html">37</a> for details of TLS; note
+that this option is used in different ways by OpenSSL and GnuTLS (see section
+<a href="spec_37.html#SECT37.2">37.2</a>).
+<hr></p>
+<a name="IX2218"></a>
+<h3>tls_tempfail_tryclear</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+When the server host is not in <tt>hosts&#095;require&#095;tls</tt>, and there is a problem in 
+setting up a TLS session, this option determines whether or not Exim should try
+to deliver the message unencrypted. If it is set false, delivery to the
+current host is deferred; if there are other hosts, they are tried. If this
+option is set true, Exim attempts to deliver unencrypted after a 4<i>xx</i>
+response to <font size=-1>STARTTLS</font>. Also, if <font size=-1>STARTTLS</font> is accepted, but the subsequent
+TLS negotiation fails, Exim closes the current connection (because it is in an
+unknown state), opens a new one to the same host, and then tries the delivery
+in clear.
+<hr></p>
+<a name="IX2219"></a>
+<a name="IX2220"></a>
+<a name="IX2221"></a>
+<h3>tls_verify_certificates</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The value of this option must be the absolute path to a file containing
+permitted server certificates, for use when setting up an encrypted connection.
+Alternatively, if you are using OpenSSL, you can set
+<tt>tls&#095;verify&#095;certificates</tt> to the name of a directory containing certificate
+files. This does not work with GnuTLS; the option must be set to the name of a
+single file if you are using GnuTLS. The values of <tt>$host</tt> and
+<tt>$host&#095;address</tt> are set to the name and address of the server during the
+expansion of this option. See chapter <a href="spec_37.html">37</a> for details of TLS.
+<hr><br>
+</p>
+<a name="IX2222"></a>
+<a name="IX2223"></a>
+<h2>
+<a name="SECT30.4" href="spec_toc.html#TOC220">
+30.4. How the value of hosts&#095;max&#095;try is used
+</a></h2>
+<p>
+The <tt>hosts&#095;max&#095;try</tt> option limits the number of hosts that are tried
+for a single delivery. However, despite the term &#147;host&#148; in its name, the option
+actually applies to each IP address independently. In other words, a multihomed 
+host is treated as several independent hosts, just as it is for retrying.
+</p>
+<p>
+Many of the larger ISPs have multiple MX records which often point to
+multihomed hosts. As a result, a list of a dozen or more IP addresses may be
+created as a result of routing one of these domains.
+</p>
+<p>
+Trying every single IP address on such a long list does not seem sensible; if
+several at the top of the list fail, it is reasonable to assume there is some
+problem that is likely to affect all of them. Roughly speaking, the value of
+<tt>hosts&#095;max&#095;try</tt> is the maximum number that are tried before deferring the 
+delivery. However, the logic cannot be quite that simple.
+</p>
+<p>
+Firstly, IP addresses that are skipped because their retry times have not
+arrived do not count, and in addition, addresses that are past their retry
+limits are also not counted, even when they are tried. This means that when
+some IP addresses are past their retry limits, more than the value of
+<tt>hosts&#095;max&#095;retry</tt> may be tried. The reason for this behaviour is to ensure
+that all IP addresses are considered before timing out an email address.
+</p>
+<p>
+Secondly, when the <tt>hosts&#095;max&#095;try</tt> limit is reached, Exim looks down the host
+list to see if there is a subsequent host with a different (higher valued) MX.
+If there is, that host is used next, and the current IP address is used but not
+counted. This behaviour helps in the case of a domain with a retry rule that
+hardly ever delays any hosts, as is now explained:
+</p>
+<p>
+Consider the case of a long list of hosts with one MX value, and a few with a 
+higher MX value. If <tt>hosts&#095;max&#095;try</tt> is small (the default is 5) only a few
+hosts at the top of the list are tried at first. With the default retry rule,
+which specifies increasing retry times, the higher MX hosts are eventually
+tried when those at the top of the list are skipped because they have not
+reached their retry times.
+</p>
+<p>
+However, it is common practice to put a fixed short retry time on domains for
+large ISPs, on the grounds that their servers are rarely down for very long.
+Unfortunately, these are exactly the domains that tend to resolve to long lists
+of hosts. The short retry time means that the lowest MX hosts are tried every
+time. The attempts may be in a different order because of random sorting, but
+without the special MX check mentioned about, the higher MX hosts would never
+be tried at all because the lower MX hosts are never all past their retry
+times.
+</p>
+<p>
+With the special check, Exim tries least one address from each MX value, even
+if the <tt>hosts&#095;max&#095;try</tt> limit has already been reached.
+<hr>
+</p>
+<font size=2>
+<a href="spec_29.html">Previous</a>&nbsp;&nbsp;<a href="spec_31.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

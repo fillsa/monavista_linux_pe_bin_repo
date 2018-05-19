@@ -1,0 +1,500 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 33</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_32.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_34.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2268"></a>
+<a name="IX2269"></a>
+<h1>
+<a name="CHAP33" href="spec_toc.html#TOC242">
+33. SMTP authentication
+</a></h1>
+<p>
+The &#147;authenticators&#148; section of Exim's run time configuration is concerned with
+SMTP authentication. This facility is an extension to the SMTP protocol,
+described in RFC 2554, which allows a client SMTP host to authenticate itself
+to a server. This is a common way for a server to recognize clients that
+are permitted to use it as a relay. SMTP authentication is not of relevance to
+the transfer of mail between servers that have no managerial connection with
+each other.
+<a name="IX2270"></a>
+</p>
+<p>
+Very briefly, the way SMTP authentication works is as follows:
+</p>
+<ul>
+<li><p>
+The server advertises a number of authentication <i>mechanisms</i> in response to 
+the client's <font size=-1>EHLO</font> command.
+</p>
+</li>
+<li><p>
+The client issues an <font size=-1>AUTH</font> command, naming a specific mechanism. The command
+may, optionally, contain some authentication data.
+</p>
+</li>
+<li><p>
+The server may issue one or more <i>challenges</i>, to which the client must send
+appropriate responses. In simple authentication mechanisms, the challenges are
+just prompts for user names and passwords. The server does not have to issue
+any challenges &#150; in some mechanisms the relevant data may all be transmitted
+with the <font size=-1>AUTH</font> command.
+</p>
+</li>
+<li><p>
+The server either accepts or denies authentication.
+</p>
+</li>
+<li><p>
+If authentication succeeds, the client may optionally make use of the <font size=-1>AUTH</font>
+option on the <font size=-1>MAIL</font> command to pass an authenticated sender in subsequent
+mail transactions. Authentication lasts for the remainder of the SMTP
+connection.
+</p>
+</li>
+<li><p>
+If authentication fails, the client may give up, or it may try a different
+authentication mechanism, or it may try transferring mail over the
+unauthenticated connection.
+</p>
+</li>
+</ul>
+<p>
+If you are setting up a client, and want to know which authentication
+mechanisms the server supports, you can use Telnet to connect to port 25 (the
+SMTP port) on the server, and issue an <font size=-1>EHLO</font> command. The response to this
+includes the list of supported mechanisms. For example:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#036; <tt><b>telnet server.example 25</b></tt></tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>Trying 192.168.34.25...</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>Connected to server.example.</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>Escape character is '&#094;]'.</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>220 server.example ESMTP Exim 4.20 ...</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt><tt><b>ehlo client.example</b></tt></tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>250-server.example Hello client.example [10.8.4.5]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>250-SIZE 52428800</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>250-PIPELINING</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>250-AUTH PLAIN</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>250 HELP</tt><br>
+</p>
+<p>
+The second-last line of this example output shows that the server supports
+authentication using the PLAIN mechanism. In Exim, the different authentication
+mechanisms are configured by specifying <i>authenticator</i> drivers. Like the
+routers and transports, which authenticators are included in the binary is
+controlled by build-time definitions. The following are currently available,
+included by setting
+<pre>
+&nbsp;&nbsp;AUTH_CRAM_MD5=yes
+&nbsp;&nbsp;AUTH_PLAINTEXT=yes
+&nbsp;&nbsp;AUTH_SPA=yes
+</pre>
+</p>
+<p>
+in <i>Local/Makefile</i>, respectively. The first of these supports the CRAM-MD5
+authentication mechanism (RFC 2195), and the second can be configured to
+support the PLAIN authentication mechanism (RFC 2595) or the LOGIN mechanism,
+which is not formally documented, but used by several MUAs. The third
+authenticator supports Microsoft's <i>Secure Password Authentication</i>
+mechanism.
+</p>
+<p>
+The authenticators are configured using the same syntax as other drivers (see
+section <a href="spec_6.html#SECT6.16">6.16</a>). If no authenticators are required, no authentication
+section need be present in the configuration file. Each authenticator can in
+principle have both server and client functions. When Exim is receiving SMTP
+mail, it is acting as a server; when it is sending out messages over SMTP, it
+is acting as a client. Authenticator configuration options are provided for use
+in both these circumstances.
+</p>
+<p>
+To make it clear which options apply to which situation, the prefixes
+<tt>server&#095;</tt> and <tt>client&#095;</tt> are used on option names that are specific to either
+the server or the client function, respectively. Server and client functions
+are disabled if none of their options are set. If an authenticator is to be
+used for both server and client functions, a single definition, using both sets
+of options, is required. For example:
+<pre>
+&nbsp;&nbsp;cram:
+&nbsp;&nbsp;  driver = cram_md5
+&nbsp;&nbsp;  public_name = CRAM-MD5
+&nbsp;&nbsp;  server_secret = ${if eq{$1}{ph10}{secret1}fail}
+&nbsp;&nbsp;  client_name = ph10
+&nbsp;&nbsp;  client_secret = secret2
+</pre>
+</p>
+<p>
+The <tt>server&#095;</tt> option is used when Exim is acting as a server, and the
+<tt>client&#095;</tt> options when it is acting as a client.
+</p>
+<p>
+Descriptions of the individual authenticators are given in subsequent chapters.
+The remainder of this chapter covers the generic options for the
+authenticators, followed by general discussion of the way authentication works
+in Exim.
+</p>
+<a name="IX2271"></a>
+<a name="IX2272"></a>
+<h2>
+<a name="SECT33.1" href="spec_toc.html#TOC243">
+33.1. Generic options for authenticators
+</a></h2>
+<hr><a name="IX2273"></a>
+<h3>driver</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option must always be set. It specifies which of the available
+authenticators is to be used.
+<hr></p>
+<a name="IX2274"></a>
+<h3>public_name</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option specifies the name of the authentication mechanism that the driver
+implements, and by which it is known to the outside world. These names should
+contain only upper case letters, digits, underscores, and hyphens (RFC 2222),
+but Exim in fact matches them caselessly. If <tt>public&#095;name</tt> is not set, it
+defaults to the driver's instance name.
+<hr></p>
+<a name="IX2275"></a>
+<h3>server_advertise_condition</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+When a server is about to advertise an authentication mechanism, the condition
+is expanded. If it yields the empty string, &#147;0&#148;, &#147;no&#148;, or &#147;false&#148;, the
+mechanism is not advertised. 
+If the expansion fails, the mechanism is not advertised. If the failure was not 
+forced, and was not caused by a lookup defer, the incident is logged.
+See section <a href="spec_33.html#SECT33.3">33.3</a> below for further discussion.
+<hr></p>
+<a name="IX2276"></a>
+<h3>server_debug_print</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If this option is set and authentication debugging is enabled (see the <i>-d</i>
+command line option), the string is expanded and included in the debugging
+output when the authenticator is run as a server. This can help with checking
+out the values of variables.
+If expansion of the string fails, the error message is written to the debugging 
+output, and Exim carries on processing.
+<hr></p>
+<a name="IX2277"></a>
+<h3>server_set_id</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+When an Exim server successfully authenticates a client, this string is
+expanded using data from the authentication, and preserved for any incoming
+messages in the variable <tt>$authenticated&#095;id</tt>. It is also included in the log
+lines for incoming messages. For example, a user/password authenticator
+configuration might preserve the user name that was used to authenticate, and
+refer to it subsequently during delivery of the message.
+If expansion fails, the option is ignored.
+<hr></p>
+<a name="IX2278"></a>
+<h3>server_mail_auth_condition</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option allows a server to discard authenticated sender addresses supplied
+as part of <font size=-1>MAIL</font> commands in SMTP connections that are authenticated by the 
+driver on which <tt>server_mail_auth&#095;condition</tt> is set. The option is not used
+as part of the authentication process; instead its (unexpanded) value is
+remembered for later use.
+How it is used is described in the following section.
+<hr><br>
+</p>
+<a name="IX2279"></a>
+<a name="IX2280"></a>
+<h2>
+<a name="SECT33.2" href="spec_toc.html#TOC244">
+33.2. The AUTH parameter on MAIL commands
+</a></h2>
+<p>
+When a client supplied an <font size=-1>AUTH=</font> item on a <font size=-1>MAIL</font> command, Exim applies 
+the following checks before accepting it as the authenticated sender of the
+message:
+</p>
+<ul>
+<li><p>
+If the connection is not using extended SMTP (that is, <font size=-1>HELO</font> was used rather 
+than <font size=-1>EHLO</font>), the use of <font size=-1>AUTH=</font> is a syntax error.
+</p>
+</li>
+<li><p>
+If the value of the <font size=-1>AUTH=</font> parameter is &#147;&#060;&#062;&#148;, it is ignored.
+</p>
+</li>
+<li><p>
+If <tt>acl&#095;smtp&#095;mailauth</tt> is defined, the ACL it specifies is run. While it is
+running, the value of <tt>$authenticated&#095;sender</tt> is set to the value obtained
+from the <font size=-1>AUTH=</font> parameter. If the ACL does not yield &#147;accept&#148;, the value of
+<tt>$authenticated&#095;sender</tt> is deleted. The <tt>acl&#095;smtp&#095;mailauth</tt> ACL may not
+return &#147;drop&#148; or &#147;discard&#148;. If it defers, a temporary error code (451) is given
+for the <font size=-1>MAIL</font> command.
+</p>
+</li>
+<li><p>
+If <tt>acl&#095;smtp&#095;mailauth</tt> is not defined, the value of the <font size=-1>AUTH=</font> parameter
+is accepted and placed in <tt>$authenticated&#095;sender</tt> only if the client has
+authenticated.
+</p>
+</li>
+<li><p>
+If the <font size=-1>AUTH=</font> value was accepted by either of the two previous rules, and
+the client has authenticated, and the authenticator has a setting for the
+<tt>server&#095;mail&#095;auth&#095;condition</tt>, the condition is checked at this point. The
+valued that was saved from the authenticator is expanded. If the expansion
+fails, or yields an empty string, &#147;0&#148;, &#147;no&#148;, or &#147;false&#148;, the value of
+<tt>$authenticated_sender</tt> is deleted. If the expansion yields any other value,
+the value of <tt>$authenticated&#095;sender</tt> is retained and passed on with the
+message.
+</p>
+</li>
+</ul>
+<p>
+When <tt>$authenticated&#095;sender</tt> is set for a message, it is passed on to other
+hosts to which Exim authenticates as a client. Do not confuse this value with
+<tt>$authenticated&#095;id</tt>, which is a string obtained from the authentication
+process, and which is not usually a complete email address.
+</p>
+<p>
+Whenever an <font size=-1>AUTH=</font> value is ignored, the incident is logged. The ACL for
+<font size=-1>MAIL</font>, if defined, is run after <font size=-1>AUTH=</font> is accepted or ignored. It can
+therefore make use of <tt>$authenticated&#095;sender</tt>. The converse is not true: the
+value of <tt>$sender&#095;address</tt> is not yet set up when the <tt>acl&#095;smtp&#095;mailauth</tt>
+ACL is run.
+</p>
+<a name="IX2281"></a>
+<h2>
+<a name="SECT33.3" href="spec_toc.html#TOC245">
+33.3. Authentication on an Exim server
+</a></h2>
+<p>
+When Exim receives an <font size=-1>EHLO</font> command, it advertises the public names of those 
+authenticators that are configured as servers, subject to the following 
+conditions:
+</p>
+<ul>
+<li><p>
+The client host must match <tt>auth&#095;advertise&#095;hosts</tt> (default *).
+</p>
+</li>
+<li><p>
+It the <tt>server&#095;advertise&#095;condition</tt> option is set, its expansion must not 
+yield the empty string, &#147;0&#148;, &#147;no&#148;, or &#147;false&#148;.
+</p>
+</li>
+</ul>
+<p>
+The order in which the authenticators are defined controls the order in which 
+the mechanisms are advertised.
+</p>
+<p>
+Some mail clients (for example, some versions of Netscape) require the user to
+provide a name and password for authentication whenever <font size=-1>AUTH</font> is advertised,
+even though authentication may not in fact be needed (for example, Exim may be
+set up to allow unconditional relaying from the client by an IP address check).
+You can make such clients more friendly by not advertising <font size=-1>AUTH</font> to them.
+For example, if clients on the 10.9.8.0/24 network are permitted (by the ACL
+that runs for <font size=-1>RCPT</font>) to relay without authentication, you should set
+<pre>
+&nbsp;&nbsp;auth_advertise_hosts = ! 10.9.8.0/24
+</pre>
+</p>
+<p>
+so that no authentication mechanisms are advertised to them.
+</p>
+<p>
+The <tt>server&#095;advertise&#095;condition</tt> controls the advertisement of individual
+authentication mechanisms. For example, it can be used to restrict the
+advertisement of a patricular mechanism to encrypted connections, by a setting
+such as:
+<pre>
+&nbsp;&nbsp;server_advertise_condition = ${if eq{$tls_cipher}{}{no}{yes}}
+</pre>
+</p>
+<p>
+If the session is encrypted, <tt>$tls&#095;cipher</tt> is not empty, and so the expansion 
+yields &#147;yes&#148;, which allows the advertisement to happen.
+</p>
+<p>
+When an Exim server receives an <font size=-1>AUTH</font> command from a client, it rejects it
+immediately if <font size=-1>AUTH</font> was not advertised in response to an earlier <font size=-1>EHLO</font>
+command. This is the case if
+</p>
+<ul>
+<li><p>
+The client host does not match <tt>auth&#095;advertise&#095;hosts</tt>; or
+</p>
+</li>
+<li><p>
+No authenticators are configured with server options; or
+</p>
+</li>
+<li><p>
+Expansion of <tt>server&#095;advertise&#095;condition</tt> blocked the advertising of all the 
+server authenticators.
+</p>
+</li>
+</ul>
+<p>
+Otherwise, Exim runs the ACL specified by <tt>acl&#095;smtp&#095;auth</tt> in order
+to decide whether to accept the command. If <tt>acl&#095;smtp&#095;auth</tt> is not set,
+<font size=-1>AUTH</font> is accepted from any client host. 
+</p>
+<p>
+If <font size=-1>AUTH</font> is not rejected by the ACL, Exim searches its configuration for a
+server authentication mechanism that was advertised in response to <font size=-1>EHLO</font> and 
+that matches the one named in the <font size=-1>AUTH</font> command. If it finds one, it runs
+the appropriate authentication protocol, and authentication either succeeds or
+fails. If there is no matching advertised mechanism, the <font size=-1>AUTH</font> command is
+rejected with a 504 error.
+</p>
+<p>
+When a message is received from an authenticated host, the value of
+<tt>$received&#095;protocol</tt> is set to &#147;asmtp&#148; instead of &#147;esmtp&#148;, and
+<tt>$sender&#095;host&#095;authenticated</tt> contains the name (not the public name) of the
+authenticator driver that successfully authenticated the client from which the
+message was received. This variable is empty if there was no successful
+authentication.
+</p>
+<a name="IX2282"></a>
+<a name="IX2283"></a>
+<a name="IX2284"></a>
+<h2>
+<a name="SECT33.4" href="spec_toc.html#TOC246">
+33.4. Testing server authentication
+</a></h2>
+<p>
+Exim's <i>-bh</i> option can be useful for testing server authentication
+configurations. The data for the <font size=-1>AUTH</font> command has to be sent using base64
+encoding. A quick way to produce such data for testing is the following Perl
+script:
+<pre>
+&nbsp;&nbsp;use MIME::Base64;
+&nbsp;&nbsp;printf ("%s", encode_base64(eval "\"$ARGV[0]\""));
+</pre>
+<a name="IX2285"></a>
+</p>
+<p>
+This interprets its argument as a Perl string, and then encodes it. The
+interpretation as a Perl string allows binary zeros, which are required for
+some kinds of authentication, to be included in the data. For example, a
+command line to run this script on such data might be
+<pre>
+&nbsp;&nbsp;encode '\0user\0password'
+</pre>
+</p>
+<p>
+Note the use of single quotes to prevent the shell interpreting the
+backslashes, so that they can be interpreted by Perl to specify characters
+whose code value is zero. 
+</p>
+<p>
+<b>Warning 1</b>: If either of the user or password strings starts with an octal
+digit, you must use three zeros instead of one after the leading backslash. If
+you do not, the octal digit that starts your string will be incorrectly
+interpreted as part of the code for the first character.
+</p>
+<p>
+<b>Warning 2</b>: If there are characters in the strings that Perl interprets 
+specially, you must use a Perl escape to prevent them being misinterpreted. For 
+example, a command such as
+<pre>
+&nbsp;&nbsp;encode '\0user@domain.com\0pas$$word'
+</pre>
+</p>
+<p>
+gives an incorrect answer because of the unescaped &#147;&#064;&#148; and &#147;&#036;&#148; characters.
+</p>
+<p>
+If you have the <tt>mimencode</tt> command installed, another way to do produce
+base64-encoded strings is to run the command
+<pre>
+&nbsp;&nbsp;echo -e -n `\0user\0password' | mimencode
+</pre>
+</p>
+<p>
+The <i>-e</i> option of <tt>echo</tt> enables the interpretation of backslash escapes in
+the argument, and the <i>-n</i> option specifies no newline at the end of its
+output. However, not all versions of <tt>echo</tt> recognize these options, so you
+should check your version before relying on this suggestion.
+</p>
+<a name="IX2286"></a>
+<h2>
+<a name="SECT33.5" href="spec_toc.html#TOC247">
+33.5. Authentication by an Exim client
+</a></h2>
+<p>
+The <b>smtp</b> transport has two options called <tt>hosts&#095;require&#095;auth</tt> and
+<tt>hosts&#095;try&#095;auth</tt>. When the <b>smtp</b> transport connects to a server that
+announces support for authentication, and the host matches an entry in either
+of these options, Exim (as a client) tries to authenticate as follows:
+</p>
+<ul>
+<li><p>
+For each authenticator that is configured as a client, it searches the
+authentication mechanisms announced by the server for one whose name
+matches the public name of the authenticator.
+</p>
+</li>
+<li><p>
+When it finds one that matches, it runs the authenticator's client code.
+The variables <tt>$host</tt> and <tt>$host&#095;address</tt> are available for any string
+expansions that the client might do. They are set to the server's name and
+IP address. If any expansion is forced to fail, the authentication attempt
+is abandoned,
+and Exim moves on to the next authenticator.
+Otherwise an expansion failure causes delivery to be
+deferred.
+</p>
+</li>
+<li><p>
+If the result of the authentication attempt is a temporary error or a timeout,
+Exim abandons trying to send the message to the host for the moment. It will
+try again later. If there are any backup hosts available, they are tried in the
+usual way.
+</p>
+</li>
+<li><p>
+If the response to authentication is a permanent error (5xx code), Exim carries
+on searching the list of authenticators and tries another one if possible. If
+all authentication attempts give permanent errors, or if there are no attempts
+because no mechanisms match
+(or option expansions force failure),
+what happens depends on whether the host matches <tt>hosts&#095;require&#095;auth</tt> or
+<tt>hosts&#095;try&#095;auth</tt>. In the first case, a temporary error is generated, and
+delivery is deferred. The error can be detected in the retry rules, and thereby
+turned into a permanent error if you wish. In the second case, Exim tries to
+deliver the message unauthenticated.
+</p>
+</li>
+</ul>
+<a name="IX2287"></a>
+<p>
+When Exim has authenticated itself to a remote server, it adds the <font size=-1>AUTH</font>
+parameter to the <font size=-1>MAIL</font> commands it sends, if it has an authenticated sender
+for the message. 
+If the message came from a remote host, the authenticated sender is the one 
+that was receiving on an incoming <font size=-1>MAIL</font> command, provided that the incoming 
+connection was authenticated and the <tt>server&#095;mail&#095;auth</tt> condition allowed the
+authenticated sender to be retained. If a local process calls Exim to send a
+message, the sender address that is built from the login name and
+<tt>qualify&#095;domain</tt> is treated as authenticated. However, if the
+<tt>authenticated&#095;sender</tt> option is set on the <b>smtp</b> transport, it overrides
+the authenticated sender that was received with the message.
+<hr>
+</p>
+<font size=2>
+<a href="spec_32.html">Previous</a>&nbsp;&nbsp;<a href="spec_34.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

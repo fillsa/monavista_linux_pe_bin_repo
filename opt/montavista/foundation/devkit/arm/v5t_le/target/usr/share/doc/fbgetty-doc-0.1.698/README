@@ -1,0 +1,260 @@
+fbgetty Copyright (C) 1999,2000,2001 Yann Droneaud (ydroneaud@meuh.eu.org). 
+
+This file describe fbgetty version 0.1.698
+
+Description
+-----------
+
+fbgetty a new getty program who support fully possibility of the 
+Linux console. For the moment it run only under Linux.
+
+Features
+--------
+  extended issue display (escape codes, shell variables)
+  framebuffer support (display logo)
+  refresh issue when VT is activated (time, user, uptime)
+  display date/time according to locale
+  display the output of any program
+  include many files in issue
+
+Usage 
+-----
+
+fbgetty [options] [variables] tty_device [framebuffer_device]
+
+Options:
+
+  -t --tty=               set tty device 
+  -f --fb= --framebuffer= set framebuffer device
+  -i --issue=             set issue file
+  -l --login-program=     set login program
+  -p --login-prompt=      set login prompt
+  -o --login-timeout=     set login timeout
+     --clear-screen[=(yes|no|0|1)]
+                          clear or not the screen, default is yes
+     --kbd=[+|-](num|caps) 
+                          set or unset a keyboard flags
+     --version            show version
+     --dump-config        display the current configuration
+     --help               show help
+
+
+Options
+-------
+
+  --issue=none		disable display of issue file
+  --login-prompt=none	disable display of login prompt
+
+  --kbd=+num,-caps	enable numpad, disable capslock
+
+  --keyboard=numlock --kbd=-capslock
+			likewise (if - nor + are present, set the flag)
+
+Environment
+-----------
+  fbgetty recognizes these environment variables
+  simply put them on the command line
+
+  LANG=[locale]
+  issue=
+  framebuffer=
+  tty=
+  login_program=
+  login_prompt=
+  login_timeout=
+  refresh=
+  clear_screen=
+
+Difference between arguments, options and variables
+---------------------------------------------------
+ priority:
+    options
+    variables
+    arguments
+
+ if you put "fbgetty /dev/tty0 fb0 -t tty1 framebuffer=fb1"
+  fbgetty will use tty1 and framebuffer fb1
+ 
+Issue tag
+---------
+('*' means: not yet supported)
+
+long form | short form | description  (equivalent shell command)
+----------------------------------------------------------------
+@system		%s	display OS name eg. kernel name (uname -s)
+
+@version	%v	display OS version eg. kernel build date (uname -v) 
+
+@release	%r	display OS release eg. kernel version (uname -r)
+
+@machine
+@architecture
+@arch		%m	display host architecture (uname -m)
+
+@tty
+@line
+@vt		%l	display tty
+
+@framebuffer
+@fb		%f	display framebuffer
+
+@speed
+@baud		%b	display line speed
+
+@hostname	%n	display nodename (or hostname), eg: corwin (uname -n)
+
+@domain		%o	display domain (YP/NIS) (domainname)
+
+@fqdn
+@FQDN		-	display full nodename, eg: corwin.ambre.meuh.eu.org (hostname -f)
+
+@user		%u	display number of users connected
+@users		%U	display number of users using format "%d user(s)"
+
+@loadavg	-	display load average *
+
+@date		%d	display date  
+
+@time		%t	display time (24H)
+
+@ftime		-	format date/time like 'date' does (see date(1) manpage or date --help)
+			example: @ftime="%X" will print time like @time
+
+@uptime		-	display uptime *
+
+@verb=
+@verbatim=	-	print string with no tag (%?,@*,$*) parsed (only escape sequence \?)
+
+@include=	-	include other file to be parsed.
+			syntax: @include=file[,files...]
+
+@include_verbatim=
+@cat=
+@dump=
+		-	print the content of the file without being parsed.
+
+@image		-	*
+
+$name
+$"name"
+${name}		display env variable ($TERM will echoing linux or linux-m)
+
+`program [args...]`
+		run the specified program with args
+		NOTE: the old syntax &program is not supported since fbgetty-0.1.5test
+
+Escape codes:
+\a		echo alert (bell)
+\b		backspace
+\e \E		echo escape char
+\f		echo formfeed
+\n		echo new line
+\r		echo carriage return
+\t		echo horizontal tab
+\v		echo vertical tab
+\\		echo slash
+\@		echo arobas
+\%		echo percent char
+\&		echo ampersand
+\$		echo dollar sign
+\ooo		echo character octal (octal code ooo)
+\xhh \Xhh	echo hex character (hexadecimal code hh)
+\[cr]		at the end of a line, don't print the carriage return (used to break a long line)
+
+All the short escape (\? or %u) work in login prompt
+
+Issue files
+-----------
+If not overrided by --issue-file, fbgetty will look for /etc/issue
+If LANG is set, it will first look for issue-file.[LANG], 
+ then is case of LANG in form lang_TERRITORY try issue-file.[LANG]
+If not, it will use the default
+
+Tips
+----
+If you want to display a file asis: without being parsed by fbgetty try this in the issue file:
+`cat <your_raw_file>`
+This will simply cat the file to the screen.
+Another method, is to convert the file to fbgetty syntax (escape all fbgetty special characters),
+checkout README and rawtoissue.sh in contrib/
+
+Installation
+------------
+
+$ ./configure.default
+$ make
+$ su
+# make install
+
+examples and scripts are installed in the $datadir/fbgetty
+by default /usr/share/fbgetty
+
+Edit inittab
+replace your old getty by fbgetty
+see examples/*.*
+
+Detailled Configuration
+-----------------------
+
+ Instead of using configure.default in order to get the default features of fbgetty,
+you can pass options directly to the configure script
+
+options:
+ --disable-framebuffer:  don't do anything about framebuffer
+ --disable-vt-refresh:   don't refresh screen when Virtual Terminal is activated
+ --disable-exec-support: don't support running any program in issue
+ 
+ --enable-secure-exec: add some security to the exec feature in issue
+  --with-exec-uid=
+  --with-exec-gid= use specified uid/gid to run program
+  OR
+  --with-exec-user= get the uid/gid from the username specified (id username)
+  OR
+  --with-exec-username=  get uid/gid at runtime from username
+   optionnaly --with-exec-groupname=  get gid from groupname 
+
+  WARNING: you can't mix configure time parameters 
+           and run time parameters, so 
+
+  ./configure --enable-secure-exec \
+              --with-exec-username=fbgetty --with-exec-gid=100
+
+           won't make fbgetty to run program with 100 as gid, 
+           instead it will use gid of user 'fbgetty'.
+
+ Next options are use to set the default values, they could be overridden at runtime
+ --with-login-program= use alternate default login program (default: /bin/login)
+ --with-login-prompt= set the default prompt (default: <hostname> login:)
+ --with-issue-file= use alternate issue (default: /etc/issue)
+
+Do ./configure --help for more options
+
+More Informations
+-----------------
+
+see info pages
+see man pages
+see http://fbgetty.meuh.eu.org
+
+Some informations about the versionning
+---------------------------------------
+
+I promise there won't be a 0.1.7 release, but some bugs appears after 
+the 0.1.6 release so i need to make a patch release.
+0.1.6.1 was a solution, but i don't want 4 numbers version, 0.1.6a was another i didn't want.
+The solution i found was to add a number after the minor version number: 0.1.60, 0.1.61.
+0.1.66 was my first choice, but i found more funny 0.1.69, so the patch release was numbered 0.1.69.
+
+But this release shows other bugs i must correct rapidly without opening the 0.1.7 branch nor the 0.2,
+so i must continue to add number after the patchlevel.
+ i found this after a little search (bc + grep): 18/106 = 0.16981132075471698113
+ this number contains all digit i want and is recursive.
+ release that can be done:
+ 0.1.6
+ 0.1.69
+ 0.1.698
+ 0.1.6981
+ and so on
+
+After closing forever the 0.1.6 branch, release will be numbered [version].[revision]
+If patch are needed, then version will be [version].[revision].[patchlevel]

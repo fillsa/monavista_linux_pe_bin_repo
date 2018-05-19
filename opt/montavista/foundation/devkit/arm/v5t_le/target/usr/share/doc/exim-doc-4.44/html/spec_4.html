@@ -1,0 +1,1004 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 4</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_3.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_5.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX123"></a>
+<h1>
+<a name="CHAP4" href="spec_toc.html#TOC31">
+4. Building and installing Exim
+</a></h1>
+<h2>
+<a name="SECT4.1" href="spec_toc.html#TOC32">
+4.1. Unpacking
+</a></h2>
+<p>
+Exim is distributed as a gzipped or bzipped tar file which, when upacked,
+creates a directory with the name of the current release (for example,
+<i>exim-4.40</i>) into which the following files are placed:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<i>ACKNOWLEDGMENTS</i>&nbsp;&nbsp;</td><td>contains some acknowledgments</td></tr>
+<tr><td>&nbsp;&nbsp;<i>CHANGES</i>&nbsp;&nbsp;</td><td>contains a reference to where changes are documented</td></tr>
+<tr><td>&nbsp;&nbsp;<i>LICENCE</i>&nbsp;&nbsp;</td><td>the GNU General Public Licence</td></tr>
+<tr><td>&nbsp;&nbsp;<i>Makefile</i>&nbsp;&nbsp;</td><td>top-level make file</td></tr>
+<tr><td>&nbsp;&nbsp;<i>NOTICE</i>&nbsp;&nbsp;</td><td>conditions for the use of Exim</td></tr>
+<tr><td>&nbsp;&nbsp;<i>README</i>&nbsp;&nbsp;</td><td>list of files, directories and simple build instructions</td></tr>
+</table>
+</p>
+<p>
+Other files whose names begin with <i>README</i> may also be present. The
+following subdirectories are created:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<i>Local</i>&nbsp;&nbsp;</td><td>an empty directory for local configuration files</td></tr>
+<tr><td>&nbsp;&nbsp;<i>OS</i>&nbsp;&nbsp;</td><td>OS-specific files</td></tr>
+<tr><td>&nbsp;&nbsp;<i>doc</i>&nbsp;&nbsp;</td><td>documentation files</td></tr>
+<tr><td>&nbsp;&nbsp;<i>exim&#095;monitor</i>&nbsp;&nbsp;</td><td>source files for the Exim monitor</td></tr>
+<tr><td>&nbsp;&nbsp;<i>scripts</i>&nbsp;&nbsp;</td><td>scripts used in the build process</td></tr>
+<tr><td>&nbsp;&nbsp;<i>src</i>&nbsp;&nbsp;</td><td>remaining source files</td></tr>
+<tr><td>&nbsp;&nbsp;<i>util</i>&nbsp;&nbsp;</td><td>independent utilities</td></tr>
+</table>
+</p>
+<p>
+The main utility programs are contained in the <i>src</i> directory, and are built
+with the Exim binary. The <i>util</i> directory contains a few optional scripts
+that may be useful to some sites.
+</p>
+<a name="IX124"></a>
+<h2>
+<a name="SECT4.2" href="spec_toc.html#TOC33">
+4.2. Multiple machine architectures and operating systems
+</a></h2>
+<p>
+<a name="IX125"></a>
+The building process for Exim is arranged to make it easy to build binaries for
+a number of different architectures and operating systems from the same set of
+source files. Compilation does not take place in the <i>src</i> directory. Instead,
+a <i>build directory</i> is created for each architecture and operating system.
+Symbolic links to the sources are installed in this directory, which is where
+the actual building takes place.
+</p>
+<p>
+In most cases, Exim can discover the machine architecture and operating system
+for itself, but the defaults can be overridden if necessary.
+</p>
+<a name="IX126"></a>
+<a name="IX127"></a>
+<h2>
+<a name="SECT4.3" href="spec_toc.html#TOC34">
+4.3. DBM libraries
+</a></h2>
+<p>
+Even if you do not use any DBM files in your configuration, Exim still needs a
+DBM library in order to operate, because it uses indexed files for its hints
+databases. Unfortunately, there are a number of DBM libraries in existence, and
+different operating systems often have different ones installed.
+<a name="IX128"></a>
+<a name="IX129"></a>
+<a name="IX130"></a>
+<a name="IX131"></a>
+</p>
+<p>
+If you are using Solaris, IRIX, one of the modern BSD systems, or a modern
+Linux distribution, the DBM configuration should happen automatically, and you
+may be able to ignore this section. Otherwise, you may have to learn more than
+you would like about DBM libraries from what follows.
+<a name="IX132"></a>
+</p>
+<p>
+Licensed versions of Unix normally contain a library of DBM functions operating
+via the <i>ndbm</i> interface, and this is what Exim expects by default. Free
+versions of Unix seem to vary in what they contain as standard. In particular,
+some early versions of Linux have no default DBM library, and different
+distributors have chosen to bundle different libraries with their packaged
+versions. However, the more recent releases seem to have standardised on the
+Berkeley DB library.
+</p>
+<p>
+Different DBM libraries have different conventions for naming the files they
+use. When a program opens a file called <i>dbmfile</i>, there are four
+possibilities:
+</p>
+<ol>
+<li TYPE="1"><p>
+A traditional <i>ndbm</i> implementation, such as that supplied as part of
+Solaris, operates on two files called <i>dbmfile.dir</i> and <i>dbmfile.pag</i>.
+</p>
+</li>
+<li TYPE="1"><a name="IX133"></a>
+<p>
+The GNU library, <i>gdbm</i>, operates on a single file. If used via its <i>ndbm</i>
+compatibility interface it makes two different hard links to it with names
+<i>dbmfile.dir</i> and <i>dbmfile.pag</i>, but if used via its native interface, the
+file name is used unmodified.
+</p>
+</li>
+<li TYPE="1"><a name="IX134"></a>
+<p>
+The Berkeley DB package, if called via its <i>ndbm</i> compatibility interface,
+operates on a single file called <i>dbmfile.db</i>, but otherwise looks to the
+programmer exactly the same as the traditional <i>ndbm</i> implementation.
+</p>
+</li>
+<li TYPE="1"><p>
+If the Berkeley package is used in its native mode, it operates on a single
+file called <i>dbmfile</i>; the programmer's interface is somewhat different to
+the traditional <i>ndbm</i> interface.
+</p>
+</li>
+<li TYPE="1"><p>
+To complicate things further, there are several very different versions of the
+Berkeley DB package. Version 1.85 was stable for a very long time, releases
+2.<em>x</em> and 3.<em>x</em> were current for a while, but the latest versions are now
+numbered 4.<em>x</em>. Maintenance of some of the earlier releases has ceased. All
+versions of Berkeley DB can be obtained from
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><a href="http://www.sleepycat.com/">http://www.sleepycat.com/</a><br>
+</p>
+</li>
+<li TYPE="1"><a name="IX135"></a>
+<p>
+Yet another DBM library, called <i>tdb</i>, has become available from
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><a href="http://download.sourceforge.net/tdb">http://download.sourceforge.net/tdb</a><br>
+</p>
+<p>
+It has its own interface, and also operates on a single file.
+</p>
+</li>
+</ol>
+<a name="IX136"></a>
+<a name="IX137"></a>
+<p>
+Exim and its utilities can be compiled to use any of these interfaces. In order
+to use any version of the Berkeley DB package in native mode, you must set
+<font size=-1>USE&#095;DB</font> in an appropriate configuration file (typically
+<i>Local/Makefile</i>). For example:
+<pre>
+&nbsp;&nbsp;USE_DB=yes
+</pre>
+</p>
+<p>
+Similarly, for gdbm you set <font size=-1>USE&#095;GDBM</font>, and for tdb you set <font size=-1>USE&#095;TDB</font>. An
+error is diagnosed if you set more than one of these.
+</p>
+<p>
+At the lowest level, the build-time configuration sets none of these options,
+thereby assuming an interface of type (1). However, some operating system
+configuration files (for example, those for the BSD operating systems and
+Linux) assume type (4) by setting <font size=-1>USE&#095;DB</font> as their default, and the
+configuration files for Cygwin set <font size=-1>USE&#095;GDBM</font>. Anything you set in
+<i>Local/Makefile</i>, however, overrides these system defaults.
+</p>
+<p>
+As well as setting <font size=-1>USE&#095;DB</font>, <font size=-1>USE&#095;GDBM</font>, or <font size=-1>USE&#095;TDB</font>, it may also be
+necessary to set <font size=-1>DBMLIB</font>, to cause inclusion of the appropriate library, as
+in one of these lines:
+<pre>
+&nbsp;&nbsp;DBMLIB = -ldb
+&nbsp;&nbsp;DBMLIB = -ltdb
+</pre>
+</p>
+<p>
+Settings like that will work if the DBM library is installed in the standard 
+place. Sometimes it is not, and the library's header file may also not be in
+the default path. You may need to set <font size=-1>INCLUDE</font> to specify where the header
+file is, and to specify the path to the library more fully in <font size=-1>DBMLIB</font>, as in 
+this example:
+<pre>
+&nbsp;&nbsp;INCLUDE=-I/usr/local/include/db-4.1
+&nbsp;&nbsp;DBMLIB=/usr/local/lib/db-4.1/libdb.a
+</pre>
+</p>
+<p>
+There is further detailed discussion about the various DBM libraries in the
+file <i>doc/dbm.discuss.txt</i> in the Exim distribution.
+</p>
+<a name="IX138"></a>
+<a name="IX139"></a>
+<a name="IX140"></a>
+<a name="IX141"></a>
+<h2>
+<a name="SECT4.4" href="spec_toc.html#TOC35">
+4.4. Pre-building configuration
+</a></h2>
+<p>
+Before building Exim, a local configuration file that specifies options
+independent of any operating system has to be created with the name
+<i>Local/Makefile</i>. A template for this file is supplied as the file
+<i>src/EDITME</i>, and it contains full descriptions of all the option settings
+therein. These descriptions are therefore not repeated here. If you are
+building Exim for the first time, the simplest thing to do is to copy
+<i>src/EDITME</i> to <i>Local/Makefile</i>, then read it and edit it appropriately.
+</p>
+<p>
+There are three settings that you must supply, because Exim will not build
+without them. They are the location of the run time configuration file
+(<font size=-1>CONFIGURE&#095;FILE</font>), the directory in which Exim binaries will be installed
+(<font size=-1>BIN&#095;DIRECTORY</font>), and the identity of the Exim user (<font size=-1>EXIM&#095;USER</font> and
+maybe <font size=-1>EXIM&#095;GROUP</font> as well). The value of <font size=-1>CONFIGURE&#095;FILE</font> can in fact be
+a colon-separated list of file names; Exim uses the first of them that exists.
+</p>
+<p>
+There are a few other parameters that can be specified either at build time or
+at run time, to enable the same binary to be used on a number of different
+machines. However, if the locations of Exim's spool directory and log file
+directory (if not within the spool directory) are fixed, it is recommended that
+you specify them in <i>Local/Makefile</i> instead of at run time, so that errors
+detected early in Exim's execution (such as a malformed configuration file) can
+be logged.
+<a name="IX142"></a>
+<a name="IX143"></a>
+</p>
+<p>
+If you are going to build the Exim monitor, a similar configuration process is
+required. The file <i>exim&#095;monitor/EDITME</i> must be edited appropriately for
+your installation and saved under the name <i>Local/eximon.conf</i>. If you are
+happy with the default settings described in <i>exim&#095;monitor/EDITME</i>,
+<i>Local/eximon.conf</i> can be empty, but it must exist.
+</p>
+<p>
+This is all the configuration that is needed in straightforward cases for known
+operating systems. However, the building process is set up so that it is easy
+to override options that are set by default or by operating-system-specific
+configuration files, for example to change the name of the C compiler, which
+defaults to <tt>gcc</tt>. See section <a href="spec_4.html#SECT4.10">4.10</a> below for details of how to do
+this.
+</p>
+<a name="IX144"></a>
+<h2>
+<a name="SECT4.5" href="spec_toc.html#TOC36">
+4.5. Support for iconv()
+</a></h2>
+<p>
+The contents of header lines in messages may be encoded according to the rules 
+described RFC 2047. This makes it possible to transmit characters that are not 
+in the ASCII character set, and to label them as being in a particular 
+character set. When Exim is inspecting header lines by means of the <tt>&#036;h&#095;</tt> 
+mechanism, it decodes them, and translates them into a specified character set 
+(default ISO-8859-1). The translation is possible only if the operating system
+supports the <i>iconv()</i> function.
+</p>
+<p>
+However, some of the operating systems that supply <i>iconv()</i> do not support
+very many conversions. The GNU <tt>libiconv</tt> library (available from
+<a href="http:/&#047;www.gnu.org/software/libiconv/">http:/&#047;www.gnu.org/software/libiconv/</a>) can be installed on such systems to
+remedy this deficiency, as well as on systems that do not supply <i>iconv()</i> at
+all. After installing <tt>libiconv</tt>, you should add 
+<pre>
+&nbsp;&nbsp;HAVE_ICONV=yes 
+</pre>
+</p>
+<p>
+to your <i>Local/Makefile</i> and rebuild Exim.
+</p>
+<a name="IX145"></a>
+<a name="IX146"></a>
+<a name="IX147"></a>
+<a name="IX148"></a>
+<a name="IX149"></a>
+<h2>
+<a name="SECT4.6" href="spec_toc.html#TOC37">
+4.6. Including TLS/SSL encryption support
+</a></h2>
+<p>
+Exim can be built to support encrypted SMTP connections, using the <font size=-1>STARTTLS</font>
+command as per RFC 2487. It can also support legacy clients that expect to 
+start a TLS session immediately on connection to a non-standard port (see the 
+<i>-tls-on-connect</i> command line option).
+</p>
+<p>
+If you want to build Exim with TLS support, you must first install either the 
+OpenSSL or GnuTLS library. There is no cryptographic code in Exim itself for
+implementing SSL.
+</p>
+<p>
+If OpenSSL is installed, you should set
+<pre>
+&nbsp;&nbsp;SUPPORT_TLS=yes
+&nbsp;&nbsp;TLS_LIBS=-lssl -lcrypto
+</pre>
+</p>
+<p>
+in <i>Local/Makefile</i>. You may also need to specify the locations of the
+OpenSSL library and include files. For example:
+<pre>
+&nbsp;&nbsp;SUPPORT_TLS=yes
+&nbsp;&nbsp;TLS_LIBS=-L/usr/local/openssl/lib -lssl -lcrypto
+&nbsp;&nbsp;TLS_INCLUDE=-I/usr/local/openssl/include/
+</pre>
+</p>
+<p>
+<a name="IX150"></a>
+If GnuTLS is installed, you should set
+<pre>
+&nbsp;&nbsp;SUPPORT_TLS=yes
+&nbsp;&nbsp;USE_GNUTLS=yes
+&nbsp;&nbsp;TLS_LIBS=-lgnutls -ltasn1 -lgcrypt
+</pre>
+</p>
+<p>
+in <i>Local/Makefile</i>, and again you may need to specify the locations of the
+library and include files. For example:
+<pre>
+&nbsp;&nbsp;SUPPORT_TLS=yes
+&nbsp;&nbsp;USE_GNUTLS=yes        
+&nbsp;&nbsp;TLS_LIBS=-L/usr/gnu/lib -lgnutls -ltasn1 -lgcrypt
+&nbsp;&nbsp;TLS_INCLUDE=-I/usr/gnu/include
+</pre>
+</p>
+<p>
+You do not need to set <font size=-1>TLS&#095;INCLUDE</font> if the relevant directory is already
+specified in <font size=-1>INCLUDE</font>. Details of how to configure Exim to make use of TLS 
+are given in chapter <a href="spec_37.html">37</a>.
+</p>
+<a name="IX151"></a>
+<a name="IX152"></a>
+<h2>
+<a name="SECT4.7" href="spec_toc.html#TOC38">
+4.7. Use of tcpwrappers
+</a></h2>
+<p>
+Exim can be linked with the <i>tcpwrappers</i> library in order to check incoming
+SMTP calls using the <i>tcpwrappers</i> control files. This may be a convenient
+alternative to Exim's own checking facilities for installations that are
+already making use of <i>tcpwrappers</i> for other purposes. To do this, you should
+set <font size=-1>USE&#095;TCP&#095;WRAPPERS</font> in <i>Local/Makefile</i>, arrange for the file
+<i>tcpd.h</i> to be available at compile time, and also ensure that the library
+<i>libwrap.a</i> is available at link time, typically by including <i>-lwrap</i> in
+<font size=-1>EXTRALIBS&#095;EXIM</font>. For example, if <i>tcpwrappers</i> is installed in
+<i>/usr/local</i>, you might have
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>USE&#095;TCP&#095;WRAPPERS=yes</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>CFLAGS=-O -I/usr/local/include</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>EXTRALIBS&#095;EXIM=-L/usr/local/lib -lwrap</tt><br>
+</p>
+<p>
+in <i>Local/Makefile</i>. The name to use in the <i>tcpwrappers</i> control files is
+&#147;exim&#148;. For example, the line
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>exim : LOCAL  192.168.1.  .friendly.domain.example</tt><br>
+</p>
+<p>
+in your <i>/etc/hosts.allow</i> file allows connections from the local host, from
+the subnet 192.168.1.0/24, and from all hosts in <i>friendly.domain.example</i>.
+All other connections are denied. Consult the <i>tcpwrappers</i> documentation for
+further details.
+</p>
+<a name="IX153"></a>
+<h2>
+<a name="SECT4.8" href="spec_toc.html#TOC39">
+4.8. Including support for IPv6
+</a></h2>
+<p>
+Exim contains code for use on systems that have IPv6 support. Setting
+<font size=-1>HAVE&#095;IPV6=YES</font> in <i>Local/Makefile</i> causes the IPv6 code to be included;
+it may also be necessary to set <font size=-1>IPV6&#095;INCLUDE</font> and <font size=-1>IPV6&#095;LIBS</font> on systems
+where the IPv6 support is not fully integrated into the normal include and
+library files.
+</p>
+<p>
+IPv6 is still changing rapidly. Two different types of DNS record for handling
+IPv6 addresses have been defined. AAAA records are already in use, and are
+currently seen as the &#147;mainstream&#148;, but another record type called A6 is being
+argued about. Its status is currently &#147;experimental&#148;. Exim has support for A6
+records, but this is included only if you set <font size=-1>SUPPORT&#095;A6=YES</font> in
+<i>Local/Makefile</i>.
+</p>
+<a name="IX154"></a>
+<h2>
+<a name="SECT4.9" href="spec_toc.html#TOC40">
+4.9. The building process
+</a></h2>
+<p>
+<a name="IX155"></a>
+Once <i>Local/Makefile</i> (and <i>Local/eximon.conf</i>, if required) have been
+created, run <i>make</i> at the top level. It determines the architecture and
+operating system types, and creates a build directory if one does not exist.
+For example, on a Sun system running Solaris 8, the directory
+<i>build-SunOS5-5.8-sparc</i> is created.
+Symbolic links to relevant source files are installed in the build directory.
+</p>
+<p>
+<font color=green>
+<b>Warning</b>: The <i>-j</i> (parallel) flag must not be used with <i>make</i>; the 
+building process fails if it is set.
+</font>
+</p>
+<p>
+If this is the first time <i>make</i> has been run, it calls a script that builds
+a make file inside the build directory, using the configuration files from the
+<i>Local</i> directory. The new make file is then passed to another instance of
+<i>make</i>. This does the real work, building a number of utility scripts, and
+then compiling and linking the binaries for the Exim monitor (if configured), a
+number of utility programs, and finally Exim itself. The command <i>make
+makefile</i> can be used to force a rebuild of the make file in the build
+directory, should this ever be necessary.
+</p>
+<p>
+If you have problems building Exim, check for any comments there may be in the
+<i>README</i> file concerning your operating system, and also take a look at the<A HREF="FAQ.html">
+FAQ,</A>
+where some common problems are covered.
+</p>
+<a name="IX156"></a>
+<h2>
+<a name="SECT4.10" href="spec_toc.html#TOC41">
+4.10. Overriding build-time options for Exim
+</a></h2>
+<p>
+The main make file that is created at the beginning of the building process
+consists of the concatenation of a number of files which set configuration
+values, followed by a fixed set of <i>make</i> instructions. If a value is set
+more than once, the last setting overrides any previous ones. This provides a
+convenient way of overriding defaults. The files that are concatenated are, in
+order:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><i>OS/Makefile-Default</i><br>
+<tt>&nbsp;&nbsp;</tt><i>OS/Makefile-</i>&#060;<em>ostype</em>&#062;<br>
+<tt>&nbsp;&nbsp;</tt><i>Local/Makefile</i><br>
+<tt>&nbsp;&nbsp;</tt><i>Local/Makefile-</i>&#060;<em>ostype</em>&#062;<br>
+<tt>&nbsp;&nbsp;</tt><i>Local/Makefile-</i>&#060;<em>archtype</em>&#062;<br>
+<tt>&nbsp;&nbsp;</tt><i>Local/Makefile-</i>&#060;<em>ostype</em>&#062;-&#060;<em>archtype</em>&#062;<br>
+<tt>&nbsp;&nbsp;</tt><i>OS/Makefile-Base</i><br>
+<a name="IX157"></a>
+</p>
+<p>
+<a name="IX158"></a>
+<a name="IX159"></a>
+where &#060;<em>ostype</em>&#062; is the operating system type and &#060;<em>archtype</em>&#062; is the
+architecture type. <i>Local/Makefile</i> is required to exist, and the building
+process fails if it is absent. The other three <i>Local</i> files are optional,
+and are often not needed.
+</p>
+<p>
+The values used for &#060;<em>ostype</em>&#062; and &#060;<em>archtype</em>&#062; are obtained from scripts
+called <i>scripts/os-type</i> and <i>scripts/arch-type</i> respectively. If either of
+the environment variables <font size=-1>EXIM&#095;OSTYPE</font> or <font size=-1>EXIM&#095;ARCHTYPE</font> is set, their
+values are used, thereby providing a means of forcing particular settings.
+Otherwise, the scripts try to get values from the <tt>uname</tt> command. If this
+fails, the shell variables <font size=-1>OSTYPE</font> and <font size=-1>ARCHTYPE</font> are inspected. A number
+of <em>ad hoc</em> transformations are then applied, to produce the standard names
+that Exim expects. You can run these scripts directly from the shell in order
+to find out what values are being used on your system.
+</p>
+<p>
+<i>OS/Makefile-Default</i> contains comments about the variables that are set
+therein. Some (but not all) are mentioned below. If there is something that
+needs changing, review the contents of this file and the contents of the make
+file for your operating system (<i>OS/Makefile-&#060;<em>ostype</em>&#062;</i>) to see what the
+default values are.
+<a name="IX160"></a>
+</p>
+<p>
+<a name="IX161"></a>
+If you need to change any of the values that are set in <i>OS/Makefile-Default</i>
+or in <i>OS/Makefile-&#060;<em>ostype</em>&#062;</i>, or to add any new definitions, you do not 
+need to change the original files. Instead, you should make the changes by
+putting the new values in an appropriate <i>Local</i> file. For example,
+when building Exim in many releases of the Tru64-Unix (formerly Digital UNIX,
+formerly DEC-OSF1) operating system, it is necessary to specify that the C
+compiler is called <i>cc</i> rather than <i>gcc</i>. Also, the compiler must be 
+called with the option <i>-std1</i>, to make it recognize some of the features of
+Standard C that Exim uses. (Most other compilers recognize Standard C by 
+default.) To do this, you should create a file called <i>Local/Makefile-OSF1</i>
+containing the lines
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>CC=cc</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>CFLAGS=-std1</tt><br>
+</p>
+<p>
+If you are compiling for just one operating system, it may be easier to put 
+these lines directly into <i>Local/Makefile</i>.
+</p>
+<p>
+Keeping all your local configuration settings separate from the distributed
+files makes it easy to transfer them to new versions of Exim simply by copying
+the contents of the <i>Local</i> directory.
+<a name="IX162"></a>
+<a name="IX163"></a>
+<a name="IX164"></a>
+<a name="IX165"></a>
+</p>
+<p>
+Exim contains support for doing LDAP, NIS, NIS+, and other kinds of file
+lookup, but not all systems have these components installed, so the default is
+not to include the relevant code in the binary. All the different kinds of file
+and database lookup that Exim supports are implemented as separate code modules
+which are included only if the relevant compile-time options are set. In the
+case of LDAP, NIS, and NIS+, the settings for <i>Local/Makefile</i> are:
+<pre>
+&nbsp;&nbsp;LOOKUP_LDAP=yes
+&nbsp;&nbsp;LOOKUP_NIS=yes
+&nbsp;&nbsp;LOOKUP_NISPLUS=yes
+</pre>
+</p>
+<p>
+<a name="IX166"></a>
+and similar settings apply to the other lookup types. They are all listed in
+<i>src/EDITME</i>. In most cases the relevant include files and interface
+libraries need to be installed before compiling Exim.
+However, in the case of cdb, which is included in the binary only if
+<pre>
+&nbsp;&nbsp;LOOKUP_CDB=yes
+</pre>
+</p>
+<p>
+is set, the code is entirely contained within Exim, and no external include
+files or libraries are required. When a lookup type is not included in the
+binary, attempts to configure Exim to use it cause run time configuration
+errors.
+<a name="IX167"></a>
+</p>
+<p>
+Exim can be linked with an embedded Perl interpreter, allowing Perl
+subroutines to be called during string expansion. To enable this facility,
+<pre>
+&nbsp;&nbsp;EXIM_PERL=perl.o
+</pre>
+</p>
+<p>
+must be defined in <i>Local/Makefile</i>. Details of this facility are given in
+chapter <a href="spec_12.html">12</a>.
+<a name="IX168"></a>
+</p>
+<p>
+The location of the X11 libraries is something that varies a lot between
+operating systems, and of course there are different versions of X11 to cope
+with. Exim itself makes no use of X11, but if you are compiling the Exim
+monitor, the X11 libraries must be available.
+The following three variables are set in <i>OS/Makefile-Default</i>:
+<pre>
+&nbsp;&nbsp;X11=/usr/X11R6
+&nbsp;&nbsp;XINCLUDE=-I$(X11)/include
+&nbsp;&nbsp;XLFLAGS=-L$(X11)/lib
+</pre>
+</p>
+<p>
+These are overridden in some of the operating-system configuration files. For
+example, in <i>OS/Makefile-SunOS5</i> there is
+<pre>
+&nbsp;&nbsp;X11=/usr/openwin
+&nbsp;&nbsp;XINCLUDE=-I$(X11)/include
+&nbsp;&nbsp;XLFLAGS=-L$(X11)/lib -R$(X11)/lib
+</pre>
+</p>
+<p>
+If you need to override the default setting for your operating system, place a
+definition of all three of these variables into your
+<i>Local/Makefile-&#060;<em>ostype</em>&#062;</i> file.
+<a name="IX169"></a>
+</p>
+<p>
+<a name="IX170"></a>
+If you need to add any extra libraries to the link steps, these can be put in a
+variable called <font size=-1>EXTRALIBS</font>, which appears in all the link commands, but by
+default is not defined. In contrast, <font size=-1>EXTRALIBS&#095;EXIM</font> is used only on the
+command for linking the main Exim binary, and not for any associated utilities.
+There is also <font size=-1>DBMLIB</font>, which appears in the link commands for binaries that
+use DBM functions (see also section <a href="spec_4.html#SECT4.3">4.3</a>). Finally, there is
+<font size=-1>EXTRALIBS&#095;EXIMON</font>, which appears only in the link step for the Exim monitor
+binary, and which can be used, for example, to include additional X11
+libraries.
+<a name="IX171"></a>
+</p>
+<p>
+The make file copes with rebuilding Exim correctly if any of the configuration
+files are edited. However, if an optional configuration file is deleted, it is
+necessary to touch the associated non-optional file (that is, <i>Local/Makefile</i>
+or <i>Local/eximon.conf</i>) before rebuilding.
+</p>
+<a name="IX172"></a>
+<a name="IX173"></a>
+<h2>
+<a name="SECT4.11" href="spec_toc.html#TOC42">
+4.11. OS-specific header files
+</a></h2>
+<p>
+The <i>OS</i> directory contains a number of files with names of the form
+<i>os.h-&#060;<em>ostype</em>&#062;</i>. These are system-specific C header files that should not
+normally need to be changed. There is a list of macro settings that are
+recognized in the file <i>OS/os.configuring</i>, which should be consulted if you
+are porting Exim to a new operating system.
+</p>
+<a name="IX174"></a>
+<h2>
+<a name="SECT4.12" href="spec_toc.html#TOC43">
+4.12. Overriding build-time options for the monitor
+</a></h2>
+<p>
+A similar process is used for overriding things when building the Exim monitor,
+where the files that are involved are
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><i>OS/eximon.conf-Default</i><br>
+<tt>&nbsp;&nbsp;</tt><i>OS/eximon.conf-</i>&#060;<em>ostype</em>&#062;<br>
+<tt>&nbsp;&nbsp;</tt><i>Local/eximon.conf</i><br>
+<tt>&nbsp;&nbsp;</tt><i>Local/eximon.conf-</i>&#060;<em>ostype</em>&#062;<br>
+<tt>&nbsp;&nbsp;</tt><i>Local/eximon.conf-</i>&#060;<em>archtype</em>&#062;<br>
+<tt>&nbsp;&nbsp;</tt><i>Local/eximon.conf-</i>&#060;<em>ostype</em>&#062;-&#060;<em>archtype</em>&#062;<br>
+<a name="IX175"></a>
+</p>
+<p>
+As with Exim itself, the final three files need not exist, and in this case the
+<i>OS/eximon.conf-&#060;<em>ostype</em>&#062;</i> file is also optional. The default values in
+<i>OS/eximon.conf-Default</i> can be overridden dynamically by setting environment
+variables of the same name, preceded by <font size=-1>EXIMON&#095;</font>. For example, setting
+<font size=-1>EXIMON&#095;LOG&#095;DEPTH</font> in the environment overrides the value of
+<font size=-1>LOG&#095;DEPTH</font> at run time.
+</p>
+<a name="IX176"></a>
+<a name="IX177"></a>
+<h2>
+<a name="SECT4.13" href="spec_toc.html#TOC44">
+4.13. Installing Exim binaries and scripts
+</a></h2>
+<p>
+The command <i>make install</i> runs the <i>exim&#095;install</i> script with no
+arguments. The script copies binaries and utility scripts into the directory
+whose name is specified by the <font size=-1>BIN&#095;DIRECTORY</font> setting in
+<i>Local/Makefile</i>. 
+</p>
+<p>
+<a name="IX178"></a>
+Exim's run time configuration file is named by the <font size=-1>CONFIGURE&#095;FILE</font> setting
+in <i>Local/Makefile</i>. If this names a single file, and the file does not
+exist, the default configuration file <i>src/configure.default</i> is copied there
+by the installation script. If a run time configuration file already exists, it
+is left alone. If <font size=-1>CONFIGURE&#095;FILE</font> is a colon-separated list, naming several
+alternative files, no default is installed.
+<a name="IX179"></a>
+<a name="IX180"></a>
+</p>
+<p>
+One change is made to the default configuration file when it is installed: the
+default configuration contains a router that references a system aliases file.
+The path to this file is set to the value specified by
+<font size=-1>SYSTEM&#095;ALIASES&#095;FILE</font> in <i>Local/Makefile</i> (<i>/etc/aliases</i> by default).
+If the system aliases file does not exist, the installation script creates it,
+and outputs a comment to the user.
+</p>
+<p>
+The created file contains no aliases, but it does contain comments about the
+aliases a site should normally have. Mail aliases have traditionally been
+kept in <i>/etc/aliases</i>. However, some operating systems are now using
+<i>/etc/mail/aliases</i>. You should check if yours is one of these, and change
+Exim's configuration if necessary.
+</p>
+<p>
+The default configuration uses the local host's name as the only local domain,
+and is set up to do local deliveries into the shared directory <i>/var/mail</i>,
+running as the local user. System aliases and <i>.forward</i> files in users' home
+directories are supported, but no NIS or NIS+ support is configured. Domains
+other than the name of the local host are routed using the DNS, with delivery
+over SMTP.
+</p>
+<p>
+<a name="IX181"></a>
+The install script copies files only if they are newer than the files they are
+going to replace. The Exim binary is required to be owned by root and have the
+<i>setuid</i> bit set,
+for normal configurations. Therefore, you must run <i>make install</i> as root so
+that it can set up the Exim binary in this way. However, in some special
+situations (for example, if a host is doing no local deliveries) it may be
+possible to run Exim without making the binary setuid root (see chapter
+<a href="spec_48.html">48</a> for details).
+</p>
+<p>
+It is possible to install Exim for special purposes (such as building a binary
+distribution) in a private part of the file system. You can do this by a
+command such as
+<pre>
+&nbsp;&nbsp;make DESTDIR=/some/directory/ install
+</pre>
+</p>
+<p>
+This has the effect of pre-pending the specified directory to all the file 
+paths, except the name of the system aliases file that appears in the default 
+configuration. (If a default alias file is created, its name <i>is</i> modified.)
+For backwards compatibility, <font size=-1>ROOT</font> is used if <font size=-1>DESTDIR</font> is not set, 
+but this usage is deprecated.
+<a name="IX182"></a>
+</p>
+<p>
+Running <i>make install</i> does not copy the Exim 4 conversion script
+<i>convert4r4</i>, or the <i>pcretest</i> test program. You will probably run the
+first of these only once (if you are upgrading from Exim 3), and the second
+isn't really part of Exim. None of the documentation files in the <i>doc</i>
+directory are copied, except for the info files when you have set
+<font size=-1>INFO&#095;DIRECTORY</font>, as described in section <a href="spec_4.html#SECT4.14">4.14</a> below.
+</p>
+<p>
+For the utility programs, old versions are renamed by adding the suffix <i>.O</i>
+to their names. The Exim binary itself, however, is handled differently. It is
+installed under a name that includes the version number and the compile number,
+for example <i>exim-4.40-1</i>. The script then arranges for a symbolic link
+called <i>exim</i> to point to the binary. If you are updating a previous version
+of Exim, the script takes care to ensure that the name <i>exim</i> is never absent
+from the directory (as seen by other processes).
+<a name="IX183"></a>
+</p>
+<p>
+If you want to see what the <i>make install</i> will do before running it for
+real, you can pass the <i>-n</i> option to the installation script by this command:
+<pre>
+&nbsp;&nbsp;make INSTALL_ARG=-n install
+</pre>
+</p>
+<p>
+The contents of the variable <font size=-1>INSTALL&#095;ARG</font> are passed to the installation
+script. You do not need to be root to run this test. Alternatively, you can run
+the installation script directly, but this must be from within the build
+directory. For example, from the top-level Exim directory you could use this
+command:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>(cd build-SunOS5-5.5.1-sparc; ../scripts/exim&#095;install -n)</tt><br>
+<a name="IX184"></a>
+</p>
+<p>
+There are two other options that can be supplied to the installation script.
+</p>
+<ul>
+<li><p>
+<i>-no&#095;chown</i> bypasses the call to change the owner of the installed binary
+to root, and the call to make it a setuid binary.
+</p>
+</li>
+<li><p>
+<i>-no&#095;symlink</i> bypasses the setting up of the symbolic link <i>exim</i> to the
+installed binary.
+</p>
+</li>
+</ul>
+<p>
+<font size=-1>INSTALL&#095;ARG</font> can be used to pass these options to the script. For example:
+<pre>
+&nbsp;&nbsp;make INSTALL_ARG=-no_symlink install
+</pre>
+</p>
+<p>
+The installation script can also be given arguments specifying which files are 
+to be copied. For example, to install just the Exim binary, and nothing else, 
+without creating the symbolic link, you could use:
+<pre>
+&nbsp;&nbsp;make INSTALL_ARG='-no_symlink exim' install
+</pre>
+</p>
+<a name="IX185"></a>
+<h2>
+<a name="SECT4.14" href="spec_toc.html#TOC45">
+4.14. Installing info documentation
+</a></h2>
+<p>
+Not all systems use the GNU <i>info</i> system for documentation, and for this
+reason, the Texinfo source of Exim's documentation is not included in the main
+distribution. Instead it is available separately from the ftp site (see section
+<a href="spec_1.html#SECT1.5">1.5</a>).
+</p>
+<p>
+If you have defined <font size=-1>INFO&#095;DIRECTORY</font> in <i>Local/Makefile</i> and the Texinfo
+source of the documentation is found in the source tree, running <i>make
+install</i> automatically builds the info files and installs them.
+</p>
+<a name="IX186"></a>
+<h2>
+<a name="SECT4.15" href="spec_toc.html#TOC46">
+4.15. Setting up the spool directory
+</a></h2>
+<p>
+When it starts up, Exim tries to create its spool directory if it does not
+exist. The Exim uid and gid are used for the owner and group of the spool
+directory. Sub-directories are automatically created in the spool directory as
+necessary.
+</p>
+<a name="IX187"></a>
+<h2>
+<a name="SECT4.16" href="spec_toc.html#TOC47">
+4.16. Testing
+</a></h2>
+<p>
+Having installed Exim, you can check that the run time configuration file is
+syntactically valid by running the following command, which assumes that the
+Exim binary directory is within your <font size=-1>PATH</font> environment variable:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>exim -bV</tt><br>
+</p>
+<p>
+If there are any errors in the configuration file, Exim outputs error messages.
+Otherwise it outputs the version number and build date,
+the DBM library that is being used, and information about which drivers and 
+other optional code modules are included in the binary.
+Some simple routing tests can be done by using the address testing option. For
+example,
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>exim -bt &#060;<em>local username</em>&#062;</tt><br>
+</p>
+<p>
+should verify that it recognizes a local mailbox, and
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>exim -bt &#060;<em>remote address</em>&#062;</tt><br>
+</p>
+<p>
+a remote one. Then try getting it to deliver mail, both locally and remotely.
+This can be done by passing messages directly to Exim, without going through a
+user agent. For example:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>exim -v postmaster&#064;your.domain.example</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>From: user&#064;your.domain.example</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>To: postmaster&#064;your.domain.example</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>Subject: Testing Exim</tt><br>
+<tt>&nbsp;&nbsp;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>This is a test message.</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>^D</tt><br>
+</p>
+<p>
+The <i>-v</i> option causes Exim to output some verification of what it is doing.
+In this case you should see copies of three log lines, one for the message's
+arrival, one for its delivery, and one containing &#147;Completed&#148;.
+<a name="IX188"></a>
+</p>
+<p>
+If you encounter problems, look at Exim's log files (<i>mainlog</i> and
+<i>paniclog</i>) to see if there is any relevant information there. Another source
+of information is running Exim with debugging turned on, by specifying the
+<i>-d</i> option. If a message is stuck on Exim's spool, you can force a delivery
+with debugging turned on by a command of the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>exim -d -M &#060;<em>message-id</em>&#062;</tt><br>
+</p>
+<p>
+You must be root or an &#147;admin user&#148; in order to do this. The <i>-d</i> option
+produces rather a lot of output, but you can cut this down to specific areas.
+For example, if you use <i>-d-all+route</i> only the debugging information relevant
+to routing is included. (See the <i>-d</i> option in chapter <a href="spec_5.html">5</a> for
+more details.)
+<a name="IX189"></a>
+<a name="IX190"></a>
+</p>
+<p>
+One specific problem that has shown up on some sites is the inability to do
+local deliveries into a shared mailbox directory, because it does not have the
+&#147;sticky bit&#148; set on it. By default, Exim tries to create a lock file before
+writing to a mailbox file, and if it cannot create the lock file, the delivery
+is deferred. You can get round this either by setting the &#147;sticky bit&#148; on the
+directory, or by setting a specific group for local deliveries and allowing
+that group to create files in the directory (see the comments above the
+<b>local&#095;delivery</b> transport in the default configuration file). Another
+approach is to configure Exim not to use lock files, but just to rely on
+<i>fcntl()</i> locking instead. However, you should do this only if all user
+agents also use <i>fcntl()</i> locking. For further discussion of locking issues,
+see chapter <a href="spec_26.html">26</a>.
+</p>
+<p>
+One thing that cannot be tested on a system that is already running an MTA is
+the receipt of incoming SMTP mail on the standard SMTP port. However, the
+<i>-oX</i> option can be used to run an Exim daemon that listens on some other
+port, or <i>inetd</i> can be used to do this. The <i>-bh</i> option and the
+<i>exim&#095;checkaccess</i> utility can be used to check out policy controls on
+incoming SMTP mail.
+</p>
+<p>
+Testing a new version on a system that is already running Exim can most easily
+be done by building a binary with a different <font size=-1>CONFIGURE&#095;FILE</font> setting. From
+within the run time configuration, all other file and directory names
+that Exim uses can be altered, in order to keep it entirely clear of the
+production version.
+</p>
+<a name="IX191"></a>
+<h2>
+<a name="SECT4.17" href="spec_toc.html#TOC48">
+4.17. Replacing another MTA with Exim
+</a></h2>
+<p>
+<a name="IX192"></a>
+Building and installing Exim for the first time does not of itself put it in
+general use. The name by which the system's MTA is called by mail user agents
+is either <i>/usr/sbin/sendmail</i>, or <i>/usr/lib/sendmail</i> (depending on the
+operating system), and it is necessary to make this name point to the <i>exim</i>
+binary in order to get the user agents to pass messages to Exim. This is
+normally done by renaming any existing file and making <i>/usr/sbin/sendmail</i>
+or <i>/usr/lib/sendmail</i>
+a symbolic link to the <i>exim</i> binary. It is a good idea to remove any setuid
+privilege and executable status from the old MTA. It is then necessary to stop
+and restart the mailer daemon, if one is running.
+<a name="IX193"></a>
+<a name="IX194"></a>
+</p>
+<p>
+Some operating systems have introduced alternative ways of switching MTAs. For
+example, if you are running FreeBSD, you need to edit the file
+<i>/etc/mail/mailer.conf</i> instead of setting up a symbolic link as just
+described. A typical example of the contents of this file for running Exim is
+as follows:
+<pre>
+&nbsp;&nbsp;sendmail            /usr/exim/bin/exim
+&nbsp;&nbsp;send-mail           /usr/exim/bin/exim
+&nbsp;&nbsp;mailq               /usr/exim/bin/exim -bp
+&nbsp;&nbsp;newaliases          /usr/bin/true
+</pre>
+</p>
+<p>
+Once you have set up the symbolic link, or edited <i>/etc/mail/mailer.conf</i>,
+your Exim installation is &#147;live&#148;. Check it by sending a message from your
+favourite user agent.
+</p>
+<p>
+You should consider what to tell your users about the change of MTA. Exim may
+have different capabilities to what was previously running, and there are
+various operational differences such as the text of messages produced by
+command line options and in bounce messages. If you allow your users to make
+use of Exim's filtering capabilities, you should make the document entitled<A HREF="filter.html">
+<i>Exim's interface to mail filtering</i></A>
+available to them.
+</p>
+<a name="IX195"></a>
+<h2>
+<a name="SECT4.18" href="spec_toc.html#TOC49">
+4.18. Upgrading Exim
+</a></h2>
+<p>
+If you are already running Exim on your host, building and installing a new
+version automatically makes it available to MUAs, or any other programs that
+call the MTA directly. However, if you are running an Exim daemon, you do need
+to send it a HUP signal, to make it re-exec itself, and thereby pick up the new
+binary. You do not need to stop processing mail in order to install a new
+version of Exim.
+</p>
+<a name="IX196"></a>
+<h2>
+<a name="SECT4.19" href="spec_toc.html#TOC50">
+4.19. Stopping the Exim daemon on Solaris
+</a></h2>
+<p>
+The standard command for stopping the mailer daemon on Solaris is
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>/etc/init.d/sendmail stop</tt><br>
+</p>
+<p>
+If <i>/usr/lib/sendmail</i> has been turned into a symbolic link, this script
+fails to stop Exim because it uses the command <i>ps -e</i> and greps the output
+for the text &#147;sendmail&#148;; this is not present because the actual program name
+(that is, &#147;exim&#148;) is given by the <i>ps</i> command with these options. A solution
+is to replace the line that finds the process id with something like
+<pre>
+&nbsp;&nbsp;pid=`cat /var/spool/exim/exim-daemon.pid`
+</pre>
+</p>
+<p>
+to obtain the daemon's pid directly from the file that Exim saves it in.
+</p>
+<p>
+Note, however, that stopping the daemon does not &#147;stop Exim&#148;. Messages can 
+still be received from local processes, and if automatic delivery is configured 
+(the normal case), deliveries will still occur.
+<hr>
+</p>
+<font size=2>
+<a href="spec_3.html">Previous</a>&nbsp;&nbsp;<a href="spec_5.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

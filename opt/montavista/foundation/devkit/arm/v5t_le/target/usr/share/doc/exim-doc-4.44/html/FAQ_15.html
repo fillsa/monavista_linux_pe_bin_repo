@@ -1,0 +1,112 @@
+<html>
+<head>
+<title>The Exim FAQ Section 15</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_14.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_16.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC312">15. UUCP</a></h2>
+<p>
+<a name="TOC313" href="FAQ.html#TOC313">Q1501:</a>&nbsp;&nbsp;The MX records for some UUCP domains point to my local host. How do I
+get it to pass the messages on to UUCP?
+</p>
+<p>
+<font color="#00BB00">A1501:</font>&nbsp;&nbsp;The simplest way is to create a file containing a list of domains, and
+the hosts to which their messages should be sent, like this:
+</p>
+<pre>
+   uucp1.domain.example:   uucp1.host.example
+   uucp2.domain.example:   uucp2.host.example
+   ....</pre>
+<p>
+Then you can use a router like this:
+</p>
+<pre>
+   uucp_router:
+     driver = accept
+     domains = lsearch;/etc/uucp/domains
+     transport = uucp_transport</pre>
+<p>
+and a transport like this:
+</p>
+<pre>
+   uucp_transport:
+     driver = pipe
+     user = nobody
+     command = /usr/local/bin/uux - -r $domain_data!rmail $local_part
+     return_fail_output</pre>
+<p>
+The <i>$domain_data</i> variable retains the value that is looked up when
+the <tt>domains</tt> option in the router is matched.
+</p>
+<p>
+<a name="TOC314" href="FAQ.html#TOC314">Q1502:</a>&nbsp;&nbsp;How can I get Exim to handle &#147;bang path&#148; addresses?
+</p>
+<p>
+<font color="#00BB00">A1502:</font>&nbsp;&nbsp;In general, you can't (Exim is an Internet mailer and recognizes only
+RFC 2822 domain-style addresses) but some restricted kinds of bang path
+can be dealt with by appropriate rewriting - but please note the warning
+below.
+</p>
+<p>
+Exim treats a bang path address as an unqualified local part, and so
+will qualify it with your domain. A rule such as
+</p>
+<pre>
+   \N^([^!]+)!(.+)@your\.domain$\N   $2@$1</pre>
+<p>
+turns <i>a!b@your.domain</i> into <i>b@a</i>. You can also use a repeating rule to
+turn multi-component paths into the &#147;percent hack&#148; notation with a rule
+such as
+</p>
+<pre>
+   \N^([^!]+)!([^@%]+)(.+)$\N   $2%$1$3   R</pre>
+<p>
+which turns <i>a!b@c</i> into <i>b%a@c</i> and <i>a!b!c@d</i> first into <i>b!c%a@d</i> and then,
+because of the R flag, into <i>c%b%a@d</i>. The R flag causes repetition up to
+10 times.
+</p>
+<p>
+<b>Warning:</b> If you install a general rewriting rule like the above, you are
+opening yourself up to the possibility of unwanted relaying. A host that
+is not permitted to relay through your system could send a message with
+an SMTP command line such as
+</p>
+<pre>
+   RCPT TO:&#60;victim-host!victim-user@your.domain&#62;</pre>
+<p>
+and this would be accepted because it is addressed to your domain.
+However, the rewriting then converts the address, and the message does
+in fact get relayed. One way round this, if all your bang path messages
+are passed to Exim via SMTP, is to use the <tt>S</tt> rewriting flag. This
+applies a rewriting rule to incoming SMTP addresses as soon as they are
+received, before checking for qualification, relaying, etc. So a rule
+such as
+</p>
+<pre>
+   \N^([^!]+)!(.+)$\N  $2@$1  S</pre>
+<p>
+rewrites simple two-component bang paths before the result is checked
+for relaying. However, this does not rewrite addresses in the headers of
+the message.
+</p>
+<p>
+<a name="TOC315" href="FAQ.html#TOC315">Q1503:</a>&nbsp;&nbsp;We see something strange on our system in regards to mail coming in via
+rmail from a UUCP link. The sender is being set to mailmaster instead of
+the real sender, and a <i>Sender:</i> header is being added to the message.
+</p>
+<p>
+<font color="#00BB00">A1503:</font>&nbsp;&nbsp;If <i>mailmaster</i> is the user that is running rmail, you need to include
+that user in the <tt>trusted_users</tt> configuration option. Only trusted users
+are permitted to specify senders when mail is passed to Exim via the
+command line.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_14.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_16.html">Next</a>
+</body>
+</html>

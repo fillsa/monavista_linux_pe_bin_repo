@@ -1,0 +1,16 @@
+This package was split from netstd by Herbert Xu herbert@debian.org on
+Tue,  2 Nov 1999 14:47:51 +1100.
+
+netstd was created by Peter Tobias tobias@et-inf.fho-emden.de on
+Wed, 20 Jul 1994 17:23:21 +0200.
+
+It was downloaded from ftp://ftp.uk.linux.org/pub/linux/Networking/netkit/.
+
+Copyright:
+
+Copyright (c) 1983-1991 The Regents of the University of California.
+Copyright (c) 1993 Peter Eriksson, Signum Support AB
+
+The license can be found in /usr/share/common-licenses/BSD.
+
+$Id: copyright,v 1.2 2000/07/18 11:48:41 herbert Exp $

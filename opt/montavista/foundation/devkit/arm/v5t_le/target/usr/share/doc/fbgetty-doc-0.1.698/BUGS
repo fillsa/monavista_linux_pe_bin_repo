@@ -1,0 +1,15 @@
+Use the Bug Tracker System to report/see bugs:
+  http://bug.tuxfamily.org
+  For viewing only, log as anonymous with password anonymous
+
+For posting bug report, if you don't have an account on BTS,
+use login fbgetty-bug and password fbgetty-bug
+
+If you don't have access to the web interface,
+you can still report bugs to <fbgetty-bug@meuh.eu.org>, 
+but the prefered way is to use BTS.
+
+All bug report are available on the mailing list fbgetty-bug@meuh.eu.org
+
+--------------------------------------------------------------------
+$Id: BUGS,v 1.4.4.2 2001/08/29 11:20:43 ydroneaud Exp $

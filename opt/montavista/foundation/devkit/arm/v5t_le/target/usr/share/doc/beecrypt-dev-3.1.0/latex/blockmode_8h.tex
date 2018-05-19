@@ -1,0 +1,108 @@
+\hypertarget{blockmode_8h}{
+\section{blockmode.h File Reference}
+\label{blockmode_8h}\index{blockmode.h@{blockmode.h}}
+}
+Blockcipher operation modes. 
+
+{\tt \#include \char`\"{}beecrypt.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{blockmode_8h_a0}{block\-Encrypt\-ECB} (const \hyperlink{structblockCipher}{block\-Cipher} $\ast$bc, \hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$bp, uint32\_\-t $\ast$dst, const uint32\_\-t $\ast$src, unsigned int nblocks)
+\begin{CompactList}\small\item\em This function encrypts a number of data blocks in Electronic Code Book mode. \item\end{CompactList}\item 
+int \hyperlink{blockmode_8h_a1}{block\-Decrypt\-ECB} (const \hyperlink{structblockCipher}{block\-Cipher} $\ast$bc, \hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$bp, uint32\_\-t $\ast$dst, const uint32\_\-t $\ast$src, unsigned int nblocks)
+\begin{CompactList}\small\item\em This function decrypts a number of data blocks in Electronic Code Book mode. \item\end{CompactList}\item 
+int \hyperlink{blockmode_8h_a2}{block\-Encrypt\-CBC} (const \hyperlink{structblockCipher}{block\-Cipher} $\ast$bc, \hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$bp, uint32\_\-t $\ast$dst, const uint32\_\-t $\ast$src, unsigned int nblocks)
+\begin{CompactList}\small\item\em This function encrypts a number of data blocks in Cipher Block Chaining mode. \item\end{CompactList}\item 
+int \hyperlink{blockmode_8h_a3}{block\-Decrypt\-CBC} (const \hyperlink{structblockCipher}{block\-Cipher} $\ast$bc, \hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$bp, uint32\_\-t $\ast$dst, const uint32\_\-t $\ast$src, unsigned int nblocks)
+\begin{CompactList}\small\item\em This function decrypts a number of data blocks in Cipher Block Chaining mode. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Blockcipher operation modes. 
+
+\begin{Desc}
+\item[\hyperlink{todo__todo000001}{Todo}]Additional modes, such as CFB and OFB.\end{Desc}
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{blockmode_8h-source}{blockmode.h}.
+
+\subsection{Function Documentation}
+\hypertarget{blockmode_8h_a3}{
+\index{blockmode.h@{blockmode.h}!blockDecryptCBC@{blockDecryptCBC}}
+\index{blockDecryptCBC@{blockDecryptCBC}!blockmode.h@{blockmode.h}}
+\subsubsection[blockDecryptCBC]{\setlength{\rightskip}{0pt plus 5cm}int block\-Decrypt\-CBC (const \hyperlink{structblockCipher}{block\-Cipher} $\ast$ {\em bc}, \hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$ {\em bp}, uint32\_\-t $\ast$ {\em dst}, const uint32\_\-t $\ast$ {\em src}, unsigned int {\em nblocks})}}
+\label{blockmode_8h_a3}
+
+
+This function decrypts a number of data blocks in Cipher Block Chaining mode. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bc}]The blockcipher. \item[{\em bp}]The cipher's parameter block. \item[{\em dst}]The cleartext data; should be aligned on a 32-bit boundary. \item[{\em src}]The ciphertext data; should be aligned on a 32-bit boundary. \item[{\em nblocks}]The number of blocks to be decrypted. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}
+\hypertarget{blockmode_8h_a1}{
+\index{blockmode.h@{blockmode.h}!blockDecryptECB@{blockDecryptECB}}
+\index{blockDecryptECB@{blockDecryptECB}!blockmode.h@{blockmode.h}}
+\subsubsection[blockDecryptECB]{\setlength{\rightskip}{0pt plus 5cm}int block\-Decrypt\-ECB (const \hyperlink{structblockCipher}{block\-Cipher} $\ast$ {\em bc}, \hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$ {\em bp}, uint32\_\-t $\ast$ {\em dst}, const uint32\_\-t $\ast$ {\em src}, unsigned int {\em nblocks})}}
+\label{blockmode_8h_a1}
+
+
+This function decrypts a number of data blocks in Electronic Code Book mode. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bc}]The blockcipher. \item[{\em bp}]The cipher's parameter block. \item[{\em dst}]The cleartext data; should be aligned on a 32-bit boundary. \item[{\em src}]The ciphertext data; should be aligned on a 32-bit boundary. \item[{\em nblocks}]The number of blocks to be decrypted. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}
+\hypertarget{blockmode_8h_a2}{
+\index{blockmode.h@{blockmode.h}!blockEncryptCBC@{blockEncryptCBC}}
+\index{blockEncryptCBC@{blockEncryptCBC}!blockmode.h@{blockmode.h}}
+\subsubsection[blockEncryptCBC]{\setlength{\rightskip}{0pt plus 5cm}int block\-Encrypt\-CBC (const \hyperlink{structblockCipher}{block\-Cipher} $\ast$ {\em bc}, \hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$ {\em bp}, uint32\_\-t $\ast$ {\em dst}, const uint32\_\-t $\ast$ {\em src}, unsigned int {\em nblocks})}}
+\label{blockmode_8h_a2}
+
+
+This function encrypts a number of data blocks in Cipher Block Chaining mode. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bc}]The blockcipher. \item[{\em bp}]The cipher's parameter block. \item[{\em dst}]The ciphertext data; should be aligned on a 32-bit boundary. \item[{\em src}]The cleartext data; should be aligned on a 32-bit boundary. \item[{\em nblocks}]The number of blocks to be encrypted. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}
+\hypertarget{blockmode_8h_a0}{
+\index{blockmode.h@{blockmode.h}!blockEncryptECB@{blockEncryptECB}}
+\index{blockEncryptECB@{blockEncryptECB}!blockmode.h@{blockmode.h}}
+\subsubsection[blockEncryptECB]{\setlength{\rightskip}{0pt plus 5cm}int block\-Encrypt\-ECB (const \hyperlink{structblockCipher}{block\-Cipher} $\ast$ {\em bc}, \hyperlink{group__BC__m_ga1}{block\-Cipher\-Param} $\ast$ {\em bp}, uint32\_\-t $\ast$ {\em dst}, const uint32\_\-t $\ast$ {\em src}, unsigned int {\em nblocks})}}
+\label{blockmode_8h_a0}
+
+
+This function encrypts a number of data blocks in Electronic Code Book mode. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bc}]The blockcipher. \item[{\em bp}]The cipher's parameter block. \item[{\em dst}]The ciphertext data; should be aligned on a 32-bit boundary. \item[{\em src}]The cleartext data; should be aligned on a 32-bit boundary. \item[{\em nblocks}]The number of blocks to be encrypted. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}

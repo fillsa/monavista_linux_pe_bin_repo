@@ -1,0 +1,157 @@
+<html>
+<head>
+<title>The Exim FAQ Section 10</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_9.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_11.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC284">10. PERFORMANCE</a></h2>
+<p>
+<a name="TOC285" href="FAQ.html#TOC285">Q1001:</a>&nbsp;&nbsp;I'm running a large mail server. Should I set <tt>split_spool_directory</tt> to
+improve performance?
+</p>
+<p>
+<font color="#00BB00">A1001:</font>&nbsp;&nbsp;Splitting the spool directory has most benefit if there are times when
+there are a large number of messages on the queue. If all mail is
+delivered very quickly, and the queue is always less than, say, a few
+hundred messages, there isn't any need to do this. With larger queues,
+there is a definite performance benefit to splitting the spool. It shows
+up earlier on some types of filing system, compared with others.
+</p>
+<p>
+Exim was not designed for handling large queues. If you are in an
+enviroment where lots of messages remain on the queue for long periods
+of time, consider implementing a back up host to which you pass these
+messages, so that the main host's queue remains short. You can use
+<tt>fallback_hosts</tt> to do this, or a router that is conditional on
+<i>$message_age</i>.
+</p>
+<p>
+<a name="TOC286" href="FAQ.html#TOC286">Q1002:</a>&nbsp;&nbsp;How well does Exim scale?
+</p>
+<p>
+<font color="#00BB00">A1002:</font>&nbsp;&nbsp;Although the author did not specifically set out to write a high-
+performance MTA, Exim does seem to be fairly efficient. The biggest
+server at the University of Cambridge (a large Sun box) goes over
+100,000 deliveries per day on busy days (it has over 20,000 users).
+There was a report of a mailing list exploder that sometimes handles
+over 100,000 deliveries a day on a big Linux box, the record being
+177,000 deliveries (791MB in total). Up to 13,000 deliveries an hour
+have been reported.
+</p>
+<p>
+These are quotes from some Exim users:
+</p>
+<p>
+"... Canada's largest internet provider, uses Exim on all of our mail
+machines, and we're absolutely delighted with it. It brought life back
+into one of our machines plagued with backlogs and high load averages.
+Here's just an example of how much email our largest mail server
+(quad SS1000) is seeing ... "  [230,911 deliveries in a day: 4,475MB]
+</p>
+<p>
+"... Exim has to ... do gethostbyname()s and RBL lookups on all of the
+incoming mail servers, and he runs from inetd (TCP Wrappers connected).
+All the same, it seems to me that he runs as fast as lightning on our
+SCO 5.0.4 box (1 Pentium 166) - far faster than MMDF which I (and many
+customers) had before."
+</p>
+<p>
+"On a PII 400 with 128M of RAM running Linux 2.2.5, I have achieved
+36656 messages per hour (outgoing unique messages and recipients). For
+about a 5 minute period, I was able to achieve an average of 30 messages
+per second (that would be 108000 m/hour)! We are using: (options that
+make a difference):
+</p>
+<pre>
+   queue_only
+   split_spool_directory
+   queue_run_max = 1
+   remote_max_parallel = 1</pre>
+<p>
+We have a cron job hat runs every five minutes that spawns 5 <tt>exim -q</tt> if
+there are less that 120 exim processes currently running. We found
+that by manually controlling the concurrency of <tt>exim -q</tt> processes
+contending for the spool for <b>remote_smtp</b> delivery that we gained
+considerable performance - 10000 m/hour."
+</p>
+<p>
+<a name="TOC287" href="FAQ.html#TOC287">Q1003:</a>&nbsp;&nbsp;We have a large password file. Can Exim use alternative lookups during
+delivery to speed things up?
+</p>
+<p>
+<font color="#00BB00">A1003:</font>&nbsp;&nbsp;If you are using FreeBSD, this problem should not arise, because it
+automatically uses an indexed password file. In some other operating
+systems you can arrange for this to happen too. On Linux, for example,
+all you need to do is
+</p>
+<pre>
+   # cd /var/db
+   # make</pre>
+<p>
+and put <tt>db</tt> before <tt>files</tt> in any <i>/etc/nsswitch.conf</i> lines you want to
+use db for.
+</p>
+<p>
+On systems that do not include support for indexed password files, you
+can build one yourself, and reference it from the Exim configuration.
+For example, for routing to local mailboxes you could use this:
+</p>
+<pre>
+   localuser:
+     driver = accept
+     condition = ${lookup{$local_part}cdb{/etc/passwd.cdb}{yes}{no}}
+     transport = local_delivery
+     user = ${extract{1}{:}{${lookup{$local_part}cdb{/etc/passwd.cdb}}}</pre>
+<p>
+This assumes a cdb version of the password file.
+</p>
+<p>
+<a name="TOC288" href="FAQ.html#TOC288">Q1004:</a>&nbsp;&nbsp;I just wondered if it might be helpful to put the hints database on a
+RAM disk during regular operation. Did anybody try that yet?
+</p>
+<p>
+<font color="#00BB00">A1004:</font>&nbsp;&nbsp;A user reported thus: ``I have found that this works great under Solaris.
+Make a RAM disk partition and keep everything in the <i>db</i> directory on
+it. However, when I try the same thing on Linux, I don't see the same
+boost. I think that Linux's file buffer cache works about the same.
+Plus, this leave more room for processes to run.''
+</p>
+<p>
+There have been other reports that Linux's delayed buffer write provides
+better overall performance in general.
+</p>
+<p>
+Apparently there is support in the Solaris kernel for a delayed writing,
+as in Linux, but Sun's server policy is to have it disabled so that you
+don't lose so much if the server crashes. There is a program called
+<i>fastfs</i> to enable and disable this support. You have to download and
+compile it yourself; find it by looking for <tt>fastfs.c</tt> in a search
+engine. Solaris performance is reported to be much improved, but you
+should take care to understand the potential hazards. In particular,
+<i>fsck</i> may be unable to &#147;fix&#148; disks automatically after a crash.
+</p>
+<p>
+<a name="TOC289" href="FAQ.html#TOC289">Q1005:</a>&nbsp;&nbsp;A lot of incoming mail is pushing up my system load too much, and there
+are many Exim processes. How can I control this?
+</p>
+<p>
+<font color="#00BB00">A1005:</font>&nbsp;&nbsp;Have you set any of the Exim configuration options that limit what it
+does under high load? For example, queue_only_load, deliver_queue_load_max?
+See the list in the section entitled <i>Resource control</i> in the manual.
+</p>
+<p>
+It sounds like a lot of simultaneous incoming mail pushes your system
+into uncontrolled overload. The multiple Exim processes are probably
+just multiple incoming messages. You can use the <i>exiwhat</i> utility to
+confirm this.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_9.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_11.html">Next</a>
+</body>
+</html>

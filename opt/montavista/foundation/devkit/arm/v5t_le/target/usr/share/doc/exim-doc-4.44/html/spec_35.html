@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 35</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_34.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_36.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2304"></a>
+<a name="IX2305"></a>
+<a name="IX2306"></a>
+<a name="IX2307"></a>
+<h1>
+<a name="CHAP35" href="spec_toc.html#TOC254">
+35. The cram&#095;md5 authenticator
+</a></h1>
+<p>
+The CRAM-MD5 authentication mechanism is described in RFC 2195. The server
+sends a challenge string to the client, and the response consists of a user
+name and the CRAM-MD5 digest of the challenge string combined with a secret
+string (password) which is known to both server and client. Thus, the secret
+is not sent over the network as plain text, which makes this authenticator more
+secure than <b>plaintext</b>. However, the downside is that the secret has to be
+available in plain text at either end.
+</p>
+<h2>
+<a name="SECT35.1" href="spec_toc.html#TOC255">
+35.1. Using cram&#095;md5 as a server
+</a></h2>
+<p>
+This authenticator has one server option, which must be set to configure the
+authenticator as a server:
+<a name="IX2308"></a>
+<hr></p>
+<a name="IX2309"></a>
+<a name="IX2310"></a>
+<h3>server_secret</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+When the server receives the client's response, the user name is placed in
+the expansion variable <tt>$1</tt>, and <tt>server&#095;secret</tt> is expanded to obtain the
+password for that user. The server then computes the CRAM-MD5 digest that the
+client should have sent, and checks that it received the correct string. If the
+expansion of <tt>server&#095;secret</tt> is forced to fail, authentication fails. If the
+expansion fails for some other reason, a temporary error code is returned to
+the client.
+<hr><br>
+</p>
+<p>
+For example, the following authenticator checks that the user name given by the
+client is &#147;ph10&#148;, and if so, uses &#147;secret&#148; as the password. For any other user
+name, authentication fails.  
+<pre>
+&nbsp;&nbsp;fixed_cram:
+&nbsp;&nbsp;  driver = cram_md5
+&nbsp;&nbsp;  public_name = CRAM-MD5
+&nbsp;&nbsp;  server_secret = ${if eq{$1}{ph10}{secret}fail}
+&nbsp;&nbsp;  server_set_id = $1
+</pre>
+</p>
+<p>
+If authentication succeeds, the setting of <tt>server&#095;set&#095;id</tt> preserves the user
+name in <tt>$authenticated&#095;id</tt>.
+A more tyical configuration might look up the secret string in a file, using
+the user name as the key. For example:
+<pre>
+&nbsp;&nbsp;lookup_cram:
+&nbsp;&nbsp;  driver = cram_md5
+&nbsp;&nbsp;  public_name = CRAM-MD5
+&nbsp;&nbsp;  server_secret = ${lookup{$1}lsearch{/etc/authpwd}{$value}fail}
+&nbsp;&nbsp;  server_set_id = $1
+</pre>
+</p>
+<p>
+Note that this expansion explicitly forces failure if the lookup fails
+because <tt>$1</tt> contains an unknown user name.
+</p>
+<h2>
+<a name="SECT35.2" href="spec_toc.html#TOC256">
+35.2. Using cram&#095;md5 as a client
+</a></h2>
+<p>
+When used as a client, the <b>cram&#095;md5</b> authenticator has two options:
+<a name="IX2311"></a>
+<hr></p>
+<a name="IX2312"></a>
+<h3>client_name</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; the primary host name<br>
+<p>
+This string is expanded, and the result used as the user name data when
+computing the response to the server's challenge.
+<hr></p>
+<a name="IX2313"></a>
+<h3>client_secret</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option must be set for the authenticator to work as a client. Its value is
+expanded and the result used as the secret string when computing the response.
+<hr><br>
+</p>
+<p>
+Different user names and secrets can be used for different servers by referring
+to <tt>$host</tt> or <tt>$host&#095;address</tt> in the options.
+</p>
+<p>
+Forced failure of either expansion string is treated as an indication that this
+authenticator is not prepared to handle this case. Exim moves on to the next
+configured client authenticator. Any other expansion failure causes Exim to
+give up trying to send the message to the current server.
+</p>
+<p>
+A simple example configuration of a <b>cram&#095;md5</b> authenticator, using fixed
+strings, is:
+<pre>
+&nbsp;&nbsp;fixed_cram:
+&nbsp;&nbsp;  driver = cram_md5
+&nbsp;&nbsp;  public_name = CRAM-MD5
+&nbsp;&nbsp;  client_name = ph10
+&nbsp;&nbsp;  client_secret = secret
+</pre>
+<hr>
+</p>
+<font size=2>
+<a href="spec_34.html">Previous</a>&nbsp;&nbsp;<a href="spec_36.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

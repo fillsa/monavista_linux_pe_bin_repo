@@ -1,0 +1,107 @@
+\hypertarget{structrsakp}{
+\section{rsakp Struct Reference}
+\label{structrsakp}\index{rsakp@{rsakp}}
+}
+RSA keypair.  
+
+
+{\tt \#include $<$rsakp.h$>$}
+
+\subsection*{Data Fields}
+\begin{CompactItemize}
+\item 
+\hyperlink{structmpbarrett}{mpbarrett} \hyperlink{structrsakp_o0}{n}
+\begin{CompactList}\small\item\em The modulus. \item\end{CompactList}\item 
+\hyperlink{structmpnumber}{mpnumber} \hyperlink{structrsakp_o1}{e}
+\begin{CompactList}\small\item\em The public exponent. \item\end{CompactList}\item 
+\hyperlink{structmpnumber}{mpnumber} \hyperlink{structrsakp_o2}{d}
+\begin{CompactList}\small\item\em The private exponent. \item\end{CompactList}\item 
+\hyperlink{structmpbarrett}{mpbarrett} \hyperlink{structrsakp_o3}{p}
+\begin{CompactList}\small\item\em The first prime factor of the modulus. \item\end{CompactList}\item 
+\hyperlink{structmpbarrett}{mpbarrett} \hyperlink{structrsakp_o4}{q}
+\begin{CompactList}\small\item\em The second prime factor of the modulus. \item\end{CompactList}\item 
+\hyperlink{structmpnumber}{mpnumber} \hyperlink{structrsakp_o5}{d1}
+\item 
+\hyperlink{structmpnumber}{mpnumber} \hyperlink{structrsakp_o6}{d2}
+\item 
+\hyperlink{structmpnumber}{mpnumber} \hyperlink{structrsakp_o7}{c}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+RSA keypair. 
+
+Definition at line 34 of file rsakp.h.
+
+\subsection{Field Documentation}
+\hypertarget{structrsakp_o7}{
+\index{rsakp@{rsakp}!c@{c}}
+\index{c@{c}!rsakp@{rsakp}}
+\subsubsection[c]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structmpnumber}{mpnumber} \hyperlink{structrsakp_o7}{rsakp::c}}}
+\label{structrsakp_o7}
+
+
+Definition at line 72 of file rsakp.h.\hypertarget{structrsakp_o2}{
+\index{rsakp@{rsakp}!d@{d}}
+\index{d@{d}!rsakp@{rsakp}}
+\subsubsection[d]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structrsakp_o2}{rsakp::d}}}
+\label{structrsakp_o2}
+
+
+The private exponent. 
+
+\hypertarget{structrsakp_o5}{
+\index{rsakp@{rsakp}!d1@{d1}}
+\index{d1@{d1}!rsakp@{rsakp}}
+\subsubsection[d1]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structrsakp_o5}{rsakp::d1}}}
+\label{structrsakp_o5}
+
+
+$d_1=d\ \textrm{mod}\ (p-1)$ \hypertarget{structrsakp_o6}{
+\index{rsakp@{rsakp}!d2@{d2}}
+\index{d2@{d2}!rsakp@{rsakp}}
+\subsubsection[d2]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structrsakp_o6}{rsakp::d2}}}
+\label{structrsakp_o6}
+
+
+$d_2=d\ \textrm{mod}\ (q-1)$ \hypertarget{structrsakp_o1}{
+\index{rsakp@{rsakp}!e@{e}}
+\index{e@{e}!rsakp@{rsakp}}
+\subsubsection[e]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structrsakp_o1}{rsakp::e}}}
+\label{structrsakp_o1}
+
+
+The public exponent. 
+
+\hypertarget{structrsakp_o0}{
+\index{rsakp@{rsakp}!n@{n}}
+\index{n@{n}!rsakp@{rsakp}}
+\subsubsection[n]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structrsakp_o0}{rsakp::n}}}
+\label{structrsakp_o0}
+
+
+The modulus. 
+
+$n=pq$ \hypertarget{structrsakp_o3}{
+\index{rsakp@{rsakp}!p@{p}}
+\index{p@{p}!rsakp@{rsakp}}
+\subsubsection[p]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structrsakp_o3}{rsakp::p}}}
+\label{structrsakp_o3}
+
+
+The first prime factor of the modulus. 
+
+\hypertarget{structrsakp_o4}{
+\index{rsakp@{rsakp}!q@{q}}
+\index{q@{q}!rsakp@{rsakp}}
+\subsubsection[q]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structrsakp_o4}{rsakp::q}}}
+\label{structrsakp_o4}
+
+
+The second prime factor of the modulus. 
+
+$c=q^{-1}\ \textrm{mod}\ p$ 
+
+The documentation for this struct was generated from the following file:\begin{CompactItemize}
+\item 
+\hyperlink{rsakp_8h}{rsakp.h}\end{CompactItemize}

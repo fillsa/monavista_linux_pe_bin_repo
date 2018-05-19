@@ -1,0 +1,1300 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 10</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_9.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_11.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX714"></a>
+<h1>
+<a name="CHAP10" href="spec_toc.html#TOC102">
+10. Domain, host, address, and local part lists
+</a></h1>
+<p>
+A number of Exim configuration options contain lists of domains, hosts,
+email addresses, or local parts. For example, the <tt>hold&#095;domains</tt> option
+contains a list of domains whose delivery is currently suspended. These lists
+are also used as data in ACL statements (see chapter <a href="spec_38.html">38</a>).
+</p>
+<p>
+Each item in one of these lists is a pattern to be matched against a domain,
+host, email address, or local part, respectively. In the sections below, the
+different types of pattern for each case are described, but first we cover some
+general facilities that apply to all four kinds of list.
+</p>
+<a name="IX715"></a>
+<h2>
+<a name="SECT10.1" href="spec_toc.html#TOC103">
+10.1. Expansion of lists
+</a></h2>
+<p>
+Each list is expanded as a single string before it is used. If the expansion is
+forced to fail, Exim behaves as if the item it is testing (domain, host,
+address, or local part) is not in the list. Other expansion failures cause
+temporary errors.
+</p>
+<p>
+If an item in a list is a regular expression, backslashes, dollars and possibly
+other special characters in the expression must be protected against
+misinterpretation by the string expander. The easiest way to do this is to use
+the <tt>&#092;N</tt> expansion feature to indicate that the contents of the regular
+expression should not be expanded. For example, in an ACL you might have:
+<pre>
+&nbsp;&nbsp;deny senders = \N^\d{8}\w@.*\.baddomain\.example$\N :
+&nbsp;&nbsp;               ${lookup{$domain}lsearch{/badsenders/bydomain}}
+</pre>
+</p>
+<p>
+The first item is a regular expression that is protected from expansion by
+<tt>&#092;N</tt>, whereas the second uses the expansion to obtain a list of unwanted
+senders based on the receiving domain.
+</p>
+<p>
+After expansion, the list is split up into separate items for matching.
+Normally, colon is used as the separator character, but this can be varied if
+necessary, as described in section <a href="spec_6.html#SECT6.15">6.15</a>.
+</p>
+<a name="IX716"></a>
+<a name="IX717"></a>
+<h2>
+<a name="SECT10.2" href="spec_toc.html#TOC104">
+10.2. Negated items in lists
+</a></h2>
+<p>
+Items in a list may be positive or negative. Negative items are indicated by a
+leading exclamation mark, which may be followed by optional white space. A list
+defines a set of items (domains, etc). When Exim processes one of these lists,
+it is trying to find out whether a domain, host, address, or local part
+(respectively) is in the set that is defined by the list. It works like this:
+</p>
+<p>
+The list is scanned from left to right. If a positive item is matched, the
+subject that is being checked is in the set; if a negative item is matched, the
+subject is not in the set. If the end of the list is reached without the
+subject having matched any of the patterns, it is in the set if the last item
+was a negative one, but not if it was a positive one. For example, the list in
+<pre>
+&nbsp;&nbsp;domainlist relay_domains = !a.b.c : *.b.c
+</pre>
+</p>
+<p>
+matches any domain ending in <i>.b.c</i> except for <i>a.b.c</i>. Domains that match
+neither <i>a.b.c</i> nor <i>&#042;.b.c</i> do not match, because the last item in the
+list is positive. However, if the setting were
+<pre>
+&nbsp;&nbsp;domainlist relay_domains = !a.b.c
+</pre>
+</p>
+<p>
+then all domains other than <i>a.b.c</i> would match because the last item in the
+list is negative. In other words, a list that ends with a negative item behaves
+as if it had an extra item <tt>:*</tt> on the end.
+</p>
+<p>
+Another way of thinking about positive and negative items in lists is to read 
+the connector as &#147;or&#148; after a positive item and as &#147;and&#148; after a negative 
+item. 
+</p>
+<a name="IX718"></a>
+<h2>
+<a name="SECT10.3" href="spec_toc.html#TOC105">
+10.3. File names in lists
+</a></h2>
+<p>
+If an item in a domain, host, address, or local part list is an absolute file
+name (beginning with a slash character), each line of the file is read and
+processed as if it were an independent item in the list, except that further
+file names are not allowed,
+and no expansion of the data from the file takes place.
+Empty lines in the file are ignored, and the file may also contain comment
+lines:
+</p>
+<ul>
+<li><p>
+For domain and host lists, if a &#035; character appears anywhere in a line of the
+file, it and all following characters are ignored.
+</p>
+</li>
+<li><p>
+Because local parts may legitimately contain &#035; characters, a comment in an
+address list or local part list file is recognized only if &#035; is preceded by
+white space or the start of the line. For example:
+<pre>
+&nbsp;&nbsp;not#comment@x.y.z   # but this is a comment
+</pre>
+</p>
+</li>
+</ul>
+<p>
+Putting a file name in a list has the same effect as inserting each line of the
+file as an item in the list (blank lines and comments excepted). However, there
+is one important difference: the file is read each time the list is processed,
+so if its contents vary over time, Exim's behaviour changes.
+</p>
+<p>
+If a file name is preceded by an exclamation mark, the sense of any match
+within the file is inverted. For example, if
+<pre>
+&nbsp;&nbsp;hold_domains = !/etc/nohold-domains
+</pre>
+</p>
+<p>
+and the file contains the lines
+<pre>
+&nbsp;&nbsp;!a.b.c
+&nbsp;&nbsp;*.b.c
+</pre>
+</p>
+<p>
+then <i>a.b.c</i> is in the set of domains defined by <tt>hold&#095;domains</tt>, whereas any
+domain matching <tt>*.b.c</tt> is not.
+</p>
+<h2>
+<a name="SECT10.4" href="spec_toc.html#TOC106">
+10.4. An lsearch file is not an out-of-line list
+</a></h2>
+<p>
+As will be described in the sections that follow, lookups can be used in lists
+to provide indexed methods of checking list membership. There has been some
+confusion about the way <b>lsearch</b> lookups work in lists. Because
+an <b>lsearch</b> file contains plain text and is scanned sequentially, it is
+sometimes thought that it is allowed to contain wild cards and other kinds of
+non-constant pattern. This is not the case. The keys in an <b>lsearch</b> file are
+always fixed strings, just as for any other single-key lookup type.
+</p>
+<p>
+If you want to use a file to contain wild-card patterns that form part of a 
+list, just give the file name on its own, without a search type, as described
+in the previous section.
+</p>
+<a name="IX719"></a>
+<a name="IX720"></a>
+<h2>
+<a name="SECT10.5" href="spec_toc.html#TOC107">
+10.5. Named lists
+</a></h2>
+<p>
+A list of domains, hosts, email addresses, or local parts can be given a name
+which is then used to refer to the list elsewhere in the configuration. This is
+particularly convenient if the same list is required in several different
+places. It also allows lists to be given meaningful names, which can improve
+the readability of the configuration. For example, it is conventional to define
+a domain list called <i>local&#095;domains</i> for all the domains that are handled
+locally on a host, using a configuration line such as
+<pre>
+&nbsp;&nbsp;domainlist local_domains = localhost:my.dom.example
+</pre>
+</p>
+<p>
+Named lists are referenced by giving their name preceded by a plus sign, so,
+for example, a router that is intended to handle local domains would be
+configured with the line
+<pre>
+&nbsp;&nbsp;domains = +local_domains
+</pre>
+</p>
+<p>
+The first router in a configuration is often one that handles all domains
+except the local ones, using a configuration with a negated item like this:
+<pre>
+&nbsp;&nbsp;dnslookup:
+&nbsp;&nbsp;  driver = dnslookup
+&nbsp;&nbsp;  domains = ! +local_domains
+&nbsp;&nbsp;  transport = remote_smtp
+&nbsp;&nbsp;  no_more
+</pre>
+</p>
+<p>
+The four kinds of named list are created by configuration lines starting with
+the words <tt>domainlist</tt>, <tt>hostlist</tt>, <tt>addresslist</tt>, or <tt>localpartlist</tt>,
+respectively. Then there follows the name that you are defining, followed by an
+equals sign and the list itself. For example:
+<pre>
+&nbsp;&nbsp;hostlist    relay_hosts = 192.168.23.0/24 : my.friend.example
+&nbsp;&nbsp;addresslist bad_senders = cdb;/etc/badsenders
+</pre>
+</p>
+<p>
+A named list may refer to other named lists:
+<pre>
+&nbsp;&nbsp;domainlist  dom1 = first.example : second.example
+&nbsp;&nbsp;domainlist  dom2 = +dom1 : third.example
+&nbsp;&nbsp;domainlist  dom3 = fourth.example : +dom2 : fifth.example
+</pre>
+</p>
+<p>
+<b>Warning</b>: If the last item in a referenced list is a negative one, the
+effect may not be what you intended, because the negation does not propagate
+out to the higher level. For example, consider:
+<pre>
+&nbsp;&nbsp;domainlist  dom1 = !a.b
+&nbsp;&nbsp;domainlist  dom2 = +dom1 : *.b
+</pre>
+</p>
+<p>
+The second list specifies &#147;either in the <tt>dom1</tt> list or <i>&#042;.b</i>&#148;. The first
+list specifies just &#147;not <i>a.b</i>&#148;, so the domain <i>x.y</i> matches it. That means
+it matches the second list as well. The effect is not the same as
+<pre>
+&nbsp;&nbsp;domainlist  dom2 = !a.b : *.b
+</pre>
+</p>
+<p>
+where <i>x.y</i> does not match. It's best to avoid negation altogether in 
+referenced lists if you can.
+</p>
+<p>
+Named lists may have a performance advantage. When Exim is routing an
+address or checking an incoming message, it caches the result of tests on named
+lists. So, if you have a setting such as
+<pre>
+&nbsp;&nbsp;domains = +local_domains
+</pre>
+</p>
+<p>
+on several of your routers
+or in several ACL statements, 
+the actual test is done only for the first one. However, the caching works only
+if there are no expansions within the list itself or any sublists that it
+references. In other words, caching happens only for lists that are known to be
+the same each time they are referenced.
+</p>
+<p>
+By default, there may be up to 16 named lists of each type. This limit can be
+extended by changing a compile-time variable. The use of domain and host lists
+is recommended for concepts such as local domains, relay domains, and relay
+hosts. The default configuration is set up like this.
+</p>
+<a name="IX721"></a>
+<a name="IX722"></a>
+<h2>
+<a name="SECT10.6" href="spec_toc.html#TOC108">
+10.6. Named lists compared with macros
+</a></h2>
+<p>
+At first sight, named lists might seem to be no different from macros in the
+configuration file. However, macros are just textual substitutions. If you
+write
+<pre>
+&nbsp;&nbsp;ALIST = host1 : host2
+&nbsp;&nbsp;auth_advertise_hosts = !ALIST
+</pre>
+</p>
+<p>
+it probably won't do what you want, because that is exactly the same as
+<pre>
+&nbsp;&nbsp;auth_advertise_hosts = !host1 : host2
+</pre>
+</p>
+<p>
+Notice that the second host name is not negated. However, if you use a host
+list, and write
+<pre>
+&nbsp;&nbsp;hostlist alist = host1 : host2
+&nbsp;&nbsp;auth_advertise_hosts = ! +alist
+</pre>
+</p>
+<p>
+the negation applies to the whole list, and so that is equivalent to
+<pre>
+&nbsp;&nbsp;auth_advertise_hosts = !host1 : !host2
+</pre>
+<font color=green></p>
+<a name="IX723"></a>
+<a name="IX724"></a>
+<h2>
+<a name="SECT10.7" href="spec_toc.html#TOC109">
+10.7. Named list caching
+</a></h2>
+<p>
+While processing a message, Exim caches the result of checking a named list if
+it is sure that the list is the same each time. In practice, this means that
+the cache operates only if the list contains no &#036; characters, which guarantees
+that it will not change when it is expanded. Sometimes, however, you may have
+an expanded list that you know will be the same each time within a given
+message. For example:
+<pre>
+&nbsp;&nbsp;domainlist special_domains = \
+&nbsp;&nbsp;           ${lookup{$sender_host_address}cdb{/some/file}}
+</pre>
+</p>
+<p>
+This provides a list of domains that depends only on the sending host's IP
+address. If this domain list is referenced a number of times (for example,
+in several ACL lines, or in several routers) the result of the check is not
+cached by default, because Exim does not know that it is going to be the
+same list each time.
+</p>
+<p>
+By appending <tt>&#095;cache</tt> to <tt>domainlist</tt> you can tell Exim to go ahead and
+cache the result anyway. For example:
+<pre>
+&nbsp;&nbsp;domainlist_cache special_domains = ${lookup{...
+</pre>
+</p>
+<p>
+If you do this, you should be absolutely sure that caching is going to do
+the right thing in all cases. When in doubt, leave it out.
+</font>
+</p>
+<a name="IX725"></a>
+<a name="IX726"></a>
+<h2>
+<a name="SECT10.8" href="spec_toc.html#TOC110">
+10.8. Domain lists
+</a></h2>
+<p>
+Domain lists contain patterns that are to be matched against a mail domain.
+The following types of item may appear in domain lists:
+</p>
+<ul>
+<li><a name="IX727"></a>
+<a name="IX728"></a>
+<a name="IX729"></a>
+<a name="IX730"></a>
+<a name="IX731"></a>
+<p>
+If a pattern consists of a single &#064; character, it matches the local host name,
+as set by the <tt>primary&#095;hostname</tt> option (or defaulted). This makes it possible
+to use the same configuration file on several different hosts that differ only
+in their names.
+</p>
+</li>
+<li><a name="IX732"></a>
+<a name="IX733"></a>
+<a name="IX734"></a>
+<p>
+If a pattern consists of the string <tt>&#064;[]</tt> it matches any local IP interface
+address, enclosed in square brackets, as in an email address that contains a
+domain literal. 
+<font color=green>
+In today's Internet, the use of domain literals is controversial.
+</font>
+</p>
+</li>
+<li><a name="IX735"></a>
+<a name="IX736"></a>
+<a name="IX737"></a>
+<a name="IX738"></a>
+<p>
+<a name="IX739"></a>
+If a pattern consists of the string <tt>&#064;mx&#095;any</tt> it matches any domain that
+has an MX record pointing to the local host or to any host that is listed in
+<tt>hosts&#095;treat&#095;as&#095;local</tt>. The items <tt>&#064;mx&#095;primary</tt> and <tt>&#064;mx&#095;secondary</tt>
+are similar, except that the first matches only when a primary MX target is the
+local host, and the second only when no primary MX target is the local host,
+but a secondary MX target is. &#147;Primary&#148; means an MX record with the lowest
+preference value &#150; there may of course be more than one of them.
+</p>
+<p>
+<font color=green>
+The MX lookup that takes place when matching a pattern of this type is 
+performed with the resolver options for widening names turned off. Thus, for 
+example, a single-component domain will <i>not</i> be expanded by adding the 
+resolver's default domain. See the <tt>qualify&#095;single</tt> and <tt>search&#095;parents</tt> 
+options of the <b>dnslookup</b> router for a discussion of domain widening.
+</p>
+<p>
+Sometimes you may want to ignore certain IP addresses when using one of these
+patterns. You can specify this by following the pattern with <tt>/ignore=&#060;<em>ip
+list</em>&#062;</tt>, where &#060;<em>ip list</em>&#062; is a list of IP addresses. These addresses are
+ignored when processing the pattern (compare the <tt>ignore&#095;target&#095;hosts</tt> option 
+on a router). For example:
+<pre>
+&nbsp;&nbsp;domains = @mx_any/ignore=127.0.0.1
+</pre>
+</p>
+<p>
+This example matches any domain that has an MX record pointing to one of
+the local host's IP addresses other than 127.0.0.1.
+</p>
+<p>
+The list of IP addresses is in fact processed by the same code that processes 
+host lists, so it may contain CIDR-coded network specifications and it may also 
+contain negative items.
+</p>
+<p>
+Because the list of IP addresses is a sublist within a domain list, you have to
+be careful about delimiters if there is more than one address. Like any other
+list, the default delimiter can be changed. Thus, you might have:
+<pre>
+&nbsp;&nbsp;domains = @mx_any/ignore=&#060;;127.0.0.1;0.0.0.0 : \
+&nbsp;&nbsp;          an.other.domain : ...
+</pre>
+</p>
+<p>
+so that the sublist uses semicolons for delimiters. When IPv6 addresses are
+involved, it is easiest to change the delimiter for the main list as well:
+<pre>
+&nbsp;&nbsp;domains = &#060;? @mx_any/ignore=&#060;;127.0.0.1;::1 ? \
+&nbsp;&nbsp;          an.other.domain ? ...
+</pre>
+</p>
+</font></li>
+<li><a name="IX740"></a>
+<a name="IX741"></a>
+<a name="IX742"></a>
+<p>
+If a pattern starts with an asterisk, the remaining characters of the pattern
+are compared with the terminating characters of the domain. The use of &#147;*&#148; in
+domain lists differs from its use in partial matching lookups. In a domain
+list, the character following the asterisk need not be a dot, whereas partial
+matching works only in terms of dot-separated components. For example, a domain
+list item such as <tt>*key.ex</tt> matches <i>donkey.ex</i> as well as
+<i>cipher.key.ex</i>.
+</p>
+</li>
+<li><a name="IX743"></a>
+<a name="IX744"></a>
+<p>
+If a pattern starts with a circumflex character, it is treated as a regular
+expression, and matched against the domain using a regular expression matching
+function. The circumflex is treated as part of the regular expression.
+References to descriptions of the syntax of regular expressions are given in
+chapter <a href="spec_8.html">8</a>.
+</p>
+<p>
+<b>Warning</b>: Because domain lists are expanded before being processed, you
+must escape any backslash and dollar characters in the regular expression, or
+use the special <tt>&#092;N</tt> sequence (see chapter <a href="spec_11.html">11</a>) to specify that it
+is not to be expanded (unless you really do want to build a regular expression
+by expansion, of course).
+</p>
+</li>
+<li><a name="IX745"></a>
+<a name="IX746"></a>
+<p>
+If a pattern starts with the name of a single-key lookup type followed by a
+semicolon (for example, &#147;dbm;&#148; or &#147;lsearch;&#148;), the remainder of the pattern
+must be a file name in a suitable format for the lookup type. For example, for
+&#147;cdb;&#148; it must be an absolute path:
+<pre>
+&nbsp;&nbsp;domains = cdb;/etc/mail/local_domains.cdb
+</pre>
+</p>
+<p>
+The appropriate type of lookup is done on the file using the domain name as the
+key. In most cases, the data that is looked up is not used; Exim is interested
+only in whether or not the key is present in the file. However, when a lookup
+is used for the <tt>domains</tt> option on a router
+or a <tt>domains</tt> condition in an ACL statement, the data is preserved in the
+<tt>$domain&#095;data</tt> variable and can be referred to in other router options or
+other statements in the same ACL.
+</p>
+</li>
+<li><p>
+Any of the single-key lookup type names may be preceded by &#147;partial&#060;<em>n</em>&#062;-&#148;,
+where the &#060;<em>n</em>&#062; is optional, for example,
+<pre>
+&nbsp;&nbsp;domains = partial-dbm;/partial/domains
+</pre>
+</p>
+<p>
+This causes partial matching logic to be invoked; a description of how this
+works is given in section <a href="spec_9.html#SECT9.6">9.6</a>.
+</p>
+</li>
+<li><a name="IX747"></a>
+<p>
+Any of the single-key lookup types may be followed by an asterisk. This causes
+a default lookup for a key consisting of a single asterisk to be done if the
+original lookup fails. This is not a useful feature when using a domain list to
+select particular domains (because any domain would match), but it might have
+value if the result of the lookup is being used via the <tt>$domain&#095;data</tt>
+expansion variable.
+</p>
+</li>
+<li><p>
+If the pattern starts with the name of a query-style lookup type followed by a
+semicolon (for example, &#147;nisplus;&#148; or &#147;ldap;&#148;), the remainder of the pattern
+must be an appropriate query for the lookup type, as described in chapter
+<a href="spec_9.html">9</a>. For example:
+<pre>
+&nbsp;&nbsp;hold_domains = mysql;select domain from holdlist \
+&nbsp;&nbsp;  where domain = '$domain';
+</pre>
+</p>
+<p>
+In most cases, the data that is looked up is not used (so for an SQL query, for
+example, it doesn't matter what field you select). Exim is interested only in
+whether or not the query succeeds. However, when a lookup is used for the
+<tt>domains</tt> option on a router, the data is preserved in the <tt>$domain&#095;data</tt>
+variable and can be referred to in other options.
+</p>
+</li>
+<li><a name="IX748"></a>
+<p>
+If none of the above cases apply, a caseless textual comparison is made between
+the pattern and the domain.
+</p>
+</li>
+</ul>
+<p>
+Here is an example that uses several different kinds of pattern:
+<pre>
+&nbsp;&nbsp;domainlist funny_domains = \
+&nbsp;&nbsp;  @ : \
+&nbsp;&nbsp;  lib.unseen.edu : \
+&nbsp;&nbsp;  *.foundation.fict.example : \
+&nbsp;&nbsp;  \N^[1-2]\d{3}\.fict\.example$\N : \
+&nbsp;&nbsp;  partial-dbm;/opt/data/penguin/book : \
+&nbsp;&nbsp;  nis;domains.byname : \
+&nbsp;&nbsp;  nisplus;[name=$domain,status=local],domains.org_dir
+</pre>
+</p>
+<p>
+There are obvious processing trade-offs among the various matching modes. Using
+an asterisk is faster than a regular expression, and listing a few names
+explicitly probably is too. The use of a file or database lookup is expensive,
+but may be the only option if hundreds of names are required. Because the
+patterns are tested in order, it makes sense to put the most commonly matched
+patterns earlier.
+</p>
+<a name="IX749"></a>
+<a name="IX750"></a>
+<h2>
+<a name="SECT10.9" href="spec_toc.html#TOC111">
+10.9. Host lists
+</a></h2>
+<p>
+Host lists are used to control what remote hosts are allowed to do. For
+example, some hosts may be allowed to use the local host as a relay, and some
+may be permitted to use the SMTP <font size=-1>ETRN</font> command. Hosts can be identified in
+two different ways, by name or by IP address. In a host list, some types of
+pattern are matched to a host name, and some are matched to an IP address.
+You need to be particularly careful with this when single-key lookups are
+involved, to ensure that the right value is being used as the key.
+</p>
+<a name="IX751"></a>
+<a name="IX752"></a>
+<h2>
+<a name="SECT10.10" href="spec_toc.html#TOC112">
+10.10. Special host list patterns
+</a></h2>
+<p>
+If a host list item is the empty string, it matches only when no remote host is
+involved. This is the case when a message is being received from a local
+process using SMTP on the standard input, that is, when a TCP/IP connection is
+not used.
+<a name="IX753"></a>
+</p>
+<p>
+The special pattern &#147;*&#148; in a host list matches any host or no host. Neither
+the IP address nor the name is actually inspected.
+</p>
+<a name="IX754"></a>
+<h2>
+<a name="SECT10.11" href="spec_toc.html#TOC113">
+10.11. Host list patterns that match by IP address
+</a></h2>
+<p>
+If an IPv4 host calls an IPv6 host and the call is accepted on an IPv6 socket,
+the incoming address actually appears in the IPv6 host as
+&#147;&#058;&#058;<tt>ffff</tt>:&#060;<em>v4address</em>&#062;&#148;. When such an address is tested against a host
+list, it is converted into a traditional IPv4 address first. (Not all operating
+systems accept IPv4 calls on IPv6 sockets, as there have been some security
+concerns.)
+</p>
+<p>
+The following types of pattern in a host list check the remote host by
+inspecting its IP address:
+</p>
+<ul>
+<li><p>
+If the pattern is a plain domain name (not a regular expression, not starting
+with *, not a lookup of any kind), Exim calls the operating system function
+to find the associated IP address(es). Exim uses the newer
+<i>getipnodebyname()</i> function when available, otherwise <i>gethostbyname()</i>.
+This typically causes a forward DNS lookup of the name. The result is compared
+with the IP address of the subject host.
+</p>
+<p>
+<font color=green>
+If there is a temporary problem (such as a DNS timeout) with the host name
+lookup, a temporary error occurs. For example, if the list is being used in an 
+ACL condition, the ACL gives a &#147;defer&#148; response, usually leading to a temporary
+SMTP error code. If no IP address can be found for the host name, what happens
+is described in section <a href="spec_10.html#SECT10.14">10.14</a> below.
+</font>
+</p>
+</li>
+<li><a name="IX755"></a>
+<p>
+If the pattern is &#147;&#064;&#148;, the primary host name is substituted and used as a
+domain name, as just described.
+</p>
+</li>
+<li><p>
+If the pattern is an IP address, it is matched against the IP address of the
+subject host. IPv4 addresses are given in the normal &#147;dotted-quad&#148; notation.
+IPv6 addresses can be given in colon-separated format, but the colons have to
+be doubled so as not to be taken as item separators when the default list
+separator is used. IPv6 addresses are recognized even when Exim is compiled
+without IPv6 support. This means that if they appear in a host list on an
+IPv4-only host, Exim will not treat them as host names. They are just addresses
+that can never match a client host.
+</p>
+</li>
+<li><a name="IX756"></a>
+<p>
+If the pattern is &#147;&#064;[]&#148;, it matches the IP address of any IP interface on
+the local host. For example, if the local host is an IPv4 host with one
+interface address 10.45.23.56, these two ACL statements have the same effect:
+<pre>
+&nbsp;&nbsp;accept hosts = 127.0.0.1 : 10.45.23.56
+&nbsp;&nbsp;accept hosts = @[]
+</pre>
+</p>
+</li>
+<li><p>
+<a name="IX757"></a>
+If the pattern is an IP address followed by a slash and a mask length (for
+example 10.11.42.0/24), it is matched against the IP address of the subject
+host under the given mask.
+This allows, an entire network of hosts to be included (or excluded) by a
+single item.
+The mask uses CIDR notation; it specifies the number of address bits that must
+match, starting from the most significant end of the address.
+</p>
+<p>
+<b>Note</b>: the mask is <i>not</i> a count of addresses, nor is it the high number
+of a range of addresses. It is the number of bits in the network portion of the
+address. The above example specifies a 24-bit netmask, so it matches all 256
+addresses in the 10.11.42.0 network. An item such as
+<pre>
+&nbsp;&nbsp;192.168.23.236/31
+</pre>
+</p>
+<p>
+matches just two addresses, 192.168.23.236 and 192.168.23.237. A mask value of 
+32 for an IPv4 address is the same as no mask at all; just a single address 
+matches.
+</p>
+<p>
+Here is another example which shows an IPv4 and an IPv6 network:
+<pre>
+&nbsp;&nbsp;recipient_unqualified_hosts = 192.168.0.0/16: \
+&nbsp;&nbsp;                              3ffe::ffff::836f::::/48
+</pre>
+</p>
+<p>
+The doubling of list separator characters applies only when these items
+appear inline in a host list. It is not required when indirecting via a file.
+For example,
+<pre>
+&nbsp;&nbsp;recipient_unqualified_hosts = /opt/exim/unqualnets
+</pre>
+</p>
+<p>
+could make use of a file containing
+<pre>
+&nbsp;&nbsp;172.16.0.0/12
+&nbsp;&nbsp;3ffe:ffff:836f::/48
+</pre>
+</p>
+<p>
+to have exactly the same effect as the previous example. When listing IPv6
+addresses inline, it is usually more convenient to use the facility for
+changing separator characters. This list contains the same two networks:
+<pre>
+&nbsp;&nbsp;recipient_unqualified_hosts = &#060;; 172.16.0.0/12; \
+&nbsp;&nbsp;                                 3ffe:ffff:836f::/48
+</pre>
+</p>
+<p>
+The separator is changed to semicolon by the leading &#147;&#060;;&#148; at the start of the
+list.
+</p>
+</li>
+</ul>
+<a name="IX758"></a>
+<h2>
+<a name="SECT10.12" href="spec_toc.html#TOC114">
+10.12. Host list patterns for single-key lookups by host address
+</a></h2>
+<p>
+When a host is to be identified by a single-key lookup of its complete IP
+address, the pattern takes this form:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>net-&#060;<em>single-key-search-type</em>&#062;;&#060;<em>search-data</em>&#062;</tt><br>
+</p>
+<p>
+For example:
+<pre>
+&nbsp;&nbsp;hosts_lookup = net-cdb;/hosts-by-ip.db
+</pre>
+</p>
+<p>
+The text form of the IP address of the subject host is used as the lookup key.
+IPv6 addresses are converted to an unabbreviated form, using lower case
+letters, with dots as separators because colon is the key terminator in
+<b>lsearch</b> files. [Colons can in fact be used in keys in <b>lsearch</b> files by
+quoting the keys, but this is a facility that was added later.] The data
+returned by the lookup is not used.
+<a name="IX759"></a>
+<a name="IX760"></a>
+</p>
+<p>
+Single-key lookups can also be performed using masked IP addresses, using
+patterns of this form:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>net&#060;<em>number</em>&#062;-&#060;<em>single-key-search-type</em>&#062;;&#060;<em>search-data</em>&#062;</tt><br>
+</p>
+<p>
+For example:
+<pre>
+&nbsp;&nbsp;net24-dbm;/networks.db
+</pre>
+</p>
+<p>
+The IP address of the subject host is masked using &#060;<em>number</em>&#062; as the mask
+length. A textual string is constructed from the masked value, followed by the
+mask, and this is used as the lookup key. For example, if the host's IP address
+is 192.168.34.6, the key that is looked up for the above example is
+&#147;192.168.34.0/24&#148;. IPv6 addresses are converted to a text value using lower
+case letters and dots as separators instead of the more usual colon, because
+colon is the key terminator in <b>lsearch</b> files. Full, unabbreviated IPv6
+addresses are always used.
+</p>
+<p>
+<b>Warning</b>: Specifing <tt>net32&#045;</tt> (for an IPv4 address) or <tt>net128&#045;</tt> (for an
+IPv6 address) is not the same as specifing just <tt>net&#045;</tt> without a number. In
+the former case the key strings include the mask value, whereas in the latter
+case the IP address is used on its own.
+</p>
+<a name="IX761"></a>
+<a name="IX762"></a>
+<a name="IX763"></a>
+<h2>
+<a name="SECT10.13" href="spec_toc.html#TOC115">
+10.13. Host list patterns that match by host name
+</a></h2>
+<p>
+There are several types of pattern that require Exim to know the name of the
+remote host. These are either wildcard patterns or lookups by name. (If a
+complete hostname is given without any wildcarding, it is used to find an IP
+address to match against, as described in the section <a href="spec_10.html#SECT10.11">10.11</a> above.)
+</p>
+<p>
+If the remote host name is not already known when Exim encounters one of these
+patterns, it has to be found from the IP address. 
+<font color=green>
+Although many sites on the Internet are conscientious about maintaining reverse
+DNS data for their hosts, there are also many that do not do this.
+Consequently, a name cannot always be found, and this may lead to unwanted
+effects. Take care when configuring host lists with wildcarded name patterns.
+Consider what will happen if a name cannot be found.
+</p>
+<p>
+Because of the problems of determining host names from IP addresses, matching
+against host names is not as common as matching against IP addresses.
+</p>
+<p>
+By default, in order to find a host name, Exim first does a reverse DNS lookup;
+if no name is found in the DNS, the system function (<i>gethostbyaddr()</i> or
+<i>getipnodebyaddr()</i> if available) is tried. The order in which these lookups
+are done can be changed by setting the <tt>host&#095;lookup&#095;order</tt> option.
+</p>
+<p>
+There are some options that control what happens if a host name cannot be
+found. These are described in section <a href="spec_10.html#SECT10.14">10.14</a> below.
+</font>
+<a name="IX764"></a>
+<a name="IX765"></a>
+</p>
+<p>
+As a result of aliasing, hosts may have more than one name. When processing any
+of the following types of pattern, all the host's names are checked:
+</p>
+<ul>
+<li><a name="IX766"></a>
+<p>
+If a pattern starts with &#147;*&#148; the remainder of the item must match the end of
+the host name. For example, <tt>*.b.c</tt> matches all hosts whose names end in
+<i>.b.c</i>. This special simple form is provided because this is a very common
+requirement. Other kinds of wildcarding require the use of a regular
+expression.
+</p>
+</li>
+<li><a name="IX767"></a>
+<a name="IX768"></a>
+<p>
+If the item starts with &#147;&#094;&#148; it is taken to be a regular expression which is
+matched against the host name. For example,
+<pre>
+&nbsp;&nbsp;^(a|b)\.c\.d$
+</pre>
+</p>
+<p>
+is a regular expression that matches either of the two hosts <i>a.c.d</i> or
+<i>b.c.d</i>. When a regular expression is used in a host list, you must take care
+that backslash and dollar characters are not misinterpreted as part of the
+string expansion. The simplest way to do this is to use <tt>&#092;N</tt> to mark that
+part of the string as non-expandable. For example:
+<pre>
+&nbsp;&nbsp;sender_unqualified_hosts = \N^(a|b)\.c\.d$\N : ....
+</pre>
+</p>
+<p>
+<font color=green>
+<b>Warning</b>: If you want to match a complete host name, you must include the 
+<tt>&#036;</tt> terminating metacharacter in the regular expression, as in the above 
+example. Without it, a match at the start of the host name is all that is 
+required.
+</font>
+</p>
+</li>
+</ul>
+<a name="IX769"></a>
+<font color=green><h2>
+<a name="SECT10.14" href="spec_toc.html#TOC116">
+10.14. Behaviour when an IP address or name cannot be found
+</a></h2>
+<p>
+While processing a host list, Exim may need to look up an IP address from a 
+name (see section <a href="spec_10.html#SECT10.11">10.11</a>), or it may need to look up a host name 
+from an IP address (see section <a href="spec_10.html#SECT10.13">10.13</a>). In either case, the 
+behaviour when it fails to find the information it is seeking is the same.
+<a name="IX770"></a>
+<a name="IX771"></a>
+</p>
+<p>
+By default, Exim behaves as if the host does not match the list. This may not
+always be what you want to happen. To change Exim's behaviour, the special
+items <tt>+include&#095;unknown</tt> or <tt>+ignore&#095;unknown</tt> may appear in the list (at
+top level &#150; they are not recognized in an indirected file).
+</p>
+<ul>
+<li><p>
+If any item that follows <tt>+include&#095;unknown</tt> requires information that
+cannot found, Exim behaves as if the host does match the list. For example,
+<pre>
+&nbsp;&nbsp;host_reject_connection = +include_unknown:*.enemy.ex
+</pre>
+</p>
+<p>
+rejects connections from any host whose name matches <tt>*.enemy.ex</tt>, and also
+any hosts whose name it cannot find.
+</p>
+</li>
+<li><p>
+If any item that follows <tt>+ignore&#095;unknown</tt> requires information that cannot 
+be found, Exim ignores that item and proceeds to the rest of the list. For 
+example:
+<pre>
+&nbsp;&nbsp;accept hosts = +ignore_unknown : friend.example : \
+&nbsp;&nbsp;               192.168.4.5
+</pre>
+</p>
+<p>
+accepts from any host whose name is <i>friend.example</i> and from 192.168.4.5, 
+whether or not its host name can be found. Without <tt>+ignore&#095;unknown</tt>, if no 
+name can be found for 192.168.4.5, it is rejected.
+</p>
+</li>
+</ul>
+<p>
+Both <tt>+include&#095;unknown</tt> and <tt>+ignore&#095;unknown</tt> may appear in the same
+list. The effect of each one lasts until the next, or until the end of the 
+list.
+</p>
+<p>
+<b>Note</b>: This section applies to permanent lookup failures. It does <i>not</i>
+apply to temporary DNS errors. They always cause a defer action.
+</font>
+</p>
+<a name="IX772"></a>
+<a name="IX773"></a>
+<a name="IX774"></a>
+<h2>
+<a name="SECT10.15" href="spec_toc.html#TOC117">
+10.15. Host list patterns for single-key lookups by host name
+</a></h2>
+<p>
+If a pattern is of the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#060;<em>single-key-search-type</em>&#062;;&#060;<em>search-data</em>&#062;</tt><br>
+</p>
+<p>
+for example
+<pre>
+&nbsp;&nbsp;dbm;/host/accept/list
+</pre>
+</p>
+<p>
+a single-key lookup is performend, using the host name as its key. If the
+lookup succeeds, the host matches the item. The actual data that is looked up
+is not used.
+</p>
+<p>
+<b>Reminder</b>: With this kind of pattern, you must have host <em>names</em> as
+keys in the file, not IP addresses. If you want to do lookups based on IP
+addresses, you must precede the search type with &#147;net-&#148; (see section
+<a href="spec_10.html#SECT10.12">10.12</a>). There is, however, no reason why you could not use two
+items in the same list, one doing an address lookup and one doing a name
+lookup, both using the same file.
+</p>
+<h2>
+<a name="SECT10.16" href="spec_toc.html#TOC118">
+10.16. Host list patterns for query-style lookups
+</a></h2>
+<p>
+If a pattern is of the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#060;<em>query-style-search-type</em>&#062;;&#060;<em>query</em>&#062;</tt><br>
+</p>
+<p>
+the query is obeyed, and if it succeeds, the host matches the item. The actual
+data that is looked up is not used. The variables <tt>$sender&#095;host&#095;address</tt> and
+<tt>$sender&#095;host&#095;name</tt> can be used in the query. For example:
+<pre>
+&nbsp;&nbsp;hosts_lookup = pgsql;\
+&nbsp;&nbsp;  select ip from hostlist where ip='$sender_host_address'
+</pre>
+</p>
+<p>
+The value of <tt>$sender&#095;host&#095;address</tt> for an IPv6 address uses colon
+separators. You can use the <tt>sg</tt> expansion item to change this if you need to.
+If you want to use masked IP addresses in database queries, you can use the
+<tt>mask</tt> expansion operator.
+</p>
+<p>
+If the query contains a reference to <tt>$sender&#095;host&#095;name</tt>, Exim automatically 
+looks up the host name if has not already done so. (See section
+<a href="spec_10.html#SECT10.13">10.13</a> for comments on finding host names.)
+</p>
+<p>
+Historical note: prior to release 4.30, Exim would always attempt to find a 
+host name before running the query, unless the search type was preceded by
+<tt>net-</tt>. This is no longer the case. For backwards compatibility, <tt>net-</tt> is 
+still recognized for query-style lookups, but its presence or absence has no
+effect. (Of course, for single-key lookups, <tt>net-</tt> <em>is</em> important.)
+</p>
+<a name="IX775"></a>
+<h2>
+<a name="SECT10.17" href="spec_toc.html#TOC119">
+10.17. Mixing wildcarded host names and addresses in host lists
+</a></h2>
+<p>
+If you have name lookups or wildcarded host names and IP addresses in the same
+host list, you should normally put the IP addresses first. For example, in an
+ACL you could have:
+<pre>
+&nbsp;&nbsp;accept hosts = 10.9.8.7 : *.friend.example
+</pre>
+</p>
+<p>
+The reason for this lies in the left-to-right way that Exim processes lists.
+It can test IP addresses without doing any DNS lookups, but when it reaches an
+item that requires a host name, it fails if it cannot find a host name to
+compare with the pattern. If the above list is given in the opposite order, the
+<tt>accept</tt> statement fails for a host whose name cannot be found, even if its
+IP address is 10.9.8.7.
+</p>
+<p>
+If you really do want to do the name check first, and still recognize the IP
+address, you can rewrite the ACL like this:
+<pre>
+&nbsp;&nbsp;accept hosts = *.friend.example
+&nbsp;&nbsp;accept hosts = 10.9.8.7
+</pre>
+</p>
+<p>
+If the first <tt>accept</tt> fails, Exim goes on to try the second one. See chapter
+<a href="spec_38.html">38</a> for details of ACLs.
+</p>
+<a name="IX776"></a>
+<a name="IX777"></a>
+<a name="IX778"></a>
+<h2>
+<a name="SECT10.18" href="spec_toc.html#TOC120">
+10.18. Address lists
+</a></h2>
+<p>
+Address lists contain patterns that are matched against mail addresses. There
+is one special case to be considered: the sender address of a bounce message is
+always empty. You can test for this by providing an empty item in an address
+list. For example, you can set up a router to process bounce messages by
+using this option setting:
+<pre>
+&nbsp;&nbsp;senders = :
+</pre>
+</p>
+<p>
+The presence of the colon creates an empty item. If you do not provide any
+data, the list is empty and matches nothing. The empty sender can also be
+detected by a regular expression that matches an empty string.
+</p>
+<p>
+The following kinds of pattern are supported in address lists:
+</p>
+<ul>
+<li><a name="IX779"></a>
+<a name="IX780"></a>
+<p>
+If (after expansion) a pattern starts with &#147;&#094;&#148;, a regular expression match is
+done against the complete address, with the pattern as the regular expression.
+You must take care that backslash and dollar characters are not misinterpreted
+as part of the string expansion. The simplest way to do this is to use <tt>&#092;N</tt>
+to mark that part of the string as non-expandable. For example:
+<pre>
+&nbsp;&nbsp;deny senders = \N^\d{8}.+@spamhaus.example$\N : ...
+</pre>
+</p>
+<p>
+The <tt>&#092;N</tt> sequences are removed by the expansion, so the item does start
+with &#147;&#094;&#148; by the time it is being interpreted as an address pattern.
+</p>
+</li>
+<li><a name="IX781"></a>
+<a name="IX782"></a>
+<a name="IX783"></a>
+<p>
+If a pattern starts with &#147;&#064;&#064;&#148; followed by a single-key lookup item 
+(for example, <tt>&#064;&#064;lsearch;/some/file</tt>), the address that is being checked is
+split into a local part and a domain. The domain is looked up in the file. If
+it is not found, there is no match. If it is found, the data that is looked up
+from the file is treated as a colon-separated list of local part patterns, each
+of which is matched against the subject local part in turn.
+<a name="IX784"></a>
+</p>
+<p>
+The lookup may be a partial one, and/or one involving a search for a default
+keyed by &#147;*&#148; (see section <a href="spec_9.html#SECT9.5">9.5</a>). The local part patterns
+that are looked up can be regular expressions or begin with &#147;*&#148;, or even be
+further lookups. They may also be independently negated. For example, with
+<pre>
+&nbsp;&nbsp;deny senders = @@dbm;/etc/reject-by-domain
+</pre>
+</p>
+<p>
+the data from which the DBM file is built could contain lines like
+<pre>
+&nbsp;&nbsp;baddomain.com:  !postmaster : *
+</pre>
+</p>
+<p>
+<a name="IX785"></a>
+to reject all senders except <tt>postmaster</tt> from that domain.
+If a local part that actually begins with an exclamation mark is required, it
+has to be specified using a regular expression. In <b>lsearch</b> files, an entry
+may be split over several lines by indenting the second and subsequent lines,
+but the separating colon must still be included at line breaks. White space
+surrounding the colons is ignored. For example:
+<pre>
+&nbsp;&nbsp;aol.com:  spammer1 : spammer2 : ^[0-9]+$ :
+&nbsp;&nbsp;          spammer3 : spammer4
+</pre>
+</p>
+<p>
+As in all colon-separated lists in Exim, a colon can be included in an item by
+doubling.
+</p>
+<p>
+If the last item in the list starts with a right angle-bracket, the remainder
+of the item is taken as a new key to look up in order to obtain a continuation
+list of local parts. The new key can be any sequence of characters. Thus one
+might have entries like
+<pre>
+&nbsp;&nbsp;aol.com: spammer1 : spammer 2 : &#062;*
+&nbsp;&nbsp;xyz.com: spammer3 : &#062;*
+&nbsp;&nbsp;*:       ^\d{8}$
+</pre>
+</p>
+<p>
+<a name="IX786"></a>
+in a file that was searched with <tt>&#064;&#064;dbm*</tt>, to specify a match for 8-digit
+local parts for all domains, in addition to the specific local parts listed for
+each domain. Of course, using this feature costs another lookup each time a
+chain is followed, but the effort needed to maintain the data is reduced.
+It is possible to construct loops using this facility, and in order to catch
+them, the chains may be no more than fifty items long.
+</p>
+</li>
+<li><p>
+The &#064;&#064;&#060;<em>lookup</em>&#062; style of item can also be used with a query-style 
+lookup, but in this case, the chaining facility is not available. The lookup 
+can only return a single list of local parts.
+</p>
+</li>
+<li><a name="IX787"></a>
+<p>
+Complete addresses can be looked up by using a pattern that 
+starts with a lookup type terminated by a semicolon, follwed by the data for
+the lookup.
+For example:
+<pre>
+&nbsp;&nbsp;deny senders = cdb;/etc/blocked.senders : \
+&nbsp;&nbsp;  mysql;select address from blocked where \
+&nbsp;&nbsp;  address='${quote_mysql:$sender_address}'
+</pre>
+</p>
+<p>
+For a single-key lookup type, Exim uses the complete address as the key.
+Partial matching (section <a href="spec_9.html#SECT9.6">9.6</a>) cannot be used, and is ignored
+if specified, with an entry being written to the panic log. 
+<a name="IX788"></a>
+</p>
+<p>
+You can configure lookup defaults, as described in section
+<a href="spec_9.html#SECT9.5">9.5</a>, but this is useful only for the &#147;*&#064;&#148; type of 
+default. For example, with this lookup:
+<pre>
+&nbsp;&nbsp;accept senders = lsearch*@;/some/file
+</pre>
+</p>
+<p>
+the file could contains lines like this:
+<pre>
+&nbsp;&nbsp;user1@domain1.example
+&nbsp;&nbsp;*@domain2.example
+</pre>
+</p>
+<p>
+and for the sender address <i>nimrod&#064;jaeger.example</i>, the sequence of keys
+that are tried is:
+<pre>
+&nbsp;&nbsp;nimrod@jaeger.example
+&nbsp;&nbsp;*@jaeger.example
+&nbsp;&nbsp;*
+</pre>
+</p>
+<p>
+<b>Warning 1</b>: Do not include a line keyed by &#147;*&#148; in the file, because that 
+would mean that every address matches, thus rendering the test useless.
+</p>
+<p>
+<b>Warning 2</b>: Do not confuse these two kinds of item:
+<pre>
+&nbsp;&nbsp;deny recipients = dbm*@;/some/file
+&nbsp;&nbsp;deny recipients = *@dbm;/some/file
+</pre>
+</p>
+<p>
+The first does a whole address lookup, with defaulting, as just described, 
+because it starts with a lookup type. The second matches the local part and
+domain independently, as described in the next paragraph.
+</p>
+</li>
+<li><p>
+If a pattern contains an &#064; character, but is not a regular expression
+and does not begin with a lookup type
+as described above, the local part of the subject address is compared with the
+local part of the pattern, which may start with an asterisk. If the local parts
+match, the domain is checked in exactly the same way as for a pattern in a
+domain list. For example, the domain can be wildcarded, refer to a named list,
+or be a lookup:
+<pre>
+&nbsp;&nbsp;deny senders = *@*.spamming.site:\
+&nbsp;&nbsp;               *@+hostile_domains:\
+&nbsp;&nbsp;               bozo@partial-lsearch;/list/of/dodgy/sites:\
+&nbsp;&nbsp;               *@dbm;/bad/domains.db
+</pre>
+<a name="IX789"></a>
+<a name="IX790"></a>
+</p>
+<p>
+If a local part that begins with an exclamation mark is required, it has to be
+specified using a regular expression, because otherwise the exclamation mark is
+treated as a sign of negation.
+</p>
+</li>
+<li><p>
+If a pattern is not one of the above syntax forms, that is, if a pattern which
+is not a regular expression or a lookup does not contain an &#064; character, it is
+matched against the domain part of the subject address. The only two formats
+that are recognized this way are a literal domain, or a domain pattern that
+starts with *. In both these cases, the effect is the same as if <tt>*&#064;</tt>
+preceded the pattern.
+</p>
+</li>
+</ul>
+<p>
+<b>Warning</b>: there is an important difference between the address list items
+in these two examples:
+<pre>
+&nbsp;&nbsp;senders = +my_list
+&nbsp;&nbsp;senders = *@+my_list
+</pre>
+</p>
+<p>
+In the first one, <tt>my&#095;list</tt> is a named address list, whereas in the second
+example it is a named domain list.
+</p>
+<a name="IX791"></a>
+<a name="IX792"></a>
+<a name="IX793"></a>
+<h2>
+<a name="SECT10.19" href="spec_toc.html#TOC121">
+10.19. Case of letters in address lists
+</a></h2>
+<p>
+Domains in email addresses are always handled caselessly, but for local parts
+case may be significant on some systems (see <tt>caseful&#095;local&#095;part</tt> for how
+Exim deals with this when routing addresses). However, RFC 2505 (<em>Anti-Spam
+Recommendations for SMTP MTAs</em>) suggests that matching of addresses to blocking
+lists should be done in a case-independent manner. Since most address lists in
+Exim are used for this kind of control, Exim attempts to do this by default.
+</p>
+<p>
+The domain portion of an address is always lowercased before matching it to an
+address list. The local part is lowercased by default, and any string
+comparisons that take place are done caselessly. This means that the data in
+the address list itself, in files included as plain file names, and in any file
+that is looked up using the &#147;&#064;&#064;&#148; mechanism, can be in any case. However, the
+keys in files that are looked up by a search type other than <b>lsearch</b> (which
+works caselessly) must be in lower case, because these lookups are not
+case-independent.
+<a name="IX794"></a>
+</p>
+<p>
+To allow for the possibility of caseful address list matching, if an item in
+an address list is the string &#147;+caseful&#148;, the original case of the local
+part is restored for any comparisons that follow, and string comparisons are no
+longer case-independent. This does not affect the domain, which remains in
+lower case. However, although independent matches on the domain alone are still
+performed caselessly, regular expressions that match against an entire address
+become case-sensitive after &#147;+caseful&#148; has been seen.
+</p>
+<a name="IX795"></a>
+<a name="IX796"></a>
+<h2>
+<a name="SECT10.20" href="spec_toc.html#TOC122">
+10.20. Local part lists
+</a></h2>
+<p>
+Case-sensitivity in local part lists is handled in the same way as for address
+lists, as just described. The &#147;+caseful&#148; item can be used if required. In a
+setting of the <tt>local&#095;parts</tt> option in a router with <tt>caseful&#095;local&#095;part</tt>
+set false, the subject is lowercased and the matching is initially
+case-insensitive. In this case, &#147;+caseful&#148; will restore case-sensitive matching
+in the local part list, but not elsewhere in the router. If
+<tt>caseful&#095;local&#095;part</tt> is set true in a router, matching in the <tt>local&#095;parts</tt>
+option is case-sensitive from the start.
+</p>
+<p>
+If a local part list is indirected to a file (see section <a href="spec_10.html#SECT10.3">10.3</a>),
+comments are handled in the same way as address lists &#150; they are recognized
+only if the &#035; is preceded by white space or the start of the line.
+Otherwise, local part lists are matched in the same way as domain lists, except
+that the special items that refer to the local host (<tt>&#064;</tt>, <tt>&#064;[]</tt>,
+<tt>&#064;mx&#095;any</tt>, <tt>&#064;mx&#095;primary</tt>, and <tt>&#064;mx&#095;secondary</tt>) are not recognized.
+Refer to section <a href="spec_10.html#SECT10.8">10.8</a> for details of the other available item
+types.
+<hr>
+</p>
+<font size=2>
+<a href="spec_9.html">Previous</a>&nbsp;&nbsp;<a href="spec_11.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

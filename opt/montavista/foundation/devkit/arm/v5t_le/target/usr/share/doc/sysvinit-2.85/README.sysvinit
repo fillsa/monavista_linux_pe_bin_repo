@@ -1,0 +1,448 @@
+
+/etc/inittab
+                                The /etc/inittab file on your target is used to configure the target for use with a
+                                serial console or virtual terminal.
+
+                                Once the target has been booted, you will want to edit this file to reflect the setup you
+                                are using (serial console or virtual terminal.)
+
+                                Example files are included in the HHL 2.0 distribution for both virtual terminals
+                                (video consoles) and serial consoles. Comments are included in the example files to
+                                help you determine which configuration is right for you.
+
+                                On the next page is an example /etc/inittab file.
+
+                                To configure the target:
+
+                                          1. Disable any console login prompts. Comment out the following line by
+                                              adding a "#" at the beginning:
+
+                                              con:2345:respawn:/sbin/getty console
+
+                                          2. Enable the correct console for your system by uncommenting the line
+                                              for your console (removing the "#" at the beginning.)
+
+
+Examples                        If you want only one "virtual terminal" uncomment the following line:
+
+                                              #1:2345:respawn:/sbin/getty 38400 tty1 
+
+                                If your device has a serial port, and you want a login problem to come over the serial
+                                port, you need to uncomment one of the following lines (depending on which serial
+                                port you are using):
+
+                                              #T0:23:respawn:/sbin/getty -L ttyS0 9600 vt100
+                                              #T1:23:respawn:/sbin/getty -L ttyS1 9600 vt100
+
+                                Note: For some boards you may need to edit this line because their serial port is on
+                                ttySA0 instead of ttyS0 (StrongARM boards are like this.)
+
+                                Note: By default a serial console is only available in run levels 2 and 3. You may also
+                                wish to change 23 to 2345 to ensure the login prompt is available in run levels 2, 3, 4
+                                and 5.
+
+
+
+
+
+
+
+
+
+
+86       Hard Hat Linux Journeyman Edition        
+
+
+
+                                                       Chapter 7: Additional Configuration Information
+                                                                                    /etc/inittab
+
+
+
+Example /etc/    Here is an example /etc/inittab file:
+inittab File 
+                  # /etc/inittab: init(8) configuration.
+                  # $Id: README.sysvinit,v 1.1 2001/05/01 04:36:55 jpuhlman Exp $
+
+                  # The default runlevel.
+                  id:2:initdefault:
+
+                  # Boot-time system configuration/initialization script.
+                  # This is run first except when booting in emergency (-b) mode.
+                  si::sysinit:/etc/init.d/rcS
+
+                  # What to do in single-user mode.
+                  ~~:S:wait:/sbin/sulogin
+
+                  # /etc/init.d executes the S and K scripts upon change
+                  # of runlevel.
+                  ## Runlevel 0 is halt.
+                  # Runlevel 1 is single-user.
+                  # Runlevels 2-5 are multi-user.
+                  # Runlevel 6 is reboot.
+
+                  l0:0:wait:/etc/init.d/rc 0
+                  l1:1:wait:/etc/init.d/rc 1
+                  l2:2:wait:/etc/init.d/rc 2
+                  l3:3:wait:/etc/init.d/rc 3
+                  l4:4:wait:/etc/init.d/rc 4
+                  l5:5:wait:/etc/init.d/rc 5
+                  l6:6:wait:/etc/init.d/rc 6
+                  # Normally not reached, but fallthrough in case of emergency.
+                  z6:6:respawn:/sbin/sulogin
+
+                  # What to do when CTRL-ALT-DEL is pressed.
+                  ca:12345:ctrlaltdel:/sbin/shutdown -t1 -a -r now
+
+                  # Action on special keypress (ALT-UpArrow).
+                  kb::kbrequest:/bin/echo "Keyboard Request--edit /etc/inittab to let this 
+                  work."
+
+                  # What to do when the power fails/returns.
+                  pf::powerwait:/etc/init.d/powerfail start
+                  pn::powerfailnow:/etc/init.d/powerfail now
+                  po::powerokwait:/etc/init.d/powerfail stop
+
+                  # This line is provided to give that out of box experience. 
+                  # In reality you should uncomment the proper devices.
+                  con:2345:respawn:/sbin/getty console
+                  # /sbin/getty invocations for the runlevels.
+                  ## The "id" field MUST be the same as the last
+                  # characters of the device (after "tty").
+                  ## Format:
+                  #  <id>:<runlevels>:<action>:<process>
+                  #1:2345:respawn:/sbin/getty 38400 tty1
+                  #2:23:respawn:/sbin/getty 38400 tty2
+                  #3:23:respawn:/sbin/getty 38400 tty3
+                  #4:23:respawn:/sbin/getty 38400 tty4
+                  #5:23:respawn:/sbin/getty 38400 tty5
+                  #6:23:respawn:/sbin/getty 38400 tty6
+
+                  # Example how to put a getty on a serial line (for a terminal)
+                  ##T0:23:respawn:/sbin/getty -L ttyS0 9600 vt100
+                  #T1:23:respawn:/sbin/getty -L ttyS1 9600 vt100
+
+                  # Example how to put a getty on a modem line.
+                  ##T3:23:respawn:/sbin/mgetty -x0 -s 57600 ttyS3
+
+
+
+
+
+MAKEDEV
+                                The MAKEDEV script can be used to create any standard device node. This script is
+                                part of the HHL 2.0 distribution and can be found either on the target or the host:
+
+                                                *     On the target, MAKEDEV is located in /sbin. A symbolic link to
+                                                      MAKEDEV is located in /dev. 
+
+                                                *     On the host, MAKEDEV is located in /opt/hardhat/devkit/
+                                                      <architecture>/<processor>/target.
+
+                                In most cases, you will run MAKEDEV  from the /dev directory on the target as
+                                MAKEDEV creates the device node in the current directory.
+
+
+Examples                        To create the device nodes /dev/hda[1-20] and /dev/hdb[1-20], on the
+                                target, run:
+
+                                                cd /dev
+                                                ./MAKEDEV ide0
+
+                                To create the framebuffer device nodes(/dev/fbX and /dev/fbXautodetect,
+                                and /dev/fbXcurrent where x=0-7) on the target, run:
+
+                                                cd /dev
+                                                ./MAKEDEV fb
+
+                                To create all of the normal audio device nodes, on the target, run:
+
+                                                cd /dev
+                                                ./MAKEDEV audio
+
+System Configuration Helpers: 
+
+shellconfig and initdconfig
+
+               Two tools commonly used for system configuration are:
+
+                            *     shellconfig
+                                  Used to add shells to the /etc/shells file and to set the
+                                  symbolic link that sets /bin/sh on the target
+
+                            *     initdconfig
+                                  Used to enable run level services.
+
+               Both of these tools are included in the HHL 2.0 distribution as cross and on-target
+               tools. 
+
+                            *     In the cross-development environment, these tools are located in:
+                                  /opt/hardhat/devkit/<architecture>/
+                                  <processor>/bin  as  <architecture>-shellconfig
+                                  and <architecture>-initdconfig.
+
+                            *     On the target, these tools are located in /usr/sbin as
+                                  both as shellconfig  and initdconfig, and as
+                                  <architecture>-shellconfig and
+                                  <architecture>-initdconfig.
+
+
+shellconfig    shellconfig is used to add shells to the /etc/shells file and to set the
+               symbolic link that sets /bin/sh on the target.
+
+               Note: To run shellconfig on the target, you need to either have /usr/bin in
+               your PATH or you need to cd to /usr/sbin and run ./shellconfig.
+
+               The following is the command line help for shellconfig:
+
+                            Usage:
+                                  shellconfig --add <name> <priority>
+                                  shellconfig --del <name> ...
+                                  shellconfig --list [name ...]
+                                  shellconfig --help
+                                  shellconfig --version
+
+                                Listing the shells installed
+
+                                To list the shells installed, you would run:
+
+                                               shellconfig --list [name...]
+
+                                For example, if you ran shellconfig --list, you would receive output similar
+                                to the following:
+
+                                              Name                    Priority        POSIX Shell (sh)
+                                              /bin/ash:               10              yes
+                                              /bin/ash.static:        11              yes
+                                              /bin/bash:              1               yes
+                                              /usr/bin/sash:          50              yes
+                                              /bin/sh is linked to /bin/bash.
+
+                                This output indicates that the following four shells are installed: 
+
+                                              * ash
+
+                                              * ash.static
+
+                                              * bash
+
+                                              *       sash 
+
+                                The lower the priority number the more likely that the application is the target of the
+                                /bin/sh symbolic link. If the priority is negative, then the shell is not POSIX and is
+                                therfore not capable of being the target of the /bin/sh symbolic link.
+
+
+                                Adding a shell
+                                You can add a shell from the configuration files with --add option.When adding a
+                                shell with the --add the <name> field is the full path (as seen by the target) to the
+                                shell and then the priority number.
+
+                                For example, to add the shell /bin/something with priority level 5, you would
+                                use:
+
+                                              shellconfig --add /bin/something 5
+
+
+                                Removing a shell
+                                You can remove a shell from the configuration files with --del option. You may list
+                                as many shells on the line as you want and each of them will be removed from the list.
+                                When deleting a shell, the <name> field is the full path (as seen by the target).
+
+                                For example, to remove the shells /bin/something and /bin/otherthing,
+                                you would use:
+
+                                              shellconfig --del /bin/something /bin/otherthing
+
+
+
+initdconfig    initdconfig is used to enable run level services for initscripts. For more
+               information about initscripts, see "Initscript Overview" on page 93. 
+
+               The following is the command line help for initdconfig:
+
+                             Usage:
+                                   initdconfig --add <name> ...
+                                   initdconfig --del <name> ...
+                                   initdconfig --list [name ...]
+                                   initdconfig [--level <levels>] <name> <on|off|reset>
+                                   initdconfig --help
+                                   initdconfig --version
+
+
+                             Levels - S Startup
+                                      0 halt
+                                      1 Single User
+                                      2 Multiuser (No networking)
+                                      3 Normal/Multiuser (w/ networking)
+                                      4 reserved for local use (same as 3)
+                                      5 xdm or equiv graphic login
+                                      6 reboot
+
+               Note: The levels indicated in the help are just a guideline, and not a hard and fast rule.
+
+
+               Listing the run levels of initscripts
+               To list the run levels of your initscripts, use:
+
+                              initdconfig --list [name ...]
+
+               For example, if you ran initdconfig --list, the  output of would appear
+               similar to this:
+
+               mountfs                 0:on                                      6:on
+               umountnfs.sh            0:on                                      6:on
+               urandom         S:off                                                   
+               ifupdown        S:on                                                    
+               cron                                2:off   3:off   4:off   5:off   
+               anacron                             2:off   3:off   4:off   5:off
+                  
+
+               In this example:
+
+                             *      The initscripts, umountfs and umountnfs.sh execute in run
+                                    levels 0 and 6. They are both enabled in those run levels.
+
+                             *      urandom may be enabled in the start runlevel, but is not enabled.
+
+                             *      ifupdown may be enabled in the start runlevel and is enabled.
+
+                             *      cron and anacron both may be enabled in run levels 2, 3, 4, and
+                                    5. They are not enabled in any of the run levels.
+
+
+
+
+                                Enabling an initscript
+
+                                To enable an initscript in all run levels (specified by the initscript) use the --add
+                                command followed by the initscript name.
+
+                                              initdconfig --add <name> ...
+
+                                For example, if you want enable cron  in all levels, use:
+
+                                              initdconfig --add cron
+
+                                To enable an initscript in only some run levels use the --level command. 
+
+                                              initdconfig [--level <levels>] <name> <on|off|reset>
+
+                                For example, if you want cron to only run in levels 3 and 4, use:
+
+                                              initdconfig --level 34 cron on
+
+                                Disabling an initscript
+
+                                To disable an initscript in all run levels (specified by the initscript) use the --del
+                                command followed by the initscript name.
+
+                                               initdconfig --del <name> ...
+
+                                For example, if you want disnable cron  in all levels, use:
+
+                                              initdconfig --del cron
+
+                                To disable an initscript in only some run levels use the --level command.
+
+                                              initdconfig [--level <levels>] <name> <on|off|reset>
+
+                                For example, if you want to disable the run levels 3 and 4 for cron, use:
+
+                                              initdconfig --level 34 cron off
+
+                                Note: The reset option (in place of on/off) will first turn the run levels off and then
+                                turn them back on. In general, this option is not needed for normal operation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Initscript Overview
+                      The initscripts are located in /etc/init.d on the target and are run from the /
+                      etc/rc.d/rc{S,0,1,2,3,4,5,6}.d directories. Symbolic links are created
+                      by the initdconfig program (see "initdconfig" on page 91) in the rc?.d
+                      directory pointing to the files in the /etc/init.d directory. The symbolic links are
+                      named SXXname or KXXname.
+
+                                       *    S indicates the scripts should be stated in that run level
+
+                                       *    K indicates scripts should be stopped when that run level is entered. 
+
+                                       *    XX is used to give the initscripts a numerical ordering to allow the
+                                            init scripts to run in a given order.
+
+                                       *    The name is identical to the name of the script in /etc/init.d.
+
+                      When the system boots, the /etc/inittab file first runs /etc/init.d/rcS.
+                      The/etc/init.d/rcS  script is responsible for starting all of the scripts in
+                      /etc/rc.d/rcS.d. Once those scripts have been started, control is returned to
+                      sysvinit.
+
+                      When runlevels change, /etc/init.d/rc is run with the argument of the new
+                      runlevel. This script is responsible for stopping all of the services beginning with a K
+                      and starting all of the services beginning with an S.
+
+
+Initscript Example    The initscripts are located in /etc/init.d on the target. The script /etc/
+                      init.d/skeleton is an example script. Similar to most initscripts, it contains the
+                      following line:
+
+                                       # chkconfig: 2345 20 20
+
+                      In this line:
+
+                                       *    The keyword is: chkconfig:
+
+                                       *    The "starting run levels" are: 2345
+
+                                       *    The "starting priority" is: 20
+
+                                       *    The "stopping priority" is: 20
+
+                      Note: The # indicates that it is a comment in the shell script, this line is interpreted by
+                      the initdconfig program.
+
+                      "Starting run levels" may be any combination of S, 0, 1, 2, 3, 4, 5, and 6. The "starting
+                      run level" implies the "stopping run level." If you specify S as the "starting run level"
+                      then the "stopping run levels" are automatically 0 and 6. If you specify 0, 1, 2, 3, 4, 5,
+                      or 6 then the non-specified run levels are automatically the "stopping run levels." 
+
+
+
+                                For example. chkconfig: 2345 x y starts in run levels 2, 3, 4, 5 and stops in
+                                run levels 0, 1, and 6.
+
+                                The starting and stopping priority numbers are used to help order the start and stop
+                                processes. If there are two items with the same start/stop priority there is no guarantee
+                                to the order in which they will run/stop.
+
+                                If either the start or stop priorities are 0 then the script does not start or stop. i.e.
+                                chkconfig: S 20 0 indicates that it starts as priority 20 in runlevel S. But it is
+                                never stopped. Conversely chkconfig: S 0 20 would indicate that it is never
+                                started, but stops in run levels 0 and 6.
+
+                                The  /etc/init.d/skeleton example also shows the parameters most
+                                initscripts contain: 
+
+                                              *       start starts the item
+
+                                              *       stop stops the item
+
+                                              *       reload reloads the item if possible (usually by sending a
+                                                      SIGHUP)
+
+                                              *       restart and force-reload should stop and then restart the
+                                                      daemon. (Force-reload is only implemented if reload is
+                                                      implemented.)
+

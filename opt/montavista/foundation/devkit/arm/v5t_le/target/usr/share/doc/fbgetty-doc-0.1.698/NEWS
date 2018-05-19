@@ -1,0 +1,116 @@
+NEW in 0.1.698:
+ * secure exec seems to work better 
+    it does not make crash programs launch latter on the same tty
+ * new tag @include_verbatim=<files>, alias @cat and @dump
+ * terminal mode initialisation (see stty(1), tcgetattr(3) or termios(3))
+ * screen is refreshed if user press [RETURN] on an empty prompt
+ * secure exec now set correctly supplementary group 
+    if only a username is specified
+ * a new script (contrib/convertissue.sh) to translate 
+    other getty issue to fbgetty syntax
+ * login name is now cleanned before passed to /bin/login:
+    space are removed at beginning and ending
+    minus are removed at beginning
+ * prompt now understand basics line editing characters:
+    ^U        clear the prompt
+    ^W        clear spaces up to the last word and last word itself
+    ^R and ^L refresh the screen like [RETURN] does on a empty prompt
+ * contrib/patch-fbv updated for fbv-0.95 thanks to Maciej Korzeñ <eaquer@atj.pl>
+ * configure script now report configuration more smartly
+   it better check secure exec flags
+ * configure.default script specify more default paths and use a cache file.
+ * new tag @baud,@speed and %b, print the line speed in baud 
+ * handle job control (limited support for a better exec feature)
+
+NEW in 0.1.69:
+ * a more flexible secure exec support: a username can now be used instead of uid/gid
+   value could be computed at configure time or run time.
+ * use of autoconf-2.52e
+
+NEW in 0.1.6:
+ * Support for utmpx
+ * hex and octal character escape support in issue (\x33)
+ * corrected long tags:
+    @Users is now @users (eq %U)
+    @user works  (eq %u)
+    @version write like %v (previously was %r)    
+ * fbgetty no longer block VT switching
+ * simpler option.h autogeneration
+ * use of autoconf-2.52, automake-1.5
+ * corrected bugs about endianess and signedness
+ * support for VCS device of linux
+ * handle complete locale specification (ex: fr_FR) for opening issue
+ * handle more style of argument during issue parsing:
+   $TERM $"TERM" ${TERM}
+   @include="file with space"
+ * output format data/time string (like date(1))
+   @ftime="-- %Z,\"%x\"",{%c}
+ * ouptut Fully Qualied Domain Name: host.domain
+ * @verbatim="a quite verbatim text with @ % \" \\ ", escape sequences are still parsed 
+
+NEW in 0.1.5:
+ * the clear-screen option work now !
+ * ability to set the keyboard mode: numlock capslock
+ * device filename are now canonicalized, ex: "../dev/./tty3" -> "/dev/vc/3"
+ * corrected an not yet discovered bug: putting text after a environment variable 
+ made fbgetty skip the rest of the line (ex: '$TERM is your term' will not be display) 
+ * ability to include other issue file in the main issue (@include=name[,names...])
+ * new fbgetty option --dump-config 
+ * secure exec support
+ * ability to disable vt switching support
+ * display short device name in issue (with out leading "/dev")
+ * login name redisplayed when switching back to fbgetty
+ * execution with arguments in issue (WARNING: the syntax &program_name will not work, use `name [args]`)
+ * long tags in issue
+ * support devfs naming scheme
+ * removed syslog message when leaving
+ * not ignoring SIGQUIT and SIGINT
+ * many bugs corrected
+
+NEW in 0.1.4:
+ * bugs corrected
+
+NEW in 0.1.3:
+ * Support of executing program in issue
+ * Support of localised issue (issue.[LANG])
+
+NEW in 0.1.2:
+ * Support of locale
+ * You can now put only the device name on command line like other getty
+ * MAKEDEV.fb more user friendly (--help is understand)
+ * added a --compile option
+ * updated to use facility provided by glibc 2
+
+NEW in 0.1.1:
+ * perhaps corrected a bug with login
+ * new bugs :-)
+
+NEW in 0.1.0:
+ ** No new features **
+ * split source file
+
+NEW in 0.0.8:
+ * add a script to create framebuffer devices
+
+NEW in 0.0.7:
+ * display framebuffer device (%f)
+ * Can disable display of issue ( --issue=none)
+ * Can disable display of prompt ( --login-prompr=none)
+ * Frame buffer used disabled if <linux/fb.h> don't exist
+ * Info page completed 
+ * Corrected a bug that prevent display of shell variable with '_'
+
+New in 0.0.6:
+ * Login prompt is now parsed like the issue file (only short option)
+ * Update with code from rungetty-1.2
+ * Display shell variable (environment)
+ * Documentation (man page)
+
+New in 0.0.5:
+ * first public release
+ * Support escape code 
+ * It work well like mingetty
+ 
+New in 0.0.0
+ * All :-)
+ * First compiling release

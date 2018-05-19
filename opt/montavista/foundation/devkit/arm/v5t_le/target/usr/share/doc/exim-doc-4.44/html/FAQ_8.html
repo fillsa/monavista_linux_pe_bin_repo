@@ -1,0 +1,162 @@
+<html>
+<head>
+<title>The Exim FAQ Section 8</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_7.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_9.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC270">8. REWRITING ADDRESSES</a></h2>
+<p>
+<a name="TOC271" href="FAQ.html#TOC271">Q0801:</a>&nbsp;&nbsp;How can I get Exim to strip the hostname from the sender's address?
+</p>
+<p>
+<font color="#00BB00">A0801:</font>&nbsp;&nbsp;If you set up a rewriting rule in the following form:
+</p>
+<pre>
+   *@*.your.domain  $1@your.domain</pre>
+<p>
+then Exim will rewrite all addresses in the envelope and the headers,
+removing anything between <tt>@</tt> and <tt>your.domain</tt>. This applies to all
+messages that Exim processes. If you want to rewrite sender addresses
+only, the the rule should be
+</p>
+<pre>
+   *@*.your.domain  $1@your.domain  Ffrs</pre>
+<p>
+This applies the rule only to the envelope sender address and to the
+<i>From:</i>, <i>Reply-to:</i>, and <i>Sender:</i> headers.
+</p>
+<p>
+<a name="TOC272" href="FAQ.html#TOC272">Q0802:</a>&nbsp;&nbsp;I have Exim configured to remove the hostname portion of the domain on
+outgoing mail, and yet the hostname is present when the mail gets
+delivered.
+</p>
+<p>
+<font color="#00BB00">A0802:</font>&nbsp;&nbsp;Check the DNS record for your domain. If the MX record points to a CNAME
+record instead of to an A record, some MTAs (not Exim) are liable to
+rewrite addresses, changing your domain name to its &#147;canonical&#148; form,
+as obtained from the CNAME record.
+</p>
+<p>
+<a name="TOC273" href="FAQ.html#TOC273">Q0803:</a>&nbsp;&nbsp;I want to rewrite local addresses in mail that goes to the outside
+world, but not for messages that remain within the local intranet.
+</p>
+<p>
+<font color="#00BB00">A0803:</font>&nbsp;&nbsp;You can use the <tt>headers_rewrite</tt> option on a transport to do this.
+The rewriting will then apply to just those copies of a message that
+pass through the transport. The <tt>return_path</tt> option can similarly be
+used to rewrite the sender address. There is no way of rewriting
+recipient addresses at transport time. However, as these are by
+definition remote addresses, you probably don't want to rewrite them.
+</p>
+<p>
+You have to set up the configuration so that it uses different SMTP
+transports for internal and external mail. If you are using a single
+router in both cases, you could configure it like this:
+</p>
+<pre>
+   dnslookup:
+     driver = dnslookup
+     transport = ${if match{$domain}{\N\.my\.domain$\N}{int_smtp}{ext_smtp}}</pre>
+<p>
+This example uses the <b>int_smtp</b> transport for domains ending in
+<i>.my.domain</i>, and <b>ext_smtp</b> for everything else. The <b>ext_smtp</b> transport
+could be something like this:
+</p>
+<pre>
+   ext_smtp:
+     driver = smtp
+     headers_rewrite = *@*.my.domain \
+          ${lookup{$1}cdb{/etc/$2/mail.handles.cdb}{$value}fail}
+     return_path = \
+       ${if match{$return_path}{\N^([^@]+)@(.*)\.my\.domain$\N}\
+        {\
+        ${lookup{$1}cdb{/etc/$2/mail.handles.cdb}{$value}fail}\
+        }\
+        fail}</pre>
+<p>
+This example uses a separate file of local-to-external address
+translations for each domain. This is not the only possibility, of
+course. The <tt>headers_rewrite</tt> and <tt>return_path</tt> options apply the same
+rewriting to the header lines and the envelope sender address,
+respectively.
+</p>
+<p>
+<a name="TOC274" href="FAQ.html#TOC274">Q0804:</a>&nbsp;&nbsp;I'm using this rewriting rule to change login names into &#147;friendly&#148;
+names, but if mail comes in for an upper case login name, it doesn't
+get rewritten.
+</p>
+<pre>
+ 	 *@my.domain	 ${lookup{$1}dbm{/usr/lib/exim/longforms}\
+			 {$value}fail}@my.domain bcfrtFT</pre>
+<p>
+The longforms database has entries of the form:
+</p>
+<pre>
+   ano23: A.N.Other</pre>
+<p>
+<font color="#00BB00">A0804:</font>&nbsp;&nbsp;Replace <tt>$1</tt> in your rule by <tt>${lc:$1}</tt> to force the local part to lower
+case before it is used as a lookup key.
+</p>
+<p>
+<a name="TOC275" href="FAQ.html#TOC275">Q0805:</a>&nbsp;&nbsp;Is it possible to completely fail a message if the rewrite rules fail?
+</p>
+<p>
+<font color="#00BB00">A0805:</font>&nbsp;&nbsp;It depends on what you mean by &#147;fail a message&#148; and what addresses you
+are rewriting. If you are rewriting recipient addresses for your local
+domain, you can do:
+</p>
+<pre>
+ 	 *@dom.ain  ${lookup{$1}dbm{/wher/ever}{$value}{failaddr}}  Ehq</pre>
+<p>
+and in your alias file put something like
+</p>
+<pre>
+ 	 failaddr:   :fail: Rewriting failed</pre>
+<p>
+This fails a single recipient - others are processed independently.
+</p>
+<p>
+<a name="TOC276" href="FAQ.html#TOC276">Q0806:</a>&nbsp;&nbsp;I'm using <i>$domain</i> as the key for a lookup in a rewriting rule, but its
+contents are not being lowercased. Aren't domains supposed to be handled
+caselessly?
+</p>
+<p>
+<font color="#00BB00">A0806:</font>&nbsp;&nbsp;The value of <i>$domain</i> is the actual domain that appears in the address.
+It could of course be lower cased, but I know that would cause some
+unhappiness, because some people have mixed-case domain names which look
+silly if the case is changed. Thus, one wants to preserve the case in
+rewrites such as
+</p>
+<pre>
+   *@*.TheRap.com   something@$domain</pre>
+<p>
+because &#147;therap&#148; doesn't look like two words. I know it seems trivial,
+but it is important to some people - especially if by some unfortunate
+accident the lowercased word is something indecent.
+</p>
+<p>
+You can trivally force lower casing by means of the <tt>${lc:</tt> operator.
+Instead of <tt>$domain</tt> write <tt>${lc:$domain}</tt>.
+</p>
+<p>
+<a name="TOC277" href="FAQ.html#TOC277">Q0807:</a>&nbsp;&nbsp;I want to rewrite local sender addresses depending on the domain of the
+recipient.
+</p>
+<p>
+<font color="#00BB00">A0807:</font>&nbsp;&nbsp;In general, this is not possible, because a message may have more than
+one recipient and Exim keeps just a single copy of each message. It may
+also deliver one copy of a message with several recipient addresses.
+You can do an incomplete job by using a regular expression match in a
+rewrite rule to test, for example, the contents of the <i>To:</i> header. This
+would work except in cases of multiple recipients.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_7.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_9.html">Next</a>
+</body>
+</html>

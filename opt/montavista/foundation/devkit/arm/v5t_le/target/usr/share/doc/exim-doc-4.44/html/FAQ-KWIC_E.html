@@ -1,0 +1,580 @@
+<html>
+<head>
+<title>Exim FAQ: KWIC index section E</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#0066FF" alink="#0066FF" vlink="#000099">
+<h1>Exim FAQ: Keyword-in-context index</h1>
+<p>
+&nbsp;&nbsp;<a href="FAQ-KWIC_A.html">&nbsp;&nbsp;A</a><a href="FAQ-KWIC_B.html">&nbsp;&nbsp;B</a><a href="FAQ-KWIC_C.html">&nbsp;&nbsp;C</a><a href="FAQ-KWIC_D.html">&nbsp;&nbsp;D</a>&nbsp;&nbsp;&nbsp;<font size=7 color="#FF0A0A"><b>E</b></font>&nbsp;<a href="FAQ-KWIC_F.html">&nbsp;&nbsp;F</a><a href="FAQ-KWIC_G.html">&nbsp;&nbsp;G</a><a href="FAQ-KWIC_H.html">&nbsp;&nbsp;H</a><a href="FAQ-KWIC_I.html">&nbsp;&nbsp;I</a><a href="FAQ-KWIC_K.html">&nbsp;&nbsp;K</a><a href="FAQ-KWIC_L.html">&nbsp;&nbsp;L</a><a href="FAQ-KWIC_M.html">&nbsp;&nbsp;M</a><a href="FAQ-KWIC_N.html">&nbsp;&nbsp;N</a><a href="FAQ-KWIC_O.html">&nbsp;&nbsp;O</a><a href="FAQ-KWIC_P.html">&nbsp;&nbsp;P</a><a href="FAQ-KWIC_Q.html">&nbsp;&nbsp;Q</a><a href="FAQ-KWIC_R.html">&nbsp;&nbsp;R</a><a href="FAQ-KWIC_S.html">&nbsp;&nbsp;S</a><a href="FAQ-KWIC_T.html">&nbsp;&nbsp;T</a><a href="FAQ-KWIC_U.html">&nbsp;&nbsp;U</a><a href="FAQ-KWIC_V.html">&nbsp;&nbsp;V</a><a href="FAQ-KWIC_W.html">&nbsp;&nbsp;W</a><a href="FAQ-KWIC_X.html">&nbsp;&nbsp;X</a><a href="FAQ-KWIC_Y.html">&nbsp;&nbsp;Y</a><a href="FAQ-KWIC_Z.html">&nbsp;&nbsp;Z</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="FAQ.html#TOC">FAQ Contents</a>
+</p>
+<table border>
+<tr>
+<td align="right"><a name="TOC160" href="FAQ_4.html#TOC160">Q0417</a>:&nbsp;&nbsp;...  could just create a <i>.vacation.msg</i> file in their home directory and not have to </td>
+<td align="left"><font color="#FF0A0A">edit</font> their <i>.forward</i> file? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC355" href="FAQ_19.html#TOC355">Q5025</a>:&nbsp;&nbsp;What precautions should I take when </td>
+<td align="left"><font color="#FF0A0A">editing</font> Exim's run time configuration file? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC158" href="FAQ_4.html#TOC158">Q0415</a>:&nbsp;&nbsp;...  use my existing alias files and forward files as well as procmail and </td>
+<td align="left"><font color="#FF0A0A">effectively</font> drop in Exim in place of Sendmail ? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC53" href="FAQ_0.html#TOC53">Q0053</a>:&nbsp;&nbsp;...  host responds to a connection with <tt>220 *****...</tt> and won't understand </td>
+<td align="left"><small><font color="#FF0A0A">EHLO</font></small> commands. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC85" href="FAQ_0.html#TOC85">Q0085</a>:&nbsp;&nbsp;I see a lot of <i>rejected </i></td>
+<td align="left"><i><font color="#FF0A0A">EHLO</font> ... syntactically invalid argument(s)</i>. I know it's because of the underscore...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC262" href="FAQ_7.html#TOC262">Q0732</a>:&nbsp;&nbsp;...  would like to either warn or deny when a host uses an underscore in the </td>
+<td align="left"><font color="#FF0A0A">EHLO</font> command. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC262" href="FAQ_7.html#TOC262">Q0732</a>:&nbsp;&nbsp;I would like to </td>
+<td align="left"><font color="#FF0A0A">either</font> warn or deny when a host uses an underscore in the EHLO command. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC335" href="FAQ_19.html#TOC335">Q5005</a>:&nbsp;&nbsp;...  3.5.8 (<i>ghostview</i>) to try printing <i>spec.ps</i>. After every printed page, the printer </td>
+<td align="left"><font color="#FF0A0A">ejects</font> a blank sheet. Is this something to do with using &#147;letter&#148; rather...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC228" href="FAQ_6.html#TOC228">Q0634</a>:&nbsp;&nbsp;...  the user's home directory, even when the delivery is to a file that is </td>
+<td align="left"><font color="#FF0A0A">elsewhere</font>? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC42" href="FAQ_0.html#TOC42">Q0042</a>:&nbsp;&nbsp;...  the sender address is <tt>&#60;&#62;</tt>. Why is the Sender on the bounce message </td>
+<td align="left"><font color="#FF0A0A">empty</font>? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC96" href="FAQ_1.html#TOC96">Q0104</a>:&nbsp;&nbsp;...  about to upgrade to a new Exim release. Do I need to ensure the spool is </td>
+<td align="left"><font color="#FF0A0A">empty</font>, or take any other special action? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC184" href="FAQ_5.html#TOC184">Q0505</a>:&nbsp;&nbsp;My problem is that Exim replaces <i>$local_part</i> with an </td>
+<td align="left"><font color="#FF0A0A">empty</font> string in the system filtering. What's wrong or what did I miss? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC191" href="FAQ_5.html#TOC191">Q0512</a>:&nbsp;&nbsp;...  reference the <i>Envelope-To:</i> header in my filter, but <i>$h_envelope-to:</i> is always </td>
+<td align="left"><font color="#FF0A0A">empty</font>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC256" href="FAQ_7.html#TOC256">Q0726</a>:&nbsp;&nbsp;...  authentication can be bypassed by sending an unknown user name and an </td>
+<td align="left"><font color="#FF0A0A">empty</font> password. What is wrong with this condition in a PLAIN authenticator?...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC320" href="FAQ_17.html#TOC320">Q1701</a>:&nbsp;&nbsp;...  trying to set up an Exim server that uses a self-signed certificate to </td>
+<td align="left"><font color="#FF0A0A">enable</font> my clients to use TLS. However, clients other than Exim refuse to accept...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC38" href="FAQ_0.html#TOC38">Q0038</a>:&nbsp;&nbsp;What does the error message <i>error in forward file (filtering not </i></td>
+<td align="left"><i><font color="#FF0A0A">enabled</font>): missing or malformed local part</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC321" href="FAQ_17.html#TOC321">Q1702</a>:&nbsp;&nbsp;...  to advertise support for SMTP authentication only when the session is </td>
+<td align="left"><font color="#FF0A0A">encrypted</font>? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC17" href="FAQ_0.html#TOC17">Q0017</a>:&nbsp;&nbsp;...  specific message to a particular server, it fails, giving the error <i>Remote </i></td>
+<td align="left"><i><font color="#FF0A0A">end</font> closed connection after data</i> or <i>Broken pipe</i> or a timeout. What's going...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC96" href="FAQ_1.html#TOC96">Q0104</a>:&nbsp;&nbsp;I'm about to upgrade to a new Exim release. Do I need to </td>
+<td align="left"><font color="#FF0A0A">ensure</font> the spool is empty, or take any other special action? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC56" href="FAQ_0.html#TOC56">Q0056</a>:&nbsp;&nbsp;...  However, whenever a user sends an email it gets sent with the return path (</td>
+<td align="left"><font color="#FF0A0A">envelope</font> sender) <i>apache@server_name.com</i> because the PHP script is running as <i>apache</i>....</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC172" href="FAQ_4.html#TOC172">Q0429</a>:&nbsp;&nbsp;...  given domain to local mailboxes, but also to generate messages to the </td>
+<td align="left"><font color="#FF0A0A">envelope</font> senders. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC239" href="FAQ_7.html#TOC239">Q0709</a>:&nbsp;&nbsp;Does Exim apply RBL checks to error messages, those with an </td>
+<td align="left"><font color="#FF0A0A">envelope</font> sender of <tt>&#60;&#62;</tt> ? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC345" href="FAQ_19.html#TOC345">Q5015</a>:&nbsp;&nbsp;...  <tt>&#60;= &#60;&#62;</tt>. Am I correct in assuming that the <tt>&#60;&#62;</tt> indicates that the </td>
+<td align="left"><font color="#FF0A0A">envelope</font> did not contain any &#147;From&#148; data? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC408" href="FAQ_27.html#TOC408">Q9811</a>:&nbsp;&nbsp;...  live mail server to use in tests of a new server. I want to preserve the </td>
+<td align="left"><font color="#FF0A0A">envelope</font> contents, but to suppress any error notifications to the original sender....</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC191" href="FAQ_5.html#TOC191">Q0512</a>:&nbsp;&nbsp;I'm trying to reference the </td>
+<td align="left"><i><font color="#FF0A0A">Envelope-To</font>:</i> header in my filter, but <i>$h_envelope-to:</i> is always empty. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC3" href="FAQ_0.html#TOC3">Q0003</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>Child process of address_pipe transport returned 69 from command xxx</i> mean?...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC13" href="FAQ_0.html#TOC13">Q0013</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> message <i>transport system_aliases: cannot find transport driver "redirect"...</i></td>
+</tr>
+<tr>
+<td align="right"><a name="TOC17" href="FAQ_0.html#TOC17">Q0017</a>:&nbsp;&nbsp;...  deliver a specific message to a particular server, it fails, giving the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>Remote end closed connection after data</i> or <i>Broken pipe</i> or a timeout. What's...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC26" href="FAQ_0.html#TOC26">Q0026</a>:&nbsp;&nbsp;...  trying to get Exim to connect an alias to a pipe, but it always gives </td>
+<td align="left"><font color="#FF0A0A">error</font> code 69, with the comment <i>(could mean service or program unavailable)</i>....</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC27" href="FAQ_0.html#TOC27">Q0027</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>Spool file is locked</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC32" href="FAQ_0.html#TOC32">Q0032</a>:&nbsp;&nbsp;...  library, even though is it present within <small>LD_LIBRARY_PATH</small>. I'm getting this </td>
+<td align="left"><font color="#FF0A0A">error</font>: </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC33" href="FAQ_0.html#TOC33">Q0033</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>lookup of host "xx.xx.xx" failed in yyy router</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC36" href="FAQ_0.html#TOC36">Q0036</a>:&nbsp;&nbsp;Why do I get the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>Permission denied: creating lock file hitching post</i> when Exim tries to...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC38" href="FAQ_0.html#TOC38">Q0038</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> message <i>error in forward file (filtering not enabled): missing or malformed...</i></td>
+</tr>
+<tr>
+<td align="right"><a name="TOC43" href="FAQ_0.html#TOC43">Q0043</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>Unable to get interface configuration: 22 Invalid argument</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC44" href="FAQ_0.html#TOC44">Q0044</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>Failed to create spool file</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC50" href="FAQ_0.html#TOC50">Q0050</a>:&nbsp;&nbsp;...  for relaying that they are being blocked with a <i>Too many connections</i> </td>
+<td align="left"><font color="#FF0A0A">error</font>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC51" href="FAQ_0.html#TOC51">Q0051</a>:&nbsp;&nbsp;When I try <tt>exim -bf</tt> to test a system filter, I received the following </td>
+<td align="left"><font color="#FF0A0A">error</font> message: <i>Filter error: unavailable filtering command "fail" near line 8 of...</i></td>
+</tr>
+<tr>
+<td align="right"><a name="TOC52" href="FAQ_0.html#TOC52">Q0052</a>:&nbsp;&nbsp;What does <i>ridiculously long message header</i> in an </td>
+<td align="left"><font color="#FF0A0A">error</font> report mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC54" href="FAQ_0.html#TOC54">Q0054</a>:&nbsp;&nbsp;I'm getting an Exim configuration </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>unknown rewrite flag character (m) in line 386</i> but I haven't used any...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC55" href="FAQ_0.html#TOC55">Q0055</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>Failed to open wait-remote_smtp database: Invalid argument</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC58" href="FAQ_0.html#TOC58">Q0058</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>failed to open DB file <i>/var/spool/exim/db/retry</i>: File exists</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC60" href="FAQ_0.html#TOC60">Q0060</a>:&nbsp;&nbsp;Why am I getting the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>failed to expand <tt>/data/lists/lists/${lc</tt> for require_files: <tt>${lc</tt> is not a known...</i></td>
+</tr>
+<tr>
+<td align="right"><a name="TOC61" href="FAQ_0.html#TOC61">Q0061</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>Too many &#147;Received&#148; headers - suspected mail loop</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC65" href="FAQ_0.html#TOC65">Q0065</a>:&nbsp;&nbsp;...  <i>root</i>) I use -C to run Exim with an alternate configuration file, it gives an </td>
+<td align="left"><font color="#FF0A0A">error</font> about being unable to create a spool file when trying to run an <b>autoreply</b>...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC67" href="FAQ_0.html#TOC67">Q0067</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>too many unrecognized commands</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC69" href="FAQ_0.html#TOC69">Q0069</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>SMTP data timeout (message abandoned) on connection from...</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC70" href="FAQ_0.html#TOC70">Q0070</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>SMTP command timeout on connection from...</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC71" href="FAQ_0.html#TOC71">Q0071</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>failed to open DB file <i>/var/spool/exim//db/retry</i>: Illegal argument</i> mean?...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC74" href="FAQ_0.html#TOC74">Q0074</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> message <i>remote delivery process count got out of step</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC81" href="FAQ_0.html#TOC81">Q0081</a>:&nbsp;&nbsp;What does </td>
+<td align="left"><i><font color="#FF0A0A">error</font> in redirect data: included file xxxx is too big</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC82" href="FAQ_0.html#TOC82">Q0082</a>:&nbsp;&nbsp;What does <i>relocation </i></td>
+<td align="left"><i><font color="#FF0A0A">error</font>: /lib/libnss_dns.so.2: symbol __libc_res_nquery, version GLIBC_PRIVATE not...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC84" href="FAQ_0.html#TOC84">Q0084</a>:&nbsp;&nbsp;...  to resubmit the message, but when I use my tested command in an alias file, I get an </td>
+<td align="left"><font color="#FF0A0A">error</font> from <i>gpg</i>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC86" href="FAQ_0.html#TOC86">Q0086</a>:&nbsp;&nbsp;What does <i>SMTP protocol violation: synchronization </i></td>
+<td align="left"><i><font color="#FF0A0A">error</font> (next input sent too soon)</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC89" href="FAQ_0.html#TOC89">Q0089</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>kernel: application bug: exim(12099) has SIGCHLD set to SIG_IGN but calls...</i></td>
+</tr>
+<tr>
+<td align="right"><a name="TOC91" href="FAQ_0.html#TOC91">Q0091</a>:&nbsp;&nbsp;Why is Exim giving the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>Failed to send message from address_reply transport</i> when I run it using...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC95" href="FAQ_1.html#TOC95">Q0103</a>:&nbsp;&nbsp;I'm getting an <i>undefined symbol</i> </td>
+<td align="left"><font color="#FF0A0A">error</font> for <tt>hosts_ctl</tt> when I try to build Exim. (On some systems this error is <i>undefined...</i></td>
+</tr>
+<tr>
+<td align="right"><a name="TOC97" href="FAQ_1.html#TOC97">Q0105</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>install-info: command not found</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC102" href="FAQ_1.html#TOC102">Q0110</a>:&nbsp;&nbsp;...  support. I have included <tt>-lpam</tt> in <small>EXTRALIBS</small>, but I'm still getting a linking </td>
+<td align="left"><font color="#FF0A0A">error</font>: </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC103" href="FAQ_1.html#TOC103">Q0111</a>:&nbsp;&nbsp;I'm getting the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>db.h: No such file or directory</i> when I try to build Exim. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC104" href="FAQ_1.html#TOC104">Q0112</a>:&nbsp;&nbsp;I'm getting the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>/usr/bin/ld: cannot find -ldb</i> when I try to build Exim. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC155" href="FAQ_4.html#TOC155">Q0412</a>:&nbsp;&nbsp;Why am I seeing the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>bad mode (100664) for /home/test/.forward</i>? I've looked through the documentation...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC156" href="FAQ_4.html#TOC156">Q0413</a>:&nbsp;&nbsp;...  messages. Can it be told to ignore the <i>.forward</i> file and/or inform the user of the </td>
+<td align="left"><font color="#FF0A0A">error</font>? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC166" href="FAQ_4.html#TOC166">Q0423</a>:&nbsp;&nbsp;...  the field in the password file contains <i>/no/home/dir</i>. This causes the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>failed to stat /no/home/dir (No such file or directory)</i> when Exim tries to look...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC173" href="FAQ_4.html#TOC173">Q0430</a>:&nbsp;&nbsp;... Whenever Exim tries to route a local address, it gives a permission denied </td>
+<td align="left"><font color="#FF0A0A">error</font> for the <i>.forward</i> file, like this: </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC190" href="FAQ_5.html#TOC190">Q0511</a>:&nbsp;&nbsp;... Whenever my system filter uses a <tt>mail</tt> command to send a message, I get the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>User 0 set for address_reply transport is on the never_users list</i>. What...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC193" href="FAQ_5.html#TOC193">Q0514</a>:&nbsp;&nbsp;When I try to send to two addresses I get an </td>
+<td align="left"><font color="#FF0A0A">error</font> in the filter file <i>malformed address: , e@fgh.com may not follow a@bcd.com</i>....</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC195" href="FAQ_6.html#TOC195">Q0601</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>Neither the xxx router nor the yyy transport set a uid for local delivery...</i></td>
+</tr>
+<tr>
+<td align="right"><a name="TOC201" href="FAQ_6.html#TOC201">Q0607</a>:&nbsp;&nbsp;...  receipt&#148; for example in Netscape Mailbox sending options, then I get an </td>
+<td align="left"><font color="#FF0A0A">error</font> message from Exim... something like <i>not supported</i>. Can I activate delivery...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC207" href="FAQ_6.html#TOC207">Q0613</a>:&nbsp;&nbsp;I have set <tt>fallback_hosts</tt> on my <b>smtp</b> transport, but after the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>sem@chat.ru cannot be resolved at this time</i> Exim isn't using them. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC213" href="FAQ_6.html#TOC213">Q0619</a>:&nbsp;&nbsp;I can't get Exim to deliver over NFS. I get the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>fcntl() failed: No locks available</i>, though the lock daemon is running...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC214" href="FAQ_6.html#TOC214">Q0620</a>:&nbsp;&nbsp;...  does Exim bounce messages without even attempting delivery, giving the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>retry time not reached for any host after a long failure period</i>? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC226" href="FAQ_6.html#TOC226">Q0632</a>:&nbsp;&nbsp;What does the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>User 1 set for local_mbx_delivery transport is on the never_users list</i>...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC229" href="FAQ_6.html#TOC229">Q0635</a>:&nbsp;&nbsp;The log message </td>
+<td align="left"><i><font color="#FF0A0A">error</font> ignored</i> appears after some delivery failures. What does it mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC239" href="FAQ_7.html#TOC239">Q0709</a>:&nbsp;&nbsp;Does Exim apply RBL checks to </td>
+<td align="left"><font color="#FF0A0A">error</font> messages, those with an envelope sender of <tt>&#60;&#62;</tt> ? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC293" href="FAQ_11.html#TOC293">Q1103</a>:&nbsp;&nbsp;I'm trying to set up majordomo, but I'm getting a wrong mode </td>
+<td align="left"><font color="#FF0A0A">error</font> when I try to send it mail. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC297" href="FAQ_12.html#TOC297">Q1201</a>:&nbsp;&nbsp;When I run fetchmail, I get the </td>
+<td align="left"><font color="#FF0A0A">error</font> <i>SMTP listener doesn't like recipient address xxx@localhost</i>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC300" href="FAQ_13.html#TOC300">Q1301</a>:&nbsp;&nbsp;Exim built with Perl support exits with the </td>
+<td align="left"><font color="#FF0A0A">error</font> message <i>./exim: can't load library 'libperl.so'</i>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC301" href="FAQ_13.html#TOC301">Q1302</a>:&nbsp;&nbsp;Exim built with Perl support exits with several </td>
+<td align="left"><font color="#FF0A0A">error</font> messages of the form <i>undefined reference to `PL_stack_sp'</i>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC326" href="FAQ_17.html#TOC326">Q1707</a>:&nbsp;&nbsp;...  am trying to use TLS with Evolution as a client, and keep seeing this </td>
+<td align="left"><font color="#FF0A0A">error</font>: <i>SMTP protocol violation: synchronization error (next input sent too soon):...</i></td>
+</tr>
+<tr>
+<td align="right"><a name="TOC372" href="FAQ_22.html#TOC372">Q9301</a>:&nbsp;&nbsp;...  have <i>gcc</i> there. So I put <tt>CC=cc</tt> in the <i>Local/Makefile</i>, but I got this </td>
+<td align="left"><font color="#FF0A0A">error</font>: </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC374" href="FAQ_23.html#TOC374">Q9401</a>:&nbsp;&nbsp;On BSDI 4.0, Exim built with Perl support exits with the </td>
+<td align="left"><font color="#FF0A0A">error</font> message </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC378" href="FAQ_25.html#TOC378">Q9601</a>:&nbsp;&nbsp;... Exim is mysteriously crashing, usually when forking to send a delivery </td>
+<td align="left"><font color="#FF0A0A">error</font> message. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC381" href="FAQ_25.html#TOC381">Q9604</a>:&nbsp;&nbsp;I get the <i>too many open files</i> </td>
+<td align="left"><font color="#FF0A0A">error</font> especially when a lot of messages land for Majordomo at the same time....</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC382" href="FAQ_25.html#TOC382">Q9605</a>:&nbsp;&nbsp;...  486 laptop. When I try to test the Mail program, I get the following </td>
+<td align="left"><font color="#FF0A0A">error</font>: <i>Failed to open configuration file /etc/exim.conf</i>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC396" href="FAQ_26.html#TOC396">Q9709</a>:&nbsp;&nbsp;When I try to compile Exim 4.x on Solaris 2.5.1 I get an </td>
+<td align="left"><font color="#FF0A0A">error</font> along the lines of <i>no such field in struct as 'value.ui32'</i>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC408" href="FAQ_27.html#TOC408">Q9811</a>:&nbsp;&nbsp;...  new server. I want to preserve the envelope contents, but to suppress any </td>
+<td align="left"><font color="#FF0A0A">error</font> notifications to the original sender. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC30" href="FAQ_0.html#TOC30">Q0030</a>:&nbsp;&nbsp;...  lookup for hosts that are allowed to relay, but it is giving really weird </td>
+<td align="left"><font color="#FF0A0A">errors</font>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC75" href="FAQ_0.html#TOC75">Q0075</a>:&nbsp;&nbsp;...  some email addresses that contain special characters are causing parsing </td>
+<td align="left"><font color="#FF0A0A">errors</font> in my LDAP lookups. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC108" href="FAQ_1.html#TOC108">Q0116</a>:&nbsp;&nbsp;I have tried to build Exim with Berkeley DB 3 and 4, but I always get </td>
+<td align="left"><font color="#FF0A0A">errors</font>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC196" href="FAQ_6.html#TOC196">Q0602</a>:&nbsp;&nbsp;Exim keeps crashing with segmentation </td>
+<td align="left"><font color="#FF0A0A">errors</font> (signal 11 or 139) during delivery. This seems to happen when it is about...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC327" href="FAQ_17.html#TOC327">Q1708</a>:&nbsp;&nbsp;...  Antivirus, but all my email is being rejected with <i>Unsupported command</i> </td>
+<td align="left"><font color="#FF0A0A">errors</font>. Why? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC309" href="FAQ_14.html#TOC309">Q1407</a>:&nbsp;&nbsp;RFC 1985 specifies that the SMTP command </td>
+<td align="left"><tt><font color="#FF0A0A">ETRN</font> host.domain</tt> causes all mail queued for that host, no matter what domain...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC310" href="FAQ_14.html#TOC310">Q1408</a>:&nbsp;&nbsp;...  local mailing list (implemented through forward files), and one of our </td>
+<td align="left"><font color="#FF0A0A">ETRN</font> clients is on this mailing list, the <b>-R</b> won't flush the mailing list message...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC333" href="FAQ_19.html#TOC333">Q5003</a>:&nbsp;&nbsp;How can I persuade Exim to accept </td>
+<td align="left"><font color="#FF0A0A">ETRN</font> commands without the leading # character? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC41" href="FAQ_0.html#TOC41">Q0041</a>:&nbsp;&nbsp;What does the message <i>unable to set gid=ddd or uid=ddd (</i></td>
+<td align="left"><i><font color="#FF0A0A">euid=ddd</font>): local delivery to ... transport=ttt</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC88" href="FAQ_0.html#TOC88">Q0088</a>:&nbsp;&nbsp;...  SENDFILE.EXE sometimes hangs while trying to send a message to Exim 4, and </td>
+<td align="left"><font color="#FF0A0A">eventually</font> times out. It worked flawlessly with Exim 3. What has changed? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC117" href="FAQ_2.html#TOC117">Q0205</a>:&nbsp;&nbsp;How can I get Exim to deliver to me locally and </td>
+<td align="left"><font color="#FF0A0A">everyone</font> else at the same domain via SMTP to the MX record specified host? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC326" href="FAQ_17.html#TOC326">Q1707</a>:&nbsp;&nbsp;I am trying to use TLS with </td>
+<td align="left"><font color="#FF0A0A">Evolution</font> as a client, and keep seeing this error: <i>SMTP protocol violation: synchronization...</i></td>
+</tr>
+<tr>
+<td align="right"><a name="TOC209" href="FAQ_6.html#TOC209">Q0615</a>:&nbsp;&nbsp;When a message in the queue got to 12h old, Exim wrote <i>retry timeout </i></td>
+<td align="left"><i><font color="#FF0A0A">exceeded</font></i> and removed all messages in the queue to this host - even recent messages....</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC242" href="FAQ_7.html#TOC242">Q0712</a>:&nbsp;&nbsp;...  ioctl call at the time of the SMTP RCPT command, to check if a user has </td>
+<td align="left"><font color="#FF0A0A">exceeded</font> their email quota. If they have I issue a temporary failure and a message...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC304" href="FAQ_14.html#TOC304">Q1402</a>:&nbsp;&nbsp;...  address <i>anything@aol.com</i> is returned within about 15 minutes saying <i>retry time </i></td>
+<td align="left"><i><font color="#FF0A0A">exceeded</font></i>, and all addresses are affected. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC339" href="FAQ_19.html#TOC339">Q5009</a>:&nbsp;&nbsp;I want to match all domains of the form <i>*.oyoy.org</i> but want a few </td>
+<td align="left"><font color="#FF0A0A">exceptions</font>. For instance I don't want <i>foo.oyoy.org</i> or <i>bar.oyoy.org</i> to be included....</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC192" href="FAQ_5.html#TOC192">Q0513</a>:&nbsp;&nbsp;...  my system filter to freeze all mails greater than 500K in size, but to </td>
+<td align="left"><font color="#FF0A0A">exclude</font> those to a specific domain. However, I don't seem to be able to use <i>$domain</i>...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC24" href="FAQ_0.html#TOC24">Q0024</a>:&nbsp;&nbsp;When I run <tt>exim -bd -q10m</tt> I get <i>PANIC LOG: </i></td>
+<td align="left"><i><font color="#FF0A0A">exec</font> of exim -q failed</i>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC89" href="FAQ_0.html#TOC89">Q0089</a>:&nbsp;&nbsp;What does the error <i>kernel: application bug: </i></td>
+<td align="left"><i><font color="#FF0A0A">exim(12099</font>) has SIGCHLD set to SIG_IGN but calls wait()</i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC11" href="FAQ_0.html#TOC11">Q0011</a>:&nbsp;&nbsp;Instead of </td>
+<td align="left"><i><font color="#FF0A0A">exim_dbmbuild</font></i>, I'm using a homegrown program to build DBM (or cdb) files, but Exim doesn't...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC110" href="FAQ_1.html#TOC110">Q0118</a>:&nbsp;&nbsp;...  <tt>LOOKUP_INCLUDE=-I/client/include</tt> in Local/Makefile, but the compilation of </td>
+<td align="left"><i><font color="#FF0A0A">exim_dumpdb</font></i> is ignoring this option and failing. Why? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC360" href="FAQ_19.html#TOC360">Q5030</a>:&nbsp;&nbsp;...  with two different configuration files. How can I run a second copy of </td>
+<td align="left"><i><font color="#FF0A0A">eximon</font></i> to inspect and modify the alternate queue? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC111" href="FAQ_1.html#TOC111">Q0119</a>:&nbsp;&nbsp;I know there are some 3rd-party patches for Exim, for </td>
+<td align="left"><font color="#FF0A0A">exiscan</font> and other things. Where are they? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC258" href="FAQ_7.html#TOC258">Q0728</a>:&nbsp;&nbsp;How do I use </td>
+<td align="left"><font color="#FF0A0A">Exiscan</font>, SA-Exim, SpamAssassin, Clam Antivirus, Sophos SAVI, or sophie with Exim?...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC264" href="FAQ_7.html#TOC264">Q0734</a>:&nbsp;&nbsp;How do MailScanner and </td>
+<td align="left"><font color="#FF0A0A">Exiscan</font> compare? What are the pros and cons? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC158" href="FAQ_4.html#TOC158">Q0415</a>:&nbsp;&nbsp;Can I use my </td>
+<td align="left"><font color="#FF0A0A">existing</font> alias files and forward files as well as procmail and effectively drop...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC283" href="FAQ_9.html#TOC283">Q0905</a>:&nbsp;&nbsp;...  filter to replace certain headers in messages, but how can I add text to </td>
+<td align="left"><font color="#FF0A0A">existing</font> headers? I want to add [SPAM] to the subject line of messages that appear...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC58" href="FAQ_0.html#TOC58">Q0058</a>:&nbsp;&nbsp;...  does the error <i>failed to open DB file <i>/var/spool/exim/db/retry</i>: File </td>
+<td align="left"><font color="#FF0A0A">exists</font></i> mean? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC300" href="FAQ_13.html#TOC300">Q1301</a>:&nbsp;&nbsp;Exim built with Perl support </td>
+<td align="left"><font color="#FF0A0A">exits</font> with the error message <i>./exim: can't load library 'libperl.so'</i>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC301" href="FAQ_13.html#TOC301">Q1302</a>:&nbsp;&nbsp;Exim built with Perl support </td>
+<td align="left"><font color="#FF0A0A">exits</font> with several error messages of the form <i>undefined reference to `PL_stack_sp'</i>....</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC374" href="FAQ_23.html#TOC374">Q9401</a>:&nbsp;&nbsp;On BSDI 4.0, Exim built with Perl support </td>
+<td align="left"><font color="#FF0A0A">exits</font> with the error message </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC393" href="FAQ_26.html#TOC393">Q9706</a>:&nbsp;&nbsp;The </td>
+<td align="left"><i><font color="#FF0A0A">exiwhat</font></i> utility isn't working for me on a Solaris 2 system. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC60" href="FAQ_0.html#TOC60">Q0060</a>:&nbsp;&nbsp;Why am I getting the error <i>failed to </i></td>
+<td align="left"><i><font color="#FF0A0A">expand</font> <tt>/data/lists/lists/${lc</tt> for require_files: <tt>${lc</tt> is not a known operator</i>...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC167" href="FAQ_4.html#TOC167">Q0424</a>:&nbsp;&nbsp;...  de-duplication features? I want it to do two deliveries if two different aliases </td>
+<td align="left"><font color="#FF0A0A">expand</font> to the same address. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC169" href="FAQ_4.html#TOC169">Q0426</a>:&nbsp;&nbsp;...  <i>anything@anotherdomain</i>. I tried adding <i>$local_part@anotherdomain</i> to my aliases but it did not </td>
+<td align="left"><font color="#FF0A0A">expand</font> - it sent it to that literal address. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC7" href="FAQ_0.html#TOC7">Q0007</a>:&nbsp;&nbsp;...  the entry <tt>*@domain.com</tt> in a lookup database, but it isn't working. The </td>
+<td align="left"><font color="#FF0A0A">expansion</font> I'm using is: </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC19" href="FAQ_0.html#TOC19">Q0019</a>:&nbsp;&nbsp;There seems to be a problem in the string </td>
+<td align="left"><font color="#FF0A0A">expansion</font> code: it doesn't recognize references to headers such as <tt>${h_to}</tt>. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC25" href="FAQ_0.html#TOC25">Q0025</a>:&nbsp;&nbsp;I can't seem to get a pipe command to run when I include a <tt>${if</tt> </td>
+<td align="left"><font color="#FF0A0A">expansion</font> in it. This fails: </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC90" href="FAQ_0.html#TOC90">Q0090</a>:&nbsp;&nbsp;I can't seem to get a pipe command to run when I include a <tt>${lookup</tt> </td>
+<td align="left"><font color="#FF0A0A">expansion</font> in it. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC322" href="FAQ_17.html#TOC322">Q1703</a>:&nbsp;&nbsp;I have some legacy clients that don't use STARTTLS, but which </td>
+<td align="left"><font color="#FF0A0A">expect</font> to negotiate a TLS session automatically on connection to the ssmtp port...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC114" href="FAQ_2.html#TOC114">Q0202</a>:&nbsp;&nbsp;Can I specify a list of domains to </td>
+<td align="left"><font color="#FF0A0A">explicitly</font> reject? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC405" href="FAQ_27.html#TOC405">Q9808</a>:&nbsp;&nbsp;I have a mailing list </td>
+<td align="left"><font color="#FF0A0A">exploder</font> on one host, and three other hosts where I want to do the actual deliveries...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC247" href="FAQ_7.html#TOC247">Q0717</a>:&nbsp;&nbsp;...  of security issues are raised. Nessus complains that Exim answers to </td>
+<td align="left"><font color="#FF0A0A">EXPN</font> and/or VRFY; sometimes it even complains that Exim allows relaying. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC59" href="FAQ_0.html#TOC59">Q0059</a>:&nbsp;&nbsp;When my Outlook </td>
+<td align="left"><font color="#FF0A0A">Express</font> 6.0 client sends a STARTTLS command to begin a TLS session, Exim doesn't...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC251" href="FAQ_7.html#TOC251">Q0721</a>:&nbsp;&nbsp;...  POP-before-SMTP set up on my Exim server, but some clients use Outlook </td>
+<td align="left"><font color="#FF0A0A">Express</font>, which sends queued messages before checking the mailbox, so it doesn't...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC323" href="FAQ_17.html#TOC323">Q1704</a>:&nbsp;&nbsp;When my Outlook </td>
+<td align="left"><font color="#FF0A0A">Express</font> 6.0 client sends a STARTTLS command to begin a TLS session, Exim doesn't...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC132" href="FAQ_3.html#TOC132">Q0312</a>:&nbsp;&nbsp;Is it possible to use a conditional </td>
+<td align="left"><font color="#FF0A0A">expression</font> for the host item in a <tt>route_list</tt> for <b>manualroute</b> router? I tried the...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC164" href="FAQ_4.html#TOC164">Q0421</a>:&nbsp;&nbsp;I can't get a regular </td>
+<td align="left"><font color="#FF0A0A">expression</font> to work in a <tt>local_parts</tt> option on one of my routers. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC174" href="FAQ_4.html#TOC174">Q0431</a>:&nbsp;&nbsp;How do I configure Exim to allow arbitrary </td>
+<td align="left"><font color="#FF0A0A">extensions</font> in local parts, of the form <i>+extension</i>? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC133" href="FAQ_3.html#TOC133">Q0313</a>:&nbsp;&nbsp;I send all </td>
+<td align="left"><font color="#FF0A0A">external</font> mail to a smart host, but this means that bad addresses also get passed...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC241" href="FAQ_7.html#TOC241">Q0711</a>:&nbsp;&nbsp;Will Exim allow me to create a file of regexs and match incoming </td>
+<td align="left"><font color="#FF0A0A">external</font> email to the list - and if a match is found file the offending message...</td>
+</tr>
+<tr>
+<td align="right"><a name="TOC364" href="FAQ_19.html#TOC364">Q5034</a>:&nbsp;&nbsp;...  <tt>queue_only</tt> option conditional? I would like the ability to queue messages from </td>
+<td align="left"><font color="#FF0A0A">external</font> sources while deliver locally generated email as normal. </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC181" href="FAQ_5.html#TOC181">Q0502</a>:&nbsp;&nbsp;...  the ability to obtain the result of a pipe command so that I can filter </td>
+<td align="left"><font color="#FF0A0A">externally</font> and redirect internally. Is this possible? </td>
+</tr>
+<tr>
+<td align="right"><a name="TOC102" href="FAQ_1.html#TOC102">Q0110</a>:&nbsp;&nbsp;I'm trying to build Exim with PAM support. I have included <tt>-lpam</tt> in </td>
+<td align="left"><small><font color="#FF0A0A">EXTRALIBS</font></small>, but I'm still getting a linking error: </td>
+</tr>
+</table>
+<p>
+&nbsp;&nbsp;<a href="FAQ-KWIC_A.html">&nbsp;&nbsp;A</a><a href="FAQ-KWIC_B.html">&nbsp;&nbsp;B</a><a href="FAQ-KWIC_C.html">&nbsp;&nbsp;C</a><a href="FAQ-KWIC_D.html">&nbsp;&nbsp;D</a>&nbsp;&nbsp;&nbsp;<font size=7 color="#FF0A0A"><b>E</b></font>&nbsp;<a href="FAQ-KWIC_F.html">&nbsp;&nbsp;F</a><a href="FAQ-KWIC_G.html">&nbsp;&nbsp;G</a><a href="FAQ-KWIC_H.html">&nbsp;&nbsp;H</a><a href="FAQ-KWIC_I.html">&nbsp;&nbsp;I</a><a href="FAQ-KWIC_K.html">&nbsp;&nbsp;K</a><a href="FAQ-KWIC_L.html">&nbsp;&nbsp;L</a><a href="FAQ-KWIC_M.html">&nbsp;&nbsp;M</a><a href="FAQ-KWIC_N.html">&nbsp;&nbsp;N</a><a href="FAQ-KWIC_O.html">&nbsp;&nbsp;O</a><a href="FAQ-KWIC_P.html">&nbsp;&nbsp;P</a><a href="FAQ-KWIC_Q.html">&nbsp;&nbsp;Q</a><a href="FAQ-KWIC_R.html">&nbsp;&nbsp;R</a><a href="FAQ-KWIC_S.html">&nbsp;&nbsp;S</a><a href="FAQ-KWIC_T.html">&nbsp;&nbsp;T</a><a href="FAQ-KWIC_U.html">&nbsp;&nbsp;U</a><a href="FAQ-KWIC_V.html">&nbsp;&nbsp;V</a><a href="FAQ-KWIC_W.html">&nbsp;&nbsp;W</a><a href="FAQ-KWIC_X.html">&nbsp;&nbsp;X</a><a href="FAQ-KWIC_Y.html">&nbsp;&nbsp;Y</a><a href="FAQ-KWIC_Z.html">&nbsp;&nbsp;Z</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="FAQ.html#TOC">FAQ Contents</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,141 @@
+arm_v5t_le-gcc -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -MM -MG proc/alloc.c proc/devname.c proc/escape.c proc/ksym.c proc/pwcache.c proc/readproc.c proc/sig.c proc/slab.c proc/sysinfo.c proc/version.c proc/whattime.c > proc/.depend
+arm_v5t_le-gcc  -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -c -o uptime.o uptime.c
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -DSHARED=1 -fpic proc/alloc.c -o proc/alloc.o
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -DSHARED=1 -fpic proc/devname.c -o proc/devname.o
+proc/devname.c:52: warning: padding struct size to alignment boundary
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -DSHARED=1 -fpic proc/escape.c -o proc/escape.o
+In file included from proc/escape.h:7,
+                 from proc/escape.c:15:
+proc/readproc.h:140: warning: padding struct size to alignment boundary
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -DSHARED=1 -fpic proc/ksym.c -o proc/ksym.o
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -DSHARED=1 -fpic proc/pwcache.c -o proc/pwcache.o
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -DSHARED=1 -fpic proc/readproc.c -o proc/readproc.o
+In file included from proc/readproc.c:13:
+proc/readproc.h:140: warning: padding struct size to alignment boundary
+proc/readproc.c: In function `status2proc':
+proc/readproc.c:165: warning: array subscript has type `char'
+proc/readproc.c:165: warning: array subscript has type `char'
+proc/readproc.c:165: warning: array subscript has type `char'
+proc/readproc.c: In function `stat2proc':
+proc/readproc.c:348: warning: use of assignment suppression and length modifier together in scanf format
+proc/readproc.c:348: warning: use of assignment suppression and length modifier together in scanf format
+proc/readproc.c: In function `file2strvec':
+proc/readproc.c:424: warning: cast increases required alignment of target type
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -DSHARED=1 -fpic proc/sig.c -o proc/sig.o
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -DSHARED=1 -fpic proc/slab.c -o proc/slab.o
+proc/slab.c:99:1: warning: multi-line comment
+proc/slab.c:104:1: warning: multi-line comment
+proc/slab.c:111:1: warning: multi-line comment
+proc/slab.c:116:1: warning: multi-line comment
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -DSHARED=1 -fpic proc/sysinfo.c -o proc/sysinfo.o
+arm_v5t_le-gcc  -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -DSHARED=1 -fpic -DVERSION=\"3\" -DSUBVERSION=\"2\" -DMINORVERSION=\"5\" -c -o proc/version.o proc/version.c
+proc/version.c:36: warning: redundant redeclaration of 'init_Linux_version'
+proc/version.h:20: warning: previous declaration of 'init_Linux_version' was here
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -DSHARED=1 -fpic proc/whattime.c -o proc/whattime.o
+arm_v5t_le-gcc  -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -Wl,-warn-common  -shared -Wl,-soname,libproc-3.2.5.so -Wl,--version-script=proc/library.map -o proc/libproc-3.2.5.so proc/alloc.o proc/devname.o proc/escape.o proc/ksym.o proc/pwcache.o proc/readproc.o proc/sig.o proc/slab.o proc/sysinfo.o proc/version.o proc/whattime.o -lc
+arm_v5t_le-gcc  -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions uptime.o proc/libproc-3.2.5.so -Wl,-warn-common  -o uptime
+arm_v5t_le-gcc  -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -c -o tload.o tload.c
+tload.c:33: warning: redundant redeclaration of 'optind'
+/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include/getopt.h:73: warning: previous declaration of 'optind' was here
+tload.c:34: warning: redundant redeclaration of 'optarg'
+/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include/getopt.h:59: warning: previous declaration of 'optarg' was here
+arm_v5t_le-gcc  -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions tload.o proc/libproc-3.2.5.so -Wl,-warn-common  -o tload
+arm_v5t_le-gcc  -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -c -o free.o free.c
+arm_v5t_le-gcc  -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions free.o proc/libproc-3.2.5.so -Wl,-warn-common  -o free
+arm_v5t_le-gcc  -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions  -c w.c
+In file included from w.c:10:
+proc/readproc.h:140: warning: padding struct size to alignment boundary
+w.c: In function `getproc':
+w.c:160: warning: comparison between signed and unsigned
+w.c:160: warning: comparison between signed and unsigned
+arm_v5t_le-gcc  -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions w.o proc/libproc-3.2.5.so -Wl,-warn-common  -o w
+arm_v5t_le-gcc  -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -c -o top.o top.c
+In file included from top.c:49:
+proc/readproc.h:140: warning: padding struct size to alignment boundary
+In file included from top.c:56:
+top.h:208: warning: padding struct size to alignment boundary
+top.h:217: warning: padding struct size to alignment boundary
+top.h:341: warning: padding struct size to alignment boundary
+top.c: In function `show_special':
+top.c:678: warning: assignment discards qualifiers from pointer target type
+top.c: In function `good_uid':
+top.c:840: warning: comparison between signed and unsigned
+top.c:841: warning: comparison between signed and unsigned
+top.c:842: warning: comparison between signed and unsigned
+top.c:845: warning: comparison between signed and unsigned
+top.c: In function `prochlp':
+top.c:1058: warning: passing arg 5 of `bsearch' from incompatible pointer type
+top.c: In function `whack_terminal':
+top.c:1864: warning: passing arg 1 of `setupterm' discards qualifiers from pointer target type
+top.c: In function `summary_show':
+top.c:2855: warning: passing arg 5 of `select' discards qualifiers from pointer target type
+top.c: In function `task_show':
+top.c:3075: warning: assignment discards qualifiers from pointer target type
+top.c: In function `window_show':
+top.c:3101: warning: assignment discards qualifiers from pointer target type
+top.c: In function `main':
+top.c:3271: warning: passing arg 5 of `select' discards qualifiers from pointer target type
+top.c:3290: warning: passing arg 5 of `select' discards qualifiers from pointer target type
+arm_v5t_le-gcc  -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions top.o proc/libproc-3.2.5.so -Wl,-warn-common  -o top -lncurses
+arm_v5t_le-gcc  -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -c -o vmstat.o vmstat.c
+arm_v5t_le-gcc  -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions vmstat.o proc/libproc-3.2.5.so -Wl,-warn-common  -o vmstat
+arm_v5t_le-gcc  -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -c -o watch.o watch.c
+arm_v5t_le-gcc  -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions watch.o -Wl,-warn-common  -o watch -lncurses
+arm_v5t_le-gcc  -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -c -o skill.o skill.c
+skill.c: In function `main':
+skill.c:379: warning: 'argptr' might be used uninitialized in this function
+arm_v5t_le-gcc  -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions skill.o proc/libproc-3.2.5.so -Wl,-warn-common  -o skill
+ln -f skill snice
+ln -f skill kill
+arm_v5t_le-gcc  -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -c -o sysctl.o sysctl.c
+arm_v5t_le-gcc  -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions sysctl.o proc/libproc-3.2.5.so -Wl,-warn-common  -o sysctl
+arm_v5t_le-gcc  -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -c -o pmap.o pmap.c
+In file included from pmap.c:24:
+proc/readproc.h:140: warning: padding struct size to alignment boundary
+arm_v5t_le-gcc  -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions pmap.o proc/libproc-3.2.5.so -Wl,-warn-common  -o pmap
+arm_v5t_le-gcc  -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -c -o pgrep.o pgrep.c
+In file included from pgrep.c:28:
+proc/readproc.h:140: warning: padding struct size to alignment boundary
+pgrep.c: In function `main':
+pgrep.c:353: warning: 'saved_start_time' might be used uninitialized in this function
+pgrep.c:353: warning: 'saved_start_time' might be used uninitialized in this function
+arm_v5t_le-gcc  -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions pgrep.o proc/libproc-3.2.5.so -Wl,-warn-common  -o pgrep
+ln -f pgrep pkill
+arm_v5t_le-gcc  -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -c -o slabtop.o slabtop.c
+arm_v5t_le-gcc  -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions slabtop.o proc/libproc-3.2.5.so -Wl,-warn-common  -o slabtop -lncurses
+arm_v5t_le-gcc  -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -c -o pwdx.o pwdx.c
+arm_v5t_le-gcc  -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions pwdx.o proc/libproc-3.2.5.so -Wl,-warn-common  -o pwdx
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions ps/display.c -o ps/display.o
+In file included from ps/common.h:16,
+                 from ps/display.c:31:
+ps/../proc/readproc.h:140: warning: padding struct size to alignment boundary
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions ps/global.c -o ps/global.o
+In file included from ps/common.h:16,
+                 from ps/global.c:23:
+ps/../proc/readproc.h:140: warning: padding struct size to alignment boundary
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions ps/help.c -o ps/help.o
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions ps/output.c -o ps/output.o
+In file included from ps/output.c:57:
+ps/../proc/readproc.h:140: warning: padding struct size to alignment boundary
+ps/output.c: In function `pr_nice':
+ps/output.c:591: warning: comparison between signed and unsigned
+ps/output.c: In function `pr_rtprio':
+ps/output.c:625: warning: comparison between signed and unsigned
+ps/output.c: In function `pr_sched':
+ps/output.c:629: warning: comparison between signed and unsigned
+ps/output.c: In function `check_header_width':
+ps/output.c:1703: warning: comparison between signed and unsigned
+ps/output.c: In function `show_one_proc':
+ps/output.c:1747: warning: comparison between signed and unsigned
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions ps/parser.c -o ps/parser.o
+In file included from ps/common.h:16,
+                 from ps/parser.c:28:
+ps/../proc/readproc.h:140: warning: padding struct size to alignment boundary
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions ps/select.c -o ps/select.o
+In file included from ps/common.h:16,
+                 from ps/select.c:16:
+ps/../proc/readproc.h:140: warning: padding struct size to alignment boundary
+arm_v5t_le-gcc  -c -D_GNU_SOURCE -I proc -I/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/include -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions ps/sortformat.c -o ps/sortformat.o
+In file included from ps/sortformat.c:21:
+ps/../proc/readproc.h:140: warning: padding struct size to alignment boundary
+arm_v5t_le-gcc  -fno-common -ffast-math -W -Wall -Wshadow -Wcast-align -Wredundant-decls -Wbad-function-cast -Wcast-qual -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -O2 -s  -Wdeclaration-after-statement -Wpadded -Wstrict-aliasing -fweb -frename-registers -fomit-frame-pointer -fno-inline-functions -Wl,-warn-common  -o ps/ps ps/display.o ps/global.o ps/help.o ps/output.o ps/parser.o ps/select.o ps/sortformat.o proc/libproc-3.2.5.so

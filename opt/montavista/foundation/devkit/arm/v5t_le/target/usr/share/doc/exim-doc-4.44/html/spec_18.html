@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 18</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_17.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_19.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX1672"></a>
+<a name="IX1673"></a>
+<a name="IX1674"></a>
+<h1>
+<a name="CHAP18" href="spec_toc.html#TOC169">
+18. The ipliteral router
+</a></h1>
+<p>
+This router has no private options. Unless it is being used purely for
+verification (see <tt>verify&#095;only</tt>) a transport is required to be defined by the
+generic <tt>transport</tt> option. The router accepts the address if its domain part
+takes the form of an RFC 2822 domain literal, that is, an IP address enclosed
+in square brackets. For example, this router handles the address
+<pre>
+&nbsp;&nbsp;root@[192.168.1.1]
+</pre>
+</p>
+<p>
+by setting up delivery to the host with that IP address. 
+</p>
+<p>
+<a name="IX1675"></a>
+<font color=green>
+If the IP address matches something in <tt>ignore&#095;target&#095;hosts</tt>, the router 
+declines.
+</font>
+If an IP literal turns out to refer to the local host, the generic <tt>self</tt>
+option determines what happens. 
+</p>
+<p>
+The RFCs require support for domain literals; however, their use is
+controversial in today's Internet. If you want to use this router, you must
+also set the main configuration option <tt>allow&#095;domain&#095;literals</tt>. Otherwise,
+Exim will not recognize the domain literal syntax in addresses.
+<hr>
+</p>
+<font size=2>
+<a href="spec_17.html">Previous</a>&nbsp;&nbsp;<a href="spec_19.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

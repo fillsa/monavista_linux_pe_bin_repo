@@ -1,0 +1,522 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 1</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_2.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<h1>
+<a name="CHAP1" href="spec_toc.html#TOC1">
+1. Introduction
+</a></h1>
+<p>
+<i>If I have seen further it is by standing on the shoulders of giants.</i>
+(Isaac Newton).
+<br>
+</p>
+<p>
+Exim is a mail transfer agent (MTA) for hosts that are running Unix or
+Unix-like operating systems. It was designed on the assumption that it would be
+run on hosts that are permanently connected to the Internet. However, it can be
+used on intermittently connected hosts with suitable configuration adjustments.
+</p>
+<p>
+Configuration files currently exist for the following operating systems: AIX,
+BSD/OS (aka BSDI), Darwin (Mac OS X), DGUX, FreeBSD, GNU/Hurd, GNU/Linux,
+HI-OSF (Hitachi), HP-UX, IRIX, MIPS RISCOS, NetBSD, OpenBSD, QNX, SCO, SCO
+SVR4.2 (aka UNIX-SV), Solaris (aka SunOS5), SunOS4, Tru64-Unix (formerly
+Digital UNIX, formerly DEC-OSF1), Ultrix, and Unixware. Some of these operating 
+systems are no longer current and cannot easily be tested, so the configuration 
+files may no longer work in practice. 
+</p>
+<p>
+There are also configuration files for compiling Exim in the Cygwin environment
+that can be installed on systems running Windows. However, this document does
+not contain any information about running Exim in the Cygwin environment.
+</p>
+<p>
+The terms and conditions for the use and distribution of Exim are contained in
+the file <i>NOTICE</i>. Exim is distributed under the terms of the GNU General
+Public Licence, a copy of which may be found in the file <i>LICENCE</i>.
+</p>
+<p>
+The use, supply or promotion of Exim for the purpose of sending bulk,
+unsolicited electronic mail is incompatible with the basic aims of the program,
+which revolve around the free provision of a service that enhances the quality
+of personal communications. The author of Exim regards indiscriminate
+mass-mailing as an antisocial, irresponsible abuse of the Internet.
+</p>
+<p>
+Exim owes a great deal to Smail 3 and its author, Ron Karr. Without the
+experience of running and working on the Smail 3 code, I could never have
+contemplated starting to write a new MTA. Many of the ideas and user interfaces
+were originally taken from Smail 3, though the actual code of Exim is entirely
+new, and has developed far beyond the initial concept.
+</p>
+<p>
+Many people, both in Cambridge and around the world, have contributed to the
+development and the testing of Exim, and to porting it to various operating
+systems. I am grateful to them all. The distribution now contains a file called
+<i>ACKNOWLEDGMENTS</i>, in which I have started recording the names of
+contributors.
+</p>
+<a name="IX1"></a>
+<h2>
+<a name="SECT1.1" href="spec_toc.html#TOC2">
+1.1. Exim documentation
+</a></h2>
+<p>
+<font color=green>
+This edition of the Exim specification applies to version 4.40 of Exim.
+Substantive changes from the 4.30 edition are marked by bars in
+the right-hand margin in the PostScript, PDF, and plain text versions of the
+document, and by green text in the HTML version, as shown by this paragraph.
+Changes are not marked in the Texinfo version, because Texinfo doesn't support
+change bars. Minor corrections and rewordings are not marked.
+</font>
+</p>
+<p>
+This document is very much a reference manual; it is not a tutorial. The reader
+is expected to have some familiarity with the SMTP mail transfer protocol and
+with general Unix system administration. Although there are some discussions
+and examples in places, the information is mostly organized in a way that makes
+it easy to look up, rather than in a natural order for sequential reading.
+Furthermore, the manual aims to cover every aspect of Exim in detail, including
+a number of rarely-used, special-purpose features that are unlikely to be of
+very wide interest.
+<a name="IX2"></a>
+</p>
+<p>
+An &#147;easier&#148; discussion of Exim which provides more in-depth explanatory,
+introductory, and tutorial material can be found in a book entitled<A HREF="http://www.uit.co.uk/exim-book/">
+<em>The Exim SMTP Mail Server</em>,
+</A>
+published by UIT Cambridge. 
+</p>
+<p>
+This book also contains a chapter that gives a general introduction to SMTP and
+Internet mail. Inevitably, however, the book is unlikely to be fully up-to-date
+with the latest release of Exim. (Note that the earlier book about Exim,
+published by O'Reilly, covers Exim 3, and many things have changed in Exim 4.)
+<a name="IX3"></a>
+<a name="IX4"></a>
+<a name="IX5"></a>
+</p>
+<p>
+As the program develops, there may be features in newer versions that have not
+yet made it into this document, which is updated only when the most significant
+digit of the fractional part of the version number changes. However,
+specifications of new features that are not yet in this manual are placed in
+the file <i>doc/NewStuff</i> in the Exim distribution. All changes to the program
+(whether new features, bug fixes, or other kinds of change) are noted briefly
+in the file called <i>doc/ChangeLog</i>.
+<a name="IX6"></a>
+</p>
+<p>
+This specification itself is available as an ASCII file in <i>doc/spec.txt</i> so
+that it can easily be searched with a text editor. Other files in the <i>doc</i>
+directory are:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<i>OptionLists.txt</i>&nbsp;&nbsp;</td><td>list of all options in alphabetical order</td></tr>
+<tr><td>&nbsp;&nbsp;<i>dbm.discuss.txt</i>&nbsp;&nbsp;</td><td>discussion about DBM libraries</td></tr>
+<tr><td>&nbsp;&nbsp;<i>exim.8</i>&nbsp;&nbsp;</td><td>a man page of Exim's command line options</td></tr>
+<tr><td>&nbsp;&nbsp;<i>filter.txt</i>&nbsp;&nbsp;</td><td>specification of the filter language</td></tr>
+<tr><td>&nbsp;&nbsp;<i>pcrepattern.txt</i>&nbsp;&nbsp;</td><td>specification of PCRE regular expressions</td></tr>
+<tr><td>&nbsp;&nbsp;<i>pcretest.txt</i>&nbsp;&nbsp;</td><td>specification of the PCRE testing program</td></tr>
+<tr><td>&nbsp;&nbsp;<i>Exim3.upgrade</i>&nbsp;&nbsp;</td><td>upgrade notes from release 2 to release 3</td></tr>
+<tr><td>&nbsp;&nbsp;<i>Exim4.upgrade</i>&nbsp;&nbsp;</td><td>upgrade notes from release 3 to release 4</td></tr>
+</table>
+</p>
+<p>
+The main specification and the specification of the filtering language are also
+available in other formats (HTML, PostScript, PDF, and Texinfo). Section
+<a href="spec_1.html#SECT1.5">1.5</a> below tells you how to get hold of these.
+</p>
+<a name="IX7"></a>
+<a name="IX8"></a>
+<h2>
+<a name="SECT1.2" href="spec_toc.html#TOC3">
+1.2. FTP and web sites, and mailing list
+</a></h2>
+<p>
+<a name="IX9"></a>
+The primary distribution site for Exim is an FTP site, whose contents are 
+described in <i>Where to find the Exim distribution</i> below. In addition,
+there is a web site at <a href="http://www.exim.org">http://www.exim.org</a> by courtesy of Energis Squared,
+formerly Planet Online Ltd, who are situated in the UK. The site is mirrored in
+a number of other countries; links to the mirrors are listed on the home page.
+The web site contains the Exim distribution, and you can also find the
+documentation and the
+FAQ</A>
+online there, as well as other relevant material.
+<a name="IX10"></a>
+</p>
+<p>
+Energis Squared also provide resources for the following mailing lists:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<em>exim-users&#064;exim.org</em>&nbsp;&nbsp;</td><td>general discussion list</td></tr>
+<tr><td>&nbsp;&nbsp;<em>exim-announce&#064;exim.org</em>&nbsp;&nbsp;</td><td>moderated, low volume announcements list</td></tr>
+</table>
+</p>
+<p>
+You can subscribe to these lists, change your existing subscriptions, and view
+or search the archives via the<A HREF="http://www.exim.org/maillist.html">
+mailing lists</A>
+link on the Exim home page. The <em>exim-users</em> mailing list is also forwarded
+to <a href="http://www.egroups.com/list/exim-users">http://www.egroups.com/list/exim-users</a>, an archiving system with
+searching capabilities.
+</p>
+<a name="IX11"></a>
+<h2>
+<a name="SECT1.3" href="spec_toc.html#TOC4">
+1.3. Exim training
+</a></h2>
+<p>
+From time to time (approximately annually at the time of writing),
+lecture-based training courses are run by the author of Exim in Cambridge, UK.
+Details can be found on the web site<A HREF="http://www-tus.csx.cam.ac.uk/courses/exim/">
+<a href="http://www-tus&#046;csx&#046;cam&#046;ac.uk/courses/exim/">http://www-tus&#046;csx&#046;cam&#046;ac.uk/courses/exim/</a>.</A>
+</p>
+<a name="IX12"></a>
+<a name="IX13"></a>
+<h2>
+<a name="SECT1.4" href="spec_toc.html#TOC5">
+1.4. Bug reports
+</a></h2>
+<p>
+Reports of obvious bugs should be emailed to <i>bugs&#064;exim.org</i>. However, if
+you are unsure whether some behaviour is a bug or not, the best thing to do is
+to post a message to the <em>exim-users</em> mailing list and have it discussed.
+</p>
+<a name="IX14"></a>
+<a name="IX15"></a>
+<h2>
+<a name="SECT1.5" href="spec_toc.html#TOC6">
+1.5. Where to find the Exim distribution
+</a></h2>
+<p>
+The master ftp site for the Exim distribution is
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><a href="ftp://ftp.csx.cam.ac.uk/pub/software/email/exim">ftp://ftp.csx.cam.ac.uk/pub/software/email/exim</a><br>
+</p>
+<p>
+Within that directory there are subdirectories called <i>exim3</i> (for previous
+Exim 3 distributions), <i>exim4</i> (for the latest Exim 4 distributions), and
+<i>Testing</i> for occasional testing versions. Those mirror sites that I know
+about are listed in the file
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><a href="ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/Mirrors">ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/Mirrors</a><br>
+</p>
+<p>
+In the <i>exim4</i> subdirectory, the current release can always be found in
+files called
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><i>exim-<em>n.nn</em>.tar.gz</i><br>
+<tt>&nbsp;&nbsp;</tt><i>exim-<em>n.nn</em>.tar.bz2</i><br>
+</p>
+<p>
+<a name="IX16"></a>
+<a name="IX17"></a>
+<a name="IX18"></a>
+where <em>n.nn</em> is the highest such version number in the directory. The two
+files contain identical data; the only difference is the type of compression.
+The <i>.bz2</i> file is usually a lot smaller than the <i>.gz</i> file.
+The distributions are signed with Philip Hazel's GPG key.
+The corresponding public key is available from a number of keyservers, and
+there is also a copy in the file:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><a href="ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/Public-Key">ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/Public-Key</a><br>
+</p>
+<p>
+The signatures for the tar bundles are in:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><i>exim-<em>n.nn</em>.tar.gz.sig</i><br>
+<tt>&nbsp;&nbsp;</tt><i>exim-<em>n.nn</em>.tar.bz2.sig</i><br>
+</p>
+<p>
+When there is only a small amount of change from one release to the next, a
+patch file may be provided, with a final component name of the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><i>exim-patch-<em>n.nn</em>-<em>m.mm</em>.gz</i><br>
+</p>
+<p>
+For each released version, the log of changes is made separately available in
+the directory
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><a href="ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/ChangeLogs">ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/ChangeLogs</a><br>
+</p>
+<p>
+so that it is possible to find out what has changed without having to download
+the entire distribution.
+<a name="IX19"></a>
+</p>
+<p>
+The main distribution contains ASCII versions of this specification and other
+documentation; other formats of the documents are available in separate files
+inside the <i>exim4</i> directory of the FTP site:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><i>exim-html-<em>n.nn</em>.tar.gz</i><br>
+<tt>&nbsp;&nbsp;</tt><i>exim-pdf-<em>n.nn</em>.tar.gz</i><br>
+<tt>&nbsp;&nbsp;</tt><i>exim-postscript-<em>n.nn</em>.tar.gz</i><br>
+<tt>&nbsp;&nbsp;</tt><i>exim-texinfo-<em>n.nn</em>.tar.gz</i><br>
+</p>
+<p>
+These tar files contain only the <i>doc</i> directory, not the complete
+distribution, and are also available in <i>.bz2</i> as well as <i>.gz</i> forms.
+<a name="IX20"></a>
+</p>
+<p>
+The FAQ is available for downloading in two different formats from
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><a href="ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/exim4/FAQ.txt.gz">ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/exim4/FAQ.txt.gz</a><br>
+<tt>&nbsp;&nbsp;</tt><a href="ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/exim4/FAQ.html.tar.gz">ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/exim4/FAQ.html.tar.gz</a><br>
+</p>
+<p>
+The first of these is a single ASCII file that can be searched with a text
+editor. The second is a directory of HTML files, normally accessed by starting
+at <i>index.html</i>. The HTML version of the FAQ (which is also included in the
+HTML documentation tarbundle) includes a keyword-in-context index, which is
+often the most convenient way of finding your way around.
+</p>
+<a name="IX21"></a>
+<h2>
+<a name="SECT1.6" href="spec_toc.html#TOC7">
+1.6. Wish list
+</a></h2>
+<p>
+A wish list is maintained, containing ideas for new features that have been
+submitted. From time to time the file is exported to the ftp site:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><a href="ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/exim4/WishList">ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/exim4/WishList</a><br>
+</p>
+<p>
+Items are removed from the list if they get implemented.
+</p>
+<a name="IX22"></a>
+<h2>
+<a name="SECT1.7" href="spec_toc.html#TOC8">
+1.7. Contributed material
+</a></h2>
+<p>
+At the ftp site, there is a directory called
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><a href="ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/exim4/Contrib/">ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/exim4/Contrib/</a><br>
+</p>
+<p>
+which contains miscellaneous files contributed to the Exim community by Exim
+users. There is also a collection of contributed configuration examples in
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><a href="ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/exim4/config.samples.tar.gz">ftp://ftp.csx.cam.ac.uk/pub/software/email/exim/exim4/config.samples.tar.gz</a><br>
+</p>
+<p>
+These samples are referenced from the FAQ.
+</p>
+<a name="IX23"></a>
+<h2>
+<a name="SECT1.8" href="spec_toc.html#TOC9">
+1.8. Limitations
+</a></h2>
+<ul>
+<li><p>
+<a name="IX24"></a>
+Exim is designed for use as an Internet MTA, and therefore handles addresses
+in RFC 2822 domain format only.
+It cannot handle UUCP &#147;bang paths&#148;, though simple two-component bang paths can
+be converted by a straightforward rewriting configuration. This restriction
+does not prevent Exim from being interfaced to UUCP as a transport mechanism,
+provided that domain addresses are used.
+</p>
+</li>
+<li><a name="IX25"></a>
+<a name="IX26"></a>
+<p>
+Exim insists that every address it handles has a domain attached. For incoming
+local messages, domainless addresses are automatically qualified with a
+configured domain value. Configuration options specify from which remote
+systems unqualified addresses are acceptable. These are then qualified on
+arrival.
+</p>
+</li>
+<li><a name="IX27"></a>
+<a name="IX28"></a>
+<p>
+The only external transport currently implemented is an SMTP transport over a
+TCP/IP network (using sockets, including support for IPv6). However, a pipe
+transport is available, and there are facilities for writing messages to files
+and pipes, optionally in <i>batched SMTP</i> format; these facilities can be used
+to send messages to some other transport mechanism such as UUCP, provided it
+can handle domain-style addresses. Batched SMTP input is also catered for.
+</p>
+</li>
+<li><p>
+Exim is not designed for storing mail for dial-in hosts. When the volumes of
+such mail are large, it is better to get the messages &#147;delivered&#148; into files
+(that is, off Exim's queue) and subsequently passed on to the dial-in hosts by
+other means.
+</p>
+</li>
+<li><p>
+Although Exim does have some facilities for scanning incoming messages, these 
+are not comprehensive enough to do full virus or spam scanning. Such operations 
+are best carried out using additional specialized software packages.
+</p>
+</li>
+</ul>
+<h2>
+<a name="SECT1.9" href="spec_toc.html#TOC10">
+1.9. Run time configuration
+</a></h2>
+<p>
+Exim's run time configuration is held in a single text file that is divided
+into a number of sections. The entries in this file consist of keywords and
+values, in the style of Smail 3 configuration files. A default configuration
+file which is suitable for simple online installations is provided in the
+distribution, and is described in chapter <a href="spec_7.html">7</a> below.
+</p>
+<a name="IX29"></a>
+<h2>
+<a name="SECT1.10" href="spec_toc.html#TOC11">
+1.10. Calling interface
+</a></h2>
+<p>
+Like many MTAs, Exim has adopted the Sendmail command line interface so that it
+can be a straight replacement for <i>/usr/lib/sendmail</i> or
+<i>/usr/sbin/sendmail</i> when sending mail, but you do not need to know anything
+about Sendmail in order to run Exim. For actions other than sending messages,
+Sendmail-compatible options also exist, but those that produce output (for
+example, <i>-bp</i>, which lists the messages on the queue) do so in Exim's own
+format. There are also some additional options that are compatible with Smail
+3, and some further options that are new to Exim. Chapter <a href="spec_5.html">5</a>
+documents all Exim's command line options. This information is automatically
+made into the man page that forms part of the Exim distribution.
+</p>
+<p>
+Control of messages on the queue can be done via certain privileged command
+line options. There is also an optional monitor program called <i>eximon</i>, which
+displays current information in an X window, and which contains a menu
+interface to Exim's command line administration options.
+</p>
+<a name="IX30"></a>
+<a name="IX31"></a>
+<h2>
+<a name="SECT1.11" href="spec_toc.html#TOC12">
+1.11. Terminology
+</a></h2>
+<p>
+The <i>body</i> of a message is the actual data that the sender wants to transmit.
+It is the last part of a message, and is separated from the <i>header</i> (see
+below) by a blank line.
+<a name="IX32"></a>
+</p>
+<p>
+When a message cannot be delivered, it is normally returned to the sender in a
+delivery failure message. The term <i>bounce</i> is commonly used for this action,
+and the error reports are often called <i>bounce messages</i>. This is a
+convenient shorthand for &#147;delivery failure error report&#148;. Such messages have an
+empty sender address in the message's <i>envelope</i> (see below) to ensure that
+they cannot themselves give rise to further bounce messages.
+</p>
+<p>
+The term <i>default</i> appears frequently in this manual. It is used to qualify a
+value which is used in the absence of any setting in the configuration. It may
+also qualify an action which is taken unless a configuration setting specifies
+otherwise.
+</p>
+<p>
+The term <i>defer</i> is used when the delivery of a message to a specific
+destination cannot immediately take place for some reason (a remote host may be
+down, or a user's local mailbox may be full). Such deliveries are <i>deferred</i>
+until a later time.
+</p>
+<p>
+The word <i>domain</i> is sometimes used to mean all but the first component of a
+host's name. It is <em>not</em> used in that sense here, where it normally
+refers to the part of an email address following the &#064; sign.
+<a name="IX33"></a>
+<a name="IX34"></a>
+</p>
+<p>
+A message in transit has an associated <i>envelope</i>, as well as a header and a
+body. The envelope contains a sender address (to which bounce messages should
+be delivered), and any number of recipient addresses. References to the
+sender or the recipients of a message usually mean the addresses in the
+envelope. An MTA uses these addresses for delivery, and for returning bounce
+messages, not the addresses that appear in the header lines.
+<a name="IX35"></a>
+<a name="IX36"></a>
+</p>
+<p>
+The <i>header</i> of a message is the first part of a message's text, consisting
+of a number of lines, each of which has a name such as <i>From:</i>, <i>To:</i>,
+<i>Subject:</i>, etc. Long header lines can be split over several text lines by
+indenting the continuations. The header is separated from the body by a blank
+line.
+<a name="IX37"></a>
+<a name="IX38"></a>
+</p>
+<p>
+The term <i>local part</i>, which is taken from RFC 2822, is used to refer to that
+part of an email address that precedes the &#064; sign. The part that follows the
+&#064; sign is called the <i>domain</i> or <i>mail domain</i>.
+<a name="IX39"></a>
+<a name="IX40"></a>
+</p>
+<p>
+The terms <i>local delivery</i> and <i>remote delivery</i> are used to distinguish
+delivery to a file or a pipe on the local host from delivery by SMTP over
+TCP/IP to a remote host.
+<a name="IX41"></a>
+</p>
+<p>
+<i>Return path</i> is another name that is used for the sender address in a
+message's envelope.
+<a name="IX42"></a>
+</p>
+<p>
+The term <i>queue</i> is used to refer to the set of messages awaiting delivery,
+because this term is in widespread use in the context of MTAs. However, in
+Exim's case the reality is more like a pool than a queue, because there is
+normally no ordering of waiting messages.
+<a name="IX43"></a>
+</p>
+<p>
+The term <i>queue runner</i> is used to describe a process that scans the queue
+and attempts to deliver those messages whose retry times have come. This term
+is used by other MTAs, and also relates to the command <tt>runq</tt>, but in Exim
+the waiting messages are normally processed in an unpredictable order.
+<a name="IX44"></a>
+</p>
+<p>
+The term <i>spool directory</i> is used for a directory in which Exim keeps the
+messages on its queue &#150; that is, those that it is in the process of
+delivering. This should not be confused with the directory in which local
+mailboxes are stored, which is called a &#147;spool directory&#148; by some people. In
+the Exim documentation, &#147;spool&#148; is always used in the first sense.
+<hr>
+</p>
+<font size=2>
+<a href="spec_2.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

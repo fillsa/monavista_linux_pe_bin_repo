@@ -1,0 +1,122 @@
+<html lang="en">
+<head>
+<title>Cancellation - The GNU C Library</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU C Library">
+<meta name="generator" content="makeinfo 4.7">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="POSIX-Threads.html#POSIX-Threads" title="POSIX Threads">
+<link rel="prev" href="Thread-Attributes.html#Thread-Attributes" title="Thread Attributes">
+<link rel="next" href="Cleanup-Handlers.html#Cleanup-Handlers" title="Cleanup Handlers">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc { font-variant:small-caps }
+  span.roman { font-family: serif; font-weight: normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Cancellation"></a>Next:&nbsp;<a rel="next" accesskey="n" href="Cleanup-Handlers.html#Cleanup-Handlers">Cleanup Handlers</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Thread-Attributes.html#Thread-Attributes">Thread Attributes</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="POSIX-Threads.html#POSIX-Threads">POSIX Threads</a>
+<hr><br>
+</div>
+
+<h3 class="section">34.3 Cancellation</h3>
+
+<p>Cancellation is the mechanism by which a thread can terminate the
+execution of another thread. More precisely, a thread can send a
+cancellation request to another thread. Depending on its settings, the
+target thread can then either ignore the request, honor it immediately,
+or defer it till it reaches a cancellation point.  When threads are
+first created by <code>pthread_create</code>, they always defer cancellation
+requests.
+
+   <p>When a thread eventually honors a cancellation request, it behaves as if
+<code>pthread_exit(PTHREAD_CANCELED)</code> was called.  All cleanup handlers
+are executed in reverse order, finalization functions for
+thread-specific data are called, and finally the thread stops executing. 
+If the canceled thread was joinable, the return value
+<code>PTHREAD_CANCELED</code> is provided to whichever thread calls
+<var>pthread_join</var> on it. See <code>pthread_exit</code> for more information.
+
+   <p>Cancellation points are the points where the thread checks for pending
+cancellation requests and performs them.  The POSIX threads functions
+<code>pthread_join</code>, <code>pthread_cond_wait</code>,
+<code>pthread_cond_timedwait</code>, <code>pthread_testcancel</code>,
+<code>sem_wait</code>, and <code>sigwait</code> are cancellation points.  In
+addition, these system calls are cancellation points:
+
+   <p><table summary=""><tr align="left"><td valign="top" width="33%"><tt>accept</tt>	</td><td valign="top" width="33%"><tt>open</tt>		</td><td valign="top" width="33%"><tt>sendmsg</tt>
+<br></td></tr><tr align="left"><td valign="top" width="33%"><tt>close</tt>		</td><td valign="top" width="33%"><tt>pause</tt>		</td><td valign="top" width="33%"><tt>sendto</tt>
+<br></td></tr><tr align="left"><td valign="top" width="33%"><tt>connect</tt>	</td><td valign="top" width="33%"><tt>read</tt>		</td><td valign="top" width="33%"><tt>system</tt>
+<br></td></tr><tr align="left"><td valign="top" width="33%"><tt>fcntl</tt>		</td><td valign="top" width="33%"><tt>recv</tt>		</td><td valign="top" width="33%"><tt>tcdrain</tt>
+<br></td></tr><tr align="left"><td valign="top" width="33%"><tt>fsync</tt>		</td><td valign="top" width="33%"><tt>recvfrom</tt>	</td><td valign="top" width="33%"><tt>wait</tt>
+<br></td></tr><tr align="left"><td valign="top" width="33%"><tt>lseek</tt>		</td><td valign="top" width="33%"><tt>recvmsg</tt>	</td><td valign="top" width="33%"><tt>waitpid</tt>
+<br></td></tr><tr align="left"><td valign="top" width="33%"><tt>msync</tt>		</td><td valign="top" width="33%"><tt>send</tt>		</td><td valign="top" width="33%"><tt>write</tt>
+<br></td></tr><tr align="left"><td valign="top" width="33%"><tt>nanosleep</tt>
+   <br></td></tr></table>
+
+<p class="noindent">All library functions that call these functions (such as
+<code>printf</code>) are also cancellation points.
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_setcancelstate</b> (<var>int state, int *oldstate</var>)<var><a name="index-pthread_005fsetcancelstate-3720"></a></var><br>
+<blockquote><p><code>pthread_setcancelstate</code> changes the cancellation state for the
+calling thread &ndash; that is, whether cancellation requests are ignored or
+not. The <var>state</var> argument is the new cancellation state: either
+<code>PTHREAD_CANCEL_ENABLE</code> to enable cancellation, or
+<code>PTHREAD_CANCEL_DISABLE</code> to disable cancellation (cancellation
+requests are ignored).
+
+        <p>If <var>oldstate</var> is not <code>NULL</code>, the previous cancellation state is
+stored in the location pointed to by <var>oldstate</var>, and can thus be
+restored later by another call to <code>pthread_setcancelstate</code>.
+
+        <p>If the <var>state</var> argument is not <code>PTHREAD_CANCEL_ENABLE</code> or
+<code>PTHREAD_CANCEL_DISABLE</code>, <code>pthread_setcancelstate</code> fails and
+returns <code>EINVAL</code>.  Otherwise it returns 0. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_setcanceltype</b> (<var>int type, int *oldtype</var>)<var><a name="index-pthread_005fsetcanceltype-3721"></a></var><br>
+<blockquote><p><code>pthread_setcanceltype</code> changes the type of responses to
+cancellation requests for the calling thread: asynchronous (immediate)
+or deferred.  The <var>type</var> argument is the new cancellation type:
+either <code>PTHREAD_CANCEL_ASYNCHRONOUS</code> to cancel the calling thread
+as soon as the cancellation request is received, or
+<code>PTHREAD_CANCEL_DEFERRED</code> to keep the cancellation request pending
+until the next cancellation point. If <var>oldtype</var> is not <code>NULL</code>,
+the previous cancellation state is stored in the location pointed to by
+<var>oldtype</var>, and can thus be restored later by another call to
+<code>pthread_setcanceltype</code>.
+
+        <p>If the <var>type</var> argument is not <code>PTHREAD_CANCEL_DEFERRED</code> or
+<code>PTHREAD_CANCEL_ASYNCHRONOUS</code>, <code>pthread_setcanceltype</code> fails
+and returns <code>EINVAL</code>.  Otherwise it returns 0. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: void <b>pthread_testcancel</b> (<var>void</var>)<var><a name="index-pthread_005ftestcancel-3722"></a></var><br>
+<blockquote><p><code>pthread_testcancel</code> does nothing except testing for pending
+cancellation and executing it. Its purpose is to introduce explicit
+checks for cancellation in long sequences of code that do not call
+cancellation point functions otherwise. 
+</p></blockquote></div>
+
+   </body></html>
+

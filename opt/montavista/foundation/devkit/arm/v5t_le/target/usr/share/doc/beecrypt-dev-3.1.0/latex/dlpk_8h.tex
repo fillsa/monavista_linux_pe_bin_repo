@@ -1,0 +1,81 @@
+\hypertarget{dlpk_8h}{
+\section{dlpk.h File Reference}
+\label{dlpk_8h}\index{dlpk.h@{dlpk.h}}
+}
+Discrete Logarithm public key, headers. 
+
+{\tt \#include \char`\"{}dldp.h\char`\"{}}\par
+\subsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \hyperlink{structdlpk__p}{dlpk\_\-p}
+\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{dlpk_8h_a0}{dlpk\_\-p\-Init} (\hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$)
+\item 
+int \hyperlink{dlpk_8h_a1}{dlpk\_\-p\-Free} (\hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$)
+\item 
+int \hyperlink{dlpk_8h_a2}{dlpk\_\-p\-Copy} (\hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$, const \hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$)
+\item 
+int \hyperlink{dlpk_8h_a3}{dlpk\_\-p\-Equal} (const \hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$, const \hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$)
+\item 
+int \hyperlink{dlpk_8h_a4}{dlpk\_\-pgoq\-Validate} (const \hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, int cofactor)
+\item 
+int \hyperlink{dlpk_8h_a5}{dlpk\_\-pgon\-Validate} (const \hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$)
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Discrete Logarithm public key, headers. 
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{dlpk_8h-source}{dlpk.h}.
+
+\subsection{Function Documentation}
+\hypertarget{dlpk_8h_a2}{
+\index{dlpk.h@{dlpk.h}!dlpk_pCopy@{dlpk\_\-pCopy}}
+\index{dlpk_pCopy@{dlpk\_\-pCopy}!dlpk.h@{dlpk.h}}
+\subsubsection[dlpk\_\-pCopy]{\setlength{\rightskip}{0pt plus 5cm}int dlpk\_\-p\-Copy (\hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$, const \hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$)}}
+\label{dlpk_8h_a2}
+
+
+\hypertarget{dlpk_8h_a3}{
+\index{dlpk.h@{dlpk.h}!dlpk_pEqual@{dlpk\_\-pEqual}}
+\index{dlpk_pEqual@{dlpk\_\-pEqual}!dlpk.h@{dlpk.h}}
+\subsubsection[dlpk\_\-pEqual]{\setlength{\rightskip}{0pt plus 5cm}int dlpk\_\-p\-Equal (const \hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$, const \hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$)}}
+\label{dlpk_8h_a3}
+
+
+\hypertarget{dlpk_8h_a1}{
+\index{dlpk.h@{dlpk.h}!dlpk_pFree@{dlpk\_\-pFree}}
+\index{dlpk_pFree@{dlpk\_\-pFree}!dlpk.h@{dlpk.h}}
+\subsubsection[dlpk\_\-pFree]{\setlength{\rightskip}{0pt plus 5cm}int dlpk\_\-p\-Free (\hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$)}}
+\label{dlpk_8h_a1}
+
+
+\hypertarget{dlpk_8h_a5}{
+\index{dlpk.h@{dlpk.h}!dlpk_pgonValidate@{dlpk\_\-pgonValidate}}
+\index{dlpk_pgonValidate@{dlpk\_\-pgonValidate}!dlpk.h@{dlpk.h}}
+\subsubsection[dlpk\_\-pgonValidate]{\setlength{\rightskip}{0pt plus 5cm}int dlpk\_\-pgon\-Validate (const \hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$)}}
+\label{dlpk_8h_a5}
+
+
+\hypertarget{dlpk_8h_a4}{
+\index{dlpk.h@{dlpk.h}!dlpk_pgoqValidate@{dlpk\_\-pgoqValidate}}
+\index{dlpk_pgoqValidate@{dlpk\_\-pgoqValidate}!dlpk.h@{dlpk.h}}
+\subsubsection[dlpk\_\-pgoqValidate]{\setlength{\rightskip}{0pt plus 5cm}int dlpk\_\-pgoq\-Validate (const \hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, int {\em cofactor})}}
+\label{dlpk_8h_a4}
+
+
+\hypertarget{dlpk_8h_a0}{
+\index{dlpk.h@{dlpk.h}!dlpk_pInit@{dlpk\_\-pInit}}
+\index{dlpk_pInit@{dlpk\_\-pInit}!dlpk.h@{dlpk.h}}
+\subsubsection[dlpk\_\-pInit]{\setlength{\rightskip}{0pt plus 5cm}int dlpk\_\-p\-Init (\hyperlink{structdlpk__p}{dlpk\_\-p} $\ast$)}}
+\label{dlpk_8h_a0}
+
+

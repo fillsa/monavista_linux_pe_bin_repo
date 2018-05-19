@@ -1,0 +1,27 @@
+#!/bin/sh
+
+if [ ! -z "$PAGER" ] ; then
+	if [ -f $PAGER ] ; then
+		exec $PAGER $@
+	else if [ -f /usr/bin/$PAGER ] ; then
+		exec /usr/bin/$PAGER $@
+	else if [ ! -z "`which $PAGER 2> /dev/null`" ] ; then
+        	exec `which $PAGER` $@
+	else
+		echo "Error: Could not find the $PAGER editor specified by eviornment variable PAGER"
+		exit 1
+	fi
+	fi
+	fi
+
+else
+	if [ -f /usr/bin/less ]; then
+		exec /usr/bin/less $@
+	else if [ -f /usr/bin/more ]; then
+		exec /usr/bin/more $@
+		echo "Error: No pager could be found"
+		exit 1
+	fi
+	fi
+fi 
+	 

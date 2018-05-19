@@ -1,0 +1,15 @@
+/* MACHINE-GENERATED. DO NOT EDIT ! */
+
+#ifndef META_H
+#define META_H
+
+#define META_FIELD_ROOT 1
+
+#define META_PROTOCOL_OFFSET (0)
+#define META_PROTOCOL_SIZE 2
+#define META_NFMARK_OFFSET (1024)
+#define META_NFMARK_SIZE 4
+#define META_TC_INDEX_OFFSET (1056)
+#define META_TC_INDEX_SIZE 2
+
+#endif /* META_H */

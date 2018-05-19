@@ -1,0 +1,136 @@
+building tcsim:       NO
+YACC is:              bison --yacc
+$ is not identifier:  -$
+tc supports "action": yes
+building the manual:  yes
+install directory:    /var/tmp/tcng-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr
+make: Entering directory `/var/tmp/BUILD/tcng/shared'
+arm_v5t_le-gcc  -MM -MG *.c >.depend || \
+		  { rm -f .depend; exit 1; }
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations    -c -o u128.o u128.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations    -c -o addr.o addr.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations    -c -o memutil.o memutil.c
+arm_v5t_le-ar crv libtcngmisc.a u128.o addr.o memutil.o
+a - u128.o
+a - addr.o
+a - memutil.o
+make: Leaving directory `/var/tmp/BUILD/tcng/shared'
+scripts/symlinks.sh link .
+touch .symlinks
+make -C tcc LD_OPTS=
+make[1]: Entering directory `/var/tmp/BUILD/tcng/tcc'
+`sed '/^YACC="\(.*\)"$/s//\1/p;d' <../config` -v -d tcng.y
+flex tcng.l
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR  -MM -MG \
+		  `echo *.c | sed 's/\<tcm_\(cls\|f\)\.c\>//g'` \
+		  >.depend || \
+		  { rm -f .depend; exit 1; }
+./mkprminc decl >param_decl.inc || \
+		  { rm -f param_decl.inc; exit 1; }
+arm_v5t_le-gcc  -c -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR  -w lex.yy.c
+arm_v5t_le-gcc  -c -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR  -w y.tab.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o tcc.o tcc.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o util.o util.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o error.o error.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o var.o var.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o data.o data.c
+./mkprminc dsc >param_dsc.inc || \
+		  { rm -f param_dsc.inc; exit 1; }
+./mkprminc reset >param_reset.inc || \
+		  { rm -f param_reset.inc; exit 1; }
+./mkprminc stack >param_stack.inc || \
+		  { rm -f param_stack.inc; exit 1; }
+./mkprminc push >param_push.inc || \
+		  { rm -f param_push.inc; exit 1; }
+./mkprminc pop >param_pop.inc || \
+		  { rm -f param_pop.inc; exit 1; }
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o param.o param.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o device.o device.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o registry.o registry.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o sprintf.o sprintf.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o sprintf_generic.o sprintf_generic.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o qdisc.o qdisc.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o q_ingress.o q_ingress.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o q_cbq.o q_cbq.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o q_dsmark.o q_dsmark.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o q_fifo.o q_fifo.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o q_gred.o q_gred.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o q_prio.o q_prio.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o q_red.o q_red.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o q_sfq.o q_sfq.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o q_tbf.o q_tbf.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o q_htb.o q_htb.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o csp.o csp.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o filter.o filter.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o f_if.o f_if.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o f_fw.o f_fw.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o f_route.o f_route.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o f_rsvp.o f_rsvp.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o f_tcindex.o f_tcindex.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o police.o police.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o tc.o tc.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o op.o op.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o field.o field.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o named.o named.c
+perl meta.pl >tccmeta.h || { rm -f tccmeta.h; exit 1; }
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o if_u32.o if_u32.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o if_c.o if_c.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o if_ext.o if_ext.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o iflib_actdb.o iflib_actdb.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o target.o target.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o location.o location.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o iflib_comb.o iflib_comb.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o iflib_off.o iflib_off.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o iflib_misc.o iflib_misc.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o iflib_red.o iflib_red.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o iflib_act.o iflib_act.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o iflib_arith.o iflib_arith.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o iflib_not.o iflib_not.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o iflib_bit.o iflib_bit.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o iflib_cheap.o iflib_cheap.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o iflib_newbit.o iflib_newbit.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o iflib_fastbit.o iflib_fastbit.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o ext_all.o ext_all.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o ext.o ext.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o ext_io.o ext_io.c
+arm_v5t_le-gcc  -g -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I../shared -DVERSION=\"`cat ../VERSION`\" -DTOPDIR=\"/var/tmp/BUILD/tcng\" -DDOLLAR    -c -o ext_dump.o ext_dump.c
+arm_v5t_le-gcc  -g -o tcc lex.yy.o y.tab.o tcc.o util.o error.o var.o data.o param.o device.o registry.o sprintf.o sprintf_generic.o qdisc.o q_ingress.o q_cbq.o q_dsmark.o q_fifo.o q_gred.o q_prio.o q_red.o q_sfq.o q_tbf.o q_htb.o csp.o filter.o f_if.o f_fw.o f_route.o f_rsvp.o f_tcindex.o police.o tc.o op.o field.o named.o if_u32.o if_c.o if_ext.o iflib_actdb.o target.o location.o iflib_comb.o iflib_off.o iflib_misc.o iflib_red.o iflib_act.o iflib_arith.o iflib_not.o iflib_bit.o iflib_cheap.o iflib_newbit.o iflib_fastbit.o ext_all.o ext.o ext_io.o ext_dump.o -lfl -lm -L../shared -ltcngmisc 
+../scripts/topdir.sh .. tcc-module
+make -C ext
+make[2]: Entering directory `/var/tmp/BUILD/tcng/tcc/ext'
+arm_v5t_le-gcc  -MM -MG \
+  `echo tccext.c echo.c echoh_main.c | \
+	   sed 's/\<cls_ext_test\.c\>//g'` >.depend || \
+	  { rm -f .depend; exit 1; }
+arm_v5t_le-gcc  -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -g -fPIC   -c -o tccext.o tccext.c
+arm_v5t_le-gcc  -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -g -fPIC   -c -o echoh.o echoh.c
+arm_v5t_le-ar cr libtccext.a tccext.o echoh.o
+../../scripts/topdir.sh ../.. tcc-ext-test
+arm_v5t_le-gcc  -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -g -fPIC -o tcc-ext-echo echo.c -L. -ltccext
+arm_v5t_le-gcc  -Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -g -fPIC -o tcc-ext-echoh echoh_main.c -L. -ltccext
+make[2]: Leaving directory `/var/tmp/BUILD/tcng/tcc/ext'
+./tcc_var2fix.pl meters.tc.in >meters.tc || \
+		  { rm -f meters.tc; exit 1; }
+[ -r ports.tc ] || make ports.tc
+make[1]: Leaving directory `/var/tmp/BUILD/tcng/tcc'
+for n in tcng tcsim; do \
+		  grep TCSIM=false config >/dev/null && \
+		  [ $n = tcsim ] || make install-$n || exit 1; \
+		  done
+make[1]: Entering directory `/var/tmp/BUILD/tcng'
+make -C tcc LD_OPTS=
+make[2]: Entering directory `/var/tmp/BUILD/tcng/tcc'
+make -C ext
+make[3]: Entering directory `/var/tmp/BUILD/tcng/tcc/ext'
+make[3]: Nothing to be done for `all'.
+make[3]: Leaving directory `/var/tmp/BUILD/tcng/tcc/ext'
+[ -r ports.tc ] || make ports.tc
+make[2]: Leaving directory `/var/tmp/BUILD/tcng/tcc'
+ln -sf scripts/localize.sh .
+tar cfh - localize.sh bin/tcc bin/tcc_var2fix.pl lib/tcng/bin/tcc-module lib/tcng/bin/tcc-ext-err lib/tcng/bin/tcc-ext-null lib/tcng/bin/tcc-ext-file lib/tcng/lib/libtccext.a lib/tcng/lib/tcm_cls.c lib/tcng/lib/tcm_f.c lib/tcng/include/tccext.h lib/tcng/include/echoh.h lib/tcng/include/tccmeta.h lib/tcng/include/default.tc lib/tcng/include/meta.tc lib/tcng/include/fields.tc lib/tcng/include/values.tc lib/tcng/include/fields4.tc lib/tcng/include/fields6.tc lib/tcng/include/meters.tc lib/tcng/include/ports.tc lib/tcng/include/idiomatic.tc | \
+		  (cd /var/tmp/tcng-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr && tar xf -)
+cd /var/tmp/tcng-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr && ./localize.sh
+Creating wrapper for bin/tcc
+Creating wrapper for bin/tcng
+rm -f localize.sh /var/tmp/tcng-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/localize.sh
+make[1]: Leaving directory `/var/tmp/BUILD/tcng'

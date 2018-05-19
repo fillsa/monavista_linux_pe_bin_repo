@@ -1,0 +1,63 @@
+Send comment to <fbgetty@meuh.eu.org>
+This is your whish list, so if you want fbgetty to make coffee,
+do your homework, or wash your socks, ask for it :-)
+
+-----------------------------------------------------------------------
+legend:
+-- this is an entry date
+*  this is a wish
+#  this is a response of the maintainers
+!  this things planed by the maintainers
+-----------------------------------------------------------------------
+
+-- Saturday March 6 1999
+
+From Yann Droneaud <lch@multimania.com>
+  ! fbgetty must be able to display image/logo
+  ! support color
+  ! perhaps add a html-like parser for issue
+  ! perhaps support animated gifs
+
+-- Monday March 8 1999 
+
+From Frank Tetu <Wip-Corp@usa.net> 
+  * Add an automatic refresh when VT is activate
+  # just add an alarm, you think !
+  # Not, there is already one for the login timeout
+
+From Yann Droneaud <lch@multimania.com> 
+  ! Show distribution name and version (@distname @distver)
+
+-- Thursday March 11 1999
+
+From Lars Degenhardt <Lars.Degenhardt@gmx.net>
+  * would it be possible to give the capabilities of fbset to fbgetty also?
+  # very interesting... but very hard to do.
+  # it will be done !
+  # just call it in issue
+
+-- Saturday March 13 1999
+
+From Yann Droneaud <lch@multimania.com>
+  ! Add a config file option (one by tty) in etc
+     /etc/fbgetty.d/tty[1-63]
+     /etc/fbgetty.d/global
+    This is good for adding capabilities of fbset  
+ 
+-- Wednesday March 17 1999
+
+From Frank Tetu <Wip-Corp@usa.net>
+  * Add an option to hide login typed (like password)
+
+-- Tuesday April 13 1999
+
+From Yann Droneaud <lch@multimania.com>
+  ! Port to other unix-like OS that support virtual terminal.
+    FreeBSD
+    NetBSD
+    ...
+  # But is these OS have a framebuffer support ?
+  # if not, fbgetty will just be able to refresh screen...
+
+-----------------------------------------------------------------------
+$Id: TODO,v 1.4.4.3 2001/11/24 12:48:53 ydroneaud Exp $

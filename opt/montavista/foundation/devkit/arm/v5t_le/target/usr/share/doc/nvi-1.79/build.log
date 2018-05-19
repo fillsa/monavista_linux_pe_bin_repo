@@ -1,0 +1,324 @@
+creating cache ./config.cache
+checking for a BSD compatible install... /usr/bin/install -c
+checking host system type... 
+checking if --enable-debug option specified... no
+checking whether cross-compiling... yes
+checking whether the compiler (arm_v5t_le-gcc  -O2  ) actually works... yes
+checking for sh... /bin/sh
+checking for sendmail... /usr/sbin/sendmail
+checking for perl5... no
+checking for perl... /usr/bin/perl
+checking for preserve directory... /var/tmp/vi.recover
+checking for chmod... /bin/chmod
+checking for cp... /bin/cp
+checking for ln... /bin/ln
+checking for mkdir... /bin/mkdir
+checking for rm... /bin/rm
+checking for strip... (cached) /bin/true
+checking how to run the C preprocessor... arm_v5t_le-cpp 
+checking for X... libraries /usr/X11R6/lib, headers /usr/X11R6/include
+checking if --enable-perlinterp option specified... no
+checking if --enable-tknvi option specified... no
+checking if --enable-tclinterp option specified... no
+checking for -ltermlib... no
+checking for -ltermcap... no
+checking if --disable-curses option specified... other curses
+checking for sys/mman.h... yes
+checking for sys/select.h... yes
+checking for ANSI C header files... yes
+checking for ssize_t... yes
+checking whether byte ordering is bigendian... no
+checking for working const... yes
+checking for st_blksize in struct stat... yes
+checking for mode_t... yes
+checking for off_t... yes
+checking for pid_t... yes
+checking for size_t... yes
+checking whether struct tm is in sys/time.h or time.h... time.h
+checking for bsearch... yes
+checking for gethostname... yes
+checking for getopt... yes
+checking for memchr... yes
+checking for memcpy... yes
+checking for memmove... yes
+checking for memset... yes
+checking for bsearch... (cached) yes
+checking for gethostname... (cached) yes
+checking for getopt... (cached) yes
+checking for memchr... (cached) yes
+checking for memcpy... (cached) yes
+checking for memmove... (cached) yes
+checking for memset... (cached) yes
+checking for mkstemp... yes
+checking for mmap... yes
+checking for snprintf... yes
+checking for strdup... yes
+checking for strerror... yes
+checking for strpbrk... yes
+checking for strtol... yes
+checking for mkstemp... (cached) yes
+checking for mmap... (cached) yes
+checking for snprintf... (cached) yes
+checking for strdup... (cached) yes
+checking for strerror... (cached) yes
+checking for strpbrk... (cached) yes
+checking for strtol... (cached) yes
+checking for strtoul... yes
+checking for vsnprintf... yes
+checking for strtoul... (cached) yes
+checking for vsnprintf... (cached) yes
+checking for select... yes
+checking for setenv... yes
+checking for strsep... yes
+checking for unsetenv... yes
+checking for valloc... yes
+checking for getpagesize... yes
+checking for working mmap... (cached) yes
+checking for vfork.h... no
+checking for working vfork... checking for vfork... yes
+yes
+checking for fcntl/flock... flock
+checking for ftruncate/chsize... ftruncate
+checking for tigetstr/tigetnum... yes
+checking for addnstr... yes
+checking for beep... yes
+checking for flash... yes
+checking for idlok... yes
+checking for keypad... yes
+checking for newterm... yes
+checking for setupterm... yes
+checking for broken gettimeofday system call... okay
+checking for System V pty calls... yes
+checking for revoke system call... yes
+checking for int type sprintf return value... (cached) yes
+checking if --disable-db option specified... bundled DB
+checking if --disable-re option specified... bundled RE
+checking for u_char... yes
+checking for u_short... yes
+checking for u_int... yes
+checking for u_long... yes
+checking for u_int8_t... yes
+checking for u_int16_t... yes
+checking for int16_t... yes
+checking for u_int32_t... yes
+checking for int32_t... yes
+updating cache ./config.cache
+creating ./config.status
+creating Makefile
+creating port.h
+creating pathnames.h
+creating recover
+creating config.h
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../cl/cl_bsd.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../cl/cl_funcs.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../cl/cl_main.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../cl/cl_read.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../cl/cl_screen.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../cl/cl_term.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/cut.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/delete.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_abbrev.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_append.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_args.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_argv.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_at.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_bang.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_cd.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_cmd.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_cscope.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_delete.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_display.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_edit.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_equal.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_file.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_filter.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_global.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_init.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_join.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_map.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_mark.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_mkexrc.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_move.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_open.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_perl.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_preserve.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_print.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_put.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_quit.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_read.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_screen.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_script.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_set.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_shell.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_shift.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_source.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_stop.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_subst.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_tag.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_tcl.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_txt.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_undo.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_usage.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_util.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_version.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_visual.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_write.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_yank.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../ex/ex_z.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/exf.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/getc.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/key.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/line.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/log.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/main.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/mark.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/msg.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/options.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/options_f.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/put.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/recover.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/screen.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/search.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/seq.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../common/util.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_at.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_ch.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_cmd.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_delete.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_ex.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_increment.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_init.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_itxt.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_left.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_mark.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_match.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_paragraph.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_put.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_redraw.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_replace.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_right.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_screen.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_scroll.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_search.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_section.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_sentence.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_status.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_txt.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_ulcase.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_undo.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_util.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_word.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_xchar.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_yank.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_z.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/v_zexit.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/vi.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/vs_line.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/vs_msg.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/vs_refresh.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/vs_relative.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/vs_smap.c
+arm_v5t_le-gcc  -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../vi/vs_split.c
+arm_v5t_le-gcc  -D__REGEX_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../regex/regcomp.c
+arm_v5t_le-gcc  -D__REGEX_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../regex/regerror.c
+arm_v5t_le-gcc  -D__REGEX_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../regex/regexec.c
+arm_v5t_le-gcc  -D__REGEX_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../regex/regfree.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   ../../db/db/db.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/mpool ../../db/mpool/mpool.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/btree ../../db/btree/bt_close.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/btree ../../db/btree/bt_conv.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/btree ../../db/btree/bt_debug.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/btree ../../db/btree/bt_delete.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/btree ../../db/btree/bt_get.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/btree ../../db/btree/bt_open.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/btree ../../db/btree/bt_overflow.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/btree ../../db/btree/bt_page.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/btree ../../db/btree/bt_put.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/btree ../../db/btree/bt_search.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/btree ../../db/btree/bt_seq.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/btree ../../db/btree/bt_split.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/btree ../../db/btree/bt_utils.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/recno ../../db/recno/rec_close.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/recno ../../db/recno/rec_delete.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/recno ../../db/recno/rec_get.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/recno ../../db/recno/rec_open.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/recno ../../db/recno/rec_put.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/recno ../../db/recno/rec_search.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/recno ../../db/recno/rec_seq.c
+arm_v5t_le-gcc  -D__DBINTERFACE_PRIVATE -c -O -O2 -I. -I../../include -I../../regex -I../../db/include   -I../../db/recno ../../db/recno/rec_utils.c
+arm_v5t_le-gcc   -o nvi cl_bsd.o cl_funcs.o cl_main.o cl_read.o cl_screen.o cl_term.o cut.o delete.o ex.o ex_abbrev.o ex_append.o ex_args.o ex_argv.o ex_at.o ex_bang.o ex_cd.o ex_cmd.o ex_cscope.o ex_delete.o ex_display.o ex_edit.o ex_equal.o ex_file.o ex_filter.o ex_global.o ex_init.o ex_join.o ex_map.o ex_mark.o ex_mkexrc.o ex_move.o ex_open.o ex_perl.o ex_preserve.o ex_print.o ex_put.o ex_quit.o ex_read.o ex_screen.o ex_script.o ex_set.o ex_shell.o ex_shift.o ex_source.o ex_stop.o ex_subst.o ex_tag.o ex_tcl.o ex_txt.o ex_undo.o ex_usage.o ex_util.o ex_version.o ex_visual.o ex_write.o ex_yank.o ex_z.o exf.o getc.o key.o line.o log.o main.o mark.o msg.o options.o options_f.o put.o recover.o screen.o search.o seq.o util.o v_at.o v_ch.o v_cmd.o v_delete.o v_ex.o v_increment.o v_init.o v_itxt.o v_left.o v_mark.o v_match.o v_paragraph.o v_put.o v_redraw.o v_replace.o v_right.o v_screen.o v_scroll.o v_search.o v_section.o v_sentence.o v_status.o v_txt.o v_ulcase.o v_undo.o v_util.o v_word.o v_xchar.o v_yank.o v_z.o v_zexit.o vi.o vs_line.o vs_msg.o vs_refresh.o vs_relative.o vs_smap.o vs_split.o  regcomp.o regerror.o regexec.o regfree.o db.o mpool.o bt_close.o bt_conv.o bt_debug.o bt_delete.o bt_get.o bt_open.o bt_overflow.o bt_page.o bt_put.o bt_search.o bt_seq.o bt_split.o bt_utils.o rec_close.o rec_delete.o rec_get.o rec_open.o rec_put.o rec_search.o rec_seq.o rec_utils.o  -lcurses  
+rm -f nex
+ln nvi nex
+[ -f /bin/chmod ]
+[ -f /bin/cp ]
+[ -f /bin/ln ]
+[ -f /bin/mkdir ]
+[ -f /bin/rm ]
+[ -d /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr ] || \
+    (/bin/mkdir /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr && /bin/chmod 755 /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr)
+[ -d /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr ] || \
+    (/bin/mkdir /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr && /bin/chmod 755 /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr)
+[ -d /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share ] || \
+    (/bin/mkdir /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share && /bin/chmod 755 /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share)
+/bin/rm -rf /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi
+/bin/mkdir /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi && /bin/chmod 755 /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi
+Installing message catalogs: /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/catalog ...
+/bin/mkdir /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/catalog && \
+    /bin/chmod 755 /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/catalog
+(cd ../../catalog && /bin/cp dutch english french german ru_SU.KOI8-R spanish swedish /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/catalog && \
+    cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/catalog && /bin/chmod 444 *)
+#@echo "Installing Perl scripts: /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/perl ..."
+#/bin/mkdir /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/perl && /bin/chmod 755 /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/perl
+#[ -f VI.pm ] && /bin/cp VI.pm /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/perl && \
+#    cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/perl && /bin/chmod 444 VI.pm)
+#(cd ../../perl_scripts && /bin/cp *.pl /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/perl && \
+#    cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/perl && /bin/chmod 444 *.pl)
+#@echo "Installing Tcl scripts: /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/tcl ..."
+#/bin/mkdir /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/tcl && /bin/chmod 755 /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/tcl
+#(cd ../../tcl_scripts && /bin/cp *.tcl /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/tcl && \
+#    cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/tcl && /bin/chmod 444 *.tcl)
+Installing recover script: /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/recover ...
+(/bin/cp recover /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/recover && \
+    /bin/chmod 555 /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/vi/recover)
+Installing vi, ex, view: /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/bin ...
+[ -d /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/bin ] || \
+    (/bin/mkdir /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/bin && /bin/chmod 755 /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/bin)
+cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/bin && /bin/rm -f `echo vi | sed 's,^,n,; '`
+/bin/cp nvi /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/bin/`echo vi | sed 's,^,n,; '`
+cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/bin && [ -f /bin/true ] && \
+    /bin/true `echo vi | sed 's,^,n,; '`
+cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/bin && /bin/chmod 555 `echo vi | sed 's,^,n,; '`
+cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/bin && /bin/rm -f `echo ex | sed 's,^,n,; '`
+cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/bin && /bin/rm -f `echo view | sed 's,^,n,; '`
+cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/bin && /bin/ln \
+	`echo vi | sed 's,^,n,; '` `echo ex | sed 's,^,n,; '`
+cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/bin && /bin/ln \
+	`echo vi | sed 's,^,n,; '` `echo view | sed 's,^,n,; '`
+[ -d /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man ] || \
+    (/bin/mkdir /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man && /bin/chmod 755 /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man)
+[ -d /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/cat1 ] || \
+    (/bin/mkdir /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/cat1 && /bin/chmod 755 /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/cat1)
+Installing man pages: /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man ...
+cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/cat1 && /bin/rm -f `echo vi.0 | sed 's,^,n,; '`
+#/bin/cp ../../docs/USD.doc/vi.man/vi.0 \
+    #/var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/cat1/`echo vi.0 | sed 's,^,n,; '`
+#cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/cat1 && /bin/chmod 444 `echo vi.0 | sed 's,^,n,; '`
+#cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/cat1 && /bin/rm -f `echo ex.0 | sed 's,^,n,; '`
+#cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/cat1 && /bin/rm -f `echo view.0 | sed 's,^,n,; '`
+#cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/cat1 && /bin/ln \
+    #`echo vi.0 | sed 's,^,n,; '` `echo ex.0 | sed 's,^,n,; '`
+#cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/cat1 && /bin/ln \
+    #`echo vi.0 | sed 's,^,n,; '` `echo view.0 | sed 's,^,n,; '`
+[ -d /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man1 ] || \
+    (/bin/mkdir /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man1 && /bin/chmod 755 /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man1)
+cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man1 && /bin/rm -f `echo vi.1 | sed 's,^,n,; '`
+/bin/cp ../../docs/USD.doc/vi.man/vi.1 \
+    /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man1/`echo vi.1 | sed 's,^,n,; '`
+cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man1 && /bin/chmod 444 `echo vi.1 | sed 's,^,n,; '`
+cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man1 && /bin/rm -f `echo ex.1 | sed 's,^,n,; '`
+cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man1 && /bin/rm -f `echo view.1 | sed 's,^,n,; '`
+cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man1 && /bin/ln \
+    `echo vi.1 | sed 's,^,n,; '` `echo ex.1 | sed 's,^,n,; '`
+cd /var/tmp/nvi-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man1 && /bin/ln \
+    `echo vi.1 | sed 's,^,n,; '` `echo view.1 | sed 's,^,n,; '`

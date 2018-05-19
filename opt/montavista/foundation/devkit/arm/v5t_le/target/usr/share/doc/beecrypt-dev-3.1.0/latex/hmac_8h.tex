@@ -1,0 +1,51 @@
+\hypertarget{hmac_8h}{
+\section{hmac.h File Reference}
+\label{hmac_8h}\index{hmac.h@{hmac.h}}
+}
+HMAC algorithm, headers. 
+
+{\tt \#include \char`\"{}beecrypt.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{group__HMAC__m_ga0}{hmac\-Setup} (\hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, const \hyperlink{structhashFunction}{hash\-Function} $\ast$, \hyperlink{group__HASH__m_ga0}{hash\-Function\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\item 
+int \hyperlink{hmac_8h_a1}{hmac\-Reset} (const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, const \hyperlink{structhashFunction}{hash\-Function} $\ast$, \hyperlink{group__HASH__m_ga0}{hash\-Function\-Param} $\ast$)
+\item 
+int \hyperlink{hmac_8h_a2}{hmac\-Update} (const \hyperlink{structhashFunction}{hash\-Function} $\ast$, \hyperlink{group__HASH__m_ga0}{hash\-Function\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\item 
+int \hyperlink{hmac_8h_a3}{hmac\-Digest} (const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, const \hyperlink{structhashFunction}{hash\-Function} $\ast$, \hyperlink{group__HASH__m_ga0}{hash\-Function\-Param} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+HMAC algorithm, headers. 
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{hmac_8h-source}{hmac.h}.
+
+\subsection{Function Documentation}
+\hypertarget{hmac_8h_a3}{
+\index{hmac.h@{hmac.h}!hmacDigest@{hmacDigest}}
+\index{hmacDigest@{hmacDigest}!hmac.h@{hmac.h}}
+\subsubsection[hmacDigest]{\setlength{\rightskip}{0pt plus 5cm}int hmac\-Digest (const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, const \hyperlink{structhashFunction}{hash\-Function} $\ast$, \hyperlink{group__HASH__m_ga0}{hash\-Function\-Param} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)}}
+\label{hmac_8h_a3}
+
+
+\hypertarget{hmac_8h_a1}{
+\index{hmac.h@{hmac.h}!hmacReset@{hmacReset}}
+\index{hmacReset@{hmacReset}!hmac.h@{hmac.h}}
+\subsubsection[hmacReset]{\setlength{\rightskip}{0pt plus 5cm}int hmac\-Reset (const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, const \hyperlink{structhashFunction}{hash\-Function} $\ast$, \hyperlink{group__HASH__m_ga0}{hash\-Function\-Param} $\ast$)}}
+\label{hmac_8h_a1}
+
+
+\hypertarget{hmac_8h_a2}{
+\index{hmac.h@{hmac.h}!hmacUpdate@{hmacUpdate}}
+\index{hmacUpdate@{hmacUpdate}!hmac.h@{hmac.h}}
+\subsubsection[hmacUpdate]{\setlength{\rightskip}{0pt plus 5cm}int hmac\-Update (const \hyperlink{structhashFunction}{hash\-Function} $\ast$, \hyperlink{group__HASH__m_ga0}{hash\-Function\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)}}
+\label{hmac_8h_a2}
+
+

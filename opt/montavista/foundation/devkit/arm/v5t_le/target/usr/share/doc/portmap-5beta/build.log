@@ -1,0 +1,12 @@
+arm_v5t_le-gcc  -Wall  -DHOSTS_ACCESS -DCHECK_PORT  -DFACILITY=LOG_DAEMON  -DIGNORE_SIGCHLD	    -O2    -c -o portmap.o portmap.c
+arm_v5t_le-gcc  -Wall  -DHOSTS_ACCESS -DCHECK_PORT  -DFACILITY=LOG_DAEMON  -DIGNORE_SIGCHLD	    -O2    -c -o pmap_check.o pmap_check.c
+arm_v5t_le-gcc  -Wall  -DHOSTS_ACCESS -DCHECK_PORT  -DFACILITY=LOG_DAEMON  -DIGNORE_SIGCHLD	    -O2    -c -o from_local.o from_local.c
+arm_v5t_le-gcc  -Wall  -DHOSTS_ACCESS -DCHECK_PORT  -DFACILITY=LOG_DAEMON  -DIGNORE_SIGCHLD	    -O2  -o portmap portmap.o pmap_check.o from_local.o  -lwrap -lnsl
+arm_v5t_le-gcc  -Wall  -DHOSTS_ACCESS -DCHECK_PORT  -DFACILITY=LOG_DAEMON  -DIGNORE_SIGCHLD	    -O2  -o pmap_dump pmap_dump.c -lnsl
+arm_v5t_le-gcc  -Wall  -DHOSTS_ACCESS -DCHECK_PORT  -DFACILITY=LOG_DAEMON  -DIGNORE_SIGCHLD	    -O2  -o pmap_set pmap_set.c -lnsl
+install -m 0755  portmap /var/tmp/portmap-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/sbin
+install -m 0755 pmap_dump /var/tmp/portmap-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/sbin
+install -m 0755 pmap_set /var/tmp/portmap-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/sbin
+install -m 0644 portmap.8 /var/tmp/portmap-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man8
+install -m 0644 pmap_dump.8 /var/tmp/portmap-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man8
+install -m 0644 pmap_set.8 /var/tmp/portmap-arm_v5t_le-root/opt/montavista/foundation/devkit/arm/v5t_le/target/usr/share/man/man8

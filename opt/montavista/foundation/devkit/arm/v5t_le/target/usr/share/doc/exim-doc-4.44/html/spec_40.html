@@ -1,0 +1,334 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 40</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_39.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_41.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2471"></a>
+<a name="IX2472"></a>
+<a name="IX2473"></a>
+<h1>
+<a name="CHAP40" href="spec_toc.html#TOC308">
+40. System-wide message filtering
+</a></h1>
+<p>
+The previous chapters (on ACLs and the local scan function) describe checks
+that can be applied to messages before they are accepted by a host. There is
+also a mechanism for checking messages once they have been received, but before
+they are delivered. This is called the <em>system filter</em>.
+</p>
+<p>
+The system filter operates in a similar manner to users' filter files, but it
+is run just once per message (however many recipients the message has). 
+It should not normally be used as a substitute for routing, because <tt>deliver</tt> 
+commands in a system router provide new envelope recipient addresses.
+The system filter must be an Exim filter. It cannot be a Sieve filter.
+</p>
+<p>
+The system filter is run at the start of a delivery attempt, before any routing
+is done. If a message fails to be completely delivered at the first attempt,
+the system filter is run again at the start of every retry.
+If you want your filter to do something only once per message, you can make use
+of the <tt>first&#095;delivery</tt> condition in an <tt>if</tt> command in the filter to prevent 
+it happening on retries.
+</p>
+<p>
+<b>Warning</b>: Because the system filter runs just once, variables that are
+specific to individual recipient addresses, such as <tt>$local&#095;part</tt> and
+<tt>$domain</tt>, are not set, and the &#147;personal&#148; condition is not meaningful. If you
+want to run a centrally-specified filter for each recipient address
+independently, you can do so by setting up a suitable <b>redirect</b> router, as
+described in section <a href="spec_40.html#SECT40.8">40.8</a> below.
+</p>
+<a name="IX2474"></a>
+<a name="IX2475"></a>
+<h2>
+<a name="SECT40.1" href="spec_toc.html#TOC309">
+40.1. Specifying a system filter
+</a></h2>
+<p>
+The name of the file that contains the system filter must be specified by
+setting <tt>system&#095;filter</tt>. If you want the filter to run under a uid and gid
+other than root, you must also set <tt>system&#095;filter&#095;user</tt> and
+<tt>system&#095;filter&#095;group</tt> as appropriate. For example:
+<pre>
+&nbsp;&nbsp;system_filter = /etc/mail/exim.filter
+&nbsp;&nbsp;system_filter_user = exim
+</pre>
+</p>
+<p>
+If a system filter generates any deliveries directly to files or pipes (via the
+<tt>save</tt> or <tt>pipe</tt> commands), transports to handle these deliveries must be
+specified by setting <tt>system&#095;filter&#095;file&#095;transport</tt> and
+<tt>system&#095;filter&#095;pipe&#095;transport</tt>, respectively. Similarly,
+<tt>system&#095;filter&#095;reply&#095;transport</tt> must be set to handle any messages generated
+by the <tt>reply</tt> command.
+</p>
+<h2>
+<a name="SECT40.2" href="spec_toc.html#TOC310">
+40.2. Testing a system filter
+</a></h2>
+<p>
+You can run simple tests of a system filter in the same way as for a user
+filter, but you should use <i>-bF</i> rather than <i>-bf</i>, so that features that
+are permitted only in system filters are recognized.
+</p>
+<h2>
+<a name="SECT40.3" href="spec_toc.html#TOC311">
+40.3. Contents of a system filter
+</a></h2>
+<p>
+The language used to specify system filters is the same as for users' filter
+files. It is described in the separate end-user document <i>Exim's interface to
+mail filtering</i>. However, there are some additional features that are
+available only in system filters; these are described in subsequent sections.
+If they are encountered in a user's filter file or when testing with <i>-bf</i>,
+they cause errors.
+<a name="IX2476"></a>
+</p>
+<p>
+There are two special conditions which, though available in users' filter
+files, are designed for use in system filters. The condition <tt>first&#095;delivery</tt>
+is true only for the first attempt at delivering a message, and
+<tt>manually&#095;thawed</tt> is true only if the message has been frozen, and
+subsequently thawed by an admin user. An explicit forced delivery counts as a
+manual thaw, but thawing as a result of the <tt>auto_thaw</tt> setting does not.
+</p>
+<p>
+<b>Warning</b>: If a system filter uses the <tt>first&#095;delivery</tt> condition to
+specify an &#147;unseen&#148; (non-significant) delivery, and that delivery does not
+succeed, it will not be tried again.
+If you want Exim to retry an unseen delivery until it succeeds, you should 
+arrange to set it up every time the filter runs.
+</p>
+<p>
+When a system filter finishes running, the values of the variables <tt>$n0</tt> &#150;
+<tt>$n9</tt> are copied into <tt>$sn0</tt> &#150; <tt>$sn9</tt> and are thereby made available to
+users' filter files. Thus a system filter can, for example, set up &#147;scores&#148; to
+which users' filter files can refer.
+</p>
+<h2>
+<a name="SECT40.4" href="spec_toc.html#TOC312">
+40.4. Additional variable for system filters
+</a></h2>
+<p>
+The expansion variable <tt>$recipients</tt>, containing a list of all the recipients
+of the message (separated by commas and white space), is available in system
+filters. It is not available in users' filters for privacy reasons.
+</p>
+<a name="IX2477"></a>
+<a name="IX2478"></a>
+<a name="IX2479"></a>
+<a name="IX2480"></a>
+<a name="IX2481"></a>
+<a name="IX2482"></a>
+<h2>
+<a name="SECT40.5" href="spec_toc.html#TOC313">
+40.5. Defer, freeze, and fail commands for system filters
+</a></h2>
+<p>
+There are three extra commands (<tt>defer</tt>, <tt>freeze</tt> and <tt>fail</tt>) which are always
+available in system filters, but are not normally enabled in users' filters.
+(See the <tt>allow&#095;defer</tt>, 
+<tt>allow&#095;freeze</tt> and <tt>allow&#095;fail</tt> options for the <b>redirect</b> router.) These
+commands can optionally be followed by the word <tt>text</tt> and a string containing
+an error message, for example:
+<pre>
+&nbsp;&nbsp;fail text "this message looks like spam to me"
+</pre>
+</p>
+<p>
+The keyword <tt>text</tt> is optional if the next character is a double quote. 
+</p>
+<p>
+The <tt>defer</tt> command defers delivery of the original recipients of the message. 
+The <tt>fail</tt> command causes all the original recipients to be failed, and a
+bounce message to be created. The <tt>freeze</tt> command suspends all delivery
+attempts for the original recipients. In all cases, any new deliveries that are
+specified by the filter are attempted as normal after the filter has run.
+</p>
+<p>
+The <tt>freeze</tt> command is ignored if the message has been manually unfrozen and
+not manually frozen since. This means that automatic freezing by a system
+filter can be used as a way of checking out suspicious messages. If a message
+is found to be all right, manually unfreezing it allows it to be delivered.
+<a name="IX2483"></a>
+<a name="IX2484"></a>
+</p>
+<p>
+The text given with a fail command is used as part of the bounce message as
+well as being written to the log. If the message is quite long, this can fill
+up a lot of log space when such failures are common. To reduce the size of the
+log message, Exim interprets the text in a special way if it starts with the
+two characters <tt>&#060;&#060;</tt> and contains <tt>&#062;&#062;</tt> later. The text between these two
+strings is written to the log, and the rest of the text is used in the bounce
+message. For example:
+<pre>
+&nbsp;&nbsp;fail "&#060;&#060;filter test 1&#062;&#062;Your message is rejected \
+&nbsp;&nbsp;     because it contains attachments that we are \
+&nbsp;&nbsp;     not prepared to receive."
+</pre>
+<a name="IX2485"></a>
+</p>
+<p>
+Take great care with the <tt>fail</tt> command when basing the decision to fail on the
+contents of the message, because the bounce message will of course include the
+contents of the original message and will therefore trigger the <tt>fail</tt> command
+again (causing a mail loop) unless steps are taken to prevent this. Testing the
+<tt>error&#095;message</tt> condition is one way to prevent this. You could use, for
+example
+<pre>
+&nbsp;&nbsp;if $message_body contains "this is spam" and not error_message
+&nbsp;&nbsp;  then fail text "spam is not wanted here" endif
+</pre>
+</p>
+<p>
+though of course that might let through unwanted bounce messages. The
+alternative is clever checking of the body and/or headers to detect bounces
+generated by the filter.
+</p>
+<p>
+The interpretation of a system filter file ceases after a 
+<tt>defer</tt>, 
+<tt>freeze</tt>, or <tt>fail</tt> command is obeyed. However, any deliveries that were set up
+earlier in the filter file are honoured, so you can use a sequence such as
+<pre>
+&nbsp;&nbsp;mail ...
+&nbsp;&nbsp;freeze
+</pre>
+</p>
+<p>
+to send a specified message when the system filter is freezing (or deferring or 
+failing) a message. The normal deliveries for the message do not, of course,
+take place.
+</p>
+<a name="IX2486"></a>
+<a name="IX2487"></a>
+<a name="IX2488"></a>
+<h2>
+<a name="SECT40.6" href="spec_toc.html#TOC314">
+40.6. Adding and removing headers in a system filter
+</a></h2>
+<p>
+Two filter commands that are available only in system filters are:
+<pre>
+&nbsp;&nbsp;headers add &#060;&#060;string&#062;&#062;
+&nbsp;&nbsp;headers remove &#060;&#060;string&#062;&#062;
+</pre>
+</p>
+<p>
+The argument for the <tt>headers add</tt> is a string which is expanded and then added
+to the end of the message's headers. It is the responsibility of the filter
+maintainer to make sure it conforms to RFC 2822 syntax. Leading white space is
+ignored, and if the string is otherwise empty, or if the expansion is forced to
+fail, the command has no effect.
+</p>
+<p>
+If the message is not delivered at the first attempt, header lines that were
+added by the system filter are stored with the message, and so are still 
+present at the next delivery attempt. For that reason, it is usual to make the
+<tt>headers add</tt> command conditional on <tt>first&#095;delivery</tt>.
+</p>
+<p>
+<font color=green>
+You can use &#147;&#092;n&#148; within the string, followed by white space, to specify
+continued header lines. More than one header may be added in one command by
+including &#147;&#092;n&#148; within the string without any following white space. For
+example:
+<pre>
+&nbsp;&nbsp;headers add "X-header-1: ....\n  \
+&nbsp;&nbsp;             continuation of X-header-1 ...\n\
+&nbsp;&nbsp;             X-header-2: ...."
+</pre>
+</p>
+<p>
+Note that the header line continuation white space after the first newline must
+be placed before the backslash that continues the input string, because white 
+space after input continuations is ignored.
+</p>
+<p>
+Header lines that are added by a system filter are visible to users' filter
+files and to all routers and transports. 
+</font>
+</p>
+<p>
+The argument for <tt>headers remove</tt> is a colon-separated list of header names.
+This command applies only to those headers that are stored with the message;
+those that are added at delivery time (such as <i>Envelope-To:</i> and
+<i>Return-Path:</i>) cannot be removed by this means.
+If there is more than one header with the same name, they are all removed.
+</p>
+<a name="IX2489"></a>
+<h2>
+<a name="SECT40.7" href="spec_toc.html#TOC315">
+40.7. Setting an errors address in a system filter
+</a></h2>
+<p>
+In a system filter, if a <tt>deliver</tt> command is followed by
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>errors&#095;to &#060;<em>some address</em>&#062;</tt><br>
+</p>
+<p>
+in order to change the envelope sender (and hence the error reporting) for that
+delivery, any address may be specified. (In a user filter, only the current
+user's address can be set.) For example, if some mail is being monitored, you
+might use
+<pre>
+&nbsp;&nbsp;unseen deliver monitor@spying.example errors_to root@local.example
+</pre>
+</p>
+<p>
+to take a copy which would not be sent back to the normal error reporting
+address if its delivery failed.
+</p>
+<h2>
+<a name="SECT40.8" href="spec_toc.html#TOC316">
+40.8. Per-address filtering
+</a></h2>
+<p>
+In contrast to the system filter, which is run just once per message for each
+delivery attempt, it is also possible to set up a system-wide filtering
+operation that runs once for each recipient address. In this case, variables
+such as <tt>$local&#095;part</tt> and <tt>$domain</tt> can be used, and indeed, the choice of
+filter file could be made dependent on them. This is an example of a router
+which implements such a filter:
+<pre>
+&nbsp;&nbsp;central_filter:
+<font color=green>&nbsp;&nbsp;  check_local_user
+</font>&nbsp;&nbsp;  driver = redirect
+&nbsp;&nbsp;  domains = +local_domains
+&nbsp;&nbsp;  file = /central/filters/$local_part
+&nbsp;&nbsp;  no_verify
+&nbsp;&nbsp;  allow_filter
+&nbsp;&nbsp;  allow_freeze
+</pre>
+</p>
+<p>
+<font color=green>
+The filter is run in a separate process under its own uid. Therefore, either
+<tt>check&#095;local&#095;user</tt> must be set (as above), in which case the filter is run as 
+the local user, or the <tt>user</tt> option must be used to specify which user to use. 
+If both are set, <tt>user</tt> overrides.
+</font>
+</p>
+<p>
+Care should be taken to ensure that none of the commands in the filter file
+specify a significant delivery if the message is to go on to be delivered to
+its intended recipient. The router will not then claim to have dealt with the
+address, so it will be passed on to subsequent routers to be delivered in the
+normal way.
+<hr>
+</p>
+<font size=2>
+<a href="spec_39.html">Previous</a>&nbsp;&nbsp;<a href="spec_41.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

@@ -1,0 +1,779 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 7</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_6.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_8.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX592"></a>
+<a name="IX593"></a>
+<h1>
+<a name="CHAP7" href="spec_toc.html#TOC72">
+7. The default configuration file
+</a></h1>
+<p>
+The default configuration file supplied with Exim as <i>src/configure.default</i>
+is sufficient for a host with simple mail requirements. As an introduction to
+the way Exim is configured, this chapter &#147;walks through&#148; the default
+configuration, giving brief explanations of the settings. Detailed descriptions
+of the options are given in subsequent chapters. The default configuration file
+itself contains extensive comments about ways you might want to modify the
+initial settings. However, note that there are many options that are not
+mentioned at all in the default configuration.
+</p>
+<h2>
+<a name="SECT7.1" href="spec_toc.html#TOC73">
+7.1. Main configuration settings
+</a></h2>
+<p>
+The main (global) configuration option settings must always come first in the
+file. The first thing you'll see in the file, after some initial comments, is
+the line
+<pre>
+&nbsp;&nbsp;# primary_hostname =
+</pre>
+</p>
+<p>
+This is a commented-out setting of the <tt>primary&#095;hostname</tt> option. Exim needs
+to know the official, fully qualified name of your host, and this is where you
+can specify it. However, in most cases you do not need to set this option. When
+it is unset, Exim uses the <i>uname()</i> system function to obtain the host name.
+</p>
+<p>
+The first three non-comment configuration lines are as follows:
+<pre>
+&nbsp;&nbsp;domainlist local_domains = @
+&nbsp;&nbsp;domainlist relay_to_domains =
+&nbsp;&nbsp;hostlist   relay_from_hosts = 127.0.0.1
+</pre>
+</p>
+<p>
+These are not, in fact, option settings. They are definitions of two named
+domain lists and one named host list. Exim allows you to give names to lists of
+domains, hosts, and email addresses, in order to make it easier to manage the
+configuration file (see section <a href="spec_10.html#SECT10.5">10.5</a>).
+</p>
+<p>
+<a name="IX594"></a>
+The first line defines a domain list called <i>local&#095;domains</i>; this is used
+later in the configuration to identify domains that are to be delivered
+on the local host. 
+There is just one item in this list, the string &#147;&#064;&#148;. This is a special form of
+entry which means &#147;the name of the local host&#148;. Thus, if the local host is
+called <i>a.host.example</i>, mail to <i>any.user&#064;a.host.example</i> is expected to
+be delivered locally. Because the local host's name is referenced indirectly,
+the same configuration file can be used on different hosts.
+</p>
+<p>
+The second line defines a domain list called <i>relay&#095;to&#095;domains</i>, but the
+list itself is empty. Later in the configuration we will come to the part that
+controls mail relaying through the local host; it allows relaying to any
+domains in this list. By default, therefore, no relaying on the basis of a mail
+domain is permitted.
+</p>
+<p>
+The third line defines a host list called <i>relay&#095;from&#095;hosts</i>. This list is
+used later in the configuration to permit relaying from any host or IP address
+that matches the list. The default contains just the IP address of the IPv4
+loopback interface, which means that processes on the local host are able to
+submit mail for relaying by sending it over TCP/IP to that interface. No other
+hosts are permitted to submit messages for relaying.
+</p>
+<p>
+Just to be sure there's no misunderstanding: at this point in the configuration
+we aren't actually setting up any controls. We are just defining some domains
+and hosts that will be used in the controls that are specified later.
+</p>
+<p>
+The next configuration line is a genuine option setting:
+<pre>
+&nbsp;&nbsp;acl_smtp_rcpt = acl_check_rcpt
+</pre>
+</p>
+<p>
+This option specifies an <i>Access Control List</i> (ACL) which is to be used
+during an incoming SMTP session for every recipient of a message (every 
+<font size=-1>RCPT</font> command). The name of the list is <i>acl&#095;check&#095;rcpt</i>, and we will
+come to its definition below, in the ACL section of the configuration. ACLs
+control which recipients are accepted for an incoming message &#150; if a
+configuration does not provide an ACL to check recipients, no SMTP mail can be
+accepted.
+</p>
+<p>
+Two commented-out options settings are next:
+<pre>
+&nbsp;&nbsp;# qualify_domain =
+&nbsp;&nbsp;# qualify_recipient =
+</pre>
+</p>
+<p>
+The first of these specifies a domain that Exim uses when it constructs a
+complete email address from a local login name. This is often needed when Exim
+receives a message from a local process. If you do not set <tt>qualify&#095;domain</tt>,
+the value of <tt>primary&#095;hostname</tt> is used. If you set both of these options, you
+can have different qualification domains for sender and recipient addresses. If
+you set only the first one, its value is used in both cases.
+<a name="IX595"></a>
+</p>
+<p>
+The following line must be uncommented if you want Exim to recognize
+addresses of the form <i>user&#064;[10.11.12.13]</i> that is, with a &#147;domain literal&#148;
+(an IP address) instead of a named domain.
+<pre>
+&nbsp;&nbsp;# allow_domain_literals
+</pre>
+</p>
+<p>
+<font color=green>
+The RFCs still require this form, but many people think that in the modern
+Internet it makes little sense to permit mail to be sent to specific hosts by
+quoting their IP addresses. This ancient format has been used by people who
+try to abuse hosts by using them for unwanted relaying. However, some
+people believe there are circumstances (for example, messages addressed to 
+<i>postmaster</i>) where domain literals are still useful.
+</font>
+</p>
+<p>
+The next configuration line is a kind of trigger guard:
+<pre>
+&nbsp;&nbsp;never_users = root
+</pre>
+</p>
+<p>
+It specifies that no delivery must ever be run as the root user. The normal
+convention is to set up <i>root</i> as an alias for the system administrator. This
+setting is a guard against slips in the configuration.
+The list of users specified by <tt>never&#095;users</tt> is not, however, the complete
+list; the build-time configuration in <i>Local/Makefile</i> has an option called
+<font size=-1>FIXED&#095;NEVER&#095;USERS</font> specifying a list that cannot be overridden. The
+contents of <tt>never&#095;users</tt> are added to this list. By default 
+<font size=-1>FIXED&#095;NEVER&#095;USERS</font> also specifies root.
+</p>
+<p>
+When a remote host connects to Exim in order to send mail, the only information
+Exim has about the host's identity is its IP address. The next configuration
+line,
+<pre>
+&nbsp;&nbsp;host_lookup = *
+</pre>
+</p>
+<p>
+specifies that Exim should do a reverse DNS lookup on all incoming connections,
+in order to get a host name. This improves the quality of the logging
+information, but if you feel it is too expensive, you can remove it entirely,
+or restrict the lookup to hosts on &#147;nearby&#148; networks.
+Note that it is not always possible to find a host name from an IP address, 
+because not all DNS reverse zones are maintained, and sometimes DNS servers are
+unreachable.
+</p>
+<p>
+The next two lines are concerned with <i>ident</i> callbacks, as defined by RFC
+1413 (hence their names):
+<pre>
+&nbsp;&nbsp;rfc1413_hosts = *
+&nbsp;&nbsp;rfc1413_query_timeout = 30s
+</pre>
+</p>
+<p>
+These settings cause Exim to make ident callbacks for all incoming SMTP calls.
+You can limit the hosts to which these calls are made, or change the timeout
+that is used. If you set the timeout to zero, all ident calls are disabled.
+Although they are cheap and can provide useful information for tracing problem
+messages, some hosts and firewalls have problems with ident calls. This can
+result in a timeout instead of an immediate refused connection, leading to
+delays on starting up an incoming SMTP session.
+</p>
+<p>
+When Exim receives messages over SMTP connections, it expects all addresses to
+be fully qualified with a domain, as required by the SMTP definition. However,
+if you are running a server to which simple clients submit messages, you may
+find that they send unqualified addresses. The two commented-out options:
+<pre>
+&nbsp;&nbsp;# sender_unqualified_hosts =
+&nbsp;&nbsp;# recipient_unqualified_hosts =
+</pre>
+</p>
+<p>
+show how you can specify hosts that are permitted to send unqualified sender
+and recipient addresses, respectively.
+</p>
+<p>
+The <tt>percent&#095;hack&#095;domains</tt> option is also commented out:
+<pre>
+&nbsp;&nbsp;# percent_hack_domains =
+</pre>
+</p>
+<p>
+It provides a list of domains for which the &#147;percent hack&#148; is to operate. This
+is an almost obsolete form of explicit email routing. If you do not know
+anything about it, you can safely ignore this topic.
+</p>
+<p>
+The last two settings in the main part of the default configuration are
+concerned with messages that have been &#147;frozen&#148; on Exim's queue. When a message
+is frozen, Exim no longer continues to try to deliver it. Freezing occurs when
+a bounce message encounters a permanent failure because the sender address of
+the original message that caused the bounce is invalid, so the bounce cannot be
+delivered. This is probably the most common case, but there are also other
+conditions that cause freezing, and frozen messages are not always bounce
+messages.
+<pre>
+&nbsp;&nbsp;ignore_bounce_errors_after = 2d
+&nbsp;&nbsp;timeout_frozen_after = 7d
+</pre>
+</p>
+<p>
+The first of these options specifies that failing bounce messages are to be
+discarded after 2 days on the queue. The second specifies that any frozen
+message (whether a bounce message or not) is to be timed out (and discarded)
+after a week. In this configuration, the first setting ensures that no failing
+bounce message ever lasts a week.
+</p>
+<a name="IX596"></a>
+<a name="IX597"></a>
+<h2>
+<a name="SECT7.2" href="spec_toc.html#TOC74">
+7.2. ACL configuration
+</a></h2>
+<p>
+In the default configuration, the ACL section follows the main configuration.
+It starts with the line
+<pre>
+&nbsp;&nbsp;begin acl
+</pre>
+</p>
+<p>
+<a name="IX598"></a>
+and it contains the definition of one ACL called <i>acl&#095;check&#095;rcpt</i> that was
+referenced in the setting of <tt>acl&#095;smtp&#095;rcpt</tt> above.
+This ACL is used for every <font size=-1>RCPT</font> command in an incoming SMTP message. Each
+<font size=-1>RCPT</font> command specifies one of the message's recipients. The ACL statements
+are considered in order, until the recipient address is either accepted or
+rejected. The <font size=-1>RCPT</font> command is then accepted or rejected, according to the
+result of the ACL processing.
+<pre>
+&nbsp;&nbsp;acl_check_rcpt:
+</pre>
+</p>
+<p>
+This line, consisting of a name terminated by a colon, marks the start of the
+ACL, and names it.
+<pre>
+&nbsp;&nbsp;accept  hosts = :
+</pre>
+</p>
+<p>
+This ACL statement accepts the recipient if the sending host matches the list.
+But what does that strange list mean? It doesn't actually contain any host
+names or IP addresses. The presence of the colon puts an empty item in the
+list; Exim matches this only if the incoming message didn't come from a remote
+host. The colon is important. Without it, the list itself is empty, and can
+never match anything.
+</p>
+<p>
+What this statement is doing is to accept unconditionally all recipients in
+messages that are submitted by SMTP from local processes using the standard
+input and output (that is, not using TCP/IP). A number of MUAs operate in this
+manner.
+<pre>
+&nbsp;&nbsp;deny    domains       = +local_domains
+&nbsp;&nbsp;        local_parts   = ^[.] : ^.*[@%!/|]
+&nbsp;&nbsp;
+&nbsp;&nbsp;deny    domains       = !+local_domains
+&nbsp;&nbsp;        local_parts   = ^[./|] : ^.*[@%!] : ^.*/\\.\\./
+</pre>
+</p>
+<p>
+These statements are concerned with local parts that contain any of the 
+characters &#147;&#064;&#148;, &#147;%&#148;, &#147;!&#148;, &#147;/&#148;, &#147;|&#148;, or dots in unusual places. Although these
+characters are entirely legal in local parts (in the case of &#147;&#064;&#148; and leading
+dots, only if correctly quoted), they do not commonly occur in Internet mail
+addresses.
+</p>
+<p>
+The first three have in the past been associated with explicitly routed
+addresses (percent is still sometimes used &#150; see the <tt>percent&#095;hack&#095;domains</tt>
+option). Addresses containing these characters are regularly tried by spammers
+in an attempt to bypass relaying restrictions, and also by open relay testing
+programs. Unless you really need them it is safest to reject these characters
+at this early stage. This configuration is heavy-handed in rejecting these
+characters for all messages it accepts from remote hosts. This is a deliberate
+policy of being as safe as possible.
+</p>
+<p>
+The first rule above is stricter, and is applied to messages that are addressed
+to one of the local domains handled by this host. This is implemented by the
+first condition, which restricts it to domains that are listed in the
+<i>local&#095;domains</i> domain list. The &#147;+&#148; character is used to indicate a
+reference to a named list. In this configuration, there is just one domain in
+<i>local&#095;domains</i>, but in general there may be many.
+</p>
+<p>
+The second condition on the first statement uses two regular expressions to
+block local parts that begin with a dot or contain &#147;&#064;&#148;, &#147;%&#148;, &#147;!&#148;, &#147;/&#148;, or &#147;|&#148;.
+If you have local accounts that include these characters, you will have to
+modify this rule.
+</p>
+<p>
+Empty components (two dots in a row) are not valid in RFC 2822, but Exim
+allows them because they have been encountered in practice. (Consider local
+parts constructed as &#147;first-initial.second-initial.family-name&#148; when applied to
+someone like the author of Exim, who has no second initial.) However, a local
+part starting with a dot or containing &#147;/../&#148; can cause trouble if it is used
+as part of a file name (for example, for a mailing list). This is also true for
+local parts that contain slashes. A pipe symbol can also be troublesome if the
+local part is incorporated unthinkingly into a shell command line.
+</p>
+<p>
+The second rule above applies to all other domains, and is less strict. This
+allows your own users to send outgoing messages to sites that use slashes
+and vertical bars in their local parts. It blocks local parts that begin
+with a dot, slash, or vertical bar, but allows these characters within the
+local part. However, the sequence &#147;/../&#148; is barred. The use of &#147;&#064;&#148;, &#147;%&#148;, and
+&#147;!&#148; is blocked, as before. The motivation here is to prevent your users (or
+your users' viruses) from mounting certain kinds of attack on remote sites.
+<pre>
+&nbsp;&nbsp;accept  local_parts   = postmaster
+&nbsp;&nbsp;        domains       = +local_domains
+</pre>
+</p>
+<p>
+This statement, which has two conditions, accepts an incoming address if the
+local part is <i>postmaster</i> and the domain is one of those listed in the
+<i>local&#095;domains</i> domain list. The &#147;+&#148; character is used to indicate a
+reference to a named list. In this configuration, there is just one domain in
+<i>local&#095;domains</i>, but in general there may be many.
+</p>
+<p>
+The presence of this statement means that mail to postmaster is never blocked
+by any of the subsequent tests. This can be helpful while sorting out problems
+in cases where the subsequent tests are incorrectly denying access.
+<pre>
+&nbsp;&nbsp;require verify        = sender
+</pre>
+</p>
+<p>
+This statement requires the sender address to be verified before any subsequent
+ACL statement can be used. If verification fails, the incoming recipient
+address is refused. Verification consists of trying to route the address, to
+see if a 
+bounce 
+message could be delivered to it. In the case of remote addresses, basic
+verification checks only the domain, but <i>callouts</i> can be used for more
+verification if required. Section <a href="spec_38.html#SECT38.20">38.20</a> discusses the
+details of address verification.
+<pre>
+&nbsp;&nbsp;# deny    message       = rejected because $sender_host_address is \
+&nbsp;&nbsp;#                         in a black list at $dnslist_domain\n\
+&nbsp;&nbsp;#                         $dnslist_text
+&nbsp;&nbsp;#         dnslists      = black.list.example
+&nbsp;&nbsp;#
+&nbsp;&nbsp;# warn    message       = X-Warning: $sender_host_address is \
+&nbsp;&nbsp;#                         in a black list at $dnslist_domain
+&nbsp;&nbsp;#         log_message   = found in $dnslist_domain
+&nbsp;&nbsp;#         dnslists      = black.list.example
+</pre>
+</p>
+<p>
+These commented-out lines are examples of how you could configure Exim to check
+sending hosts against a DNS black list. The first statement rejects messages
+from blacklisted hosts, whereas the second merely inserts a warning header
+line.
+<pre>
+&nbsp;&nbsp;accept  domains       = +local_domains
+&nbsp;&nbsp;        endpass
+&nbsp;&nbsp;        message       = unknown user
+&nbsp;&nbsp;        verify        = recipient
+</pre>
+</p>
+<p>
+<a name="IX599"></a>
+This statement accepts the incoming recipient address if its domain is one of
+the local domains, but only if the address can be verified. Verification of
+local addresses normally checks both the local part and the domain. The
+<tt>endpass</tt> line needs some explanation: if the condition above <tt>endpass</tt> fails,
+that is, if the address is not in a local domain, control is passed to the next
+ACL statement. However, if the condition below <tt>endpass</tt> fails, that is, if a
+recipient in a local domain cannot be verified, access is denied and the
+recipient is rejected.
+The <tt>message</tt> modifier provides a customized error message for the failure.
+<pre>
+&nbsp;&nbsp;accept  domains       = +relay_to_domains
+&nbsp;&nbsp;        endpass
+&nbsp;&nbsp;        message       = unrouteable address
+&nbsp;&nbsp;        verify        = recipient
+</pre>
+</p>
+<p>
+This statement accepts the incoming recipient address if its domain is one of
+the domains for which this host is a relay, but again, only if the address can
+be verified.
+<pre>
+&nbsp;&nbsp;accept  hosts         = +relay_from_hosts
+</pre>
+</p>
+<p>
+Control reaches this statement only if the recipient's domain is neither a
+local domain, nor a relay domain. The statement accepts the address if the
+message is coming from one of the hosts that are defined as being allowed to
+relay through this host. Recipient verification is omitted here, because in
+many cases the clients are dumb MUAs that do not cope well with SMTP error
+responses. If you are actually relaying out from MTAs, you should probably add
+recipient verification here.
+<pre>
+&nbsp;&nbsp;accept  authenticated = *
+</pre>
+</p>
+<p>
+Control reaches here for attempts to relay to arbitrary domains from arbitrary
+hosts. The statement accepts the address only if the client host has
+authenticated itself. The default configuration does not define any
+authenticators, which means that no client can in fact authenticate. You will
+need to add authenticator definitions if you want to make use of this ACL
+statement.
+<pre>
+&nbsp;&nbsp;deny    message       = relay not permitted
+</pre>
+</p>
+<p>
+The final statement denies access, giving a specific error message. Reaching
+the end of the ACL also causes access to be denied, but with the generic
+message &#147;administrative prohibition&#148;.
+</p>
+<a name="IX600"></a>
+<a name="IX601"></a>
+<h2>
+<a name="SECT7.3" href="spec_toc.html#TOC75">
+7.3. Router configuration
+</a></h2>
+<p>
+The router configuration comes next in the default configuration, introduced
+by the line
+<pre>
+&nbsp;&nbsp;begin routers
+</pre>
+</p>
+<p>
+Routers are the modules in Exim that make decisions about where to send
+messages. An address is passed to each router in turn, until it is either
+accepted, or failed. This means that the order in which you define the routers
+matters. Each router is fully described in its own chapter later in this
+manual. Here we give only brief overviews.
+<a name="IX602"></a>
+<pre>
+&nbsp;&nbsp;# domain_literal:
+&nbsp;&nbsp;#   driver = ipliteral
+&nbsp;&nbsp;#   domains = !+local_domains
+&nbsp;&nbsp;#   transport = remote_smtp
+</pre>
+</p>
+<p>
+This router is commented out because the majority of sites do not want to
+support domain literal addresses (those of the form <i>user&#064;[10.9.8.7]</i>). If
+you uncomment this router, you also need to uncomment the setting of
+<tt>allow&#095;domain&#095;literals</tt> in the main part of the configuration.
+<pre>
+&nbsp;&nbsp;dnslookup:
+&nbsp;&nbsp;  driver = dnslookup
+&nbsp;&nbsp;  domains = ! +local_domains
+&nbsp;&nbsp;  transport = remote_smtp
+&nbsp;&nbsp;  ignore_target_hosts = 0.0.0.0 : 127.0.0.0/8
+&nbsp;&nbsp;  no_more
+</pre>
+</p>
+<p>
+The first uncommented router handles addresses that do not involve any local
+domains. This is specified by the line
+<pre>
+&nbsp;&nbsp;domains = ! +local_domains
+</pre>
+</p>
+<p>
+The <tt>domains</tt> option lists the domains to which this router applies, but the
+exclamation mark is a negation sign, so the router is used only for domains
+that are not in the domain list called <i>local&#095;domains</i> (which was defined at
+the start of the configuration). The plus sign before <i>local&#095;domains</i>
+indicates that it is referring to a named list. Addresses in other domains are
+passed on to the following routers.
+</p>
+<p>
+The name of the router driver is <b>dnslookup</b>,
+and is specified by the <tt>driver</tt> option. Do not be confused by the fact that
+the name of this router instance is the same as the name of the driver. The 
+instance name is arbitrary, but the name set in the <tt>driver</tt> option must be one 
+of the driver modules that is in the Exim binary.
+</p>
+<p>
+The <b>dnslookup</b> router routes addresses by looking up their domains in the
+DNS in order to obtain a list of hosts to which the address is routed. If the
+router succeeds, the address is queued for the <b>remote&#095;smtp</b> transport, as
+specified by the <tt>transport</tt> option. If the router does not find the domain in
+the DNS, no further routers are tried because of the <tt>no&#095;more</tt> setting, so the
+address fails and is bounced.
+</p>
+<p>
+The <tt>ignore&#095;target&#095;hosts</tt> option specifies a list of IP addresses that are to
+be entirely ignored. This option is present because a number of cases have been
+encountered where MX records in the DNS point to host names 
+whose IP addresses are 0.0.0.0 or are in the 127 subnet (typically 127.0.0.1).
+Completely ignoring these IP addresses causes Exim to fail to route the
+email address, so it bounces. Otherwise, Exim would log a routing problem, and
+continue to try to deliver the message periodically until the address timed
+out.
+<pre>
+&nbsp;&nbsp;system_aliases:
+&nbsp;&nbsp;  driver = redirect
+&nbsp;&nbsp;  allow_fail
+&nbsp;&nbsp;  allow_defer
+&nbsp;&nbsp;  data = ${lookup{$local_part}lsearch{/etc/aliases}}
+&nbsp;&nbsp;# user = exim
+&nbsp;&nbsp;  file_transport = address_file
+&nbsp;&nbsp;  pipe_transport = address_pipe
+</pre>
+</p>
+<p>
+Control reaches this and subsequent routers only for addresses in the local
+domains. This router checks to see whether the local part is defined as an
+alias in the <i>/etc/aliases</i> file, and if so, redirects it according to the
+data that it looks up from that file. If no data is found for the local part,
+the value of the <tt>data</tt> option is empty, causing the address to be passed to
+the next router.
+</p>
+<p>
+<i>/etc/aliases</i> is a conventional name for the system aliases file that is 
+often used. That is why it is referenced by from the default configuration 
+file. However, you can change this by setting <font size=-1>SYSTEM&#095;ALIASES&#095;FILE</font> in
+<i>Local/Makefile</i> before building Exim.
+<pre>
+&nbsp;&nbsp;userforward:
+&nbsp;&nbsp;  driver = redirect
+&nbsp;&nbsp;  check_local_user
+&nbsp;&nbsp;  file = $home/.forward
+&nbsp;&nbsp;  no_verify
+&nbsp;&nbsp;  no_expn
+&nbsp;&nbsp;  check_ancestor
+&nbsp;&nbsp;# allow_filter
+&nbsp;&nbsp;  file_transport = address_file
+&nbsp;&nbsp;  pipe_transport = address_pipe
+&nbsp;&nbsp;  reply_transport = address_reply
+</pre>
+</p>
+<p>
+This is the most complicated router in the default configuration. It is another
+redirection router, but this time it is looking for forwarding data set up by
+individual users. The <tt>check&#095;local&#095;user</tt> setting means that the first thing it
+does is to check that the local part of the address is the login name of a
+local user. If it is not, the router is skipped. When a local user is found,
+the file called <i>.forward</i> in the user's home directory is consulted. If it
+does not exist, or is empty, the router declines. Otherwise, the contents of
+<i>.forward</i> are interpreted as redirection data (see chapter <a href="spec_22.html">22</a> 
+for more details).
+<a name="IX603"></a>
+</p>
+<p>
+Traditional <i>.forward</i> files contain just a list of addresses, pipes, or
+files. Exim supports this by default. However, if <tt>allow&#095;filter</tt> is set (it is
+commented out by default), the contents of the file are interpreted as a set of
+Exim or Sieve filtering instructions, provided the file begins with &#147;&#035;Exim
+filter&#148; or &#147;&#035;Sieve filter&#148;, respectively. User filtering is discussed in the
+separate document entitled <i>Exim's interfaces to mail filtering</i>.
+</p>
+<p>
+The <tt>no&#095;verify</tt> and <tt>no&#095;expn</tt> options mean that this router is skipped when
+verifying addresses, or when running as a consequence of an SMTP <font size=-1>EXPN</font>
+command. 
+There are two reasons for doing this:
+</p>
+<ol>
+<li TYPE="1"><p>
+Whether or not a local user has a <i>.forward</i> file is not really relevant when 
+checking an address for validity; it makes sense not to waste resources doing
+unnecessary work.
+</p>
+</li>
+<li TYPE="1"><p>
+More importantly, when Exim is verifying addresses or handling an <font size=-1>EXPN</font> 
+command during an SMTP session, it is running as the Exim user, not as root. 
+The group is the Exim group, and no additional groups are set up.
+It may therefore not be possible for Exim to read users' <i>.forward</i> files at
+this time.
+</p>
+</li>
+</ol>
+<p>
+The setting of <tt>check&#095;ancestor</tt> prevents the router from generating a new
+address that is the same as any previous address that was redirected. (This
+works round a problem concerning a bad interaction between aliasing and
+forwarding &#150; see section <a href="spec_22.html#SECT22.5">22.5</a>).
+</p>
+<p>
+The final three option settings specify the transports that are to be used when
+forwarding generates a direct delivery to a file, or to a pipe, or sets up an
+auto-reply, respectively. For example, if a <i>.forward</i> file contains
+<pre>
+&nbsp;&nbsp;a.nother@elsewhere.example, /home/spqr/archive
+</pre>
+</p>
+<p>
+the delivery to <i>/home/spqr/archive</i> is done by running the <tt>address&#095;file</tt>
+transport.
+<pre>
+&nbsp;&nbsp;localuser:
+&nbsp;&nbsp;  driver = accept
+&nbsp;&nbsp;  check_local_user
+&nbsp;&nbsp;  transport = local_delivery
+</pre>
+</p>
+<p>
+The final router sets up delivery into local mailboxes, provided that the local
+part is the name of a local login, by accepting the address and queuing it for
+the <b>local&#095;delivery</b> transport. Otherwise, we have reached the end of the
+routers, so the address is bounced.
+</p>
+<a name="IX604"></a>
+<a name="IX605"></a>
+<h2>
+<a name="SECT7.4" href="spec_toc.html#TOC76">
+7.4. Transport configuration
+</a></h2>
+<p>
+Transports define mechanisms for actually delivering messages. They operate
+only when referenced from routers, so the order in which they are defined does
+not matter. The transports section of the configuration starts with
+<pre>
+&nbsp;&nbsp;begin transports
+</pre>
+</p>
+<p>
+One remote transport and four local transports are defined.
+<pre>
+&nbsp;&nbsp;remote_smtp:
+&nbsp;&nbsp;  driver = smtp
+</pre>
+</p>
+<p>
+This transport is used for delivering messages over SMTP connections. All its
+options are defaulted. The list of remote hosts comes from the router.
+<pre>
+&nbsp;&nbsp;local_delivery:
+&nbsp;&nbsp;  driver = appendfile
+&nbsp;&nbsp;  file = /var/mail/$local_part
+&nbsp;&nbsp;  delivery_date_add
+&nbsp;&nbsp;  envelope_to_add
+&nbsp;&nbsp;  return_path_add
+&nbsp;&nbsp;# group = mail
+&nbsp;&nbsp;# mode = 0660
+</pre>
+</p>
+<p>
+This <b>appendfile</b> transport is used for local delivery to user mailboxes in
+traditional BSD mailbox format. By default it runs under the uid and gid of the
+local user, which requires the sticky bit to be set on the <i>/var/mail</i>
+directory. Some systems use the alternative approach of running mail deliveries
+under a particular group instead of using the sticky bit. The commented options
+show how this can be done.
+</p>
+<p>
+Exim adds three headers to the message as it delivers it: <i>Delivery-date:</i>,
+<i>Envelope-to:</i> and <i>Return-path:</i>. This action is requested by the three
+similarly-named options above.
+<pre>
+&nbsp;&nbsp;address_pipe:
+&nbsp;&nbsp;  driver = pipe
+&nbsp;&nbsp;  return_output
+</pre>
+</p>
+<p>
+This transport is used for handling deliveries to pipes that are generated by
+redirection (aliasing or users' <i>.forward</i> files). The <tt>return&#095;output</tt>
+option specifies that any output generated by the pipe is to be returned to the
+sender.
+<pre>
+&nbsp;&nbsp;address_file:
+&nbsp;&nbsp;  driver = appendfile
+&nbsp;&nbsp;  delivery_date_add
+&nbsp;&nbsp;  envelope_to_add
+&nbsp;&nbsp;  return_path_add
+</pre>
+</p>
+<p>
+This transport is used for handling deliveries to files that are generated by
+redirection. The name of the file is not specified in this instance of
+<b>appendfile</b>, because it comes from the <b>redirect</b> router.
+<pre>
+&nbsp;&nbsp;address_reply:
+&nbsp;&nbsp;  driver = autoreply
+</pre>
+</p>
+<p>
+This transport is used for handling automatic replies generated by users'
+filter files.
+</p>
+<a name="IX606"></a>
+<a name="IX607"></a>
+<h2>
+<a name="SECT7.5" href="spec_toc.html#TOC77">
+7.5. Default retry rule
+</a></h2>
+<p>
+The retry section of the configuration file contains rules which affect the way
+Exim retries deliveries that cannot be completed at the first attempt. It is
+introduced by the line
+<pre>
+&nbsp;&nbsp;begin retry
+</pre>
+</p>
+<p>
+In the default configuration, there is just one rule, which applies to all
+errors:
+<pre>
+&nbsp;&nbsp;*   *   F,2h,15m; G,16h,1h,1.5; F,4d,6h
+</pre>
+</p>
+<p>
+This causes any temporarily failing address to be retried every 15 minutes for
+2 hours, then at intervals starting at one hour and increasing by a factor of
+1.5 until 16 hours have passed, then every 6 hours up to 4 days. If an address
+is not delivered after 4 days of failure, it is bounced.
+</p>
+<h2>
+<a name="SECT7.6" href="spec_toc.html#TOC78">
+7.6. Rewriting configuration
+</a></h2>
+<p>
+The rewriting section of the configuration, introduced by
+<pre>
+&nbsp;&nbsp;begin rewrite
+</pre>
+</p>
+<p>
+contains rules for rewriting addresses in messages as they arrive. There are no
+rewriting rules in the default configuration file.
+</p>
+<a name="IX608"></a>
+<h2>
+<a name="SECT7.7" href="spec_toc.html#TOC79">
+7.7. Authenticators configuration
+</a></h2>
+<p>
+The authenticators section of the configuration, introduced by
+<pre>
+&nbsp;&nbsp;begin authenticators
+</pre>
+</p>
+<p>
+defines mechanisms for the use of the SMTP <font size=-1>AUTH</font> command. No authenticators
+are specified in the default configuration file.
+<hr>
+</p>
+<font size=2>
+<a href="spec_6.html">Previous</a>&nbsp;&nbsp;<a href="spec_8.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

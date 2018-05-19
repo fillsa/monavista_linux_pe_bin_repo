@@ -1,0 +1,938 @@
+<html>
+<head>
+<title>The Exim FAQ Section 4</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_3.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_5.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC143">4. ROUTING FOR LOCAL DELIVERY</a></h2>
+<p>
+<a name="TOC144" href="FAQ.html#TOC144">Q0401:</a>&nbsp;&nbsp;I need to have any mail for <i>virt.dom.ain</i> that doesn't match one of the
+aliases in <i>/usr/lib/aliases.virt</i> delivered to a particular address, for
+example, <i>postmaster@virt.dom.ain</i>.
+</p>
+<p>
+<font color="#00BB00">A0401:</font>&nbsp;&nbsp;Adding an asterisk to a search type causes Exim to look up &#147;*&#148; when the
+normal lookup fails. So if your aliasing router is something like this:
+</p>
+<pre>
+   virtual:
+     driver = redirect
+     domains = virt.dom.ain
+     data = ${lookup{$local_part}lsearch{/usr/lib/aliases.virt}}
+     no_more</pre>
+<p>
+you should change <tt>lsearch</tt> to <tt>lsearch*</tt>, and put this in the alias
+file:
+</p>
+<pre>
+   *: postmaster@virt.dom.ain</pre>
+<p>
+This solution has the feature that if there are several unknown
+addresses in the same message, only one copy gets sent to the
+postmaster, because of Exim's normal de-duplication rules.
+</p>
+<p>
+NOTE: This solution works only if there is also an entry for <i>postmaster</i>
+in the alias file, ultimately resolving to an address that is not in
+<i>virt.dom.ain</i>. See also <a href="FAQ_4.html#TOC177">Q0434</a>.
+</p>
+<p>
+<a name="TOC145" href="FAQ.html#TOC145">Q0402:</a>&nbsp;&nbsp;How do I arrange for all incoming email for <i>*@some.domain</i> to go into one
+pop3 mail account? The customer doesn't want to add a list of specific
+local parts to the system.
+</p>
+<p>
+<font color="#00BB00">A0402:</font>&nbsp;&nbsp;Set up a special transport that writes to the mailbox like this:
+</p>
+<pre>
+   special_transport:
+     driver = appendfile
+     file = /pop/mailbox
+     envelope_to_add
+     return_path_add
+     delivery_date_add
+     user = exim</pre>
+<p>
+The file will be written as the user <tt>exim</tt>. Then arrange to route all
+mail for that domain to that transport, with a router like this:
+</p>
+<pre>
+   special_router:
+     driver = accept
+     domains = some.domain
+     transport = special_transport</pre>
+<p>
+<a name="TOC146" href="FAQ.html#TOC146">Q0403:</a>&nbsp;&nbsp;How do I configure Exim to send messages for unknown local users to a
+central server?
+</p>
+<p>
+<font color="#00BB00">A0403:</font>&nbsp;&nbsp;Assuming you are using something like the default configuration, where
+local users are processed by the later routers, you should add the
+following router at the end:
+</p>
+<pre>
+   unknown:
+     driver = manualroute
+     transport = remote_smtp
+     route_list = * server.host.name
+     no_verify</pre>
+<p>
+However, you should if possible try to verify that the user is known on
+the central server before accepting the message in the first place. This
+can be done by making use of Exim's &#147;call forward&#148; facility.
+</p>
+<p>
+<a name="TOC147" href="FAQ.html#TOC147">Q0404:</a>&nbsp;&nbsp;How can I arrange for messages submitted by (for example) Majordomo to
+be handled specially?
+</p>
+<p>
+<font color="#00BB00">A0404:</font>&nbsp;&nbsp;You can use the <tt>condition</tt> option on a router, with a setting such as
+</p>
+<pre>
+   condition = ${if and {{eq {$sender_host_address}{}} \
+               {eq {$sender_ident}{majordom}}} {yes}{no}}</pre>
+<p>
+This first tests for a locally-submitted message, by ensuring there is
+no sending host address, and then it checks the identity of the user
+that ran the submitting process.
+</p>
+<p>
+<a name="TOC148" href="FAQ.html#TOC148">Q0405:</a>&nbsp;&nbsp;On a host that accepts mail for several domains, do I have to use fully
+qualified addresses in <i>/etc/aliases</i> or do I have to set up an alias
+file for each domain?
+</p>
+<p>
+<font color="#00BB00">A0405:</font>&nbsp;&nbsp;You can do it either way. The default aliasing router contains this line:
+</p>
+<pre>
+   data = ${lookup{$local_part}lsearch{/etc/aliases}}</pre>
+<p>
+which is what does the actual lookup. To make it look up the complete
+address instead of just the local part, use
+</p>
+<pre>
+   data = ${lookup{$local_part@$domain}lsearch{/etc/aliases}}</pre>
+<p>
+If you want to use a separate file for each domain, use
+</p>
+<pre>
+   data = ${lookup{$local_part}lsearch{/etc/aliases/$domain}}</pre>
+<p>
+<a name="TOC149" href="FAQ.html#TOC149">Q0406:</a>&nbsp;&nbsp;Some of my users are using the <i>.forward</i> to pipe to a shell command which
+appends to the user's INBOX. How can I forbid this?
+</p>
+<p>
+<font color="#00BB00">A0406:</font>&nbsp;&nbsp;If you allow your users to run shells in pipes, you cannot control which
+commands they run or which files they write to. However, you should point
+out to them that writing to an INBOX by arbitrary commands is not
+interlocked with the MTA and MUAs, and is liable to mess up the contents
+of the file.
+</p>
+<p>
+If a user simply wants to choose a specific file for the delivery of
+messages, this can be done by putting a file name in a <i>.forward</i> file
+rather than using a pipe, or by using the <tt>save</tt> command in an Exim
+filter file.
+</p>
+<p>
+You can set <tt>forbid_pipe</tt> on the router, but that will prevent them from
+running any pipe commands at all. Alternatively, you can restrict which
+commands they may run in their pipes by setting the <tt>allow_commands</tt>
+and/or <tt>restrict_to_path</tt> options in the <b>address_pipe</b> transport.
+</p>
+<p>
+<a name="TOC150" href="FAQ.html#TOC150">Q0407:</a>&nbsp;&nbsp;How can I arrange for a default value when using a query-style lookup
+such as LDAP or NIS+ to handle aliases?
+</p>
+<p>
+<font color="#00BB00">A0407:</font>&nbsp;&nbsp;Use a second query in the failure part of the original lookup, like
+this:
+</p>
+<pre>
+   data = ${lookup ldap\
+     {ldap://x.y.z/l=yvr?aliasaddress?sub?(&(mail=$local_part@$domain))}\
+     {$value}\
+     {\
+     ${lookup ldap \
+       {ldap://x.y.z/l=yvr?aliasaddress?sub?(&(mail=default@$domain))}}\
+     }}</pre>
+<p>
+Of course, if the default is a fixed value you can just include it
+directly.
+</p>
+<p>
+<a name="TOC151" href="FAQ.html#TOC151">Q0408:</a>&nbsp;&nbsp;If I don't fully qualify the addresses in a virtual domain's alias file
+then mail to aliases which also match the local domain get delivered to
+the local domain.
+</p>
+<p>
+<font color="#00BB00">A0408:</font>&nbsp;&nbsp;Set the <tt>qualify_preserve_domain</tt> option on the <b>redirect</b> router.
+</p>
+<p>
+<a name="TOC152" href="FAQ.html#TOC152">Q0409:</a>&nbsp;&nbsp;I want mail for any local part at certain virtual domains to go
+to a single address for each domain.
+</p>
+<p>
+<font color="#00BB00">A0409:</font>&nbsp;&nbsp;One way to to this is
+</p>
+<pre>
+   virtual:
+     driver = redirect
+     data = ${lookup{$domain}lsearch{/etc/virtual}}</pre>
+<p>
+The <i>/etc/virtual</i> file contains a list of domains and the addresses to
+which their mail should be sent. For example:
+</p>
+<pre>
+   domain1:  postmaster@some.where.else
+   domain2:  joe@xyz.plc</pre>
+<p>
+If the number of domains is large, using a DBM or cdb file would be more
+efficient. If the lookup fails to find the domain in the file, the value
+of the <tt>data</tt> option is empty, causing the router to decline.
+</p>
+<p>
+<a name="TOC153" href="FAQ.html#TOC153">Q0410:</a>&nbsp;&nbsp;How can I make Exim look in the alias NIS map instead of <i>/etc/aliases</i>?
+</p>
+<p>
+<font color="#00BB00">A0410:</font>&nbsp;&nbsp;The default configuration does not use NIS (many hosts don't run it).
+You need to change this line in the <b>system_aliases</b> router:
+</p>
+<pre>
+   data = ${lookup{$local_part}lsearch{/etc/aliases}}</pre>
+<p>
+Change it to
+</p>
+<pre>
+   data = ${lookup{$local_part}nis{mail.aliases}}</pre>
+<p>
+If you want to use <i>/etc/aliases</i> as well as NIS, put this router (with
+a different name) before or after the default one, depending on which
+data source you want to take precedence.
+</p>
+<p>
+<a name="TOC154" href="FAQ.html#TOC154">Q0411:</a>&nbsp;&nbsp;Why will Exim deliver a message locally to any username that is longer
+than 8 characters as long as the first 8 characters match one of the
+local usernames?
+</p>
+<p>
+<font color="#00BB00">A0411:</font>&nbsp;&nbsp;The problem is in your operating system. Exim just calls the <i>getpwnam()</i>
+function to test a local part for being a local login name. It does not
+presume to guess the maximum length of user name for the underlying
+operating system. Many operating systems correctly reject names that are
+longer than the maximum length; yours is apparently deficient in this
+regard. To cope with such systems, Exim has an option called
+<tt>max_user_name_length</tt> which you can set to the maximum allowed length.
+</p>
+<p>
+<a name="TOC155" href="FAQ.html#TOC155">Q0412:</a>&nbsp;&nbsp;Why am I seeing the error <i>bad mode (100664) for /home/test/.forward</i>?
+I've looked through the documentation but can't see anything to suggest
+that Exim has to do anything other than read the <i>.forward</i> file.
+</p>
+<p>
+<font color="#00BB00">A0412:</font>&nbsp;&nbsp;For security, Exim checks for mode bits that shouldn't be set, by
+default 022. You can change this by setting the <tt>modemask</tt> option of the
+<b>redirect</b> router that is handling <i>.forward</i> files.
+</p>
+<p>
+<a name="TOC156" href="FAQ.html#TOC156">Q0413:</a>&nbsp;&nbsp;When a user's <i>.forward</i> file is syntactially invalid, Exim defers
+delivery of all messages to that user, which sometimes include the
+user's own test messages. Can it be told to ignore the <i>.forward</i> file
+and/or inform the user of the error?
+</p>
+<p>
+<font color="#00BB00">A0413:</font>&nbsp;&nbsp;Setting <tt>skip_syntax_errors</tt> on the redirect router causes syntax
+errors to be skipped. When dealing with users' <i>.forward</i> files it is best
+to combine this with a setting of <tt>syntax_errors_to</tt> in order to send
+a message about the error to the user. However, to avoid an infinite
+cascade of messages, you have to be able to send to an address that
+bypasses <i>.forward</i> file processing. This can be done by including a
+router like this one
+</p>
+<pre>
+   real_localuser:
+     driver = accept
+     check_local_user
+     transport = local_delivery
+     prefix = real-</pre>
+<p>
+before the <b>redirect</b> router that handles <i>.forward</i> files. This will
+do an ordinary local delivery without <i>.forward</i> processing, if the
+local part is prefixed by <tt>real-</tt>. You can then set something like
+the following options on the <b>redirect</b> router:
+</p>
+<pre>
+   skip_syntax_errors
+   syntax_errors_to = real-$local_part@$domain
+   syntax_errors_text = "\
+     This is an automatically generated message. An error has been \
+     found\nin your .forward file. Details of the error are reported \
+     below. While\nthis error persists, messages addressed to you will \
+     get delivered into\nyour normal mailbox and you will receive a \
+     copy of this message for\neach one."</pre>
+<p>
+A final tidying setting to go with this is a rewriting rule that changes
+<tt>real-username</tt> into just <tt>username</tt> in the headers of the message:
+</p>
+<pre>
+   \N^real-([^@]+)@your\.dom\.ain$\N    $1@your.dom.ain   h</pre>
+<p>
+This means that users won't ever see the <tt>real-</tt> prefix, unless they
+look at the <i>Envelope-To:</i> header.
+</p>
+<p>
+<a name="TOC157" href="FAQ.html#TOC157">Q0414:</a>&nbsp;&nbsp;I have set <tt>caseful_local_part</tt> on the routers that handle my local
+domain because my users have upper case letters in their login names,
+but incoming mail now has to use the correct case. Can I relax this
+somehow?
+</p>
+<p>
+<font color="#00BB00">A0414:</font>&nbsp;&nbsp;If you really have to live with caseful user names but want incoming
+local parts to be caseless, then you have to maintain a file, indexed by
+the lower case forms, that gives the correct case for each login, like
+this:
+</p>
+<pre>
+   admin:    Admin
+   steven:   Steven
+   mcdonald: McDonald
+   lamanch:  LaManche
+   ...</pre>
+<p>
+and at the start of the routers that handle your local domain, put one
+like this:
+</p>
+<pre>
+   set_case_router:
+     driver = redirect
+     data = ${lookup{${lc:$local_part}}lsearch{/the/file}}
+     qualify_preserve_domain</pre>
+<p>
+For efficiency, you should also set the <tt>redirect_router</tt> option to cause
+processing of the changed address to begin at the next router. If you
+are otherwise using the default configuration, the setting would be
+</p>
+<pre>
+   redirect_router = system_aliases</pre>
+<p>
+If there are lots of users, then a DBM or cdb file would be more
+efficient than a linear search. If you are handling several domains,
+you will have to extend this configuration to cope appropriately.
+</p>
+<p>
+<a name="TOC158" href="FAQ.html#TOC158">Q0415:</a>&nbsp;&nbsp;Can I use my existing alias files and forward files as well as procmail
+and effectively drop in Exim in place of Sendmail ?
+</p>
+<p>
+<font color="#00BB00">A0415:</font>&nbsp;&nbsp;Yes, as long as your alias and forward files don't assume that pipes are
+going to run under a shell. If they do, you either have to change them,
+or configure Exim to use a shell (which it doesn't by default).
+</p>
+<p>
+<a name="TOC159" href="FAQ.html#TOC159">Q0416:</a>&nbsp;&nbsp;What is quickest way to set up Exim so any message sent to a
+non-existing user would bounce back with a different message, based
+on the name of non-existing user?
+</p>
+<p>
+<font color="#00BB00">A0416:</font>&nbsp;&nbsp;Place this router last, so that it catches any local addresses that
+are not otherwise handled:
+</p>
+<pre>
+   non_exist:
+     driver = accept
+     transport = non_exist_reply
+     no_verify</pre>
+<p>
+Then add the following transport to the transports section:
+</p>
+<pre>
+   non_exist_reply:
+     driver = autoreply
+     user = exim
+     to = $sender_address
+     subject = User does not exist
+     text = You sent mail to $local_part. That's not a valid user here. \
+            The subject was: $subject.</pre>
+<p>
+If you want to pick up a message from a file, you can use the <tt>file</tt>
+option (use <tt>file_expand</tt> if you want its contents expanded).
+</p>
+<p>
+<a name="TOC160" href="FAQ.html#TOC160">Q0417:</a>&nbsp;&nbsp;What do I need to do to make Exim handle <i>/usr/ucb/vacation</i> processing
+automatically, so that people could just create a <i>.vacation.msg</i> file in
+their home directory and not have to edit their <i>.forward</i> file?
+</p>
+<p>
+<font color="#00BB00">A0417:</font>&nbsp;&nbsp;Add a new router like this, immediately before the normal <b>localuser</b>
+router:
+</p>
+<pre>
+   vacation:
+     driver = accept
+     check_local_user
+     require_files = $home/.vacation.msg
+     transport = vacation_transport
+     unseen</pre>
+<p>
+and a matching new transport like this:
+</p>
+<pre>
+   vacation_transport:
+     driver = pipe
+     command = /usr/ucb/vacation $local_part</pre>
+<p>
+However, some versions of <i>/usr/ucb/vacation</i> do not work properly unless
+the DBM file(s) it uses are created in advance - it won't create them
+itself. You also need a way of removing them when the vacation is over.
+</p>
+<p>
+Another possibility is to use a fixed filter file which is run whenever
+<i>.vacation.msg</i> exists, for example:
+</p>
+<pre>
+   vacation:
+     driver = redirect
+     check_local_user
+     require_files = $home/.vacation.msg
+     file = /some/central/filter
+     allow_filter</pre>
+<p>
+The filter file should use the <tt>if personal</tt> check before sending mail,
+to avoid generating automatic responses to mailing lists. If sending a
+message is all that it does, this doesn't count as a &#147;significant&#148;
+delivery, so the original message goes on to be delivered as normal.
+</p>
+<p>
+Yet another possibility is to make use of Exim's <b>autoreply</b> transport,
+and not use <i>/usr/ucb/vacation</i> at all.
+</p>
+<p>
+<a name="TOC161" href="FAQ.html#TOC161">Q0418:</a>&nbsp;&nbsp;I want to use a default entry in my alias file to handle unknown local
+parts, but it picks up the local parts that the aliases generate. For
+example, if the alias file is
+</p>
+<pre>
+   luke.skywalker: luke
+   ls: luke
+   *: postmaster</pre>
+<p>
+then messages addressed to <i>luke.skywalker</i> end up at <i>postmaster</i>.
+</p>
+<p>
+<font color="#00BB00">A0418:</font>&nbsp;&nbsp;The default mechanism works best with virtual domains, where the
+generated address is not in the same domain. If you just want to pick up
+all unknown local parts and send them to postmaster, an easier way to do
+it is to put this as your last router:
+</p>
+<pre>
+   unknown:
+     driver = redirect
+     data = postmaster
+     no_verify</pre>
+<p>
+Another possibility is to put the redirect router for these aliases
+after all the other routers, so that local parts which are user names
+get picked off first. You will need to have two aliasing routers if
+there are some local parts (e.g. <i>root</i>) which are login names, but which
+you want to handle as aliases.
+</p>
+<p>
+<a name="TOC162" href="FAQ.html#TOC162">Q0419:</a>&nbsp;&nbsp;I have some obsolete domains which people have been warned not to use
+any more. How can I arrange to delete any mail that is sent to them?
+</p>
+<p>
+<font color="#00BB00">A0419:</font>&nbsp;&nbsp;To reject them at SMTP time, with a customized error message, place
+statments like this in the ACL:
+</p>
+<pre>
+   deny message = The domain $domain is obsolete
+        domains = lsearch;/etc/exim/obsolete.domains</pre>
+<p>
+For messages that don't arrive over SMTP, you can use a router like
+this to bounce them:
+</p>
+<pre>
+   obsolete:
+     driver = redirect
+     domains = lsearch;/etc/exim/obsolete.domains
+     allow_fail
+     data = :fail: the domain $domain is obsolete</pre>
+<p>
+If you just want to throw away mail to those domains, accept them at
+SMTP time, and use a router like this:
+</p>
+<pre>
+   obsolete:
+     domains = lsearch;/etc/exim/obsolete.domains
+     data = :blackhole:</pre>
+<p>
+<a name="TOC163" href="FAQ.html#TOC163">Q0420:</a>&nbsp;&nbsp;How can I arrange that mail addressed to <i>anything@something.mydomain.com</i>
+gets delivered to <i>something@mydomain.com</i>?
+</p>
+<p>
+<font color="#00BB00">A0420:</font>&nbsp;&nbsp;Set up a router like this:
+</p>
+<pre>
+   user_from_domain:
+     driver = redirect
+     data = ${if match{$domain}{\N^(.+)\.mydomain\.com$\N}\
+       {$1@mydomain.com}}</pre>
+<p>
+<a name="TOC164" href="FAQ.html#TOC164">Q0421:</a>&nbsp;&nbsp;I can't get a regular expression to work in a <tt>local_parts</tt> option on
+one of my routers.
+</p>
+<p>
+<font color="#00BB00">A0421:</font>&nbsp;&nbsp;Have you remembered to protect any backslash and dollar characters in
+your regex from unwanted expansion? The easiest way is to use the
+<tt>\N</tt> facility, like this:
+</p>
+<pre>
+   local_parts = \N^0740\d{6}\N</pre>
+<p>
+<a name="TOC165" href="FAQ.html#TOC165">Q0422:</a>&nbsp;&nbsp;How can I arrange for all addresses in a group of domains <i>*.example.com</i>
+to share the same alias file? I have a number of such groups.
+</p>
+<p>
+<font color="#00BB00">A0422:</font>&nbsp;&nbsp;For a single group you could just hard wire the file name into a router
+that had
+</p>
+<pre>
+   domains = *.example.com</pre>
+<p>
+set, to restrict it to the relevant domains. For a number of such groups
+you can create a file containing the domains, like this:
+</p>
+<pre>
+   *.example1.com    example1.com
+   *.example2.com    example2.com
+   ...</pre>
+<p>
+Then create a router like this
+</p>
+<pre>
+   domain_aliases:
+     driver = redirect
+     domains = partial-lsearch;/that/file
+     data = ${lookup{$local_part}lsearch*{/etc/aliases.d/$domain_data}}</pre>
+<p>
+The variable <i>$domain_data</i> contains the data that was looked up when the
+<tt>domains</tt> option was matched, i.e. <tt>example1.com</tt>, <tt>example2.com</tt>, etc.
+in this case.
+</p>
+<p>
+<a name="TOC166" href="FAQ.html#TOC166">Q0423:</a>&nbsp;&nbsp;Some of our users have no home directories; the field in the password
+file contains <i>/no/home/dir</i>. This causes the error <i>failed to stat
+/no/home/dir (No such file or directory)</i> when Exim tries to look for a
+<i>.forward file</i>, and the delivery is deferred.
+</p>
+<p>
+<font color="#00BB00">A0423:</font>&nbsp;&nbsp;There are two issues involved here:
+</p>
+<p>
+(1) &nbsp;With the default configuration, you are asking Exim to check for a
+<i>.forward</i> file in the user's home directory. If no file is found,
+Exim tries to <i>stat()</i> the home directory. This is so that it will
+notice a missing NFS home directory, and not treat it as if the
+<i>.forward</i> file did not exist. This <i>stat()</i> is failing when the
+home directory really doesn't exist. You should arrange for the
+<b>userforward</b> router not to run for these special users, by adding
+this line:
+</p>
+<pre>
+   condition = ${if eq {$home}{/no/home/dir}{no}{yes}}</pre>
+<p>
+(2) &nbsp;If you use <tt>check_local_user</tt> on another router to route to a local
+transport (again, this is what is in the default configuration), you
+will also have to specify a current directory for the transport, because
+by default it makes the home directory current. This is easily done by
+adding
+</p>
+<pre>
+   current_directory = /</pre>
+<p>
+to the transport or
+</p>
+<pre>
+   transport_current_directory = /</pre>
+<p>
+to the router. Or you can add <tt>home_directory</tt> to the transport, because
+the current directory defaults to the home directory.
+</p>
+<p>
+<a name="TOC167" href="FAQ.html#TOC167">Q0424:</a>&nbsp;&nbsp;How can I disable Exim's de-duplication features? I want it to do two
+deliveries if two different aliases expand to the same address.
+</p>
+<p>
+<font color="#00BB00">A0424:</font>&nbsp;&nbsp;This is not possible. Duplication has other ramifications other than
+just (in)convenience. Consider:
+</p>
+<p>
+. Message is addressed to A and to B.
+</p>
+<p>
+. Both A and B are aliased to C.
+</p>
+<p>
+. Without de-duplication, two deliveries to C are scheduled.
+</p>
+<p>
+. One delivery happens, Exim records that it has delivered the message
+to C.
+</p>
+<p>
+. The next delivery fails (C's mailbox is over quota, say).
+</p>
+<p>
+Next time round, Exim wants to know if it has already delivered to C or
+not, before scheduling a new delivery. Has it? Obviously, if duplicate
+deliveries are supported, it has to remember not only that it has
+delivered to C but also the &#147;history&#148; of how that delivery happened - in
+effect an ancestry list back to the original envelope address. This it
+does not do, and changing it to work in that way would be a lot of work
+and a big upheaval.
+</p>
+<p>
+The best way to get duplicate deliveries if you want them is not to use
+aliases, but to route the addresses directly to a transport, e.g.
+</p>
+<pre>
+   duplicates:
+     driver = accept
+     local_parts = lsearch;/etc/list/of/special/local/parts
+     transport = local_delivery
+     user = exim</pre>
+<p>
+<a name="TOC168" href="FAQ.html#TOC168">Q0425:</a>&nbsp;&nbsp;My users' mailboxes are distributed between several servers according to
+the first letter of the user name. All the servers receive incoming mail
+at random. I would like to have the same configuration file for all the
+servers, which does local delivery for the mailboxes it holds, and sends
+other addresses to the correct other server. Is this possible?
+</p>
+<p>
+<font color="#00BB00">A0425:</font>&nbsp;&nbsp;It is easiest if you arrange for all the users to have password entries
+on all the servers. This means that non-existent users can be detected
+at the first server they reach. Set up a file containing a mapping from
+the first letter of the user names to the servers where their mailboxes
+are held. For example:
+</p>
+<pre>
+   a: server1
+   b: server1
+   c: server2
+   ...</pre>
+<p>
+Before the normal <b>localuser</b> router, place the following router:
+</p>
+<pre>
+   mailbox_host:
+     driver = manualroute
+     check_local_user
+     transport = remote_smtp
+     route_list = * ${lookup{${substr_0_1:$local_part}}lsearch{/etc/mapfile}}
+     self = pass</pre>
+<p>
+This router checks for a local account, then looks up the host from the
+first character of the local part. If the host is not the local host,
+the address is routed to the <b>remote_smtp</b> transport, and sent to the
+correct host. If the host is the local host, the <tt>self</tt> option causes
+the router to pass the address to the next router, which does a local
+delivery.
+</p>
+<p>
+The router is skipped for local parts that are not the names of local
+users, and so these addresses fail.
+</p>
+<p>
+<a name="TOC169" href="FAQ.html#TOC169">Q0426:</a>&nbsp;&nbsp;One of the things I want to set up is for <i>anything@onedomain</i> to forward
+to <i>anything@anotherdomain</i>. I tried adding <i>$local_part@anotherdomain</i> to
+my aliases but it did not expand - it sent it to that literal address.
+</p>
+<p>
+<font color="#00BB00">A0426:</font>&nbsp;&nbsp;If you want to do it that way, you can use the <tt>expand</tt> operator on
+the lookup used in the data option of the redirect router. For example:
+</p>
+<pre>
+   data = ${expand:${lookup{$local_part}lsearch*{/etc/aliases}}}</pre>
+<p>
+Another approach is to use a router like this:
+</p>
+<pre>
+   forwarddomain:
+     driver = redirect
+     domains = onedomain
+     data = $local_part@anotherdomain</pre>
+<p>
+The value of <tt>data</tt> can, of course, be more complicated, involving
+lookups etc. if you have lots of different cases.
+</p>
+<p>
+<a name="TOC170" href="FAQ.html#TOC170">Q0427:</a>&nbsp;&nbsp;How can I have an address looked up in two different alias files, and
+delivered to all the addresses that are found?
+</p>
+<p>
+<font color="#00BB00">A0427:</font>&nbsp;&nbsp;Use a router like this:
+</p>
+<pre>
+   multi_aliases:
+     driver = redirect
+     data = ${lookup{$local_part}lsearch{/etc/aliases1}\
+       {$value${lookup{$local_part}lsearch{/etc/aliases2}{,$value}}}\
+       {${lookup{$local_part}lsearch{/etc/aliases2}{$value}fail}}}\</pre>
+<p>
+If the first lookup succeeds, the result is its data, followed by the
+data from the second lookup, if any, separated by a comma. If the first
+lookup fails, the result is the data from the third lookup (which also
+looks in the second file), but if this also fails, the entire expansion
+is forced to fail, thereby causing the router to decline.
+</p>
+<p>
+Another approach is to use two routers, with the first re-generating the
+original local part when it succeeds. This won't get processed by the
+same router again. For example:
+</p>
+<pre>
+   multi_aliases1:
+     driver = redirect
+     data = ${lookup{$local_part}lsearch{/etc/aliases1}{$value,$local_part}}</pre>
+<pre>
+   multi_aliases2:
+     data = ${lookup{$local_part}lsearch{/etc/aliases2}}</pre>
+<p>
+This scales more easily to three or more alias files.
+</p>
+<p>
+<a name="TOC171" href="FAQ.html#TOC171">Q0428:</a>&nbsp;&nbsp;I've converted from Sendmail, and I notice that Exim doesn't make use
+of the <tt>owner-</tt> entries in my alias file to change the sender address in
+outgoing messages to a mailing list.
+</p>
+<p>
+<font color="#00BB00">A0428:</font>&nbsp;&nbsp;If you have an alias file with entries like this:
+</p>
+<pre>
+   somelist:        a@b, c@d, ...
+   owner-somelist:  postmaster</pre>
+<p>
+Sendmail assumes that the second entry specifies a new sender address
+for the first. Exim does not make this assumption. However, you can make
+it take the same action, by adding
+</p>
+<pre>
+   errors_to = owner-$local_part@whatever.domain</pre>
+<p>
+to the configuration for your aliasing router. This is fail-safe,
+because Exim verifies a new sender address before using it. Thus, the
+change of sender address occurs only when the owner entry exists.
+</p>
+<p>
+<a name="TOC172" href="FAQ.html#TOC172">Q0429:</a>&nbsp;&nbsp;I would like to deliver mail addressed to a given domain to local
+mailboxes, but also to generate messages to the envelope senders.
+</p>
+<p>
+<font color="#00BB00">A0429:</font>&nbsp;&nbsp;You can do this with an &#147;unseen&#148; router and an <b>autoreply</b> transport,
+along the following lines:
+</p>
+<pre>
+   # Router
+   auto_warning_r:
+     driver = accept
+     check_local_user
+     domains = &#60;domains you want to do this for&#62;
+     condition = ${if eq{$sender_address}{}{no}{yes}}
+     transport = warning_t
+     no_verify
+     unseen</pre>
+<p>
+Place this router immediately before the normal <b>localuser</b> router. The
+<tt>unseen</tt> option means that the address is still passed on to the next
+router. The transport is configured like this:
+</p>
+<pre>
+   # Transport
+   warning_t:
+     driver = autoreply
+     file = /usr/local/mail/warning.txt
+     file_expand
+     from = postmaster@your.domain
+     to = $sender_address
+     user = exim
+     subject = Re: Your mail to $local_part@$domain</pre>
+<p>
+Note the use of the <tt>condition</tt> option to avoid attempting to send a
+message when there is no sender (that is, when the incoming message is a
+bounce message). You can of course extend this to include other
+conditions. If you want to log the sending of messages, you can add
+</p>
+<pre>
+   log = /some/file</pre>
+<p>
+to the transport and also make use of the <tt>once</tt> option if you want to
+send only one message to each sender.
+</p>
+<p>
+<a name="TOC173" href="FAQ.html#TOC173">Q0430:</a>&nbsp;&nbsp;Whenever Exim tries to route a local address, it gives a permission
+denied error for the <i>.forward</i> file, like this:
+</p>
+<pre>
+   1998-08-10 16:55:32 0z5y2W-0000B8-00 == xxxx@yyy.zzz &#60;xxxx@yyy.zz&#62;
+     D=userforward defer (-1): failed to open /home/xxxx/.forward
+     (userforward router): Permission denied (euid=1234 egid=101)</pre>
+<p>
+<font color="#00BB00">A0430:</font>&nbsp;&nbsp;Have you remembered to make Exim setuid <i>root</i>?
+</p>
+<p>
+<a name="TOC174" href="FAQ.html#TOC174">Q0431:</a>&nbsp;&nbsp;How do I configure Exim to allow arbitrary extensions in local parts, of
+the form <i>+extension</i>?
+</p>
+<p>
+<font color="#00BB00">A0431:</font>&nbsp;&nbsp;Add this pre-condition to the relevant router:
+</p>
+<pre>
+   local_part_suffix = +*</pre>
+<p>
+If you want the extensions to be optional, also add the option
+</p>
+<pre>
+   local_part_suffix_optional</pre>
+<p>
+When the router runs, <i>$local_part</i> contains the local part with the
+extension removed, and the extension (if any) is in <i>$local_part_suffix</i>.
+If you have set <tt>check_local_user</tt>, the test is carried out after the
+extension is removed.
+</p>
+<p>
+<a name="TOC175" href="FAQ.html#TOC175">Q0432:</a>&nbsp;&nbsp;I use NIS for my user data. How can I stop Exim rejecting mail when my
+NIS servers are being restarted?
+</p>
+<p>
+<font color="#00BB00">A0432:</font>&nbsp;&nbsp;Exim doesn't know that you are using NIS; it just calls the <i>getpwnam()</i>
+function, which is routed by nsswitch. Unfortunately, <i>getpwnam()</i>
+was never designed to be routed through NIS, and it returns NULL if the
+entry is not found or if the connection to the NIS server fails. This
+means that Exim cannot tell the difference between &#147;no such user&#148; and
+&#147;NIS is down&#148;.
+</p>
+<p>
+Crutches to help with this problem are <tt>finduser_retries</tt> in Exim, and
+<i>nscd</i> on the Unix side, but they are not perfect, and mail can still
+be lost. However, Nico Erfurth pointed out that you can create a router
+for Exim that tests for the availability of NIS, and force a defer if
+NIS is not running:
+</p>
+<pre>
+   check_nis:
+      driver = redirect
+      data = ${lookup {$local_part} nis {passwd}{}}</pre>
+<p>
+This should be placed before any router that makes any use of NIS,
+typically at the start of your local routers. How does it work? If
+your NIS server is reachable, the lookup will take place, and whether it
+succeeds or fails, the result is an empty strting. This causes the
+router to decline, and the address is passed to the following routers.
+If your NIS server is down, the lookup defers, and this causes the
+router to defer. A verification of an incoming address gets a temporary
+rejection, and a delivery is deferred till later.
+</p>
+<p>
+<a name="TOC176" href="FAQ.html#TOC176">Q0433:</a>&nbsp;&nbsp;How can I arrange for a single address to be processed by <i>both</i>
+<b>redirect</b> <i>and</i> <b>accept</b>?
+</p>
+<p>
+<font color="#00BB00">A0433:</font>&nbsp;&nbsp;Check out the <tt>unseen</tt> option.
+</p>
+<p>
+<a name="TOC177" href="FAQ.html#TOC177">Q0434:</a>&nbsp;&nbsp;How can I redirect all local parts that are not in my system aliases to
+a single address? I tried using an asterisk in the system alias file
+with an <tt>lsearch*</tt> lookup, but that send <i>all</i> messages to the
+default address.
+</p>
+<p>
+<font color="#00BB00">A0434:</font>&nbsp;&nbsp;If your alias file generates addresses in the local domain, they are
+also processed as a potential aliases. For example, suppose this is your
+alias file:
+</p>
+<pre>
+   caesar:   jc
+   anthony:  ma
+   *:        brutus</pre>
+<p>
+The local part <i>caesar</i> is aliased to <i>jc</i>, but that address is then
+reprocessed by the routers. As the address is in the local domain, the
+alias file is again consulted, and this time the default matches. In
+fact after the second aliasing, <i>brutus</i> is also processed again from
+the start, and is aliased to itself. However, this happens only once,
+because the next time, Exim notices that the aliasing router has already
+processed <i>brutus</i>, so the router is skipped in order to avoid
+looping.
+</p>
+<p>
+There are several ways of solving this problem; which one you use
+depends on your aliasing data.
+</p>
+<p>
+(1) &nbsp;If the result of aliasing is always a local user name, that is,
+aliasing never generates another alias, you can use the
+<tt>redirect_router</tt> option on the router to specify that processing
+the generated addresses must start at the next router. For example:
+</p>
+<pre>
+   redirect_router = userforward</pre>
+<p>
+assuming that the next router is called <b>userforward</b>. This
+ensures that there is at most one pass through the aliasing router.
+</p>
+<p>
+(2) &nbsp;If you cannot rely on aliases generating non-aliases, it is often
+easier not to use a default alias, but instead to place a router
+such as the one below after all the other local routers (for the
+relevant domains):
+</p>
+<pre>
+   catch_unknown:
+     driver = redirect
+     domains = ...
+     data = brutus@$domain</pre>
+<p>
+Note that the default aliasing technique works more successfully for
+virtual domains (see <a href="FAQ_4.html#TOC144">Q0401</a>) because the generated address for the
+default is not usually in the same virtual domain as the incoming
+address.
+</p>
+<p>
+<a name="TOC178" href="FAQ.html#TOC178">Q0435:</a>&nbsp;&nbsp;My alias file contains fully qualified addresses as keys, and some
+wildcard domains in the form @foo.bar. Can Exim handle these?
+</p>
+<p>
+<font color="#00BB00">A0435:</font>&nbsp;&nbsp;You can handle fully qualified addresses with this router:
+</p>
+<pre>
+   qualified_aliases:
+     driver = redirect
+     data = ${lookup{$local_part@$domain}lsearch{/etc/aliases}}</pre>
+<p>
+(Add any other options you need for the <b>redirect</b> router.) Place this
+router either before or after the default aliases router that looks up
+the local part only. (Or, if you have no unqualified aliases, replace
+the default router.)
+</p>
+<p>
+To handle wildcards in the form @foo.bar you will need yet another
+router. (Wildcards of the form *@foo.bar can be handled by an lsearch*@
+lookup.) Something like this:
+</p>
+<pre>
+   wildcard_aliases:
+     driver = redirect
+     data = ${lookup{@$domain}lsearch{/etc/aliases}}</pre>
+<p>
+Place this after the routers that handle the more specific aliases.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_3.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_5.html">Next</a>
+</body>
+</html>

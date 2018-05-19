@@ -1,0 +1,89 @@
+ipgrab 
+
+Mike Borella
+mike@borella.netNOPSAM
+
+------------------------------------------------------------------------------
+
+COPYRIGHT
+
+Copyright (C) 1997-2003 Mike Borella
+
+Redistribution and use in source and binary forms are permitted
+provided that this paragraph is duplicated in all such forms and in
+any documentation, advertising materials, and other materials related
+to such distribution and use acknowledge that the software was
+developed by Mike Borella.  The name of the Author may not be used to
+endorse or promote products derived from this software without
+specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+Some of this code has been taken from tcpdump, which was developed by
+the Network Research Group at Lawrence Berkeley National Lab, and is
+copyrighted by the University of California Regents.
+
+------------------------------------------------------------------------------
+
+DESCRIPTION
+
+This program reads and parses packets from the link layer through the
+transport layer, dumping explicit header information along the way.
+It is a lot like tcpdump from LBL except that I've made an effort to
+dump every relevant header field possible.  The overall structure of
+the code is loosely based on tcpdump and I've lifted a few modules
+from the tcpdump distribution when necessary, rather than re-inventing
+the wheel.  In particular, the address conversion hashing routines are
+pretty much lifted verbatim, as well as the TCP options section.
+
+I expect that this code can be used for detailed packet level
+debugging of existing or new protocols.  Also, I imagine that it could
+be a useful teaching and instruction tool for TCP/IP or security
+courses.  I've made an effort to make the code readable, sometimes
+even at the expense of efficiency, so that one can use it to learn
+about the pcap library calls and the header field data structures.
+
+Would you like to see new features and protocols supported?  Do you
+have a proprietary protocol that you'd like to test?  Two ways to make
+it happen: (1) write a module yourself - if you send me a copy I'll
+merge it into my source and acknowledge you as author, (2) ask me to
+write it - send me email for details.
+
+-------------------------------------------------------------------------------
+
+INSTALLATION
+
+You must have the pcap library (libpcap) installed.  In particular,
+the pcap.h and net/bpf.h files must be in an appropriate include
+directory (just grabbing a pre-compiled libpcap.so won't cut it).
+Download pcap from http://www.tcpdump.org
+
+Run the configure script to create a Makefile, then type 'make'.  If
+you need to install any other libraries or headers, configure should
+tell you.
+
+It should compile cleanly on Linux and most other types of UNIX.  It 
+will also run on Windows if the WinPcap library is properly installed. 
+In order to build on Windows you need Cygwin with the WinPcap 
+development files installed in the /usr/local directory.
+
+-------------------------------------------------------------------------------
+
+OPERATION
+
+See man page for details.
+
+-------------------------------------------------------------------------------
+
+THANKS
+
+Marty Roesch fixed some of the timestamping, and provided the code for
+payload output.  Jorgen Pehrson provided the buffered output option.
+Stuart Stock added a lot of fixes to ISAKMP.  Cullen Jennings contributed
+the MGCP parser.
+
+Lots of other people suggested things that eventually made their way
+into the code, in one form or another.
+

@@ -1,0 +1,233 @@
+<html lang="en">
+<head>
+<title>Condition Variables - The GNU C Library</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU C Library">
+<meta name="generator" content="makeinfo 4.7">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="POSIX-Threads.html#POSIX-Threads" title="POSIX Threads">
+<link rel="prev" href="Mutexes.html#Mutexes" title="Mutexes">
+<link rel="next" href="POSIX-Semaphores.html#POSIX-Semaphores" title="POSIX Semaphores">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc { font-variant:small-caps }
+  span.roman { font-family: serif; font-weight: normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Condition-Variables"></a>Next:&nbsp;<a rel="next" accesskey="n" href="POSIX-Semaphores.html#POSIX-Semaphores">POSIX Semaphores</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Mutexes.html#Mutexes">Mutexes</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="POSIX-Threads.html#POSIX-Threads">POSIX Threads</a>
+<hr><br>
+</div>
+
+<h3 class="section">34.6 Condition Variables</h3>
+
+<p>A condition (short for &ldquo;condition variable&rdquo;) is a synchronization
+device that allows threads to suspend execution until some predicate on
+shared data is satisfied. The basic operations on conditions are: signal
+the condition (when the predicate becomes true), and wait for the
+condition, suspending the thread execution until another thread signals
+the condition.
+
+   <p>A condition variable must always be associated with a mutex, to avoid
+the race condition where a thread prepares to wait on a condition
+variable and another thread signals the condition just before the first
+thread actually waits on it.
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_cond_init</b> (<var>pthread_cond_t *cond, pthread_condattr_t *cond_attr</var>)<var><a name="index-pthread_005fcond_005finit-3737"></a></var><br>
+<blockquote>
+<p><code>pthread_cond_init</code> initializes the condition variable <var>cond</var>,
+using the condition attributes specified in <var>cond_attr</var>, or default
+attributes if <var>cond_attr</var> is <code>NULL</code>. The LinuxThreads
+implementation supports no attributes for conditions, hence the
+<var>cond_attr</var> parameter is actually ignored.
+
+        <p>Variables of type <code>pthread_cond_t</code> can also be initialized
+statically, using the constant <code>PTHREAD_COND_INITIALIZER</code>.
+
+        <p>This function always returns 0. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_cond_signal</b> (<var>pthread_cond_t *cond</var>)<var><a name="index-pthread_005fcond_005fsignal-3738"></a></var><br>
+<blockquote><p><code>pthread_cond_signal</code> restarts one of the threads that are waiting
+on the condition variable <var>cond</var>. If no threads are waiting on
+<var>cond</var>, nothing happens. If several threads are waiting on
+<var>cond</var>, exactly one is restarted, but it is not specified which.
+
+        <p>This function always returns 0. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_cond_broadcast</b> (<var>pthread_cond_t *cond</var>)<var><a name="index-pthread_005fcond_005fbroadcast-3739"></a></var><br>
+<blockquote><p><code>pthread_cond_broadcast</code> restarts all the threads that are waiting
+on the condition variable <var>cond</var>. Nothing happens if no threads are
+waiting on <var>cond</var>.
+
+        <p>This function always returns 0. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_cond_wait</b> (<var>pthread_cond_t *cond, pthread_mutex_t *mutex</var>)<var><a name="index-pthread_005fcond_005fwait-3740"></a></var><br>
+<blockquote><p><code>pthread_cond_wait</code> atomically unlocks the <var>mutex</var> (as per
+<code>pthread_unlock_mutex</code>) and waits for the condition variable
+<var>cond</var> to be signaled. The thread execution is suspended and does
+not consume any CPU time until the condition variable is signaled. The
+<var>mutex</var> must be locked by the calling thread on entrance to
+<code>pthread_cond_wait</code>. Before returning to the calling thread,
+<code>pthread_cond_wait</code> re-acquires <var>mutex</var> (as per
+<code>pthread_lock_mutex</code>).
+
+        <p>Unlocking the mutex and suspending on the condition variable is done
+atomically. Thus, if all threads always acquire the mutex before
+signaling the condition, this guarantees that the condition cannot be
+signaled (and thus ignored) between the time a thread locks the mutex
+and the time it waits on the condition variable.
+
+        <p>This function always returns 0. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_cond_timedwait</b> (<var>pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime</var>)<var><a name="index-pthread_005fcond_005ftimedwait-3741"></a></var><br>
+<blockquote><p><code>pthread_cond_timedwait</code> atomically unlocks <var>mutex</var> and waits
+on <var>cond</var>, as <code>pthread_cond_wait</code> does, but it also bounds the
+duration of the wait. If <var>cond</var> has not been signaled before time
+<var>abstime</var>, the mutex <var>mutex</var> is re-acquired and
+<code>pthread_cond_timedwait</code> returns the error code <code>ETIMEDOUT</code>. 
+The wait can also be interrupted by a signal; in that case
+<code>pthread_cond_timedwait</code> returns <code>EINTR</code>.
+
+        <p>The <var>abstime</var> parameter specifies an absolute time, with the same
+origin as <code>time</code> and <code>gettimeofday</code>: an <var>abstime</var> of 0
+corresponds to 00:00:00 GMT, January 1, 1970. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_cond_destroy</b> (<var>pthread_cond_t *cond</var>)<var><a name="index-pthread_005fcond_005fdestroy-3742"></a></var><br>
+<blockquote><p><code>pthread_cond_destroy</code> destroys the condition variable <var>cond</var>,
+freeing the resources it might hold.  If any threads are waiting on the
+condition variable, <code>pthread_cond_destroy</code> leaves <var>cond</var>
+untouched and returns <code>EBUSY</code>.  Otherwise it returns 0, and
+<var>cond</var> must not be used again until it is reinitialized.
+
+        <p>In the LinuxThreads implementation, no resources are associated with
+condition variables, so <code>pthread_cond_destroy</code> actually does
+nothing. 
+</p></blockquote></div>
+
+   <p><code>pthread_cond_wait</code> and <code>pthread_cond_timedwait</code> are
+cancellation points. If a thread is canceled while suspended in one of
+these functions, the thread immediately resumes execution, relocks the
+mutex specified by  <var>mutex</var>, and finally executes the cancellation. 
+Consequently, cleanup handlers are assured that <var>mutex</var> is locked
+when they are called.
+
+   <p>It is not safe to call the condition variable functions from a signal
+handler. In particular, calling <code>pthread_cond_signal</code> or
+<code>pthread_cond_broadcast</code> from a signal handler may deadlock the
+calling thread.
+
+   <p>Consider two shared variables <var>x</var> and <var>y</var>, protected by the
+mutex <var>mut</var>, and a condition variable <var>cond</var> that is to be
+signaled whenever <var>x</var> becomes greater than <var>y</var>.
+
+<pre class="smallexample">     int x,y;
+     pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
+     pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+</pre>
+   <p>Waiting until <var>x</var> is greater than <var>y</var> is performed as follows:
+
+<pre class="smallexample">     pthread_mutex_lock(&amp;mut);
+     while (x &lt;= y) {
+             pthread_cond_wait(&amp;cond, &amp;mut);
+     }
+     /* operate on x and y */
+     pthread_mutex_unlock(&amp;mut);
+</pre>
+   <p>Modifications on <var>x</var> and <var>y</var> that may cause <var>x</var> to become greater than
+<var>y</var> should signal the condition if needed:
+
+<pre class="smallexample">     pthread_mutex_lock(&amp;mut);
+     /* modify x and y */
+     if (x &gt; y) pthread_cond_broadcast(&amp;cond);
+     pthread_mutex_unlock(&amp;mut);
+</pre>
+   <p>If it can be proved that at most one waiting thread needs to be waken
+up (for instance, if there are only two threads communicating through
+<var>x</var> and <var>y</var>), <code>pthread_cond_signal</code> can be used as a slightly more
+efficient alternative to <code>pthread_cond_broadcast</code>. In doubt, use
+<code>pthread_cond_broadcast</code>.
+
+   <p>To wait for <var>x</var> to becomes greater than <var>y</var> with a timeout of 5
+seconds, do:
+
+<pre class="smallexample">     struct timeval now;
+     struct timespec timeout;
+     int retcode;
+     
+     pthread_mutex_lock(&amp;mut);
+     gettimeofday(&amp;now);
+     timeout.tv_sec = now.tv_sec + 5;
+     timeout.tv_nsec = now.tv_usec * 1000;
+     retcode = 0;
+     while (x &lt;= y &amp;&amp; retcode != ETIMEDOUT) {
+             retcode = pthread_cond_timedwait(&amp;cond, &amp;mut, &amp;timeout);
+     }
+     if (retcode == ETIMEDOUT) {
+             /* timeout occurred */
+     } else {
+             /* operate on x and y */
+     }
+     pthread_mutex_unlock(&amp;mut);
+</pre>
+   <p>Condition attributes can be specified at condition creation time, by
+passing a condition attribute object as second argument to
+<code>pthread_cond_init</code>.  Passing <code>NULL</code> is equivalent to passing
+a condition attribute object with all attributes set to their default
+values.
+
+   <p>The LinuxThreads implementation supports no attributes for
+conditions. The functions on condition attributes are included only for
+compliance with the POSIX standard.
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_condattr_init</b> (<var>pthread_condattr_t *attr</var>)<var><a name="index-pthread_005fcondattr_005finit-3743"></a></var><br>
+&mdash; Function: int <b>pthread_condattr_destroy</b> (<var>pthread_condattr_t *attr</var>)<var><a name="index-pthread_005fcondattr_005fdestroy-3744"></a></var><br>
+<blockquote><p><code>pthread_condattr_init</code> initializes the condition attribute object
+<var>attr</var> and fills it with default values for the attributes. 
+<code>pthread_condattr_destroy</code> destroys the condition attribute object
+<var>attr</var>.
+
+        <p>Both functions do nothing in the LinuxThreads implementation.
+
+        <p><code>pthread_condattr_init</code> and <code>pthread_condattr_destroy</code> always
+return 0. 
+</p></blockquote></div>
+
+   </body></html>
+

@@ -1,0 +1,160 @@
+\hypertarget{base64_8h}{
+\section{base64.h File Reference}
+\label{base64_8h}\index{base64.h@{base64.h}}
+}
+Base64 encoding and decoding, headers. 
+
+{\tt \#include \char`\"{}beecrypt.h\char`\"{}}\par
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \hyperlink{base64_8h_a0}{B64DECODE\_\-WHITESPACE}\ \char`\"{} $\backslash$f$\backslash$n$\backslash$r$\backslash$t$\backslash$v\char`\"{}
+\item 
+\#define \hyperlink{base64_8h_a1}{B64ENCODE\_\-CHARS\_\-PER\_\-LINE}\ 72
+\item 
+\#define \hyperlink{base64_8h_a2}{B64ENCODE\_\-EOLSTR}\ \char`\"{}$\backslash$n\char`\"{}
+\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+char $\ast$ \hyperlink{base64_8h_a6}{b64encode} (const void $\ast$data, size\_\-t ns)
+\item 
+char $\ast$ \hyperlink{base64_8h_a7}{b64crc} (const unsigned char $\ast$data, size\_\-t ns)
+\item 
+int \hyperlink{base64_8h_a8}{b64decode} (const char $\ast$s, void $\ast$$\ast$datap, size\_\-t $\ast$lenp)
+\item 
+char $\ast$ \hyperlink{base64_8h_a9}{b64enc} (const \hyperlink{structmemchunk}{memchunk} $\ast$)
+\item 
+\hyperlink{structmemchunk}{memchunk} $\ast$ \hyperlink{base64_8h_a10}{b64dec} (const char $\ast$)
+\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+const char $\ast$ \hyperlink{base64_8h_a3}{b64decode\_\-whitespace}
+\item 
+int \hyperlink{base64_8h_a4}{b64encode\_\-chars\_\-per\_\-line}
+\item 
+const char $\ast$ \hyperlink{base64_8h_a5}{b64encode\_\-eolstr}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Base64 encoding and decoding, headers. 
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{base64_8h-source}{base64.h}.
+
+\subsection{Define Documentation}
+\hypertarget{base64_8h_a0}{
+\index{base64.h@{base64.h}!B64DECODE_WHITESPACE@{B64DECODE\_\-WHITESPACE}}
+\index{B64DECODE_WHITESPACE@{B64DECODE\_\-WHITESPACE}!base64.h@{base64.h}}
+\subsubsection[B64DECODE\_\-WHITESPACE]{\setlength{\rightskip}{0pt plus 5cm}\#define B64DECODE\_\-WHITESPACE\ \char`\"{} $\backslash$f$\backslash$n$\backslash$r$\backslash$t$\backslash$v\char`\"{}}}
+\label{base64_8h_a0}
+
+
+Definition at line 34 of file base64.h.\hypertarget{base64_8h_a1}{
+\index{base64.h@{base64.h}!B64ENCODE_CHARS_PER_LINE@{B64ENCODE\_\-CHARS\_\-PER\_\-LINE}}
+\index{B64ENCODE_CHARS_PER_LINE@{B64ENCODE\_\-CHARS\_\-PER\_\-LINE}!base64.h@{base64.h}}
+\subsubsection[B64ENCODE\_\-CHARS\_\-PER\_\-LINE]{\setlength{\rightskip}{0pt plus 5cm}\#define B64ENCODE\_\-CHARS\_\-PER\_\-LINE\ 72}}
+\label{base64_8h_a1}
+
+
+Definition at line 40 of file base64.h.\hypertarget{base64_8h_a2}{
+\index{base64.h@{base64.h}!B64ENCODE_EOLSTR@{B64ENCODE\_\-EOLSTR}}
+\index{B64ENCODE_EOLSTR@{B64ENCODE\_\-EOLSTR}!base64.h@{base64.h}}
+\subsubsection[B64ENCODE\_\-EOLSTR]{\setlength{\rightskip}{0pt plus 5cm}\#define B64ENCODE\_\-EOLSTR\ \char`\"{}$\backslash$n\char`\"{}}}
+\label{base64_8h_a2}
+
+
+Definition at line 46 of file base64.h.
+
+\subsection{Function Documentation}
+\hypertarget{base64_8h_a7}{
+\index{base64.h@{base64.h}!b64crc@{b64crc}}
+\index{b64crc@{b64crc}!base64.h@{base64.h}}
+\subsubsection[b64crc]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ b64crc (const unsigned char $\ast$ {\em data}, size\_\-t {\em ns})}}
+\label{base64_8h_a7}
+
+
+Encode crc of binary input data into 5 bytes of base64 output. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]binary data \item[{\em ns}]no. bytes of binary data \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:](malloc'd) base64 string \end{Desc}
+\hypertarget{base64_8h_a10}{
+\index{base64.h@{base64.h}!b64dec@{b64dec}}
+\index{b64dec@{b64dec}!base64.h@{base64.h}}
+\subsubsection[b64dec]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structmemchunk}{memchunk}$\ast$ b64dec (const char $\ast$)}}
+\label{base64_8h_a10}
+
+
+\hypertarget{base64_8h_a8}{
+\index{base64.h@{base64.h}!b64decode@{b64decode}}
+\index{b64decode@{b64decode}!base64.h@{base64.h}}
+\subsubsection[b64decode]{\setlength{\rightskip}{0pt plus 5cm}int b64decode (const char $\ast$ {\em s}, void $\ast$$\ast$ {\em datap}, size\_\-t $\ast$ {\em lenp})}}
+\label{base64_8h_a8}
+
+
+Decode chunks of 4 bytes of base64 input into 3 bytes of binary output. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em s}]base64 string \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em datap}]address of (malloc'd) binary data \item[{\em lenp}]address of no. bytes of binary data \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]0 on success, 1: s == NULL, 2: bad length, 3: bad char \end{Desc}
+\hypertarget{base64_8h_a9}{
+\index{base64.h@{base64.h}!b64enc@{b64enc}}
+\index{b64enc@{b64enc}!base64.h@{base64.h}}
+\subsubsection[b64enc]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ b64enc (const \hyperlink{structmemchunk}{memchunk} $\ast$)}}
+\label{base64_8h_a9}
+
+
+\hypertarget{base64_8h_a6}{
+\index{base64.h@{base64.h}!b64encode@{b64encode}}
+\index{b64encode@{b64encode}!base64.h@{base64.h}}
+\subsubsection[b64encode]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ b64encode (const void $\ast$ {\em data}, size\_\-t {\em ns})}}
+\label{base64_8h_a6}
+
+
+Encode chunks of 3 bytes of binary input into 4 bytes of base64 output. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]binary data \item[{\em ns}]no. bytes of data (0 uses strlen(data)) \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:](malloc'd) base64 string \end{Desc}
+
+
+\subsection{Variable Documentation}
+\hypertarget{base64_8h_a3}{
+\index{base64.h@{base64.h}!b64decode_whitespace@{b64decode\_\-whitespace}}
+\index{b64decode_whitespace@{b64decode\_\-whitespace}!base64.h@{base64.h}}
+\subsubsection[b64decode\_\-whitespace]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ \hyperlink{base64_8h_a3}{b64decode\_\-whitespace}}}
+\label{base64_8h_a3}
+
+
+$\backslash$ Decode white space character set (default). \hypertarget{base64_8h_a4}{
+\index{base64.h@{base64.h}!b64encode_chars_per_line@{b64encode\_\-chars\_\-per\_\-line}}
+\index{b64encode_chars_per_line@{b64encode\_\-chars\_\-per\_\-line}!base64.h@{base64.h}}
+\subsubsection[b64encode\_\-chars\_\-per\_\-line]{\setlength{\rightskip}{0pt plus 5cm}int \hyperlink{base64_8h_a4}{b64encode\_\-chars\_\-per\_\-line}}}
+\label{base64_8h_a4}
+
+
+$\backslash$ Encode 72 characters per line (default). \hypertarget{base64_8h_a5}{
+\index{base64.h@{base64.h}!b64encode_eolstr@{b64encode\_\-eolstr}}
+\index{b64encode_eolstr@{b64encode\_\-eolstr}!base64.h@{base64.h}}
+\subsubsection[b64encode\_\-eolstr]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ \hyperlink{base64_8h_a5}{b64encode\_\-eolstr}}}
+\label{base64_8h_a5}
+
+
+$\backslash$ Encode end-of-line string (default). 

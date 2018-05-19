@@ -1,0 +1,600 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 44</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_43.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_45.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2561"></a>
+<h1>
+<a name="CHAP44" href="spec_toc.html#TOC346">
+44. Message processing
+</a></h1>
+<p>
+Exim performs various transformations on the sender and recipient addresses of
+all messages that it handles, and also on the messages' header lines. Some of
+these are optional and configurable, while others always take place. All of
+this processing, except rewriting as a result of routing, and the addition or
+removal of header lines while delivering, happens when a message is received,
+before it is placed on Exim's queue.
+</p>
+<p>
+Some of the automatic processing takes place 
+<font color=green>
+by default
+</font>
+only for &#147;locally-originated&#148; messages. This adjective is used to describe
+messages that are not received over TCP/IP, but instead are passed to an Exim
+process on its standard input. This includes the interactive &#147;local SMTP&#148; case
+that is set up by the <i>-bs</i> command line option. <b>Note</b>: messages received
+over TCP/IP on the loopback interface (127.0.0.1 or &#058;&#058;1) are not considered
+to be locally-originated. Exim does not treat the loopback interface specially
+in any way.
+<font color=green><a name="IX2562"></a>
+</p>
+<p>
+Processing that happens automatically for locally-originated messages can also 
+be requested for other messages. This is done by obeying the modifier
+<pre>
+&nbsp;&nbsp;control = submission
+</pre>
+</p>
+<p>
+in one of the ACLs that are run for an incoming message (see section
+<a href="spec_38.html#SECT38.11">38.11</a>). This makes Exim treat the message as a local submission, and is 
+normally used when the source of the message is known to be an MUA running on a 
+client host (as opposed to an MTA). In the descriptions below, the term
+&#147;submission mode&#148; is used to describe this state.
+</p>
+<p>
+When a <i>From:</i> or <i>Sender:</i> header is generated in submission mode, the value 
+of <tt>qualify&#095;domain</tt> is used by default. However, it is possible to specify 
+another domain by a setting such as
+<pre>
+&nbsp;&nbsp;control = submission/domain=some.other.domain
+</pre>
+</p>
+<a name="IX2563"></a>
+<a name="IX2564"></a>
+<a name="IX2565"></a>
+</font><h2>
+<a name="SECT44.1" href="spec_toc.html#TOC347">
+44.1. Line endings
+</a></h2>
+<p>
+RFC 2821 specifies that CRLF (two characters: carriage-return, followed by 
+linefeed) is the line ending for messages transmitted over the Internet using
+SMTP over TCP/IP. However, within individual operating systems, different
+conventions are used. For example, Unix-like systems use just LF, but others
+use CRLF or just CR.
+</p>
+<p>
+Exim was designed for Unix-like systems, and internally, it stores messages 
+using the system's convention of a single LF as a line terminator. When 
+receiving a message, all line endings are translated to this standard format. 
+Originally, it was thought that programs that passed messages directly to an 
+MTA within an operating system would use that system's convention. Experience 
+has shown that this is not the case; for example, there are Unix applications
+that use CRLF in this circumstance. For this reason, and for compatibility with 
+other MTAs, the way Exim handles line endings for all messages is now as 
+follows:
+</p>
+<ul>
+<li><p>
+LF not preceded by CR is treated as a line ending.
+</p>
+</li>
+<li><p>
+CR is treated as a line ending; if it is immediately followed by LF, the LF 
+is ignored.
+</p>
+</li>
+<li><p>
+The sequence &#147;CR, dot, CR&#148; does not terminate an incoming SMTP message,
+nor a local message in the state where a line containing only a dot is a
+terminator.
+</p>
+</li>
+<li><p>
+If a bare CR is encountered within a header line, an extra space is added after
+the line terminator so as not to end the header line. The reasoning behind this
+is that bare CRs in header lines are most likely either to be mistakes, or
+people trying to play silly games.
+</p>
+</li>
+<li><p>
+<font color=green>
+If the first header line received in a message ends with CRLF, a subsequent 
+bare LF in a header line is treated in the same way as a bare CR in a header 
+line. 
+</font>
+</p>
+</li>
+</ul>
+<a name="IX2566"></a>
+<a name="IX2567"></a>
+<h2>
+<a name="SECT44.2" href="spec_toc.html#TOC348">
+44.2. Unqualified addresses
+</a></h2>
+<p>
+By default, Exim expects every address it receives from an external host to be
+fully qualified. Unqualified addresses cause negative responses to SMTP
+commands. However, because SMTP is used as a means of transporting messages
+from MUAs running on personal workstations, there is sometimes a requirement to
+accept unqualified addresses from specific hosts or IP networks.
+</p>
+<p>
+<a name="IX2568"></a>
+<a name="IX2569"></a>
+Exim has two options that separately control which hosts may send unqualified
+sender or receipient addresses in SMTP commands, namely
+<tt>sender_unqualified_hosts</tt> and <tt>recipient_unqualified_hosts</tt>. In both
+cases, if an unqualified address is accepted, it is qualified by adding the
+value of <tt>qualify_domain</tt> or <tt>qualify_recipient</tt>, as appropriate.
+</p>
+<a name="IX2570"></a>
+<a name="IX2571"></a>
+<a name="IX2572"></a>
+<a name="IX2573"></a>
+<a name="IX2574"></a>
+<a name="IX2575"></a>
+<a name="IX2576"></a>
+<h2>
+<a name="SECT44.3" href="spec_toc.html#TOC349">
+44.3. The UUCP From line
+</a></h2>
+<p>
+Messages that have come from UUCP (and some other applications) often begin
+with a line containing the envelope sender and a timestamp, following the word
+&#147;From&#148;. Examples of two common formats are:
+<pre>
+&nbsp;&nbsp;From a.oakley@berlin.mus Fri Jan  5 12:35 GMT 1996
+&nbsp;&nbsp;From f.butler@berlin.mus Fri, 7 Jan 97 14:00:00 GMT
+</pre>
+</p>
+<p>
+This line precedes the RFC 2822 header lines. For compatibility with Sendmail,
+Exim recognizes such lines at the start of messages that are submitted to it
+via the command line (that is, on the standard input). It does not recognize
+such lines in incoming SMTP messages, unless the sending host matches
+<tt>ignore&#095;fromline&#095;hosts</tt> or the <i>-bs</i> option was used for a local message and
+<tt>ignore&#095;fromline&#095;local</tt> is set. The recognition is controlled by a regular
+expression that is defined by the <tt>uucp&#095;from&#095;pattern</tt> option, whose default
+value matches the two common cases shown above and puts the address that
+follows &#147;From&#148; into <tt>$1</tt>.
+<a name="IX2577"></a>
+</p>
+<p>
+When the caller of Exim for a non-SMTP message that contains a &#147;From&#148; line is a
+trusted user, the message's sender address is constructed by expanding the
+contents of <tt>uucp&#095;sender&#095;address</tt>, whose default value is &#147;&#036;1&#148;. This is then
+parsed as an RFC 2822 address. If there is no domain, the local part is
+qualified with <tt>qualify&#095;domain</tt> unless it is the empty string. However, if the
+command line <i>-f</i> option is used, it overrides the &#147;From&#148; line.
+</p>
+<p>
+If the caller of Exim is not trusted, the &#147;From&#148; line is recognized, but the
+sender address is not changed. This is also the case for incoming SMTP messages
+that are permitted to contain &#147;From&#148; lines.
+</p>
+<p>
+Only one &#147;From&#148; line is recognized. If there is more than one, the second is
+treated as a data line that starts the body of the message, as it is not valid
+as a header line. This also happens if a &#147;From&#148; line is present in an incoming
+SMTP message from a source that is not permitted to send them.
+</p>
+<a name="IX2578"></a>
+<h2>
+<a name="SECT44.4" href="spec_toc.html#TOC350">
+44.4. Resent- header lines
+</a></h2>
+<p>
+RFC 2822 makes provision for sets of header lines starting with the string
+<tt>Resent-</tt> to be added to a message when it is resent by the original
+recipient to somebody else. These headers are <i>Resent-Date:</i>, <i>Resent-From:</i>,
+<i>Resent-Sender:</i>, <i>Resent-To:</i>, <i>Resent-Cc:</i>, <i>Resent-Bcc:</i> and
+<i>Resent-Message-ID:</i>. The RFC says:
+</p>
+<p>
+<i>Resent fields are strictly informational. They MUST NOT be used in the normal
+processing of replies or other such automatic actions on messages.</i>
+</p>
+<p>
+This leaves things a bit vague as far as other processing actions such as
+address rewriting are concerned. Exim treats <tt>Resent&#045;</tt> header lines as
+follows:
+</p>
+<ul>
+<li><p>
+A <i>Resent-From:</i> line that just contains the login id of the submitting user
+is automatically rewritten in the same way as <i>From:</i> (see below).
+</p>
+</li>
+<li><p>
+If there's a rewriting rule for a particular header line, it is also applied to
+<tt>Resent&#045;</tt> header lines of the same type. For example, a rule that rewrites
+<i>From:</i> also rewrites <i>Resent-From:</i>.
+</p>
+</li>
+<li><p>
+For local messages, if <i>Sender:</i> is removed on input, <i>Resent-Sender:</i> is also
+removed.
+</p>
+</li>
+<li><p>
+For a locally-submitted message,
+if there are any <tt>Resent&#045;</tt> header lines but no <i>Resent-Date:</i>,
+<i>Resent-From:</i>, or <i>Resent-Message-Id:</i>, they are added as necessary. It is
+the contents of <i>Resent-Message-Id:</i> (rather than <i>Message-Id:</i>) which are
+included in log lines in this case.
+</p>
+</li>
+<li><p>
+The logic for adding <i>Sender:</i> is duplicated for <i>Resent-Sender:</i> when any
+<tt>Resent&#045;</tt> header lines are present.
+</p>
+</li>
+</ul>
+<h2>
+<a name="SECT44.5" href="spec_toc.html#TOC351">
+44.5. The Auto-Submitted: header line
+</a></h2>
+<p>
+Whenever Exim generates a bounce or a delay warning message, it includes the 
+header line
+<pre>
+&nbsp;&nbsp;Auto-Submitted: auto-generated
+</pre>
+</p>
+<a name="IX2579"></a>
+<h2>
+<a name="SECT44.6" href="spec_toc.html#TOC352">
+44.6. The Bcc: header line
+</a></h2>
+<p>
+If Exim is called with the <i>-t</i> option, to take recipient addresses from a
+message's header, it removes any <i>Bcc:</i> header line that may exist (after
+extracting its addresses). If <i>-t</i> is not present on the command line, any
+existing <i>Bcc:</i> is not removed.
+</p>
+<a name="IX2580"></a>
+<h2>
+<a name="SECT44.7" href="spec_toc.html#TOC353">
+44.7. The Date: header line
+</a></h2>
+<p>
+If a locally-generated 
+<font color=green>
+or submission-mode
+</font>
+message has no <i>Date:</i> header line, Exim adds one, using the current date and
+time.
+</p>
+<a name="IX2581"></a>
+<a name="IX2582"></a>
+<h2>
+<a name="SECT44.8" href="spec_toc.html#TOC354">
+44.8. The Delivery-date: header line
+</a></h2>
+<p>
+<i>Delivery-date:</i> header lines are not part of the standard RFC 2822 header
+set. Exim can be configured to add them to the final delivery of messages. (See
+the generic <tt>delivery&#095;date&#095;add</tt> transport option.) They should not be present
+in messages in transit. If the <tt>delivery&#095;date&#095;remove</tt> configuration option is
+set (the default), Exim removes <i>Delivery-date:</i> header lines from incoming
+messages.
+</p>
+<a name="IX2583"></a>
+<a name="IX2584"></a>
+<h2>
+<a name="SECT44.9" href="spec_toc.html#TOC355">
+44.9. The Envelope-to: header line
+</a></h2>
+<p>
+<i>Envelope-to:</i> header lines are not part of the standard RFC 2822 header set.
+Exim can be configured to add them to the final delivery of messages. (See the
+generic <tt>envelope&#095;to&#095;add</tt> transport option.) They should not be present in
+messages in transit. If the <tt>envelope&#095;to&#095;remove</tt> configuration option is set
+(the default), Exim removes <i>Envelope-to:</i> header lines from incoming
+messages.
+</p>
+<a name="IX2585"></a>
+<a name="IX2586"></a>
+<h2>
+<a name="SECT44.10" href="spec_toc.html#TOC356">
+44.10. The From: header line
+</a></h2>
+<p>
+<font color=green>
+If a submission-mode message does not contain a <i>From:</i> header line, Exim adds 
+one if either of the following conditions is true:
+</p>
+<ol>
+<li TYPE="1"><p>
+The envelope sender address is not empty (that is, this is not a bounce 
+message); the added header line copies the envelope sender address.
+</p>
+</li>
+<li TYPE="1"><p>
+The SMTP session is authenticated and <tt>$authenticated&#095;id</tt> is not empty; the 
+added header's local part is <tt>$authenticated&#095;id</tt> and the domain is 
+the domain specified on the submission control, or <tt>$qualify&#095;domain</tt> if that 
+is not set.
+</p>
+</li>
+</ol>
+<p>
+A non-empty envelope sender takes precedence.
+</font>
+</p>
+<p>
+If a locally-generated incoming message does not contain a <i>From:</i> header
+line, Exim adds one containing the sender's address. The calling user's login
+name and full name are used to construct the address, as described in section
+<a href="spec_44.html#SECT44.16">44.16</a>. They are obtained from the password data by calling
+<i>getpwuid()</i> (but see the <tt>unknown&#095;login</tt> configuration option). The address
+is qualified with <tt>qualify&#095;domain</tt>.
+</p>
+<p>
+For compatibility with Sendmail, if an incoming, non-SMTP message has a
+<i>From:</i> header line containing just the unqualified login name of the calling
+user, this is replaced by an address containing the user's login name and full
+name as described in section <a href="spec_44.html#SECT44.16">44.16</a>.
+</p>
+<a name="IX2587"></a>
+<h2>
+<a name="SECT44.11" href="spec_toc.html#TOC357">
+44.11. The Message-ID: header line
+</a></h2>
+<p>
+<a name="IX2588"></a>
+If a locally-generated
+<font color=green>
+or submission-mode
+</font>
+incoming message does not contain a <i>Message-ID:</i> or <i>Resent-Message-ID:</i>
+header line, Exim adds one to the message. If there are any <i>Resent-:</i> headers
+in the message, it creates <i>Resent-Message-ID:</i>. The id is constructed from
+Exim's internal message id, preceded by the letter E to ensure it starts with a
+letter, and followed by &#064; and the primary host name. Additional information
+can be included in this header line by setting the
+<tt>message&#095;id&#095;header&#095;text</tt> and/or <tt>message_id_header_domain</tt> options.
+</p>
+<a name="IX2589"></a>
+<h2>
+<a name="SECT44.12" href="spec_toc.html#TOC358">
+44.12. The Received: header line
+</a></h2>
+<p>
+A <i>Received:</i> header line is added at the start of every message. The contents
+are defined by the <tt>received&#095;header&#095;text</tt> configuration option, and Exim
+automatically adds a semicolon and a timestamp to the configured string.
+</p>
+<p>
+<font color=green>
+The <i>Received:</i> header is generated as soon as the message's header lines have 
+been received. At this stage, the timestamp in the <i>Received:</i> header line is 
+the time that the message started to be received. This is the value that is 
+seen by the <font size=-1>DATA</font> ACL and by the <i>local&#095;scan()</i> function.
+</p>
+<p>
+Once a message is accepted, the timestamp in the <i>Received:</i> header line is 
+changed to the time of acceptance, which is (apart from a small delay while the 
+-H spool file is written) the earliest time at which delivery could start.
+</font>
+</p>
+<a name="IX2590"></a>
+<a name="IX2591"></a>
+<h2>
+<a name="SECT44.13" href="spec_toc.html#TOC359">
+44.13. The Return-path: header line
+</a></h2>
+<p>
+<i>Return-path:</i> header lines are defined as something an MTA may insert when
+it does the final delivery of messages. (See the generic <tt>return&#095;path&#095;add</tt>
+transport option.) Therefore, they should not be present in messages in
+transit. If the <tt>return&#095;path&#095;remove</tt> configuration option is set (the
+default), Exim removes <i>Return-path:</i> header lines from incoming messages.
+</p>
+<a name="IX2592"></a>
+<h2>
+<a name="SECT44.14" href="spec_toc.html#TOC360">
+44.14. The Sender: header line
+</a></h2>
+<p>
+For a locally-originated message from an untrusted user, Exim may remove an
+existing <i>Sender:</i> header line, and it may add a new one. You can modify these
+actions by setting <tt>local&#095;sender&#095;retain</tt> true or <tt>local&#095;from&#095;check</tt> false.
+</p>
+<p>
+When a local message is received from an untrusted user and
+<tt>local&#095;from&#095;check</tt> is true (the default), a check is made to see if the
+address given in the <i>From:</i> header line is the correct (local) sender of the
+message. The address that is expected has the login name as the local part and
+the value of <tt>qualify&#095;domain</tt> as the domain. Prefixes and suffixes for the
+local part can be permitted by setting <tt>local&#095;from&#095;prefix</tt> and
+<tt>local&#095;from&#095;suffix</tt> appropriately. If <i>From:</i> does not contain the correct
+sender, a <i>Sender:</i> line is added to the message.
+</p>
+<p>
+If you set <tt>local&#095;from&#095;check</tt> false, this checking does not occur. However,
+the removal of an existing <i>Sender:</i> line still happens, unless you also set
+<tt>local&#095;sender&#095;retain</tt> to be true. It is not possible to set both of these
+options true at the same time.
+</p>
+<p>
+<font color=green>
+By default, no processing of <i>Sender:</i> header lines is done for messages
+received by TCP/IP or for messages submitted by trusted users. However, when a 
+message is received over TCP/IP in submission mode, <i>Sender:</i> header lines are 
+always removed. If the SMTP session is authenticated, and <tt>$authenticated&#095;id</tt> 
+is not empty, a sender address is created with <tt>$authenticated&#095;id</tt> as the 
+local part and either the domain specified in the submission control or, if 
+that is not specified, <tt>$qualify&#095;domain</tt> as the domain. This is compared with
+the address in the <i>From:</i> header line. If they are different, a <i>Sender:</i>
+header line is added. Prefixes and suffixes for the local part in <i>From:</i> can
+be permitted by setting <tt>local&#095;from&#095;prefix</tt> and <tt>local&#095;from&#095;suffix</tt>
+appropriately.
+</font>
+</p>
+<a name="IX2593"></a>
+<a name="IX2594"></a>
+<h2>
+<a name="SECT44.15" href="spec_toc.html#TOC361">
+44.15. Adding and removing header lines
+</a></h2>
+<p>
+When a message is delivered, the addition and removal of header lines can be
+specified on any of the routers and transports, and also in the system filter.
+Changes specified in the system filter affect all deliveries of a message.
+</p>
+<p>
+Header changes specified on a router affect all addresses handled by that
+router, and also any new addresses it generates. If an address passes through
+several routers, the changes are cumulative. When a message is processed by a
+transport, the message's original set of header lines is output, except for
+those named in any <tt>headers&#095;remove</tt> options that the address has encountered
+as it was processed, and any in the transport's own <tt>headers&#095;remove</tt> option.
+Then the new header lines from <tt>headers&#095;add</tt> options are output.
+</p>
+<a name="IX2595"></a>
+<a name="IX2596"></a>
+<h2>
+<a name="SECT44.16" href="spec_toc.html#TOC362">
+44.16. Constructed addresses
+</a></h2>
+<p>
+When Exim constructs a sender address for a locally-generated message, it uses
+the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#060;<em>user name</em>&#062; &#060;$&#060;login&#062;&#062;&#064;&#060;<em>qualify&#095;domain</em>&#062;&#062;</tt><br>
+</p>
+<p>
+For example:
+<pre>
+&nbsp;&nbsp;Zaphod Beeblebrox &#060;zaphod@end.univ.example&#062;
+</pre>
+</p>
+<p>
+The user name is obtained from the <i>-F</i> command line option if set, or
+otherwise by looking up the calling user by <i>getpwuid()</i> and extracting the
+&#147;gecos&#148; field from the password entry. If the &#147;gecos&#148; field contains an
+ampersand character, this is replaced by the login name with the first letter
+upper cased, as is conventional in a number of operating systems. See the
+<tt>gecos&#095;name</tt> option for a way to tailor the handling of the &#147;gecos&#148; field. The
+<tt>unknown&#095;username</tt> option can be used to specify user names in cases when
+there is no password file entry.
+</p>
+<p>
+In all cases, the user name is made to conform to RFC 2822 by quoting all or
+parts of it if necessary. In addition, if it contains any non-printing
+characters, it is encoded as described in RFC 2047, which defines a way of
+including non-ASCII characters in header lines. 
+The value of the <tt>headers&#095;charset</tt> option specifies the name of the encoding 
+that is used (the characters are assumed to be in this encoding).
+The setting of <tt>print&#095;topbitchars</tt> controls whether characters with the top
+bit set (that is, with codes greater than 127) count as printing characters or
+not.
+</p>
+<a name="IX2597"></a>
+<a name="IX2598"></a>
+<h2>
+<a name="SECT44.17" href="spec_toc.html#TOC363">
+44.17. Case of local parts
+</a></h2>
+<p>
+RFC 2822 states that the case of letters in the local parts of addresses cannot
+be assumed to be non-significant. Exim preserves the case of local parts of
+addresses, but by default it uses a lower-cased form when it is routing,
+because on most Unix systems, usernames are in lower case and case-insensitive
+routing is required. However, any particular router can be made to use the
+original case for local parts by setting the <tt>caseful&#095;local&#095;part</tt> generic
+router option.
+<a name="IX2599"></a>
+</p>
+<p>
+If you must have mixed-case user names on your system, the best way to proceed,
+assuming you want case-independent handling of incoming email, is to set up
+your first router to convert incoming local parts in your domains to the
+correct case by means of a file lookup. For example:
+<pre>
+&nbsp;&nbsp;correct_case:
+&nbsp;&nbsp;  driver = redirect
+&nbsp;&nbsp;  domains = +local_domains
+&nbsp;&nbsp;  data = ${lookup{$local_part}cdb\
+&nbsp;&nbsp;              {/etc/usercased.cdb}{$value}fail}\
+&nbsp;&nbsp;              @$domain
+</pre>
+</p>
+<p>
+For this router, the local part is forced to lower case by the default action
+(<tt>caseful&#095;local&#095;part</tt> is not set). The lower-cased local part is used to look
+up a new local part in the correct case. If you then set <tt>caseful&#095;local&#095;part</tt>
+on any subsequent routers which process your domains, they will operate on
+local parts with the correct case in a case-sensitive manner.
+</p>
+<a name="IX2600"></a>
+<a name="IX2601"></a>
+<h2>
+<a name="SECT44.18" href="spec_toc.html#TOC364">
+44.18. Dots in local parts
+</a></h2>
+<p>
+RFC 2822 forbids empty components in local parts. That is, an unquoted local
+part may not begin or end with a dot, nor have two consecutive dots in the
+middle. However, it seems that many MTAs do not enforce this, so Exim permits
+empty components for compatibility.
+</p>
+<a name="IX2602"></a>
+<h2>
+<a name="SECT44.19" href="spec_toc.html#TOC365">
+44.19. Rewriting addresses
+</a></h2>
+<p>
+Rewriting of sender and recipient addresses, and addresses in headers, can
+happen automatically, or as the result of configuration options, as described
+in chapter <a href="spec_31.html">31</a>. The headers that may be affected by this are <i>Bcc:</i>,
+<i>Cc:</i>, <i>From:</i>, <i>Reply-To:</i>, <i>Sender:</i>, and <i>To:</i>.
+</p>
+<p>
+Automatic rewriting includes qualification, as mentioned above. The other case
+in which it can happen is when an incomplete non-local domain is given. The
+routing process may cause this to be expanded into the full domain name. For
+example, a header such as
+<pre>
+&nbsp;&nbsp;To: hare@teaparty
+</pre>
+</p>
+<p>
+might get rewritten as
+<pre>
+&nbsp;&nbsp;To: hare@teaparty.wonderland.fict.example
+</pre>
+</p>
+<p>
+Rewriting as a result of routing is the one kind of message processing that
+does not happen at input time, as it cannot be done until the address has
+been routed.
+</p>
+<p>
+Strictly, one should not do <em>any</em> deliveries of a message until all its
+addresses have been routed, in case any of the headers get changed as a
+result of routing. However, doing this in practice would hold up many
+deliveries for unreasonable amounts of time, just because one address could not
+immediately be routed. Exim therefore does not delay other deliveries when
+routing of one or more addresses is deferred.
+<hr>
+</p>
+<font size=2>
+<a href="spec_43.html">Previous</a>&nbsp;&nbsp;<a href="spec_45.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

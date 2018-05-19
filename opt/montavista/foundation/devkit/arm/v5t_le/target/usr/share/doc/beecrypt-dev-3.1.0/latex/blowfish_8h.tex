@@ -1,0 +1,168 @@
+\hypertarget{blowfish_8h}{
+\section{blowfish.h File Reference}
+\label{blowfish_8h}\index{blowfish.h@{blowfish.h}}
+}
+Blowfish block cipher. 
+
+{\tt \#include \char`\"{}beecrypt.h\char`\"{}}\par
+{\tt \#include \char`\"{}blowfishopt.h\char`\"{}}\par
+\subsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \hyperlink{structblowfishParam}{blowfish\-Param}
+\begin{CompactList}\small\item\em Holds all the parameters necessary for the Blowfish cipher. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \hyperlink{blowfish_8h_a0}{BLOWFISHROUNDS}\ 16
+\item 
+\#define \hyperlink{blowfish_8h_a1}{BLOWFISHPSIZE}\ (BLOWFISHROUNDS+2)
+\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{blowfish_8h_a3}{blowfish\-Setup} (\hyperlink{structblowfishParam}{blowfish\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t, \hyperlink{beecrypt_8h_a73}{cipher\-Operation})
+\begin{CompactList}\small\item\em The function performs the cipher's key expansion. \item\end{CompactList}\item 
+int \hyperlink{blowfish_8h_a4}{blowfish\-Set\-IV} (\hyperlink{structblowfishParam}{blowfish\-Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)
+\begin{CompactList}\small\item\em This function sets the Initialization Vector. \item\end{CompactList}\item 
+int \hyperlink{blowfish_8h_a5}{blowfish\-Encrypt} (\hyperlink{structblowfishParam}{blowfish\-Param} $\ast$, uint32\_\-t $\ast$, const uint32\_\-t $\ast$)
+\begin{CompactList}\small\item\em This function performs the Blowfish encryption; it encrypts one block of 64 bits. \item\end{CompactList}\item 
+int \hyperlink{blowfish_8h_a6}{blowfish\-Decrypt} (\hyperlink{structblowfishParam}{blowfish\-Param} $\ast$, uint32\_\-t $\ast$, const uint32\_\-t $\ast$)
+\begin{CompactList}\small\item\em This function performs the Blowfish decryption; it Rderypts one block of 64 bits. \item\end{CompactList}\item 
+uint32\_\-t $\ast$ \hyperlink{blowfish_8h_a7}{blowfish\-Feedback} (\hyperlink{structblowfishParam}{blowfish\-Param} $\ast$)
+\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+const \hyperlink{structblockCipher}{block\-Cipher} \hyperlink{blowfish_8h_a2}{blowfish}
+\begin{CompactList}\small\item\em Holds the full API description of the Blowfish algorithm. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Blowfish block cipher. 
+
+For more information on this blockcipher, see: \char`\"{}Applied Cryptography\char`\"{}, second edition Bruce Schneier Wiley \& Sons
+
+Also see \href{http://www.counterpane.com/blowfish.html}{\tt http://www.counterpane.com/blowfish.html}
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{blowfish_8h-source}{blowfish.h}.
+
+\subsection{Define Documentation}
+\hypertarget{blowfish_8h_a1}{
+\index{blowfish.h@{blowfish.h}!BLOWFISHPSIZE@{BLOWFISHPSIZE}}
+\index{BLOWFISHPSIZE@{BLOWFISHPSIZE}!blowfish.h@{blowfish.h}}
+\subsubsection[BLOWFISHPSIZE]{\setlength{\rightskip}{0pt plus 5cm}\#define BLOWFISHPSIZE\ (BLOWFISHROUNDS+2)}}
+\label{blowfish_8h_a1}
+
+
+Definition at line 41 of file blowfish.h.\hypertarget{blowfish_8h_a0}{
+\index{blowfish.h@{blowfish.h}!BLOWFISHROUNDS@{BLOWFISHROUNDS}}
+\index{BLOWFISHROUNDS@{BLOWFISHROUNDS}!blowfish.h@{blowfish.h}}
+\subsubsection[BLOWFISHROUNDS]{\setlength{\rightskip}{0pt plus 5cm}\#define BLOWFISHROUNDS\ 16}}
+\label{blowfish_8h_a0}
+
+
+Definition at line 40 of file blowfish.h.
+
+\subsection{Function Documentation}
+\hypertarget{blowfish_8h_a6}{
+\index{blowfish.h@{blowfish.h}!blowfishDecrypt@{blowfishDecrypt}}
+\index{blowfishDecrypt@{blowfishDecrypt}!blowfish.h@{blowfish.h}}
+\subsubsection[blowfishDecrypt]{\setlength{\rightskip}{0pt plus 5cm}blowfish\-Decrypt (\hyperlink{structblowfishParam}{blowfish\-Param} $\ast$ {\em bp}, uint32\_\-t $\ast$ {\em dst}, const uint32\_\-t $\ast$ {\em src})}}
+\label{blowfish_8h_a6}
+
+
+This function performs the Blowfish decryption; it Rderypts one block of 64 bits. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bp}]The cipher's parameter block. \item[{\em dst}]The cleartext; should be aligned on 32-bit boundary. \item[{\em src}]The ciphertext; should be aligned on 32-bit boundary. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}
+\hypertarget{blowfish_8h_a5}{
+\index{blowfish.h@{blowfish.h}!blowfishEncrypt@{blowfishEncrypt}}
+\index{blowfishEncrypt@{blowfishEncrypt}!blowfish.h@{blowfish.h}}
+\subsubsection[blowfishEncrypt]{\setlength{\rightskip}{0pt plus 5cm}blowfish\-Encrypt (\hyperlink{structblowfishParam}{blowfish\-Param} $\ast$ {\em bp}, uint32\_\-t $\ast$ {\em dst}, const uint32\_\-t $\ast$ {\em src})}}
+\label{blowfish_8h_a5}
+
+
+This function performs the Blowfish encryption; it encrypts one block of 64 bits. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bp}]The cipher's parameter block. \item[{\em dst}]The ciphertext; should be aligned on 32-bit boundary. \item[{\em src}]The cleartext; should be aligned on 32-bit boundary. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}
+\hypertarget{blowfish_8h_a7}{
+\index{blowfish.h@{blowfish.h}!blowfishFeedback@{blowfishFeedback}}
+\index{blowfishFeedback@{blowfishFeedback}!blowfish.h@{blowfish.h}}
+\subsubsection[blowfishFeedback]{\setlength{\rightskip}{0pt plus 5cm}uint32\_\-t$\ast$ blowfish\-Feedback (\hyperlink{structblowfishParam}{blowfish\-Param} $\ast$)}}
+\label{blowfish_8h_a7}
+
+
+\hypertarget{blowfish_8h_a4}{
+\index{blowfish.h@{blowfish.h}!blowfishSetIV@{blowfishSetIV}}
+\index{blowfishSetIV@{blowfishSetIV}!blowfish.h@{blowfish.h}}
+\subsubsection[blowfishSetIV]{\setlength{\rightskip}{0pt plus 5cm}int blowfish\-Set\-IV (\hyperlink{structblowfishParam}{blowfish\-Param} $\ast$ {\em bp}, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$ {\em iv})}}
+\label{blowfish_8h_a4}
+
+
+This function sets the Initialization Vector. 
+
+\begin{Desc}
+\item[Note:]This function is only useful in block chaining or feedback modes. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bp}]The cipher's parameter block. \item[{\em iv}]The initialization vector; may be null. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \end{description}
+\end{Desc}
+\hypertarget{blowfish_8h_a3}{
+\index{blowfish.h@{blowfish.h}!blowfishSetup@{blowfishSetup}}
+\index{blowfishSetup@{blowfishSetup}!blowfish.h@{blowfish.h}}
+\subsubsection[blowfishSetup]{\setlength{\rightskip}{0pt plus 5cm}int blowfish\-Setup (\hyperlink{structblowfishParam}{blowfish\-Param} $\ast$ {\em bp}, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$ {\em key}, size\_\-t {\em keybits}, \hyperlink{beecrypt_8h_a73}{cipher\-Operation} {\em op})}}
+\label{blowfish_8h_a3}
+
+
+The function performs the cipher's key expansion. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bp}]The cipher's parameter block. \item[{\em key}]The key value. \item[{\em keybits}]The number of bits in the key; legal values are: 32 to 448, in multiples of 8. \item[{\em op}]ENCRYPT or DECRYPT. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Return values:]
+\begin{description}
+\item[{\em 0}]on success. \item[{\em -1}]on failure. \end{description}
+\end{Desc}
+
+
+\subsection{Variable Documentation}
+\hypertarget{blowfish_8h_a2}{
+\index{blowfish.h@{blowfish.h}!blowfish@{blowfish}}
+\index{blowfish@{blowfish}!blowfish.h@{blowfish.h}}
+\subsubsection[blowfish]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{blowfish_8h_a2}{blowfish}}}
+\label{blowfish_8h_a2}
+
+
+Holds the full API description of the Blowfish algorithm. 
+

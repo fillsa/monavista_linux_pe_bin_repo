@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 41</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_40.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_42.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<h1>
+<a name="CHAP41" href="spec_toc.html#TOC317">
+41. Customizing bounce and warning messages
+</a></h1>
+<p>
+When a message fails to be delivered, or remains on the queue for more than a
+configured amount of time, Exim sends a message to the original sender, or
+to an alternative configured address. The text of these messages is built into
+the code of Exim, but it is possible to change it, either by adding a single
+string, or by replacing each of the paragraphs by text supplied in a file.
+</p>
+<p>
+The <i>From:</i> and <i>To:</i> header lines are automatically generated; you can cause 
+a <i>Reply-To:</i> line to be added by setting the <tt>errors&#095;reply&#095;to</tt> option. Exim 
+also adds the line
+<pre>
+&nbsp;&nbsp;Auto-Submitted: auto-generated
+</pre>
+</p>
+<p>
+to all warning and bounce messages,
+</p>
+<a name="IX2490"></a>
+<a name="IX2491"></a>
+<h2>
+<a name="SECT41.1" href="spec_toc.html#TOC318">
+41.1. Customizing bounce messages
+</a></h2>
+<p>
+If <tt>bounce&#095;message&#095;text</tt> is set, its contents are included in the default
+message immediately after &#147;This message was created automatically by mail
+delivery software.&#148; The string is not expanded. It is not used if
+<tt>bounce&#095;message&#095;file</tt> is set.
+</p>
+<p>
+When <tt>bounce&#095;message&#095;file</tt> is set, it must point to a template file for
+constructing error messages. The file consists of a series of text items,
+separated by lines consisting of exactly four asterisks. If the file cannot be
+opened, default text is used and a message is written to the main and panic
+logs. If any text item in the file is empty, default text is used for that
+item.
+</p>
+<p>
+Each item of text that is read from the file is expanded, and there are two
+expansion variables which can be of use here: <tt>$bounce&#095;recipient</tt> is set to
+the recipient of an error message while it is being created, and
+<tt>$return&#095;size&#095;limit</tt> contains the value of the <tt>return&#095;size&#095;limit</tt> option,
+rounded to a whole number.
+</p>
+<p>
+The items must appear in the file in the following order:
+</p>
+<ul>
+<li><p>
+The first item is included in the headers, and should include at least a
+<i>Subject:</i> header. Exim does not check the syntax of these headers.
+</p>
+</li>
+<li><p>
+The second item forms the start of the error message. After it, Exim lists the
+failing addresses with their error messages.
+</p>
+</li>
+<li><p>
+The third item is used to introduce any text from pipe transports that is to be
+returned to the sender. It is omitted if there is no such text.
+</p>
+</li>
+<li><p>
+The fourth item is used to introduce the copy of the message that is returned
+as part of the error report.
+</p>
+</li>
+<li><p>
+The fifth item is added after the fourth one if the returned message is
+truncated because it is bigger than <tt>return&#095;size&#095;limit</tt>.
+</p>
+</li>
+<li><p>
+The sixth item is added after the copy of the original message.
+</p>
+</li>
+</ul>
+<p>
+The default state (<tt>bounce&#095;message&#095;file</tt> unset) is equivalent to the
+following file, in which the sixth item is empty. The <i>Subject:</i> line has been
+split into two here in order to fit it on the page:
+</p>
+<hr>
+<pre>
+&nbsp;&nbsp;Subject: Mail delivery failed
+&nbsp;&nbsp;  ${if eq{$sender_address}{$bounce_recipient}{: returning message to sender}}
+&nbsp;&nbsp;****
+&nbsp;&nbsp;This message was created automatically by mail delivery software.
+&nbsp;&nbsp;
+&nbsp;&nbsp;A message ${if eq{$sender_address}{$bounce_recipient}{that you sent }{sent by
+&nbsp;&nbsp;
+&nbsp;&nbsp;  &#060;$sender_address&#062;
+&nbsp;&nbsp;
+&nbsp;&nbsp;}}could not be delivered to all of its recipients.
+&nbsp;&nbsp;The following address(es) failed:
+&nbsp;&nbsp;****
+&nbsp;&nbsp;The following text was generated during the delivery attempt(s):
+&nbsp;&nbsp;****
+&nbsp;&nbsp;------ This is a copy of the message, including all the headers. ------
+&nbsp;&nbsp;****
+&nbsp;&nbsp;------ The body of the message is $message_size characters long; only the first
+&nbsp;&nbsp;------ $return_size_limit or so are included here.
+&nbsp;&nbsp;****
+</pre>
+<hr>
+<a name="IX2492"></a>
+<a name="IX2493"></a>
+<h2>
+<a name="SECT41.2" href="spec_toc.html#TOC319">
+41.2. Customizing warning messages
+</a></h2>
+<p>
+The option 
+<tt>warn&#095;message&#095;file</tt> 
+can be pointed at a template file for use when
+warnings about message delays are created. In this case there are only three
+text sections:
+</p>
+<ul>
+<li><p>
+The first item is included in the headers, and should include at least a
+<i>Subject:</i> header. Exim does not check the syntax of these headers.
+</p>
+</li>
+<li><p>
+The second item forms the start of the warning message. After it, Exim lists
+the delayed addresses.
+</p>
+</li>
+<li><p>
+The third item then ends the message.
+</p>
+</li>
+</ul>
+<p>
+The default state is equivalent to the following file, except that the line 
+starting &#147;A message&#148; has been split here, in order to fit it on the page:
+</p>
+<hr>
+<pre>
+&nbsp;&nbsp;Subject: Warning: message $message_id delayed $warn_message_delay
+&nbsp;&nbsp;****
+&nbsp;&nbsp;This message was created automatically by mail delivery software.
+&nbsp;&nbsp;
+&nbsp;&nbsp;A message ${if eq{$sender_address}{$warn_message_recipients}
+&nbsp;&nbsp;  {that you sent }{sent by
+&nbsp;&nbsp;
+&nbsp;&nbsp;  &#060;$sender_address&#062;
+&nbsp;&nbsp;
+&nbsp;&nbsp;}}has not been delivered to all of its recipients after
+&nbsp;&nbsp;more than $warn_message_delay on the queue on $primary_hostname.
+&nbsp;&nbsp;
+&nbsp;&nbsp;The message identifier is:     $message_id
+&nbsp;&nbsp;The subject of the message is: $h_subject
+&nbsp;&nbsp;The date of the message is:    $h_date
+&nbsp;&nbsp;
+&nbsp;&nbsp;The following address(es) have not yet been delivered:
+&nbsp;&nbsp;****
+&nbsp;&nbsp;No action is required on your part. Delivery attempts will continue for
+&nbsp;&nbsp;some time, and this warning may be repeated at intervals if the message
+&nbsp;&nbsp;remains undelivered. Eventually the mail delivery software will give up,
+&nbsp;&nbsp;and when that happens, the message will be returned to you.
+</pre>
+<hr>
+<p>
+except that in the default state the subject and date lines are omitted if no
+appropriate headers exist. During the expansion of this file,
+<tt>$warn&#095;message&#095;delay</tt>
+is set to the delay time in one of the forms &#147;&#060;<em>n</em>&#062; minutes&#148;
+or &#147;&#060;<em>n</em>&#062; hours&#148;, and 
+<tt>$warn&#095;message&#095;recipients</tt>
+contains a list of recipients for the warning message. There may be more than
+one if there are multiple addresses with different <tt>errors&#095;to</tt> settings on the
+routers that handled them.
+<hr>
+</p>
+<font size=2>
+<a href="spec_40.html">Previous</a>&nbsp;&nbsp;<a href="spec_42.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

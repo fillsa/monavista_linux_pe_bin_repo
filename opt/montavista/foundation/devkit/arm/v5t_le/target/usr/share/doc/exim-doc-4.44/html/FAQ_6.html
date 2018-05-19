@@ -1,0 +1,703 @@
+<html>
+<head>
+<title>The Exim FAQ Section 6</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_5.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_7.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC194">6. DELIVERY</a></h2>
+<p>
+<a name="TOC195" href="FAQ.html#TOC195">Q0601:</a>&nbsp;&nbsp;What does the error <i>Neither the xxx router nor the yyy transport set
+a uid for local delivery of...</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0601:</font>&nbsp;&nbsp;Whenever Exim does a local delivery, it runs a process under a specific
+user and group id (uid and gid). For deliveries into mailboxes, and to
+pipes and files set up by forwarding, it normally picks up the uid/gid
+of the receiving user. However, if an address is directed to a pipe or a
+file by some other means, such an entry in the system alias file of the
+form
+</p>
+<pre>
+   majordomo: |/local/mail/majordomo ...</pre>
+<p>
+then Exim has to be told what uid/gid to use for the delivery. This can
+be done either on the routerr that handles the address, or on the
+transport that actually does the delivery. If a pipe is going to run a
+setuid program, then it doesn't matter what uid Exim starts it out with,
+and so the most straightforward thing is to put
+</p>
+<pre>
+   user = exim</pre>
+<p>
+on either the router or the transport. A setting on the transport
+overrides a setting on the router, so if the same transport is being
+used with several routers, you should set the user on it only if you
+want the same uid to be used in all cases.
+</p>
+<p>
+In the default configuration, the transports used for file and pipe
+deliveries are the ones called <tt>address_file</tt> and <tt>address_pipe</tt>. You
+can specify different transports by setting, for example,
+</p>
+<pre>
+   pipe_transport = special_pipe_transport</pre>
+<p>
+on the <b>system_aliases</b> router. Then you can set up <b>special_pipe_transport</b>
+</p>
+<pre>
+   special_pipe_transport:
+     driver = pipe
+     user = ????</pre>
+<p>
+which will be used only for pipe deliveries from that one router.
+What you put for the ???? is up to you, and depends on the particular
+circumstances.
+</p>
+<p>
+<a name="TOC196" href="FAQ.html#TOC196">Q0602:</a>&nbsp;&nbsp;Exim keeps crashing with segmentation errors (signal 11 or 139) during
+delivery. This seems to happen when it is about to contact a remote
+host or when a delivery is deferred.
+</p>
+<p>
+<font color="#00BB00">A0602:</font>&nbsp;&nbsp;This could be a problem with Exim's databases. Try running a delivery
+with debugging turned on. If the last line of the debug output is
+something like this:
+</p>
+<pre>
+   locked /var/spool/exim/db/retry.lockfile</pre>
+<p>
+the crash is happening inside the DBM library. Check that your DBM
+library is correctly installed. In particular, if you have installed a
+second DBM library onto a system that already had one, check that its
+version of <i>ndbm.h</i> is being seen first. For example, if the new
+version is in <i>/usr/local/include</i>, check that there isn't another
+version in <i>/usr/include</i>. If you are using Berkeley db, you can set
+</p>
+<pre>
+   USE_DB=yes</pre>
+<p>
+in your <i>Local/Makefile</i> to avoid using <i>ndbm.h</i> altogether. This is
+particularly relevant for version 2 (or later) of Berkeley db, because
+no <i>ndbm.h</i> file is distributed with it. Another thing you can try is
+to run
+</p>
+<pre>
+   exim_dumpdb /var/spool/exim retry</pre>
+<p>
+to see if it also crashes, or build the <i>test_dbfn</i> tool and fiddle
+around with it. If both fail, it is most almost certainly a problem with
+your DBM library. You could try to update it, or force Exim to use
+another library. See the file <i>doc/dbm.discuss.txt</i> for hints about
+this.
+</p>
+<p>
+<a name="TOC197" href="FAQ.html#TOC197">Q0603:</a>&nbsp;&nbsp;How can mails that are being routed through routers that do not set
+<tt>check_local_user</tt> be delivered under the uid of the recipient?
+</p>
+<p>
+<font color="#00BB00">A0603:</font>&nbsp;&nbsp;<a href="FAQ_6.html#TOC195">Q0601</a> contains background information on this. If you are using, say, an
+alias file to direct messages to specific mailboxes, you can use
+the <tt>user</tt> option on either the router or the transport to set the uid.
+What you put in the setting depends on how the required uid is to be
+found. It could be looked up in a file or computed somehow from the
+local part, for example.
+</p>
+<p>
+<a name="TOC198" href="FAQ.html#TOC198">Q0604:</a>&nbsp;&nbsp;I want to use MMDF-style mailboxes. How can I get Exim to append the
+ctrl-A characters that separate indvidual emails?
+</p>
+<p>
+<font color="#00BB00">A0604:</font>&nbsp;&nbsp;Set the <tt>message_suffix</tt> option in the <b>appendfile</b> transport. In fact,
+for MMDF mailboxes you need a prefix as well as a suffix to get it
+working right, so your transport should contain these settings:
+</p>
+<pre>
+   message_prefix = "\1\1\1\1\n"
+   message_suffix = "\1\1\1\1\n"</pre>
+<p>
+Also, you need to change the <tt>check_string</tt> and <tt>escape_string</tt> settings so
+that the escaping happens for lines in the message that happen to begin
+with the MMDF prefix or suffix string, rather than &#147;From&#148; (the default):
+</p>
+<pre>
+   check_string  = "\1\1\1\1\n"
+   escape_string = "\1\1\1\1 \n"</pre>
+<p>
+Adding a space to the line is sufficient to prevent it being taken as a
+separator.
+</p>
+<p>
+<a name="TOC199" href="FAQ.html#TOC199">Q0605:</a>&nbsp;&nbsp;If a user's mailbox is over quota, is there a way for me to set it up so
+that the mail bounces to the sender and is not stored in the mail queue?
+</p>
+<p>
+<font color="#00BB00">A0605:</font>&nbsp;&nbsp;In the retry section of the configuration, put
+</p>
+<pre>
+   *@your.dom.ain        quota</pre>
+<p>
+That is, provide no retry timings for over quota errors. They will then
+bounce immediately. Alternatively, you can set up retries for a short
+time only, or use something like this:
+</p>
+<pre>
+   *@your.dom.ain        quota_7d
+   *@your.dom.ain        quota       F,2h,15m; F,3d,1h</pre>
+<p>
+which bounces immediately if the user's mailbox hasn't been read for 7
+days, but otherwise tries for up to 3 days after the first quota
+failure.
+</p>
+<p>
+<a name="TOC200" href="FAQ.html#TOC200">Q0606:</a>&nbsp;&nbsp;I'm using tmail to do local deliveries, but when I turned on the
+<tt>use_crlf</tt> option on the <b>pipe</b> transport (tmail prefers <tt>\r\n</tt>
+terminations) message bodies started to vanish.
+</p>
+<p>
+<font color="#00BB00">A0606:</font>&nbsp;&nbsp;You need to unset the <tt>mesage_prefix</tt> option, or change it so that its
+default <tt>\n</tt> terminator becomes <tt>\r\n</tt>. For example, the
+transport could be:
+</p>
+<pre>
+   local_delivery_mbx:
+	   driver = pipe
+	   command = /usr/local/bin/tmail $local_part
+	   user = exim
+	   current_directory = /
+     use_crlf
+     message_prefix =</pre>
+<p>
+The reason for this is as follows: tmail uses the line terminator on
+the first line it sees to determine whether lines are terminated by
+<tt>\r\n</tt> or <tt>\n</tt>. If the latter, it moans to stderr and changes subsequent
+<tt>\n</tt> terminators to <tt>\r\n</tt>. The default setting of the <tt>message_prefix</tt>
+option is <tt>From ...\n</tt>, and this is unaffected by the <tt>use_crlf</tt> option.
+If you don't change this, tmail sees the first line terminated by
+<tt>\n</tt> and prepends <tt>\r</tt> to the <tt>\n</tt> terminator on all subsequent
+lines. However, if <tt>use_crlf</tt> is set, Exim makes all other lines
+<tt>\r\n</tt> terminated, leading to doubled <tt>\r\r\n</tt> lines and
+corrupt mbx mailboxes.
+</p>
+<p>
+<a name="TOC201" href="FAQ.html#TOC201">Q0607:</a>&nbsp;&nbsp;When I activate &#147;return receipt&#148; for example in Netscape Mailbox
+sending options, then I get an error message from Exim... something
+like <i>not supported</i>. Can I activate delivery confirmations?
+</p>
+<p>
+<font color="#00BB00">A0607:</font>&nbsp;&nbsp;Exim does not support any kind of delivery notification.
+</p>
+<p>
+(1) &nbsp;You can configure it to recognize headers such as
+<tt>Return-receipt-to:</tt> if you wish.
+</p>
+<p>
+(2) &nbsp;Some people want MSN (message status notification). Such services
+are implemented in MUAs, and don't impact on the MTA at all.
+</p>
+<p>
+(3) &nbsp;I investigated the RFCs which describe the DSN (delivery status
+notification) system. However, I was unable to specify any sensible way
+of actually doing anything with the data. There were comments on the
+mailing list at the time; many people, including me, conclude that DSN
+is in practice unworkable. The killer problem is with forwarding and
+aliasing. Do you propagate the DSN data with the generated addresses?
+Do you send back a &#147;reached end of the DSN world&#148; or &#147;expanded&#148; message?
+Do you do this differently for different kinds of aliasing/forwarding?
+For a user who has a <i>.forward</i> file with a single address in, this
+might seem easy - just propagate the data. But what if there are several
+forwardings? If you propagate the DSN data, the sender may get back
+several DSN messages - and should the sender really know about the
+detail of the receiver's forwarding arrangements? There isn't really
+any way to distinguish between a <i>.forward</i> file that is forwarding
+and one that is a mini mailing list. And so on, and so on. There are so
+many questions that don't have obvious answers.
+</p>
+<p>
+<a name="TOC202" href="FAQ.html#TOC202">Q0608:</a>&nbsp;&nbsp;What does the message <i>retry time not reached [for any host]</i> on the log
+mean? Why won't Exim try to deliver the message?
+</p>
+<p>
+<font color="#00BB00">A0608:</font>&nbsp;&nbsp;That is not an error. It means exactly what it says. A previous attempt
+to deliver to that address failed with a temporary error, and Exim
+computed the earliest time at which to try again. This can apply to
+local as well as to remote deliveries. For remote deliveries, each host
+(if there are several) has its own retry time.
+</p>
+<p>
+If you are running on a dial-up host, the rest of this answer probably
+does not apply to you. Go and read <a href="FAQ_14.html#TOC306">Q1404</a> instead. If your host is
+permanently online, read on...
+</p>
+<p>
+Some MTAs have a retrying schedule for each message. Exim does not work
+like this. Retry timing is normally host-based for remote deliveries and
+address-based for local deliveries. (There are some exceptions for certain
+kinds of remote failure - see <i>Errors in outgoing SMTP</i> in the manual.)
+</p>
+<p>
+If a new message arrives for a failing address and the retry time has
+not yet arrived, Exim will log <i>retry time not reached</i> and leave the
+message on the queue, without attempting delivery. Similarly, if a queue
+runner notices the message before the time to retry has arrived, it
+writes the same log entry. When the retry time has past, Exim attempts
+delivery at the next queue run. If you want to know when that will be,
+run the exinext utility on the address, for example:
+</p>
+<pre>
+   exinext user@some.domain</pre>
+<p>
+You can suppress these messages on the log by including <tt>-retry_defer</tt>
+in the setting of <tt>log_selector</tt>. You can force a delivery attempt on a
+specific message (overriding the retry time) by means of the -M option:
+</p>
+<pre>
+   exim -M 10hCET-0000Bf-00</pre>
+<p>
+If you want to do this for the entire queue, use the <b>-qf</b> option.
+</p>
+<p>
+<a name="TOC203" href="FAQ.html#TOC203">Q0609:</a>&nbsp;&nbsp;Exim seems to be sending the same message twice, according to the log,
+although there is a difference in capitalization of the local part of
+the address.
+</p>
+<p>
+<font color="#00BB00">A0609:</font>&nbsp;&nbsp;That is correct. The RFCs are explicit in stating that capitalization
+matters for local parts. For remote domains, Exim is not entitled to
+assume case independence of local parts. I know, it is utterly silly,
+and it causes a lot of grief, but that's what the rules say. Here is a
+quote from RFC 2821:
+</p>
+<p>
+... a command verb, an argument value other than a mailbox local-part,
+and free form text MAY be encoded in upper case, lower case, or any
+mixture of upper and lower case with no impact on its meaning.  This
+is NOT true of a mailbox local-part.  The local-part of a mailbox
+MUST BE treated as case sensitive.  Therefore, SMTP implementations
+MUST take care to preserve the case of mailbox local-parts.  Mailbox
+domains are not case sensitive.  In particular, for some hosts the
+user "smith" is different from the user "Smith".  However, exploiting
+the case sensitivity of mailbox local-parts impedes interoperability
+and is discouraged.
+</p>
+<p>
+<a name="TOC204" href="FAQ.html#TOC204">Q0610:</a>&nbsp;&nbsp;How can I force the next retry time for a host to be now?
+</p>
+<p>
+<font color="#00BB00">A0610:</font>&nbsp;&nbsp;You can change the retry time with the <i>exim_fixdb</i> utility, but its
+interface is very clumsy. If you have a message for the host on the
+queue, the simplest thing to do is to force a delivery with the <b>-M</b>
+command line option. If delivery succeeds, the retry data will get
+cleared. If the host is past the cutoff time, so that messages are
+bouncing immediately without trying a delivery, you can use <b>-odq</b> to
+put a message on the queue without a delivery attempt, and then use
+<b>-M</b> on it.
+</p>
+<p>
+<a name="TOC205" href="FAQ.html#TOC205">Q0611:</a>&nbsp;&nbsp;I set up <tt>|/bin/grep Subject|/usr/bin/smbclient -M &#60;netbiosname&#62;</tt> as an
+alias but it doesn't work.
+</p>
+<p>
+<font color="#00BB00">A0611:</font>&nbsp;&nbsp;That is a shell command line. Exim does not run pipe commands under a
+shell by default (for added security - and it saves a process). You
+need something like
+</p>
+<pre>
+   "|/bin/sh -c '/bin/grep Subject|/usr/bin/smbclient -M &#60;netbiosname&#62;'"</pre>
+<p>
+<a name="TOC206" href="FAQ.html#TOC206">Q0612:</a>&nbsp;&nbsp;Why does the <b>pipe</b> transport add a line starting with <tt>&#62;From</tt> to
+messages?
+</p>
+<p>
+<font color="#00BB00">A0612:</font>&nbsp;&nbsp;Actually, it adds a line starting with <tt>From</tt> followed by a space.
+This is commonly referred to as the <tt>From_</tt> line, to emphasize the
+fact that <tt>From</tt> is followed by a space and not a colon. This is a
+pseudo-header line that contains the envelope sender address and the
+time of delivery. It originated as a separator line in Berkeley format
+mailboxes, but is also used in other contexts. (And yes, it is often
+confused with the <i>From:</i> header line, and this causes a lot of grief.
+The use of <tt>From_</tt> was one of the really bad email design decisions.)
+</p>
+<p>
+Exim's <b>pipe</b> transport adds this pseudo-header line by default
+because <i>/usr/ucb/vacation</i> needs it, and that is one of the the most
+common uses of piping. The <i>procmail</i> local delivery agent also makes
+use of the <tt>From_</tt> line. If you do not want it, change the setting of
+<tt>message_prefix</tt> on the <b>pipe</b> transport. For example, to remove the
+line altogether, use
+</p>
+<pre>
+   message_prefix =</pre>
+<p>
+If you are not piping to <i>/usr/ucb/vacation</i> or <i>procmail</i>, it is
+likely that you do not need a <tt>From_</tt> line, and indeed it may cause
+problems if it is present.
+</p>
+<p>
+One user reported that this line gave trouble when a pipe was used to
+send messages to Courier's <i>deliverquota</i> program. The line was
+retained with the message, and caused problems for MS Exchange 2000 when
+retrieving messages with its built-in POP collector. Specifically, it
+caused Exchange to not be able to recognise message attachments.
+</p>
+<p>
+<a name="TOC207" href="FAQ.html#TOC207">Q0613:</a>&nbsp;&nbsp;I have set <tt>fallback_hosts</tt> on my <b>smtp</b> transport, but after the error
+<i>sem@chat.ru cannot be resolved at this time</i> Exim isn't using them.
+</p>
+<p>
+<font color="#00BB00">A0613:</font>&nbsp;&nbsp;<tt>fallback_hosts</tt> works only if an attempt at delivery to the original
+host(s) fails. In this case, Exim couldn't even resolve the domain
+<i>chat.ru</i> to discover what the original hosts were, so it never got as far
+as the transport. However, see <a href="FAQ_3.html#TOC135">Q0315</a> for a possible solution.
+</p>
+<p>
+<a name="TOC208" href="FAQ.html#TOC208">Q0614:</a>&nbsp;&nbsp;After the holidays my ISP has always hundreds of e-mails waiting for me.
+These are forced down Exim's throat in one go. Exim spawns a lot of
+kids, but is there some limit to the number of processes it creates?
+</p>
+<p>
+<font color="#00BB00">A0614:</font>&nbsp;&nbsp;Unless you have changed <tt>smtp_accept_queue_per_connection</tt> it should
+spawn only that many processes per connection (default 10). Your ISP
+may be making many connections, of course. That is limited by
+<tt>smtp_accept_max</tt>.
+</p>
+<p>
+<a name="TOC209" href="FAQ.html#TOC209">Q0615:</a>&nbsp;&nbsp;When a message in the queue got to 12h old, Exim wrote <i>retry timeout
+exceeded</i> and removed all messages in the queue to this host - even
+recent messages. How I can avoid this behaviour? I only want to remove
+messages that have exceeded the maximum retry time.
+</p>
+<p>
+<font color="#00BB00">A0615:</font>&nbsp;&nbsp;Exim's retrying is host-based rather than message-based. The philosophy
+is that if a host has been down for a very long time, there is no point
+in keeping messages hanging around. However, you might like to check
+out <tt>delay_after_cutoff</tt> in the <b>smtp</b> transport. It doesn't do what you
+want, but it might help.
+</p>
+<p>
+<a name="TOC210" href="FAQ.html#TOC210">Q0616:</a>&nbsp;&nbsp;Can Exim add a <i>Content-Length:</i> header to messages it delivers?
+</p>
+<p>
+<font color="#00BB00">A0616:</font>&nbsp;&nbsp;You could include something like
+</p>
+<pre>
+   headers_remove = "content-length"
+   headers_add = "Content-Length: $message_body_size"</pre>
+<p>
+to the <b>appendfile</b> transport. However, the use of <i>Content-Length:</i> can
+cause several problems, and is not recommended unless you really know
+what you are doing. There is a discussion of the problems in
+<a href="http://home.netscape.com/eng/mozilla/2.0/relnotes/demo/content-length.html">http://home.netscape.com/eng/mozilla/2.0/relnotes/demo/content-length.html</a>.
+</p>
+<p>
+<a name="TOC211" href="FAQ.html#TOC211">Q0617:</a>&nbsp;&nbsp;Exim seems to be trying to deliver a message every 10 minutes, though
+the retry rules specify longer times after a while, because it is
+writing a log entry every time, like this:
+</p>
+<pre>
+   1999-08-26 14:51:19 11IVsE-000MuP-00 == example@example.com T=smtp defer
+   (-34): some host address lookups failed and retry time not reached for
+   other hosts or connection limit reached</pre>
+<p>
+<font color="#00BB00">A0617:</font>&nbsp;&nbsp;It is looking at the message every 10 minutes, but it isn't actually
+trying to deliver. It's looking up <i>example.com</i> in the DNS and finding
+this information:
+</p>
+<pre>
+   example.com.                MX 10 example-com.isp.example.com.
+   example.com.                MX  0 mail.example.com.
+   mail.example.com.           A  202.77.183.45
+   A lookup for example-com.isp.example.com. yielded NXDOMAIN</pre>
+<p>
+The last line means that there is no address (A) record in the DNS for
+<i>example-com.isp.example.com</i>. That accounts for <i>some host address
+lookups failed</i>, but the retry time for <i>mail.example.com</i> hasn't been
+reached, which accounts for <i>retry time not reached for other hosts</i>.
+</p>
+<p>
+<a name="TOC212" href="FAQ.html#TOC212">Q0618:</a>&nbsp;&nbsp;I am trying to set exim up to have a automatic failover if it sees that
+the system that it is sending all mail to is down.
+</p>
+<p>
+<font color="#00BB00">A0618:</font>&nbsp;&nbsp;Add to the <b>remote_smtp</b> transport the following:
+</p>
+<pre>
+   fallback_hosts = failover.server.name(s)</pre>
+<p>
+If there are several names, they must be separated by colons.
+</p>
+<p>
+<a name="TOC213" href="FAQ.html#TOC213">Q0619:</a>&nbsp;&nbsp;I can't get Exim to deliver over NFS. I get the error <i>fcntl() failed:
+No locks available</i>, though the lock daemon is running on the NFS server
+and other hosts are able to access it.
+</p>
+<p>
+<font color="#00BB00">A0619:</font>&nbsp;&nbsp;Check that you have <i>lockd</i> running on the NFS client. This is not
+always running by default on some systems (Red Hat is believed to be one
+such system).
+</p>
+<p>
+<a name="TOC214" href="FAQ.html#TOC214">Q0620:</a>&nbsp;&nbsp;Why does Exim bounce messages without even attempting delivery, giving
+the error <i>retry time not reached for any host after a long failure
+period</i>?
+</p>
+<p>
+<font color="#00BB00">A0620:</font>&nbsp;&nbsp;This message means that all hosts to which the message could be sent
+have been failing for so long that the end of the retry period
+(typically 4 or 5 days) has been reached. In this situation, Exim still
+computes a next time to retry, but any messages that arrive in the
+meantime are bounced straight away. You can alter this behaviour by
+unsetting the <tt>delay_after_cutoff</tt> option on the smtp transport. Then Exim
+will try most messages for those hosts once before giving up.
+</p>
+<p>
+<a name="TOC215" href="FAQ.html#TOC215">Q0621:</a>&nbsp;&nbsp;My <i>.forward</i> file is <tt>|/usr/bin/procmail -f-</tt> and mail gets delivered,
+but there was a bounce to the sender, sending him the output of procmail.
+How can I prevent this?
+</p>
+<p>
+<font color="#00BB00">A0621:</font>&nbsp;&nbsp;Exim's default configuration is set up like this:
+</p>
+<pre>
+   address_pipe:
+     driver = pipe
+     return_output</pre>
+<p>
+The <tt>return_output</tt> option requests that any output that the pipe
+produces be returned to the sender. That is the safest default. If you
+don't want this, you can either remove the option altogether, or change
+it to <tt>return_fail_output</tt>, to return output only if the command fails.
+Note that this will affect all pipes that users run, not just your
+procmail one. It might be better to arrange for procmail not to produce
+any output when it succeeds.
+</p>
+<p>
+<a name="TOC216" href="FAQ.html#TOC216">Q0622:</a>&nbsp;&nbsp;Can I write an ordinary file when I run a perl script as a transport
+filter for the <b>remote_smtp</b> and <b>address_pipe</b> transports?
+</p>
+<p>
+<font color="#00BB00">A0622:</font>&nbsp;&nbsp;Yes, provided the file is writeable by the uid under which the transport
+runs (the Exim user in the case of the remote transport). However, if two
+messages are being delivered at once, their data will get mixed up in
+the file unless you implement your own locking scheme. If all you want
+to do is to take a copy of the message, another approach that avoids
+the locking problem is to use a system filter to set up an &#147;unseen&#148;
+delivery to a file. If you only want the message's headers, you can
+set <tt>message_filter_file_transport</tt> to point to a special <b>appendfile</b>
+transport that has <tt>headers_only</tt> set.
+</p>
+<p>
+<a name="TOC217" href="FAQ.html#TOC217">Q0623:</a>&nbsp;&nbsp;My <i>/var/spool/mail</i> has grown drastically. Is there any possibility of
+using two directories?
+</p>
+<p>
+<font color="#00BB00">A0623:</font>&nbsp;&nbsp;You can use an expansion string to split mailboxes between two
+directories. For example,
+</p>
+<pre>
+   file = /var/spool/mail${nhash_2:$local_part}/$local_part</pre>
+<p>
+which does a hash on the local part, producing either 0 or 1, thereby
+using \(mail0) or <i>mail1</i>. But remember, the MUAs that read these mailboxes
+also have to know where they are.
+</p>
+<p>
+<a name="TOC218" href="FAQ.html#TOC218">Q0624:</a>&nbsp;&nbsp;Sendmail has a program called <i>smrsh</i> that restricts what binaries
+can be run from sendmail aliases. Is there something like this in Exim ?
+</p>
+<p>
+<font color="#00BB00">A0624:</font>&nbsp;&nbsp;Check out the <tt>allow_commands</tt> option in the <b>pipe</b> transport.
+</p>
+<p>
+<a name="TOC219" href="FAQ.html#TOC219">Q0625:</a>&nbsp;&nbsp;I wish to have large emails go out one at a time.
+</p>
+<p>
+<font color="#00BB00">A0625:</font>&nbsp;&nbsp;One possibility is to set up a router that defers all large messages,
+except in queue runs. Since queue runners deliver just one
+message at a time, if you limited the number of simultaneous queue
+runners to 1, you would get the effect you wanted. A suitable router
+might be
+</p>
+<pre>
+   defer_if_large_unless_queue_run:
+     driver = redirect
+     condition = ${if or{{queue_running}{&#60;{$message_size}{200K}}}{no}{yes}}
+     allow_defer
+     data = :defer: too large for immediate delivery
+     no_verify</pre>
+<p>
+Of course, this would always delay any large message until the next
+queue runner, but if you run them fairly regularly, this shouldn't be a
+huge problem, and may even be desirable. Note the use of <tt>no_verify</tt> to
+ensure that this router is not used when Exim is verifying addresses.
+</p>
+<p>
+<a name="TOC220" href="FAQ.html#TOC220">Q0626:</a>&nbsp;&nbsp;Exim can route local parts independent of their case, but the Cyrus LMTP
+daemon requires the correct case. How can I fix this?
+</p>
+<p>
+<font color="#00BB00">A0626:</font>&nbsp;&nbsp;You need to rewrite the local part to the correct case before running
+the router that routes to Cyrus. For example, if you require all lower
+case, and your router is called <tt>local_user</tt>, put this router in front
+of it:
+</p>
+<pre>
+   lowercase_local:
+     driver = redirect
+     redirect_router = local_user
+     domains = +local_domains
+     data = ${lc:$local_part}@$domain</pre>
+<p>
+The setting of <tt>redirect_router</tt> causes processing of the rewritten
+address to start at the next router, instead of the first router. See
+also <a href="FAQ_6.html#TOC224">Q0630</a>, and <a href="C045.txt">C045</a> for a more complete Cyrus configuration.
+</p>
+<p>
+<a name="TOC221" href="FAQ.html#TOC221">Q0627:</a>&nbsp;&nbsp;Is there a command I can send to Exim to retry all queued messages
+regardless of their retry schedule?
+</p>
+<p>
+<font color="#00BB00">A0627:</font>&nbsp;&nbsp;The <b>-qff</b> option starts a queue runner that forces a delivery attempt
+for all messages, including frozen ones. If you use <b>-qf</b>, frozen
+messages are skipped.
+</p>
+<p>
+<a name="TOC222" href="FAQ.html#TOC222">Q0628:</a>&nbsp;&nbsp;I have the default retry rule, which I thought meant that Exim should
+keep trying for four days, but it seems to be bouncing some messages
+immediately.
+</p>
+<p>
+<font color="#00BB00">A0628:</font>&nbsp;&nbsp;See <a href="FAQ_6.html#TOC209">Q0615</a> and <a href="FAQ_6.html#TOC214">Q0620</a>.
+</p>
+<p>
+<a name="TOC223" href="FAQ.html#TOC223">Q0629:</a>&nbsp;&nbsp;I'm having trouble with quotas and Courier, because Exim is not handling
+maildirsize files.
+</p>
+<p>
+<font color="#00BB00">A0629:</font>&nbsp;&nbsp;You will do better to move the quota handling to Courier. Use <i>maildrop</i>
+as your MDA rather than direct Exim delivery.  This also has the
+advantage that if you give web access to the mail spool (over <i>sqwebmail</i>)
+you can then use the web front end to edit <i>maildrop</i> filter files.
+</p>
+<p>
+<a name="TOC224" href="FAQ.html#TOC224">Q0630:</a>&nbsp;&nbsp;How can I configure Exim to deliver to a Cyrus message store?
+</p>
+<p>
+<font color="#00BB00">A0630:</font>&nbsp;&nbsp;(1) The reference manual contains an example that uses pipe delivery.
+</p>
+<p>
+(2) &nbsp;Here is a transport that uses LMTP delivery, assuming that
+<i>$local_part</i> contains the username:
+</p>
+<pre>
+   cyrus_inbox:
+     driver =lmtp
+     user = cyrus
+     socket = /var/cyrus/socket/lmtp</pre>
+<p>
+(3) &nbsp;This is a transport that delivers direct to a non-inbox mailbox:
+</p>
+<pre>
+   cyrus_mailbox:
+     driver = pipe
+     user = $local_part
+     message_prefix =
+     message_suffix =
+     log_fail_output
+     return_output
+     command = "/usr/cyrus/bin/deliver -a $local_part \
+                -m &#60;mailbox-name&#62; $local_part"</pre>
+<p>
+This delivers to the Cyrus mailbox <tt>user.$local_part.&#60;mailbox-name&#62;</tt>.
+Using <tt>user = $local_part</tt> and <tt>-a $local_part</tt> makes it work
+without needing an explicit `p' ACL set for `anyone' on the mailbox.
+</p>
+<p>
+<a name="TOC225" href="FAQ.html#TOC225">Q0631:</a>&nbsp;&nbsp;I would like to choose a retry rule based on on the sender rather than
+the recipient address. Is this possible?
+</p>
+<p>
+<font color="#00BB00">A0631:</font>&nbsp;&nbsp;Yes. The address part of a retry rule is matched as a single-item
+address list. Such lists are always expanded, so you can use something
+like this:
+</p>
+<pre>
+   "${if eq{$sender_address}{xxx}{*@*}{no@no}}" quota F,1h,10m; ...</pre>
+<p>
+If the sender address is &#147;xxx&#148;, the pattern expands to &#147;*@*&#148;, which
+matches all recipient addresses; if you want to, you can make this a
+more restrictive pattern. If the sender address is not &#147;xxx&#148;, the
+pattern expands to &#147;no@no&#148;, which is assumed to be a recipient address
+that can never match, so the retry rule is skipped.
+</p>
+<p>
+<a name="TOC226" href="FAQ.html#TOC226">Q0632:</a>&nbsp;&nbsp;What does the error <i>User 1 set for local_mbx_delivery transport is on
+the never_users list</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0632:</font>&nbsp;&nbsp;You have configured the <b>local_mbx_delivery</b> to run as the user whose
+id (uid) is 1. However, this user is on the list defined by the
+<tt>never_users</tt> runtime option, or the <small>FIXED_NEVER_USERS</small> compile-time
+option. These are &#147;safety catch&#148; lists; Exim refuses to deliver to any
+user that is on them. The most common use of <tt>never_users</tt> is to avoid
+doing any deliveries as <i>root</i>, but it can contain other uids.
+</p>
+<p>
+<a name="TOC227" href="FAQ.html#TOC227">Q0633:</a>&nbsp;&nbsp;Why is <i>$domain</i> not set in the <b>smtp</b> transport?
+</p>
+<p>
+<font color="#00BB00">A0633:</font>&nbsp;&nbsp;The <b>smtp</b> transport can handle several recipient addresses at once.
+This happens by default if the host lists for the addresses are
+identical. A single copy of the message is sent, using multiple <small>RCPT</small>
+commands to transmit multiple envelope recipients. The <i>$domain</i>
+variable is set in the <b>smtp</b> transport only if all the recipient
+addresses have the same domain. You must have a case where several
+addresses with different domains resolve to the same set of hosts.
+</p>
+<p>
+If you want to restrict the transport so that it handles only a single
+domain at once (but still possibly with more than one recipient), set
+</p>
+<pre>
+   multi_domain = false</pre>
+<p>
+If you want to restrict the transport so that it handles only a single
+address at once, set
+</p>
+<pre>
+   max_rcpt = 1</pre>
+<p>
+<a name="TOC228" href="FAQ.html#TOC228">Q0634:</a>&nbsp;&nbsp;How can I stop a local transport from trying to access the user's home
+directory, even when the delivery is to a file that is elsewhere?
+</p>
+<p>
+<font color="#00BB00">A0634:</font>&nbsp;&nbsp;See answer (2) for <a href="FAQ_4.html#TOC166">Q0423</a>.
+</p>
+<p>
+<a name="TOC229" href="FAQ.html#TOC229">Q0635:</a>&nbsp;&nbsp;The log message <i>error ignored</i> appears after some delivery failures.
+What does it mean?
+</p>
+<p>
+<font color="#00BB00">A0635:</font>&nbsp;&nbsp;This message is written when Exim fails to deliver a bounce message whose
+age is greater than <tt>ignore_bounce_errors_after</tt>. It indicates that the
+failing bounce message has been discarded.
+</p>
+<p>
+The same message is written after failed deliveries when a filter file
+uses the <tt>noerror</tt> feature when setting up a delivery, or if a router
+has the setting
+</p>
+<pre>
+   errors_to = &#60;&#62;</pre>
+<p>
+Both of these specify that delivery failures are to be discarded.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_5.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_7.html">Next</a>
+</body>
+</html>

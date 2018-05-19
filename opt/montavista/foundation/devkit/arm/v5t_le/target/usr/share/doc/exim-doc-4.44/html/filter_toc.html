@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim Filter Specification Contents</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>Exim Filter Specification</h1><hr>
+<ul>
+<li><a name="TOC1" href="filter_0.html#CHAP0">Exim's interfaces to mail filtering</a></li>
+<li><a name="TOC2" href="filter_1.html#CHAP1">1. Forwarding and filtering in Exim</a></li>
+<ul>
+<li><a name="TOC3" href="filter_1.html#SECT1.1">1.1. Introduction</a></li>
+<li><a name="TOC4" href="filter_1.html#SECT1.2">1.2. Testing a new filter file</a></li>
+<li><a name="TOC5" href="filter_1.html#SECT1.3">1.3. Installing a filter file</a></li>
+<li><a name="TOC6" href="filter_1.html#SECT1.4">1.4. Testing an installed filter file</a></li>
+<li><a name="TOC7" href="filter_1.html#SECT1.5">1.5. Details of filtering commands</a></li>
+</ul>
+<li><a name="TOC8" href="filter_2.html#CHAP2">2. Sieve filter files</a></li>
+<ul>
+<li><a name="TOC9" href="filter_2.html#SECT2.1">2.1. Recognition of Sieve filters</a></li>
+<li><a name="TOC10" href="filter_2.html#SECT2.2">2.2. Saving to specified folders</a></li>
+<li><a name="TOC11" href="filter_2.html#SECT2.3">2.3. Strings containing header names</a></li>
+<li><a name="TOC12" href="filter_2.html#SECT2.4">2.4. Exists test with empty list of headers</a></li>
+<li><a name="TOC13" href="filter_2.html#SECT2.5">2.5. Header test with invalid MIME encoding in header</a></li>
+<li><a name="TOC14" href="filter_2.html#SECT2.6">2.6. Address test for multiple addresses per header</a></li>
+<li><a name="TOC15" href="filter_2.html#SECT2.7">2.7. Semantics of keep</a></li>
+<li><a name="TOC16" href="filter_2.html#SECT2.8">2.8. Semantics of fileinto</a></li>
+<li><a name="TOC17" href="filter_2.html#SECT2.9">2.9. Semantics of redirect</a></li>
+<li><a name="TOC18" href="filter_2.html#SECT2.10">2.10. String arguments</a></li>
+<li><a name="TOC19" href="filter_2.html#SECT2.11">2.11. Number units</a></li>
+<li><a name="TOC20" href="filter_2.html#SECT2.12">2.12. RFC compliance</a></li>
+</ul>
+<li><a name="TOC21" href="filter_3.html#CHAP3">3. Exim filter files</a></li>
+<ul>
+<li><a name="TOC22" href="filter_3.html#SECT3.1">3.1. Format of Exim filter files</a></li>
+<li><a name="TOC23" href="filter_3.html#SECT3.2">3.2. Data values in filter commands</a></li>
+<li><a name="TOC24" href="filter_3.html#SECT3.3">3.3. String expansion</a></li>
+<li><a name="TOC25" href="filter_3.html#SECT3.4">3.4. Some useful general variables</a></li>
+<li><a name="TOC26" href="filter_3.html#SECT3.5">3.5. Header variables</a></li>
+<li><a name="TOC27" href="filter_3.html#SECT3.6">3.6. User variables</a></li>
+<li><a name="TOC28" href="filter_3.html#SECT3.7">3.7. Current directory</a></li>
+<li><a name="TOC29" href="filter_3.html#SECT3.8">3.8. Significant deliveries</a></li>
+<li><a name="TOC30" href="filter_3.html#SECT3.9">3.9. Filter commands</a></li>
+<li><a name="TOC31" href="filter_3.html#SECT3.10">3.10. The add command</a></li>
+<li><a name="TOC32" href="filter_3.html#SECT3.11">3.11. The deliver command</a></li>
+<li><a name="TOC33" href="filter_3.html#SECT3.12">3.12. The save command</a></li>
+<li><a name="TOC34" href="filter_3.html#SECT3.13">3.13. The pipe command</a></li>
+<li><a name="TOC35" href="filter_3.html#SECT3.14">3.14. Mail commands</a></li>
+<li><a name="TOC36" href="filter_3.html#SECT3.15">3.15. Logging commands</a></li>
+<li><a name="TOC37" href="filter_3.html#SECT3.16">3.16. The finish command</a></li>
+<li><a name="TOC38" href="filter_3.html#SECT3.17">3.17. The testprint command</a></li>
+<li><a name="TOC39" href="filter_3.html#SECT3.18">3.18. The fail command</a></li>
+<li><a name="TOC40" href="filter_3.html#SECT3.19">3.19. The freeze command</a></li>
+<li><a name="TOC41" href="filter_3.html#SECT3.20">3.20. The headers command</a></li>
+<li><a name="TOC42" href="filter_3.html#SECT3.21">3.21. Obeying commands conditionally</a></li>
+<li><a name="TOC43" href="filter_3.html#SECT3.22">3.22. String testing conditions</a></li>
+<li><a name="TOC44" href="filter_3.html#SECT3.23">3.23. Numeric testing conditions</a></li>
+<li><a name="TOC45" href="filter_3.html#SECT3.24">3.24. Testing for significant deliveries</a></li>
+<li><a name="TOC46" href="filter_3.html#SECT3.25">3.25. Testing for error messages</a></li>
+<li><a name="TOC47" href="filter_3.html#SECT3.26">3.26. Testing for personal mail</a></li>
+<li><a name="TOC48" href="filter_3.html#SECT3.27">3.27. Testing delivery status</a></li>
+<li><a name="TOC49" href="filter_3.html#SECT3.28">3.28. Testing a list of addresses</a></li>
+<li><a name="TOC50" href="filter_3.html#SECT3.29">3.29. Multiple personal mailboxes</a></li>
+<li><a name="TOC51" href="filter_3.html#SECT3.30">3.30. Ignoring delivery errors</a></li>
+<li><a name="TOC52" href="filter_3.html#SECT3.31">3.31. Examples of Exim filter commands</a></li>
+</ul>
+</ul>
+</body>
+</html>

@@ -1,0 +1,885 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 3</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_2.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_4.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<h1>
+<a name="CHAP3" href="spec_toc.html#TOC14">
+3. How Exim receives and delivers mail
+</a></h1>
+<a name="IX58"></a>
+<h2>
+<a name="SECT3.1" href="spec_toc.html#TOC15">
+3.1. Overall philosophy
+</a></h2>
+<p>
+Exim is designed to work efficiently on systems that are permanently connected
+to the Internet and are handling a general mix of mail. In such circumstances,
+most messages can be delivered immediately. Consequently, Exim does not
+maintain independent queues of messages for specific domains or hosts, though
+it does try to send several messages in a single SMTP connection after a host
+has been down, and it also maintains per-host retry information.
+</p>
+<a name="IX59"></a>
+<h2>
+<a name="SECT3.2" href="spec_toc.html#TOC16">
+3.2. Policy control
+</a></h2>
+<p>
+Policy controls are now an important feature of MTAs that are connected to the
+Internet. Perhaps their most important job is to stop MTAs being abused as
+&#147;open relays&#148; by misguided individuals who send out vast amounts of unsolicited
+junk, and want to disguise its source. Exim provides flexible facilities for
+specifying policy controls on incoming mail:
+</p>
+<ul>
+<li><a name="IX60"></a>
+<p>
+Exim 4 (unlike previous versions of Exim) implements policy controls on
+incoming SMTP mail by means of <i>Access Control Lists</i> (ACLs). Each list is a
+series of statements that may either grant or deny access. ACLs can be used at
+several places in the SMTP dialogue while receiving a message. However, the
+most common places are after each <font size=-1>RCPT</font> command, and at the very end of the
+message. The sysadmin can specify conditions for accepting or rejecting
+individual recipients or the entire message, respectively, at these two points
+(see chapter <a href="spec_38.html">38</a>). Denial of access results in an SMTP error code.
+</p>
+</li>
+<li><p>
+An ACL is also available for locally generated, non-SMTP messages. In this 
+case, the only available actions are to accept or deny the entire message.
+</p>
+</li>
+<li><p>
+When a message has been received, either from a remote host or from the local
+host, but before the final acknowledgement has been sent, a locally supplied C
+function called <i>local&#095;scan()</i> can be run to inspect the message and decide
+whether to accept it or not (see chapter <a href="spec_39.html">39</a>). If the message is
+accepted, the list of recipients can be modified by the function.
+</p>
+</li>
+<li><p>
+After a message has been accepted, a further checking mechanism is available in
+the form of the <em>system filter</em> (see chapter <a href="spec_40.html">40</a>). This runs
+at the start of every delivery process.
+</p>
+</li>
+</ul>
+<a name="IX61"></a>
+<a name="IX62"></a>
+<h2>
+<a name="SECT3.3" href="spec_toc.html#TOC17">
+3.3. User filters
+</a></h2>
+<p>
+In a conventional Exim configuration, users are able to run private filters by 
+setting up appropriate <i>.forward</i> files in their home directories. See 
+chapter <a href="spec_22.html">22</a> (about the <b>redirect</b> router) for the configuration 
+needed to support this, and the separate document entitled<A HREF="filter_toc.html">
+<i>Exim's interfaces to mail filtering</i></A>
+for user details. Two different kinds of filtering are available:
+</p>
+<ul>
+<li><p>
+Sieve filters are written in the standard filtering language that is defined by 
+RFC 3028.
+</p>
+</li>
+<li><p>
+Exim filters are written in a syntax that is unique to Exim, but which is more 
+powerful than Sieve, which it pre-dates.
+</p>
+</li>
+</ul>
+<p>
+User filters are run as part of the routing process, described below.
+</p>
+<a name="IX63"></a>
+<a name="IX64"></a>
+<a name="IX65"></a>
+<a name="IX66"></a>
+<a name="IX67"></a>
+<a name="IX68"></a>
+<a name="IX69"></a>
+<h2>
+<a name="SECT3.4" href="spec_toc.html#TOC18">
+3.4. Message identification
+</a></h2>
+<p>
+Every message handled by Exim is given a <i>message id</i> which is sixteen
+characters long. It is divided into three parts, separated by hyphens, for
+example <tt>16VDhn-0001bo-D3</tt>. Each part is a sequence of letters and digits,
+normally encoding numbers in base 62. However, in the Darwin operating
+system (Mac OS X) and when Exim is compiled to run under Cygwin, base 36 
+(avoiding the use of lower case letters) is used instead, because the message 
+id is used to construct file names, and the names of files in those systems are
+not case-sensitive.
+<a name="IX70"></a>
+</p>
+<p>
+The detail of the contents of the message id have changed as Exim has evolved.
+Earlier versions relied on the operating system not re-using a process id (pid)
+within one second. On modern operating systems, this assumption can no longer
+be made, so the algorithm had to be changed. To retain backward compatibility, 
+the format of the message id was retained, which is why the following rules are 
+somewhat eccentric:
+</p>
+<ul>
+<li><p>
+The first six characters of the message id are the time at which the message
+started to be received, to a granularity of one second. That is, this field
+contains the number of seconds since the start of the epoch (the normal Unix
+way of representing the date and time of day).
+</p>
+</li>
+<li><p>
+After the first hyphen, the next six characters are the id of the process that
+received the message.
+</p>
+</li>
+<li><p>
+There are two different possibilities for the final two characters:
+</p>
+<ol>
+<li TYPE="1"><a name="IX71"></a>
+<p>
+If <tt>localhost&#095;number</tt> is not set, this value is the fractional part of the
+time of reception, normally in units of 1/2000 of a second, but for systems
+that must use base 36 instead of base 62 (because of case-insensitive file
+systems), the units are 1/1000 of a second.
+</p>
+</li>
+<li TYPE="1"><p>
+If <tt>localhost&#095;number</tt> is set, it is multiplied by 200 (100) and added to
+the fractional part of the time, which in this case is in units of 1/200
+(1/100) of a second.
+</p>
+</li>
+</ol>
+</li>
+</ul>
+<p>
+After a message has been received, Exim waits for the clock to tick at the
+appropriate resolution before proceeding, so that if another message is
+received by the same process, or by another process with the same (re-used)
+pid, it is guaranteed that the time will be different. In most cases, the clock
+will already have ticked while the message was being received.
+</p>
+<a name="IX72"></a>
+<a name="IX73"></a>
+<h2>
+<a name="SECT3.5" href="spec_toc.html#TOC19">
+3.5. Receiving mail
+</a></h2>
+<p>
+The only way Exim can receive mail from a remote host is using SMTP over
+TCP/IP, in which case the sender and recipient addresses are tranferred using
+SMTP commands. However, from a locally running process (such as a user's MUA),
+there are several possibilities:
+</p>
+<ul>
+<li><p>
+If the process runs Exim with the <i>-bm</i> option, the message is read
+non-interactively (usually via a pipe), with the recipients taken from the
+command line, or from the body of the message if <i>-t</i> is also used.
+</p>
+</li>
+<li><p>
+If the process runs Exim with the <i>-bS</i> option, the message is also read
+non-interactively, but in this case the recipients are listed at the start of
+the message in a series of SMTP <font size=-1>RCPT</font> commands, terminated by a <font size=-1>DATA</font>
+command. This is so-called &#147;batch SMTP&#148; format,
+but it isn't really SMTP. The SMTP commands are just another way of passing
+envelope addresses in a non-interactive submission.
+</p>
+</li>
+<li><p>
+If the process runs Exim with the <i>-bs</i> option, the message is read
+interactively, using the SMTP protocol. A two-way pipe is normally used for
+passing data between the local process and the Exim process.
+This is &#147;real&#148; SMTP and is handled in the same way as SMTP over TCP/IP. For
+example, the ACLs for SMTP commands are used for this form of submission.
+</p>
+</li>
+<li><p>
+A local process may also make a TCP/IP call to the host's loopback address
+(127.0.0.1) or any other of its IP addresses. When receiving messages, Exim
+does not treat the loopback address specially. It treats all such connections
+in the same way as connections from other hosts.
+</p>
+</li>
+</ul>
+<a name="IX74"></a>
+<a name="IX75"></a>
+<p>
+In the three cases that do not involve TCP/IP, the sender address is
+constructed from the login name of the user that called Exim and a default
+qualification domain (which can be set by the <tt>qualify&#095;domain</tt> configuration
+option). For local or batch SMTP, a sender address that is passed using the
+SMTP <font size=-1>MAIL</font> command is ignored. However, the system administrator may allow
+certain users (&#147;trusted users&#148;) to specify a different sender address
+unconditionally, or all users to specify certain forms of different sender
+address. The <i>-f</i> option or the SMTP <font size=-1>MAIL</font> command is used to specify these
+different addresses. See section <a href="spec_5.html#SECT5.2">5.2</a> for details of trusted
+users, and the <tt>untrusted&#095;set&#095;sender</tt> option for a way of allowing untrusted
+users to change sender addresses.
+</p>
+<p>
+Messages received by either of the non-interactive mechanisms are subject to 
+checking by the non-SMTP ACL, if one is defined. Messages received using SMTP 
+(either over TCP/IP, or interacting with a local process) can be checked by a 
+number of ACLs that operate at different times during the SMTP session. Either 
+individual recipients, or the entire message, can be rejected if local policy 
+requirements are not met. The <i>local&#095;scan()</i> function (see chapter
+<a href="spec_39.html">39</a>) is run for all incoming messages.
+</p>
+<p>
+Exim can be configured not to start a delivery process when a message is
+received; this can be unconditional, or depend on the number of incoming SMTP
+connections or the system load. In these situations, new messages wait on the
+queue until a queue runner process picks them up. However, in standard
+configurations under normal conditions, delivery is started as soon as a
+message is received.
+</p>
+<a name="IX76"></a>
+<a name="IX77"></a>
+<h2>
+<a name="SECT3.6" href="spec_toc.html#TOC20">
+3.6. Handling an incoming message
+</a></h2>
+<p>
+When Exim accepts a message, it writes two files in its spool directory. The
+first contains the envelope information, the current status of the message,
+and the header lines, and the second contains the body of the message. The
+names of the two spool files consist of the message id, followed by <tt>-H</tt> for
+the file containing the envelope and header, and <tt>-D</tt> for the data file.
+<a name="IX78"></a>
+</p>
+<p>
+By default all these message files are held in a single directory called
+<i>input</i> inside the general Exim spool directory. Some operating systems do
+not perform very well if the number of files in a directory gets very large; to
+improve performance in such cases, the <tt>split&#095;spool&#095;directory</tt> option can be
+used. This causes Exim to split up the input files into 62 sub-directories
+whose names are single letters or digits.
+</p>
+<p>
+The envelope information consists of the address of the message's sender and
+the addresses of the recipients. This information is entirely separate from
+any addresses contained in the header lines. The status of the message includes
+a list of recipients who have already received the message. The format of the
+first spool file is described in chapter <a href="spec_49.html">49</a>.
+<a name="IX79"></a>
+</p>
+<p>
+Address rewriting that is specified in the rewrite section of the configuration
+(see chapter <a href="spec_31.html">31</a>) is done once and for all on incoming addresses,
+both in the header lines and the envelope, at the time the message is accepted.
+If during the course of delivery additional addresses are generated (for
+example, via aliasing), these new addresses are rewritten as soon as they are
+generated. At the time a message is actually delivered (transported) further
+rewriting can take place; because this is a transport option, it can be
+different for different forms of delivery. It is also possible to specify the
+addition or removal of certain header lines at the time the message is
+delivered (see chapters <a href="spec_15.html">15</a> and <a href="spec_24.html">24</a>).
+</p>
+<a name="IX80"></a>
+<a name="IX81"></a>
+<h2>
+<a name="SECT3.7" href="spec_toc.html#TOC21">
+3.7. Life of a message
+</a></h2>
+<p>
+A message remains in the spool directory until it is completely delivered to
+its recipients or to an error address, or until it is deleted by an
+administrator or by the user who originally created it. In cases when delivery
+cannot proceed &#150; for example, when a message can neither be delivered to its
+recipients nor returned to its sender, the message is marked &#147;frozen&#148; on the
+spool, and no more deliveries are attempted.
+<a name="IX82"></a>
+<a name="IX83"></a>
+</p>
+<p>
+An administrator can &#147;thaw&#148; such messages when the problem has been corrected,
+and can also freeze individual messages by hand if necessary. In addition, an
+administrator can force a delivery error, causing a bounce message to be sent.
+<a name="IX84"></a>
+</p>
+<p>
+<a name="IX85"></a>
+There is an option called <tt>auto&#095;thaw</tt>, which can be used to cause Exim to
+retry frozen messages after a certain time. When this is set, no message will
+remain on the queue for ever, because the delivery timeout will eventually be
+reached. Delivery failure reports (bounce messages) that reach this timeout are
+discarded.
+There is also an option called <tt>timeout&#095;frozen&#095;after</tt>, which discards frozen
+messages after a certain time.
+<a name="IX86"></a>
+<a name="IX87"></a>
+</p>
+<p>
+While Exim is working on a message, it writes information about each delivery
+attempt to the main log file. This includes successful, unsuccessful, and
+delayed deliveries for each recipient (see chapter <a href="spec_45.html">45</a>). The log lines
+are also written to a separate <em>message log</em> file for each message. These
+logs are solely for the benefit of the administrator, and are normally deleted
+along with the spool files when processing of a message is complete.
+The use of individual message logs can be disabled by setting 
+<tt>no&#095;message&#095;logs</tt>; this might give an improvement in performance on very
+busy systems.
+<a name="IX88"></a>
+<a name="IX89"></a>
+</p>
+<p>
+All the information Exim itself needs to set up a delivery is kept in the first
+spool file, along with the header lines. When a successful delivery occurs, the
+address is immediately written at the end of a journal file, whose name is the
+message id followed by <tt>-J</tt>. At the end of a delivery run, if there are some
+addresses left to be tried again later, the first spool file (the <tt>-H</tt> file)
+is updated to indicate which these are, and the journal file is then deleted.
+Updating the spool file is done by writing a new file and renaming it, to
+minimize the possibility of data loss.
+</p>
+<p>
+Should the system or the program crash after a successful delivery but before
+the spool file has been updated, the journal is left lying around. The next
+time Exim attempts to deliver the message, it reads the journal file and
+updates the spool file before proceeding. This minimizes the chances of double
+deliveries caused by crashes.
+</p>
+<a name="IX90"></a>
+<a name="IX91"></a>
+<a name="IX92"></a>
+<h2>
+<a name="SECT3.8" href="spec_toc.html#TOC22">
+3.8. Processing an address for delivery
+</a></h2>
+<p>
+The main delivery processing elements of Exim are called <em>routers</em> and
+<em>transports</em>, and collectively these are known as <em>drivers</em>. Code for a
+number of them is provided in the source distribution, and compile-time options
+specify which ones are included in the binary. Run time options specify which
+ones are actually used for delivering messages.
+<a name="IX93"></a>
+</p>
+<p>
+Each driver that is specified in the run time configuration is an <i>instance</i> 
+of that particular driver type. Multiple instances are allowed; for example, 
+you can set up several different <b>smtp</b> transports, each with different 
+option values that might specify different ports or different timeouts. Each
+instance has its own identifying name. In what follows we will normally use the
+instance name when discussing one particular instance (that is, one specific 
+configuration of the driver), and the generic driver name when discussing
+the driver's features in general.
+</p>
+<p>
+A <em>router</em> is a driver that operates on an address, either determining how
+its delivery should happen, by routing it to a specific transport, or
+converting the address into one or more new addresses (for example, via an
+alias file). A router may also explicitly choose to fail an address, causing it
+to be bounced.
+</p>
+<p>
+A <em>transport</em> is a driver that transmits a copy of the message from Exim's
+spool to some destination. There are two kinds of transport: for a <em>local</em>
+transport, the destination is a file or a pipe on the local host, whereas for a
+<em>remote</em> transport the destination is some other host. A message is passed
+to a specific transport as a result of successful routing. If a message has
+several recipients, it may be passed to a number of different transports.
+<a name="IX94"></a>
+</p>
+<p>
+An address is processed by passing it to each configured router instance in
+turn, subject to certain preconditions, until a router accepts the address or
+specifies that it should be bounced. We will describe this process in more
+detail shortly. As a simple example, the diagram below illustrates how each
+recipient address in a message is processed in a small configuration of three
+routers that are configured in various ways.
+</p>
+<p>
+<img src="routing.gif" alt="Routing an address"><br>
+</p>
+<p>
+To make this a more concrete example, we'll describe it in terms of some actual
+routers, but remember, this is only an example. You can configure Exim's
+routers in many different ways, and there may be any number of routers in a
+configuration.
+</p>
+<p>
+The first router that is specified in a configuration is often one that handles
+addresses in domains that are not recognized specially by the local host. These
+are typically addresses for arbitrary domains on the Internet. A precondition
+is set up which looks for the special domains known to the host (for example,
+its own domain name), and the router is run for addresses that do <em>not</em>
+match. Typically, this is a router that looks up domains in the DNS in order to
+find the hosts to which this address routes. If it succeeds, the address is
+queued for a suitable SMTP transport; if it does not succeed, the router is
+configured to fail the address.
+</p>
+<p>
+The example pictured could be a configuration of this type. The second and
+third routers can only be run for addresses for which the preconditions for
+the first router are not met. If one of these preconditions checks the
+domain, the second and third routers are run only for domains that are somehow
+special to the local host.
+</p>
+<p>
+The second router does redirection &#150; also known as aliasing and forwarding.
+When it generates one or more new addresses from the original, each of them is
+routed independently from the start. Otherwise, the router may cause an address
+to fail, or it may simply decline to handle the address, in which case the 
+address is passed to the next router.
+</p>
+<p>
+The final router in many configurations is one that checks to see if the
+address belongs to a local mailbox. The precondition may involve a check to
+see if the local part is the name of a login account, or it may look up the
+local part in a file or a database. If its preconditions are not met, or if
+the router declines, we have reached the end of the routers. When this happens,
+the address is bounced.
+</p>
+<a name="IX95"></a>
+<a name="IX96"></a>
+<h2>
+<a name="SECT3.9" href="spec_toc.html#TOC23">
+3.9. Processing an address for verification
+</a></h2>
+<p>
+As well as being used to decide how to deliver to an address, Exim's routers 
+are also used for <i>address verification</i>. Verification can be requested as 
+one of the checks to be performed in an ACL for incoming messages, on both 
+sender and recipient addresses, and it can be tested using the <i>-bv</i> and 
+<i>-bvs</i> command line options.
+</p>
+<p>
+When an address is being verified, the routers are run in &#147;verify mode&#148;. This 
+does not affect the way the routers work, but it is a state that can be 
+detected. By this means, a router can be skipped or made to behave differently
+when verifying. A common example is a configuration in which the first router
+sends all messages to a message-scanning program, unless they have been
+previously scanned. Thus, the first router accepts all addresses without any
+checking, making it useless for verifying. Normally, the <tt>no&#095;verify</tt> option 
+would be set for such a router, causing it to be skipped in verify mode.
+</p>
+<a name="IX97"></a>
+<a name="IX98"></a>
+<a name="IX99"></a>
+<h2>
+<a name="SECT3.10" href="spec_toc.html#TOC24">
+3.10. Running an individual router
+</a></h2>
+<p>
+As explained in the example above, a number of preconditions are checked before
+running a router. If any are not met, the router is skipped, and the address is
+passed to the next router. When all the preconditions on a router <em>are</em> met,
+the router is run. What happens next depends on the outcome, which is one of
+the following:
+</p>
+<ul>
+<li><p>
+<a name="IX100"></a>
+<i>accept</i>: The router accepts the address, and either queues it for a
+transport, or generates one or more &#147;child&#148; addresses. Processing the original
+address ceases, 
+unless the <tt>unseen</tt> option is set on the router. This option
+can be used to set up multiple deliveries with different routing (for example,
+for keeping archive copies of messages). When <tt>unseen</tt> is set, the address is
+passed to the next router. Normally, however, an <i>accept</i> return marks the
+end of routing.
+<a name="IX101"></a>
+<a name="IX102"></a>
+</p>
+<p>
+If child addresses are generated, Exim checks to see whether they are
+duplicates of any existing recipient addresses. During this check, local parts
+are treated as case-sensitive. Duplicate addresses are discarded. Each of the
+remaining child addresses is then processed independently, starting with the
+first router by default. It is possible to change this by setting the
+<tt>redirect&#095;router</tt> option to specify which router to start at for child
+addresses. Unlike <tt>pass&#095;router</tt> (see below) the router specified by
+<tt>redirect&#095;router</tt> may be anywhere in the router configuration.
+</p>
+</li>
+<li><p>
+<i>pass</i>: The router recognizes the address, but cannot handle it itself. It
+requests that the address be passed to another router. By default the address
+is passed to the next router, but this can be changed by setting the
+<tt>pass&#095;router</tt> option. However, (unlike <tt>redirect&#095;router</tt>) the named router
+must be below the current router (to avoid loops).
+</p>
+</li>
+<li><p>
+<i>decline</i>: The router declines to accept the address because it does not
+recognize it at all. By default, the address is passed to the next router, but
+this can be prevented by setting the <tt>no&#095;more</tt> option. When <tt>no&#095;more</tt> is set,
+all the remaining routers are skipped.
+</p>
+</li>
+<li><p>
+<i>fail</i>: The router determines that the address should fail, and queues it for
+the generation of a bounce message. There is no further processing of the
+original address unless <tt>unseen</tt> is set on the router.
+</p>
+</li>
+<li><p>
+<i>defer</i>: The router cannot handle the address at the present time. (A database
+may be offline, or a DNS lookup may have timed out.) No further processing of
+the address happens in this delivery attempt. It is tried again next time the
+message is considered for delivery.
+</p>
+</li>
+<li><p>
+<i>error</i>: There is some error in the router (for example, a syntax error in
+its configuration). The action is as for defer.
+</p>
+</li>
+</ul>
+<p>
+If an address reaches the end of the routers without having been accepted by
+any of them, it is bounced as unrouteable.
+The default error message in this situation is &#147;unrouteable address&#148;, but you 
+can set your own message by making use of the <tt>cannot&#095;route&#095;message</tt> option. 
+This can be set for any router; the value from the last router that &#147;saw&#148; 
+the address is used.
+</p>
+<p>
+Sometimes while routing you want to fail a delivery when some conditions are
+met but others are not, instead of passing the address on for further routing.
+You can do this by having a second router that explicitly fails the delivery
+when the relevant conditions are met. The <b>redirect</b> router has a &#147;fail&#148; 
+facility for this purpose.
+</p>
+<a name="IX103"></a>
+<a name="IX104"></a>
+<h2>
+<a name="SECT3.11" href="spec_toc.html#TOC25">
+3.11. Router preconditions
+</a></h2>
+<p>
+The preconditions that are tested for each router are listed below, in the
+order in which they are tested. The individual configuration options are
+described in more detail in chapter <a href="spec_15.html">15</a>.
+</p>
+<ul>
+<li><p>
+The <tt>local&#095;part&#095;prefix</tt> and <tt>local&#095;part&#095;suffix</tt> options can specify that
+the local parts handled by the router may or must have certain prefixes and/or
+suffixes. If a mandatory affix (prefix or suffix) is not present, the router is
+skipped. These conditions are tested first. When an affix is present, it is
+removed from the local part before further processing, including the evaluation
+of any other conditions.
+</p>
+</li>
+<li><p>
+Routers can be designated for use only when not verifying an address, that is, 
+only when routing it for delivery (or testing its delivery routing). If the 
+<tt>verify</tt> option is set false, the router is skipped when Exim is verifying an 
+address.
+Setting the <tt>verify</tt> option actually sets two options, <tt>verify&#095;sender</tt> and 
+<tt>verify&#095;recipient</tt>, which independently control the use of the router for 
+sender and recipient verification. You can set these options directly if 
+you want a router to be used for only one type of verification.
+</p>
+</li>
+<li><p>
+If the <tt>address&#095;test</tt> option is set false, the router is skipped when Exim is 
+run with the <i>-bt</i> option to test an address routing. This can be helpful when 
+the first router sends all new messages to a scanner of some sort; it makes it 
+possible to use <i>-bt</i> to test subsequent delivery routing without having to
+simulate the effect of the scanner.
+</p>
+</li>
+<li><p>
+Routers can be designated for use only when verifying an address, as
+opposed to routing it for delivery. The <tt>verify&#095;only</tt> option controls this.
+</p>
+</li>
+<li><p>
+Certain routers can be explicitly skipped when running the routers to check an
+address given in the SMTP <font size=-1>EXPN</font> command (see the <tt>expn</tt> option).
+</p>
+</li>
+<li><p>
+If the <tt>domains</tt> option is set, the domain of the address must be in the set of
+domains that it defines.
+</p>
+</li>
+<li><p>
+If the <tt>local&#095;parts</tt> option is set, the local part of the address must be in
+the set of local parts that it defines. If <tt>local&#095;part&#095;prefix</tt> or
+<tt>local&#095;part&#095;suffix</tt> is in use, the prefix or suffix is removed from the local
+part before this check. If you want to do precondition tests on local parts
+that include affixes, you can do so by using a <tt>condition</tt> option (see below)
+that uses the variables <tt>$local&#095;part</tt>, <tt>$local&#095;part&#095;prefix</tt>, and
+<tt>$local&#095;part&#095;suffix</tt> as necessary.
+</p>
+</li>
+<li><p>
+If the <tt>check&#095;local&#095;user</tt> option is set, the local part must be the name of
+an account on the local host.
+If this check succeeds, the uid and gid of the local user are placed in 
+<tt>$local&#095;user&#095;uid</tt> and <tt>$local&#095;user&#095;gid</tt>; these values can be used in the
+remaining preconditions.
+</p>
+</li>
+<li><p>
+If the <tt>router&#095;home&#095;directory</tt> option is set, it is expanded at this point,
+because it overrides the value of <tt>$home</tt>. If this expansion were left till 
+later, the value of <tt>$home</tt> as set by <tt>check&#095;local&#095;user</tt> would be used in 
+subsequent tests. Having two different values of <tt>$home</tt> in the same router 
+could lead to confusion.
+</p>
+</li>
+<li><p>
+If the <tt>senders</tt> option is set, the envelope sender address must be in the set
+of addresses that it defines.
+</p>
+</li>
+<li><p>
+If the <tt>require&#095;files</tt> option is set, the existence or non-existence of
+specified files is tested.
+</p>
+</li>
+<li><a name="IX105"></a>
+<p>
+If the <tt>condition</tt> option is set, it is evaluated and tested. This option uses
+an expanded string to allow you to set up your own custom preconditions.
+Expanded strings are described in chapter <a href="spec_11.html">11</a>.
+</p>
+</li>
+</ul>
+<p>
+Note that <tt>require&#095;files</tt> comes near the end of the list, so you cannot use it
+to check for the existence of a file in which to lookup up a domain, local
+part, or sender. However, as these options are all expanded, you can use the
+<tt>exists</tt> expansion condition to make such tests within each condition. The
+<tt>require&#095;files</tt> option is intended for checking files that the router may be
+going to use internally, or which are needed by a specific transport (for
+example, <i>.procmailrc</i>).
+</p>
+<a name="IX106"></a>
+<h2>
+<a name="SECT3.12" href="spec_toc.html#TOC26">
+3.12. Delivery in detail
+</a></h2>
+<p>
+When a message is to be delivered, the sequence of events is as follows:
+</p>
+<ul>
+<li><p>
+<a name="IX107"></a>
+If a system-wide filter file is specified, the message is passed to it. The
+filter may add recipients to the message, replace the recipients, discard the
+message, cause a new message to be generated, or cause the message delivery to
+fail. The format of the system filter file is the same as for Exim user filter
+files, described in the separate document entitled<A HREF="filter.html">
+<i>Exim's interfaces to mail filtering</i>.</A>
+(<b>Note</b>: Sieve cannot be used for system filter files.)
+Some additional features are available in system filters &#150; see chapter
+<a href="spec_40.html">40</a> for details. Note that a message is passed to the system
+filter only once per delivery attempt, however many recipients it has. However,
+if there are several delivery attempts because one or more addresses could not
+be immediately delivered, the system filter is run each time. The filter
+condition <tt>first&#095;delivery</tt> can be used to detect the first run of the system
+filter.
+</p>
+</li>
+<li><p>
+Each recipient address is offered to each configured router in turn, subject to
+its preconditions, until one is able to handle it. If no router can handle
+the address, that is, if they all decline, the address is failed. Because
+routers can be targeted at particular domains, several locally handled domains
+can be processed entirely independently of each other.
+</p>
+</li>
+<li><a name="IX108"></a>
+<a name="IX109"></a>
+<p>
+A router that accepts an address may set up a local or a remote transport for
+it. However, the transport is not run at this time. Instead, the address is
+placed on a list for the particular transport, to be run later. Alternatively,
+the router may generate one or more new addresses (typically from alias,
+forward, or filter files). New addresses are fed back into this process from
+the top, but in order to avoid loops, a router ignores any address which has an
+identically-named ancestor that was processed by itself.
+</p>
+</li>
+<li><p>
+When all the routing has been done, addresses that have been successfully
+handled are passed to their assigned transports. When local transports are
+doing real local deliveries, they handle only one address at a time, but if a
+local transport is being used as a pseudo-remote transport (for example, to
+collect batched SMTP messages for transmission by some other means) multiple
+addresses can be handled. Remote transports can always handle more than one
+address at a time, but can be configured not to do so, or to restrict multiple
+addresses to the same domain.
+</p>
+</li>
+<li><p>
+Each local delivery to a file or a pipe runs in a separate process under a
+non-privileged uid, and these deliveries are run one at a time. Remote
+deliveries also run in separate processes, normally under a uid that is private
+to Exim (&#147;the Exim user&#148;), but in this case, several remote deliveries can be
+run in parallel. The maximum number of simultaneous remote deliveries for any
+one message is set by the <tt>remote&#095;max&#095;parallel</tt> option.
+<font color=green>
+The order in which deliveries are done is not defined, except that all local 
+deliveries happen before any remote deliveries.
+</font>
+</p>
+</li>
+<li><a name="IX110"></a>
+<p>
+When it encounters a local delivery during a queue run, Exim checks its retry
+database to see if there has been a previous temporary delivery failure for the
+address before running the local transport. If there was a previous failure,
+Exim does not attempt a new delivery until the retry time for the address is
+reached. However, this happens only for delivery attempts that are part of a
+queue run. Local deliveries are always attempted when delivery immediately
+follows message reception, even if retry times are set for them. This makes for
+better behaviour if one particular message is causing problems (for example,
+causing quota overflow, or provoking an error in a filter file).
+</p>
+</li>
+<li><a name="IX111"></a>
+<p>
+Remote transports do their own retry handling, since an address may be
+deliverable to one of a number of hosts, each of which may have a different
+retry time. If there have been previous temporary failures and no host has
+reached its retry time, no delivery is attempted, whether in a queue run or
+not. See chapter <a href="spec_32.html">32</a> for details of retry strategies.
+</p>
+</li>
+<li><p>
+If there were any permanent errors, a bounce message is returned to an
+appropriate address (the sender in the common case), with details of the error
+for each failing address. Exim can be configured to send copies of bounce
+messages to other addresses.
+</p>
+</li>
+<li><a name="IX112"></a>
+<p>
+If one or more addresses suffered a temporary failure, the message is left on
+the queue, to be tried again later. Delivery of these addresses is said to be
+<i>deferred</i>.
+</p>
+</li>
+<li><p>
+When all the recipient addresses have either been delivered or bounced,
+handling of the message is complete. The spool files and message log are
+deleted, though the message log can optionally be preserved if required.
+</p>
+</li>
+</ul>
+<a name="IX113"></a>
+<a name="IX114"></a>
+<a name="IX115"></a>
+<h2>
+<a name="SECT3.13" href="spec_toc.html#TOC27">
+3.13. Retry mechanism
+</a></h2>
+<p>
+Exim's mechanism for retrying messages that fail to get delivered at the first
+attempt is the queue runner process. You must either run an Exim daemon that
+uses the <i>-q</i> option with a time interval to start queue runners at regular
+intervals, or use some other means (such as <i>cron</i>) to start them. If you do
+not arrange for queue runners to be run, messages that fail temporarily at the
+first attempt will remain on your queue for ever. A queue runner process works
+it way through the queue, one message at a time, trying each delivery that has
+passed its retry time.
+You can run several queue runners at once.
+</p>
+<p>
+Exim uses a set of configured rules to determine when next to retry the failing
+address (see chapter <a href="spec_32.html">32</a>). These rules also specify when Exim should
+give up trying to deliver to the address, at which point it generates a bounce
+message. If no retry rules are set for a particular host, address, and error
+combination, no retries are attempted, and temporary errors are treated as
+permanent.
+</p>
+<a name="IX116"></a>
+<h2>
+<a name="SECT3.14" href="spec_toc.html#TOC28">
+3.14. Temporary delivery failure
+</a></h2>
+<p>
+There are many reasons why a message may not be immediately deliverable to a
+particular address. Failure to connect to a remote machine (because it, or the
+connection to it, is down) is one of the most common. Temporary failures may be
+detected during routing as well as during the transport stage of delivery.
+Local deliveries may be delayed if NFS files are unavailable, or if a mailbox
+is on a file system where the user is over quota. Exim can be configured to
+impose its own quotas on local mailboxes; where system quotas are set they will
+also apply.
+</p>
+<p>
+<a name="IX117"></a>
+If a host is unreachable for a period of time, a number of messages may be
+waiting for it by the time it recovers, and sending them in a single SMTP
+connection is clearly beneficial. Whenever a delivery to a remote host is
+deferred, 
+Exim makes a note in its hints database, and whenever a successful
+SMTP delivery has happened, it looks to see if any other messages are waiting
+for the same host. If any are found, they are sent over the same SMTP
+connection, subject to a configuration limit as to the maximum number in any
+one connection.
+</p>
+<a name="IX118"></a>
+<a name="IX119"></a>
+<h2>
+<a name="SECT3.15" href="spec_toc.html#TOC29">
+3.15. Permanent delivery failure
+</a></h2>
+<p>
+When a message cannot be delivered to some or all of its intended recipients, a
+bounce message is generated. Temporary delivery failures turn into permanent
+errors when their timeout expires. All the addresses that fail in a given
+delivery attempt are listed in a single message. If the original message has
+many recipients, it is possible for some addresses to fail in one delivery
+attempt and others to fail subsequently, giving rise to more than one bounce
+message. The wording of bounce messages can be customized by the administrator.
+See chapter <a href="spec_41.html">41</a> for details.
+<a name="IX120"></a>
+</p>
+<p>
+Bounce messages contain an <i>X-Failed-Recipients:</i> header line that lists the
+failed addresses, for the benefit of programs that try to analyse such messages
+automatically.
+<a name="IX121"></a>
+</p>
+<p>
+A bounce message is normally sent to the sender of the original message, as
+obtained from the message's envelope. For incoming SMTP messages, this is the
+address given in the <font size=-1>MAIL</font> command. However, when an address is
+expanded via a forward or alias file, an alternative address can be specified
+for delivery failures of the generated addresses. For a mailing list expansion
+(see section <a href="spec_42.html#SECT42.2">42.2</a>) it is common to direct bounce messages to the
+manager of the list.
+</p>
+<a name="IX122"></a>
+<h2>
+<a name="SECT3.16" href="spec_toc.html#TOC30">
+3.16. Failures to deliver bounce messages
+</a></h2>
+<p>
+If a bounce message (either locally generated or received from a remote host)
+itself suffers a permanent delivery failure, the message is left on the queue,
+but it is frozen, awaiting the attention of an administrator. There are options
+which can be used to make Exim discard such failed messages, or to keep them
+for only a short time (see <tt>timeout&#095;frozen&#095;after</tt> and
+<tt>ignore&#095;bounce&#095;errors&#095;after</tt>).
+<hr>
+</p>
+<font size=2>
+<a href="spec_2.html">Previous</a>&nbsp;&nbsp;<a href="spec_4.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

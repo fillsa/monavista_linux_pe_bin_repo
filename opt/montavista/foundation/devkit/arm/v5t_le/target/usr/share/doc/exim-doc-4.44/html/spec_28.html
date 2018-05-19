@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 28</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_27.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_29.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2057"></a>
+<a name="IX2058"></a>
+<a name="IX2059"></a>
+<a name="IX2060"></a>
+<h1>
+<a name="CHAP28" href="spec_toc.html#TOC209">
+28. The lmtp transport
+</a></h1>
+<p>
+The <b>lmtp</b> transport runs the LMTP protocol (RFC 2033) over a pipe to a
+specified command
+or by interacting with a Unix domain socket.
+This transport is something of a cross between the <b>pipe</b> and <b>smtp</b>
+transports. Exim also has support for using LMTP over TCP/IP; this is
+implemented as an option for the <b>smtp</b> transport. Because LMTP is expected
+to be of minority interest, the default build-time configure in <i>src/EDITME</i>
+has it commented out. You need to ensure that
+<pre>
+&nbsp;&nbsp;TRANSPORT_LMTP=yes
+</pre>
+</p>
+<p>
+is present in your <i>Local/Makefile</i> in order to have the <b>lmtp</b> transport
+included in the Exim binary.
+</p>
+<p>
+The private options of the <b>lmtp</b> transport are as follows:
+<a name="IX2061"></a>
+<hr></p>
+<a name="IX2062"></a>
+<h3>batch_id</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+See the description of local delivery batching in chapter <a href="spec_25.html">25</a>.
+<hr></p>
+<a name="IX2063"></a>
+<h3>batch_max</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 1<br>
+<p>
+This limits the number of addresses that can be handled in a single delivery.
+Most LMTP servers can handle several addresses at once, so it is normally a
+good idea to increase this value. See the description of local delivery
+batching in chapter <a href="spec_25.html">25</a>.
+<hr></p>
+<a name="IX2064"></a>
+<h3>command</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option must be set if <tt>socket</tt> is not set.
+The string is a command which is run in a separate process. It is split up into
+a command name and list of arguments, each of which is separately expanded (so
+expansion cannot change the number of arguments). The command is run directly,
+not via a shell. The message is passed to the new process using the standard
+input and output to operate the LMTP protocol.
+<hr></p>
+<a name="IX2065"></a>
+<h3>socket</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option must be set if <tt>command</tt> is not set. The result of expansion must 
+be the name of a Unix domain socket. The transport connects to the socket and 
+delivers the message to it using the LMTP protocol.
+<hr></p>
+<a name="IX2066"></a>
+<h3>timeout</h3>
+<i>Type:</i>&nbsp; time<br><i>Default:</i>&nbsp; 5m<br>
+<p>
+The transport is aborted if the created process 
+or Unix domain socket
+does not respond to LMTP commands or message input within this timeout.
+<hr><br>
+</p>
+<p>
+Here is an example of a typical LMTP transport:
+<pre>
+&nbsp;&nbsp;lmtp:
+&nbsp;&nbsp;  driver = lmtp
+&nbsp;&nbsp;  command = /some/local/lmtp/delivery/program
+&nbsp;&nbsp;  batch_max = 20
+&nbsp;&nbsp;  user = exim
+</pre>
+</p>
+<p>
+This delivers up to 20 addresses at a time, in a mixture of domains if
+necessary, running as the user <i>exim</i>.
+<hr>
+</p>
+<font size=2>
+<a href="spec_27.html">Previous</a>&nbsp;&nbsp;<a href="spec_29.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

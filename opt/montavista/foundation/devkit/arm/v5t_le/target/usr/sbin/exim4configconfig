@@ -1,0 +1,750 @@
+#!/bin/sh
+set -e
+
+alias stripwhitespace="sed -e 's/^[[:blank:]]*//' -e 's/[[:blank:]]*$//'"
+
+installeddebconfversion=`dpkg -s debconf | sed -ne '/^Version/s/^Version: //p'`
+if [ "reconfigure" != "$1" ] && \
+	dpkg --compare-versions "${installeddebconfversion}" "le" "1.4" && \
+	[ "$exim4postinstisrunning" != "true" ] ; then
+	echo "Installed debconf version is broken. Aborting preconfigure." 1>&2
+	exit 0
+fi
+
+. /usr/share/debconf/confmodule
+
+[ -n "$EX4DEBUG" ] && set -x
+
+convert_to_long ()
+{
+	case "$1" in
+	internet)
+		echo -n "internet site; mail is sent and received directly using SMTP"
+		;;
+	smarthost)
+		echo -n "mail sent by smarthost; received via SMTP or fetchmail"
+		;;
+	satellite)
+		echo -n "mail sent by smarthost; no local mail"
+		;;
+	local)
+		echo -n "local delivery only; not on a network"
+		;;
+	exim3manual)
+		echo -n "manually convert from handcrafted Exim v3 configuration"
+		;;
+	none)
+		echo -n "no configuration at this time"
+		;;
+	esac
+}
+convert_to_short ()
+{
+	case "$1" in
+	"internet site; mail is sent and received directly using SMTP")
+		echo -n "internet"
+		;;
+	"mail sent by smarthost; received via SMTP or fetchmail")
+		echo -n	"smarthost"
+		;;
+	"mail sent by smarthost; no local mail")
+		echo -n	"satellite"
+		;;
+	"local delivery only; not on a network")
+		echo -n	"local"
+		;;
+	"manually convert from handcrafted Exim v3 configuration")
+		echo -n	"exim3manual"
+		;;
+	"no configuration at this time")
+		echo -n	"none"
+		;;
+	esac
+}
+
+# store environment variables in debconf db.
+storevar2db() {
+	dc_eximconfig_configtype=`echo "${dc_eximconfig_configtype}" | stripwhitespace`
+	dc_local_interfaces=`echo "${dc_local_interfaces}" | stripwhitespace`
+	dc_other_hostnames=`echo "${dc_other_hostnames}" | stripwhitespace`
+	dc_readhost=`echo "${dc_readhost}" | stripwhitespace`
+	dc_relay_domains=`echo "${dc_relay_domains}" | stripwhitespace`
+	dc_relay_nets=`echo "${dc_relay_nets}" | stripwhitespace`
+	dc_smarthost=`echo "${dc_smarthost}" | stripwhitespace`
+	dc_minimaldns=`echo "${dc_minimaldns}" | stripwhitespace`
+	dc_use_split_config=`echo "${dc_use_split_config}" | stripwhitespace`
+	dc_hide_mailname=`echo "${dc_hide_mailname}" | stripwhitespace`
+	# store externally changed values to debconf.db
+	db_set exim4/dc_eximconfig_configtype \
+		"`convert_to_long ${dc_eximconfig_configtype}`"
+	db_set exim4/dc_local_interfaces "${dc_local_interfaces}"
+	db_set exim4/dc_other_hostnames "${dc_other_hostnames}"
+	db_set exim4/dc_readhost "${dc_readhost}"
+	db_set exim4/dc_relay_domains "${dc_relay_domains}"
+	db_set exim4/dc_relay_nets "${dc_relay_nets}"
+	db_set exim4/dc_smarthost "${dc_smarthost}"
+	if [ "x${dc_minimaldns}" != "x" ]; then
+		db_set exim4/dc_minimaldns "${dc_minimaldns}"
+	fi
+	db_set exim4/use_split_config "${dc_use_split_config}"
+	db_set exim4/hide_mailname "${dc_hide_mailname}"
+	db_fset "exim4/dc_other_hostnames" mailname "${dc_mailname_in_oh}"
+}
+
+# ipv6: replace double colons in colon-separated host lists with umlaut-o
+# replace ':' with ' : ', add leading and ending whitespace.
+# return empty string if custom delimiter was used:
+	#    local_domains = <; 172.16.0.0/12; 3ffe:ffff:836f::/48
+# e.g: 'localhost : 172.16.0.1 :3ffe::ffff::836f::::: foo.org'
+#       ===> ' localhost : 172.16.0.1 : 3ffeöffffö836föö : foo.org '
+alias coloncolon2oe="sed -e 's/[[:blank:]]*//g' -e '/^</d' -e 's/:::::/:öö/g' -e 's/::::/öö/g' -e 's/:::/:ö/g' -e 's/::/ö/g' -e 's/:/ : /g' -e 's/^/ /' -e 's/$/ /'"
+
+# try to parse exim3 configuration file - works only if it was generated
+# with eximconfig.
+parseexim3() {
+	dc_mailname=`head -n 1 /etc/mailname | stripwhitespace` || true
+
+	# get the .... entries from
+	# host_accept_relay = 127.0.0.1 : ::::1 : ......
+	# if they exist, ie. parse list, and remove "127.0.0.1", "::::1"
+	# and "localhost" from it.
+	#
+	dc_relay_nets=`cat $1 | grep -h '^host_accept_relay[[:blank:]]*=' | sed -e 's/^host_accept_relay[[:blank:]]*=//' | coloncolon2oe | sed -e 's/ 127\.0\.0\\.1 //g' -e 's/ localhost //g' -e 's/ öö1//g' -e 's/[[:blank:]]*//g' -e 's/::/:/g' -e 's/^://' -e 's/:$//' -e 's/ö/::/g'`
+
+	# 'local_domains = $colonhostnames', including mailname and "localhost"
+	#
+	dc_other_hostnames=`cat $1 | grep -h '^local_domains[[:blank:]]*=' | sed -e 's/^local_domains[[:blank:]]*=//' | coloncolon2oe | sed -e 's/ localhost //g' -e "s/ ${dc_mailname} //g" -e 's/[[:blank:]]*//g' -e 's/::/:/g' -e 's/^://' -e 's/:$//' -e 's/ö/::/g'`
+
+	# relay_domains = some.domain
+	dc_relay_domains=`cat $1 | grep -h '^relay_domains = ' | sed -e 's/^relay_domains[[:blank:]]*=[[:blank:]]*//' -e 's/[[:blank:]]*$//'`
+
+	# lookuphost router exist ---> dc_eximconfig_configtype=internet
+	#
+	if cat $1 | grep -h -A2 '^lookuphost:' | \
+		grep -h -A1 '[[:blank:]]*driver = lookuphost' | \
+		grep -h -q '[[:blank:]]*transport = remote_smtp' ; then
+		dc_eximconfig_configtype=internet
+	else
+		# smart:-director exists ---> dc_eximconfig_configtype=satellite
+		#
+		# Later we need the new_address directive to find dc_readhost.
+		# ' || true' is required for "set -e"
+		dc_readhost=`cat $1 | grep -h -A2 '^smart:' | grep -h -A1 '^[[:blank:]]*driver = smartuser' | grep -h '^[[:blank:]]*new_address' || true`
+
+		# smarthost router exists --> dc_eximconfig_configtype is satellite or smarthost
+		#
+		# we need the route_list directive to find dc_smarthost
+		# ' || true' is required for "set -e"
+		dc_smarthost=`cat $1 | grep -h -A3 '^smarthost:' | grep -h -A2 '[[:blank:]]*driver = domainlist' | grep -h -A1 '^[[:blank:]]*transport = remote_smtp' | grep -h '^[[:blank:]]*route_list = "' || true`
+
+		if [ ! -z "${dc_readhost}" ] ; then
+			dc_eximconfig_configtype=satellite
+		elif [ ! -z "${dc_smarthost}" ] ; then
+			dc_eximconfig_configtype=smarthost
+		elif ! cat "$1" | grep -h -q '^remote_smtp:'; then
+			# dc_eximconfig_configtype=local has no remote_smtp transport.
+			dc_eximconfig_configtype=local
+		else
+			# handcrafted config. We probably misparsed, reset values
+			# and exit.
+			dc_eximconfig_configtype=''
+			dc_local_interfaces='notset'
+			dc_other_hostnames=''
+			dc_readhost=''
+			dc_relay_domains=''
+			dc_relay_nets=''
+			dc_smarthost=''
+			dc_hide_mailname=''
+			return 1
+		fi
+	fi
+
+	case ${dc_eximconfig_configtype} in
+		internet|local)
+			#paranoia
+			dc_readhost=''
+			dc_smarthost=''
+			dc_hide_mailname='false'
+			;;
+		satellite)
+			#  new_address = ${local_part}@$readhost
+			dc_readhost=`echo "${dc_readhost}" | sed -e 's/^.*@//' -e 's/[[:blank:]]*$//'`
+			#  route_list = "* $smtphost bydns_a"
+			dc_smarthost=`echo "${dc_smarthost}" | \
+				sed -e 's/^ *route_list = "\* //' -e 's/ bydns_a"//' -e 's/[[:blank:]]*$//'`
+			dc_hide_mailname='true'
+			dc_relay_domains=''
+			;;
+		smarthost)
+			#  route_list = "* $smtphost bydns_a"
+			dc_smarthost=`echo "${dc_smarthost}" | \
+				sed -e 's/^ *route_list = "\* //' -e 's/ bydns_a"//' -e 's/[[:blank:]]*$//'`
+			dc_hide_mailname='false'
+			dc_relay_domains=''
+			;;
+	esac
+}
+
+##########
+mailname2otherhostnames() {
+	# u-ex4.conf no longer includes mailname in local domains,
+	# insert it once into other_hostnames.
+	# The debconf script might run twice, we need to store the result
+	# in a file to pass it to postinst..
+	[ -d /var/lib/exim4 ] || \
+		install -d -oroot -groot -m755 /var/lib/exim4
+	dc_mailname=`head -n 1 /etc/mailname | stripwhitespace` || true
+	if [ -z "${dc_other_hostnames}" ] ; then
+		dc_other_hostnames="${dc_mailname}"
+	else
+		dc_other_hostnames=`echo "${dc_other_hostnames}" | stripwhitespace`:${dc_mailname}
+	fi
+	echo dc_other_hostnames="'""${dc_other_hostnames}""'" > \
+		/var/lib/exim4/addmailname2oh
+	db_fset "exim4/dc_other_hostnames" mailname true
+	dc_mailname_in_oh="true"
+}
+mailname2otherhostnamesdcloop() {
+# append mailname to other_hostnames, once. on fresh installations.
+	if [ "${dc_mailname_in_oh}" != "true" ] ;then
+		db_get exim4/mailname
+		dc_mailname=`echo "$RET"| stripwhitespace`
+		db_get "exim4/dc_other_hostnames"
+		dc_other_hostnames=`echo "$RET"| stripwhitespace`
+		if [ -z "${dc_other_hostnames}" ] ; then
+			dc_other_hostnames="${dc_mailname}"
+		else
+			dc_other_hostnames="${dc_other_hostnames}:${dc_mailname}"
+		fi
+		db_set exim4/dc_other_hostnames "${dc_other_hostnames}"
+		db_fset "exim4/dc_other_hostnames" mailname true
+		dc_mailname_in_oh="true"
+	fi
+}
+##########
+
+
+# set to dummy value, so we can differ between unset vs (seen or set outside debconf)
+dc_local_interfaces=notset
+
+# SETTITLE is only supported since debconf 1.3.22
+if command -v db_settitle > /dev/null 2>&1; then
+	db_settitle exim4/exim4-config-title 2>/dev/null || true
+fi
+db_get exim4/dc_eximconfig_configtype
+dc_eximconfig_configtype=`convert_to_short "$RET"`
+db_get exim4/use_split_config
+dc_use_split_config="$RET"
+# Did we append mailname to other_hostnames yet?
+db_fget "exim4/dc_other_hostnames" mailname || true
+dc_mailname_in_oh="$RET"
+
+if [ -e /etc/exim4/update-exim4.conf.conf ] ; then
+	. /etc/exim4/update-exim4.conf.conf || true
+	# on upgrades _once_ add mailname to other_hostnames
+	if [ -n "$2" ] && [ "$1" = "configure" ] && \
+		[ "${dc_mailname_in_oh}" != "true" ] ; then
+			mailname2otherhostnames
+	fi
+	# set defaults using these values
+	storevar2db
+else
+	# If there are no debconf answers (running first time) and we are
+	# making a cross upgrade from exim3, try to parse its config file
+	# to seed debconf db.
+	if [ "x${dc_eximconfig_configtype}" = "x" ] && [ -r /etc/exim/exim.conf ] ; then
+		# parse old configfile
+		#
+		# first do unfolding of lines continued with backslash, by:
+		# 1. remove comment lines
+		# 2. remove blank lines
+		# 3. remove "\<optional space><newline><optional space>"
+		exim3confunfolded=`tempfile -p EX3`
+		perl -e \
+		'undef $/;
+		while (<>) {
+			s/^[[:space:]]*#[^\n]*\n//mg;
+			s/^\n//mg;
+			s/\\[[:space:]]*\n[[:space:]]*//g;
+		} continue {
+			print or die "blah";
+		}' < /etc/exim/exim.conf > "$exim3confunfolded"
+		if parseexim3 "$exim3confunfolded" ; then
+			# set defaults using these values
+			storevar2db
+		fi
+		rm -f "$exim3confunfolded"
+	fi
+fi
+
+## set up default values, we cannot do this in templates file because
+## config script is called two times before update-exim4.conf.conf exists.
+[ "x${dc_eximconfig_configtype}" = "x" ] && \
+	dc_eximconfig_configtype="local" && \
+	db_set exim4/dc_eximconfig_configtype "`convert_to_long ${dc_eximconfig_configtype}`"
+
+
+if [ -e /etc/mailname ] ; then
+	dc_mailname=`head -n 1 /etc/mailname | stripwhitespace` || true
+	# store values
+	db_set exim4/mailname "${dc_mailname}"
+else
+	db_get exim4/mailname
+	dc_mailname="$RET"
+fi
+
+#Set default mailname
+if [ "x${dc_mailname}" = "x" ] ; then
+	dc_mailname=`hostname --fqdn` || dc_mailname=`hostname` && \
+	dc_mailname=`echo "${dc_mailname}" | stripwhitespace` && \
+	db_set exim4/mailname "${dc_mailname}"
+fi
+fqdn=`hostname --fqdn` || fqdn=''
+db_subst exim4/dc_other_hostnames fqdn "$fqdn"
+
+# initialize env-vars from debconf_db, if they haven't been set yet either by
+# parseexim3() or by sourcing /etc/exim4/update-exim4.conf.conf
+if [ "x${dc_readhost}" = "x" ] ; then
+	db_get exim4/dc_readhost
+	dc_readhost="$RET"
+fi
+if [ "x${dc_smarthost}" = "x" ] ; then
+	db_get exim4/dc_smarthost
+	dc_smarthost="$RET"
+fi
+# Tricky! An empty value for this option is significant, therefore both
+# envvar and debconf-value default to "nonset"  instead of "", the
+# following line will only change then envvars value if the config-script
+# runs the second time without existing /etc/exim4/update-exim4.conf.conf or
+# if the debconf-db has been preseeded by other means.
+if [ "x${dc_local_interfaces}" = "xnotset" ]; then
+	db_get exim4/dc_local_interfaces
+	dc_local_interfaces="$RET"
+fi
+if [ "x${dc_minimaldns}" = "x" ] ; then
+	db_get exim4/dc_minimaldns
+	dc_minimaldns="$RET"
+fi
+
+if [ "x${dc_use_split_config}" = "x" ] ; then
+	if [ "x${2}" = "x" ] ; then
+		# fresh installation
+		db_set exim4/use_split_config false
+		dc_use_split_config="false"
+	else
+		db_set exim4/use_split_config true
+		dc_use_split_config="true"
+	fi
+fi
+
+db_version 2.0
+
+db_capb backup
+# initial state
+STATE=1
+# last valid state
+STATELIMIT=51
+EX4QUESTION=""
+while [ "$STATE" != 0 ] && [ "$STATE" -le "$STATELIMIT" ]; do
+	case "$STATE" in
+		1)
+		EX4QUESTION="exim4/use_split_config"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		db_input medium "$EX4QUESTION" || true
+		;;
+
+		2)
+		EX4QUESTION="exim4/dc_eximconfig_configtype"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		db_input critical "$EX4QUESTION" || true
+		;;
+		3)
+		EX4QUESTION=""
+		db_get exim4/dc_eximconfig_configtype
+		dc_eximconfig_configtype=`convert_to_short "$RET"`
+		PREVSTATE=$(($STATE - 1))
+		case "${dc_eximconfig_configtype}" in
+			none)
+			# dont ask more questions
+			#NEXTSTATE=$(($STATELIMIT + 1))
+			NEXTSTATE=4
+			;;
+			internet)
+			NEXTSTATE=8
+			;;
+			smarthost)
+			NEXTSTATE=20
+			;;
+			satellite)
+			NEXTSTATE=30
+			;;
+			local)
+			NEXTSTATE=40
+			;;
+			exim3manual)
+			NEXTSTATE=50
+			;;
+			*)
+			# Should not happen. Break loop
+			NEXTSTATE=$(($STATELIMIT + 1))
+			;;
+		esac
+		;;
+
+		4)
+		# show additional info for type=none
+		EX4QUESTION="exim4/no_config"
+		PREVSTATE=2
+		NEXTSTATE=$(($STATE + 1))
+		# same priority as configtype because of danger of loop?
+		db_input critical "$EX4QUESTION" || true
+		;;
+		5)
+		EX4QUESTION=""
+		PREVSTATE=2
+		db_get exim4/no_config || true
+		if [ "$RET" = "false" ]; then
+			NEXTSTATE=2
+		else
+			#break loop
+			NEXTSTATE=$(($STATELIMIT + 1))
+		fi
+		;;
+
+		8)
+		# internet site
+		EX4QUESTION="exim4/mailname"
+		db_input medium "$EX4QUESTION" || true
+		PREVSTATE=2
+		NEXTSTATE=$(($STATE + 1))
+		;;
+		9)
+		EX4QUESTION="exim4/dc_local_interfaces"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		if [ "x${dc_local_interfaces}" = "xnotset" ] ; then
+			dc_local_interfaces=''
+			db_set exim4/dc_local_interfaces ''
+		fi
+		db_input medium "$EX4QUESTION" || true
+		;;
+		10)
+		EX4QUESTION="exim4/dc_other_hostnames"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		mailname2otherhostnamesdcloop
+		db_input medium "$EX4QUESTION" || true
+		;;
+		11)
+		EX4QUESTION="exim4/dc_relay_domains"
+		db_input medium "$EX4QUESTION" || true
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		;;
+		12)
+		EX4QUESTION="exim4/dc_relay_nets"
+		db_input medium "$EX4QUESTION" || true
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		;;
+		13)
+		EX4QUESTION="exim4/dc_minimaldns"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATELIMIT + 1))
+		db_input low "$EX4QUESTION" || true
+		;;
+		
+		20)
+		# internet site with smarthost
+		EX4QUESTION="exim4/mailname"
+		db_input medium "$EX4QUESTION" || true
+		PREVSTATE=2
+		NEXTSTATE=$(($STATE + 1))
+		;;
+		21)
+		EX4QUESTION="exim4/dc_local_interfaces"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		if [ "x${dc_local_interfaces}" = "xnotset" ] ; then
+			dc_local_interfaces='127.0.0.1'
+			db_set exim4/dc_local_interfaces '127.0.0.1'
+		fi
+		db_input medium "$EX4QUESTION" || true
+		;;
+		22)
+		EX4QUESTION="exim4/dc_other_hostnames"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		mailname2otherhostnamesdcloop
+		db_input medium "$EX4QUESTION" || true
+		;;
+		23)
+		EX4QUESTION="exim4/dc_relay_nets"
+		db_input medium "$EX4QUESTION" || true
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		;;
+		24)
+		EX4QUESTION="exim4/dc_smarthost"
+		if [ "x${dc_smarthost}" = "x" ] ; then
+			# default to mail.mailname
+			dc_smarthost="mail.${dc_mailname}"
+			db_set exim4/dc_smarthost "${dc_smarthost}"
+		fi
+		db_input high "$EX4QUESTION" || true
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		;;
+		25)
+		EX4QUESTION="exim4/hide_mailname"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		db_get exim4/mailname || true
+		dc_mailname="$RET"
+		db_get exim4/dc_other_hostnames || true
+		dc_other_hostnames="$RET"
+		db_subst exim4/hide_mailname mailname ${dc_mailname}
+		db_subst exim4/hide_mailname dc_other_hostnames \
+			${dc_other_hostnames}
+		if [ "x${dc_hide_mailname}" = "x" ] ; then
+			dc_hide_mailname='false'
+			db_set exim4/hide_mailname "${dc_hide_mailname}"
+		fi
+		db_input medium "$EX4QUESTION" || true
+		;;
+		26)
+		EX4QUESTION="exim4/dc_readhost"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		db_get exim4/hide_mailname
+		dc_hide_mailname="$RET"
+		if [ "${dc_hide_mailname}" = "true" ];then
+			if [ "x${dc_readhost}" = "x" ] ; then
+				# default to mailname
+				dc_readhost="${dc_mailname}"
+				db_set exim4/dc_readhost "${dc_readhost}"
+			fi
+			db_input medium "$EX4QUESTION" || true
+		else
+			EX4QUESTION=""
+		fi
+		;;
+		27)
+		EX4QUESTION="exim4/dc_minimaldns"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATELIMIT + 1))
+		db_input low "$EX4QUESTION" || true
+		;;
+		
+		30)
+		# satellite
+		EX4QUESTION="exim4/mailname"
+		db_input medium "$EX4QUESTION" || true
+		PREVSTATE=2
+		NEXTSTATE=$(($STATE + 1))
+		;;
+		31)
+		EX4QUESTION="exim4/dc_local_interfaces"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		if [ "x${dc_local_interfaces}" = "xnotset" ] ; then
+			dc_local_interfaces='127.0.0.1'
+			db_set exim4/dc_local_interfaces '127.0.0.1'
+		fi
+		db_input medium "$EX4QUESTION" || true
+		;;
+		32)
+		EX4QUESTION="exim4/dc_other_hostnames"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		mailname2otherhostnamesdcloop
+		db_input medium "$EX4QUESTION" || true
+		;;
+		33)
+		EX4QUESTION="exim4/hide_mailname"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		db_get exim4/mailname || true
+		dc_mailname="$RET"
+		db_get exim4/dc_other_hostnames || true
+		dc_other_hostnames="$RET"
+		db_subst exim4/hide_mailname mailname ${dc_mailname}
+		db_subst exim4/hide_mailname dc_other_hostnames \
+			${dc_other_hostnames}
+		if [ "x${dc_hide_mailname}" = "x" ] ; then
+			dc_hide_mailname='true'
+			db_set exim4/hide_mailname "${dc_hide_mailname}"
+		fi
+		db_input low "$EX4QUESTION" || true
+		;;
+		34)
+		EX4QUESTION="exim4/dc_readhost"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		db_get exim4/hide_mailname
+		dc_hide_mailname="$RET"
+		if [ "${dc_hide_mailname}" = "true" ];then
+			if [ "x${dc_readhost}" = "x" ] ; then
+				# default to domain of mailname
+				dc_readhost="${dc_mailname}"
+				db_set exim4/dc_readhost "${dc_readhost}"
+			fi
+			db_input high "$EX4QUESTION" || true
+		else
+			EX4QUESTION=""
+		fi
+		;;
+		35)
+		EX4QUESTION="exim4/dc_smarthost"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		db_get exim4/dc_readhost
+		dc_readhost="$RET"
+		if [ "x${dc_smarthost}" = "x" ] ; then
+			# default to read_host
+			dc_smarthost="${dc_readhost}"
+			db_set exim4/dc_smarthost "${dc_smarthost}"
+		fi
+		db_input high "$EX4QUESTION" || true
+		;;
+		36)
+		EX4QUESTION=""
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		# satellite-system! Only ask for relay_nets if they are
+		# nonempty - we cannot distinguish whether they were set outside debconf
+		# or whether the user switched dc_eximconfig_configtype
+		db_get exim4/dc_relay_nets || true
+		dc_relay_nets="$RET"
+		if [ "x${dc_relay_nets}" != "x" ] ; then
+			db_input medium exim4/dc_relay_nets || true
+			NEXTSTATE=$(($STATE + 1))
+		fi
+		;;	
+		37)
+		EX4QUESTION="exim4/dc_minimaldns"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATELIMIT + 1))
+		db_input low "$EX4QUESTION" || true
+		;;
+		
+		40)
+		# local mail only
+		EX4QUESTION="exim4/mailname"
+		db_input medium "$EX4QUESTION" || true
+		PREVSTATE=2
+		NEXTSTATE=$(($STATE + 1))
+		;;
+		41)
+		EX4QUESTION=""
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		if [ "x${dc_local_interfaces}" = "xnotset" ] ; then
+			dc_local_interfaces='127.0.0.1'
+			db_set exim4/dc_local_interfaces '127.0.0.1'
+		fi
+		db_input medium exim4/dc_local_interfaces || true
+		;;
+
+		42)
+		EX4QUESTION="exim4/dc_other_hostnames"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		mailname2otherhostnamesdcloop
+		db_input medium "$EX4QUESTION" || true
+		;;
+		
+		43)
+		EX4QUESTION=""
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATE + 1))
+		# local mail only -system! Only ask for relay_nets/relay_domains if they are
+		# nonempty - we cannot distinguish whether they were set outside debconf
+		# or whether the user switched dc_eximconfig_configtype
+		db_get exim4/dc_relay_nets || true
+		dc_relay_nets="$RET"
+		db_get exim4/dc_relay_domains || true
+		dc_relay_domains="$RET"
+		
+		if [ "x${dc_relay_nets}" != "x" ] ; then
+			db_input medium exim4/dc_relay_nets || true
+		fi
+		if [ "x${dc_relay_domains}" != "x" ] ; then
+			db_input medium exim4/dc_relay_domains || true
+		fi
+		;;	
+		44)
+		EX4QUESTION="exim4/dc_minimaldns"
+		PREVSTATE=$(($STATE - 1))
+		NEXTSTATE=$(($STATELIMIT + 1))
+		db_input low "$EX4QUESTION" || true
+		;;
+		50)
+		#MANUAL upgrade fom exim3
+		EX4QUESTION="exim4/exim3_upgrade"
+		PREVSTATE=2
+		NEXTSTATE=$(($STATE + 1))
+		# same priority as configtype because of danger of loop?
+		db_input critical "$EX4QUESTION" || true
+		;;
+		51)
+		EX4QUESTION=""
+		PREVSTATE=2
+		db_get exim4/exim3_upgrade || true
+		if [ "$RET" = "false" ]; then
+			NEXTSTATE=1
+		else
+			#break loop
+			NEXTSTATE=$(($STATELIMIT + 1))
+		fi
+		;;
+	esac
+	if db_go; then
+		STATE=$NEXTSTATE
+	else
+		STATE=$PREVSTATE
+	fi
+done
+if  [ "$STATE" = 0 ] ; then
+	# User pressed back on the first question, go back to previous
+	# package if run by base-config 2.0. #222773.
+	exit 30
+fi
+
+# make sure dc_local_interfaces is set to sane value
+if [ "x${dc_local_interfaces}" = "xnotset" ] ; then
+	dc_local_interfaces=''
+	db_set exim4/dc_local_interfaces ''
+fi
+
+if [ ! -e /etc/aliases ] || \
+	! grep -q '^root:[[:space:]]*[[:alnum:]]' /etc/aliases ; then
+	db_get exim4/dc_postmaster
+	if [ -z "$RET" ] && db_get passwd/username; then
+		if [ "$dc_eximconfig_configtype" = "satellite" ]; then
+			db_set exim4/dc_postmaster "real-${RET}"
+		else
+			db_set exim4/dc_postmaster "${RET}"
+		fi
+	fi
+	db_input high exim4/dc_postmaster || true
+	db_go || true
+fi
+
+db_get exim4/dc_postmaster || true
+dc_postmaster=`echo "$RET" | stripwhitespace`
+
+# if [ "x${dc_eximconfig_configtype}" = "xsatellite" ] || [ "x${dc_eximconfig_configtype}" = "xlocal" ] ; then
+# 	# reset dc_relay_domains dc_relay_nets and dc_other_hostnames
+# 	db_set exim4/dc_relay_domains ""
+# 	db_set exim4/dc_relay_nets ""
+# 	db_set exim4/dc_other_hostnames ""
+# fi
+if [ "$1" = "reconfigure" ] && [ -x /etc/init.d/exim4 ] &&\
+	command -v invoke-rc.d >/dev/null 2>&1; then
+	# use restart instead of reload, as changing listenig interfaces
+	# cannot be done with HUP.
+	invoke-rc.d exim4 restart || true
+fi

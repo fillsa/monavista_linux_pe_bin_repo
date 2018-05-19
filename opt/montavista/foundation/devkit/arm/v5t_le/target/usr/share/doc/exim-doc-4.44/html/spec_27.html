@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 27</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_26.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_28.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2037"></a>
+<a name="IX2038"></a>
+<h1>
+<a name="CHAP27" href="spec_toc.html#TOC207">
+27. The autoreply transport
+</a></h1>
+<p>
+The <b>autoreply</b> transport is not a true transport in that it does not cause
+the message to be transmitted. Instead, it generates another mail message. It
+is usually run as the result of mail filtering, a &#147;vacation&#148; message being the
+standard example. However, it can also be run directly from a router like any
+other transport. To reduce the possibility of message cascades, messages
+created by the <b>autoreply</b> transport always have empty envelope sender
+addresses, like bounce messages.
+</p>
+<p>
+The parameters of the message to be sent can be specified in the configuration
+by options described below. However, these are used only when the address
+passed to the transport does not contain its own reply information. When the
+transport is run as a consequence of a 
+<tt>mail</tt>
+or <tt>vacation</tt> command in a filter file, the parameters of the message are
+supplied by the filter, and passed with the address. The transport's options
+that define the message are then ignored (so they are not usually set in this
+case). The message is specified entirely by the filter or by the transport; it
+is never built from a mixture of options. However, the <tt>file&#095;optional</tt>,
+<tt>mode</tt>, and <tt>return&#095;message</tt> options apply in all cases.
+</p>
+<p>
+<b>Autoreply</b> is implemented as a local transport. When used as a result of a
+command in a user's filter file, <b>autoreply</b> normally runs under the uid and
+gid of the user, and with appropriate current and home directories (see chapter
+<a href="spec_23.html">23</a>).
+</p>
+<p>
+There is a subtle difference between routing a message to a <b>pipe</b> transport
+that generates some text to be returned to the sender, and routing it to an
+<b>autoreply</b> transport. This difference is noticeable only if more than one
+address from the same message is so handled. In the case of a pipe, the
+separate outputs from the different addresses are gathered up and returned to
+the sender in a single message, whereas if <b>autoreply</b> is used, a separate
+message is generated for each address that is passed to it.
+</p>
+<p>
+Non-printing characters are not permitted in the header lines generated for the
+message that <b>autoreply</b> creates, with the exception of newlines that are
+immediately followed by whitespace. If any non-printing characters are found, 
+the transport defers.
+Whether characters with the top bit set count as printing characters or not is
+controlled by the <tt>print&#095;topbitchars</tt> global option.
+</p>
+<p>
+If any of the generic options for manipulating headers (for example,
+<tt>headers&#095;add</tt>) are set on an <b>autoreply</b> transport, they apply to the copy of
+the original message that is included in the generated message when
+<tt>return&#095;message</tt> is set. They do not apply to the generated message itself.
+</p>
+<p>
+If the <b>autoreply</b> transport receives return code 2 from Exim when it submits
+the message, indicating that there were no recipients, it does not treat this
+as an error. This means that autoreplies sent to <tt>$sender&#095;address</tt> when this
+is empty (because the incoming message is a bounce message) do not cause
+problems. They are just discarded.
+</p>
+<a name="IX2039"></a>
+<h2>
+<a name="SECT27.1" href="spec_toc.html#TOC208">
+27.1. Private options for autoreply
+</a></h2>
+<hr><a name="IX2040"></a>
+<h3>bcc</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This specifies the addresses that are to receive &#147;blind carbon copies&#148; of the
+message when the message is specified by the transport.
+<hr></p>
+<a name="IX2041"></a>
+<h3>cc</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This specifies recipients of the message and the contents of the <i>Cc:</i> header
+when the message is specified by the transport.
+<hr></p>
+<a name="IX2042"></a>
+<h3>file</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+The contents of the file are sent as the body of the message when the message
+is specified by the transport. If both <tt>file</tt> and <tt>text</tt> are set, the text
+string comes first.
+<hr></p>
+<a name="IX2043"></a>
+<h3>file_expand</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this is set, the contents of the file named by the <tt>file</tt> option are
+subjected to string expansion as they are added to the message.
+<hr></p>
+<a name="IX2044"></a>
+<h3>file_optional</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, no error is generated if the file named by the <tt>file</tt>
+option or passed with the address does not exist or cannot be read.
+<hr></p>
+<a name="IX2045"></a>
+<h3>from</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This specifies the contents of the <i>From:</i> header when the message is specified
+by the transport.
+<hr></p>
+<a name="IX2046"></a>
+<h3>headers</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This specifies additional RFC 2822 headers that are to be added to the message when
+the message is specified by the transport. Several can be given by using &#147;&#092;n&#148;
+to separate them. There is no check on the format.
+<hr></p>
+<a name="IX2047"></a>
+<h3>log</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option names a file in which a record of every message sent is logged when
+the message is specified by the transport.
+<hr></p>
+<a name="IX2048"></a>
+<h3>mode</h3>
+<i>Type:</i>&nbsp; octal integer<br><i>Default:</i>&nbsp; 0600<br>
+<p>
+If either the log file or the &#147;once&#148; file has to be created, this mode is used.
+<hr></p>
+<a name="IX2049"></a>
+<h3>once</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option names a file or DBM database in which a record of each 
+<i>To:</i> recipient is kept when the message is specified by the transport.
+<b>Note</b>: This does not apply to <i>Cc:</i> or <i>Bcc:</i> recipients.
+If <tt>once&#095;file&#095;size</tt> is not set, a DBM database is used, and it is allowed to
+grow as large as necessary. If a potential recipient is already in the
+database, no message is sent by default. However, if <tt>once&#095;repeat</tt> specifies a
+time greater than zero, the message is sent if that much time has elapsed since
+a message was last sent to this recipient. If <tt>once</tt> is unset, the message is
+always sent.
+</p>
+<p>
+If <tt>once&#095;file&#095;size</tt> is set greater than zero, it changes the way Exim
+implements the <tt>once</tt> option. Instead of using a DBM file to record every
+recipient it sends to, it uses a regular file, whose size will never get larger
+than the given value. In the file, it keeps a linear list of recipient
+addresses and times at which they were sent messages. If the file is full when
+a new address needs to be added, the oldest address is dropped. If
+<tt>once&#095;repeat</tt> is not set, this means that a given recipient may receive
+multiple messages, but at unpredictable intervals that depend on the rate of
+turnover of addresses in the file. If <tt>once&#095;repeat</tt> is set, it specifies a
+maximum time between repeats.
+<hr></p>
+<a name="IX2050"></a>
+<h3>once_file_size</h3>
+<i>Type:</i>&nbsp; integer<br><i>Default:</i>&nbsp; 0<br>
+<p>
+See <tt>once</tt> above.
+<hr></p>
+<a name="IX2051"></a>
+<h3>once_repeat</h3>
+<i>Type:</i>&nbsp; time, expanded<br><i>Default:</i>&nbsp; 0s<br>
+<p>
+See <tt>once</tt> above.
+After expansion, the value of this option must be a valid time value.
+<hr></p>
+<a name="IX2052"></a>
+<h3>reply_to</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This specifies the contents of the <i>Reply-To:</i> header when the message is
+specified by the transport.
+<hr></p>
+<a name="IX2053"></a>
+<h3>return_message</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this is set, a copy of the original message is returned with the new
+message, subject to the maximum size set in the <tt>return&#095;size&#095;limit</tt> global
+configuration option.
+<hr></p>
+<a name="IX2054"></a>
+<h3>subject</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This specifies the contents of the <i>Subject:</i> header when the message is
+specified by the transport.
+<hr></p>
+<a name="IX2055"></a>
+<h3>text</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This specifies a single string to be used as the body of the message when the
+message is specified by the transport. If both <tt>text</tt> and <tt>file</tt> are set, the
+text comes first.
+<hr></p>
+<a name="IX2056"></a>
+<h3>to</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This specifies recipients of the message and the contents of the <i>To:</i> header
+when the message is specified by the transport.
+<hr><br>
+<hr>
+</p>
+<font size=2>
+<a href="spec_26.html">Previous</a>&nbsp;&nbsp;<a href="spec_28.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

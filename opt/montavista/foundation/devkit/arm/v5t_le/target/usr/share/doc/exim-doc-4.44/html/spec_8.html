@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 8</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_7.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_9.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX609"></a>
+<a name="IX610"></a>
+<h1>
+<a name="CHAP8" href="spec_toc.html#TOC80">
+8. Regular expressions
+</a></h1>
+<p>
+Exim supports the use of regular expressions in many of its options. It
+uses the PCRE regular expression library; this provides regular expression
+matching that is compatible with Perl 5. The syntax and semantics of
+regular expressions is discussed in many Perl reference books, and also in
+Jeffrey Friedl's<A HREF="http://www.oreilly.com/catalog/regex/">
+<em>Mastering Regular Expressions</em></A>
+(O'Reilly, ISBN 0-596-00289-0).
+</p>
+<p>
+The documentation for the syntax and semantics of the regular expressions that 
+are supported by PCRE is included in plain text in the file
+<i>doc/pcrepattern.txt</i> in the Exim distribution, and also in the HTML
+tarbundle of Exim documentation, and as an appendix to the<A HREF="http://www.uit.co.uk/exim-book/">
+Exim book.</A>
+It describes in detail the features of the regular expressions that PCRE
+supports, so no further description is included here. The PCRE functions are
+called from Exim using the default option settings (that is, with no PCRE
+options set), except that the <font size=-1>PCRE&#095;CASELESS</font> option is set when the
+matching is required to be case-insensitive.
+</p>
+<p>
+<font color=green>
+In most cases, when a regular expression is required in an Exim configuration, 
+it has to start with a circumflex, in order to distinguish it from plain text 
+or an &#147;ends with&#148; wildcard. In this example of a configuration setting, the
+second item in the colon-separated list is a regular expression.
+<pre>
+&nbsp;&nbsp;domains = a.b.c : ^\\d{3} : *.y.z : ...
+</pre>
+</p>
+<p>
+The doubling of the backslash is required because of string expansion that
+precedes interpretation &#150; see section <a href="spec_11.html#SECT11.1">11.1</a> for more discussion of
+this issue, and a way of avoiding the need for doubling backslashes. The
+regular expression that is eventually used in this example contains just one
+backslash. The circumflex is included in the regular expression, and has the
+normal effect of &#147;anchoring&#148; it to the start of the string that is being
+matched.
+</p>
+<p>
+There are, however, two cases where a circumflex is not required for the 
+recognition of a regular expression: these are the <tt>match</tt> condition in a
+string expansion, and the <tt>matches</tt> condition in an Exim filter file. In these
+cases, the relevant string is always treated as a regular expression; if it
+does not start with a circumflex, the expression is not anchored, and can match
+anywhere in the subject string.
+</p>
+<p>
+In all cases, if you want a regular expression to match at the end of a string, 
+you must code the &#036; metacharacter to indicate this. For example:
+<pre>
+&nbsp;&nbsp;domains = ^\\d{3}\\.example
+</pre>
+</p>
+<p>
+matches the domain <i>123.example</i>, but it also matches <i>123.example.com</i>. 
+You need to use:
+<pre>
+&nbsp;&nbsp;domains = ^\\d{3}\\.example\$
+</pre>
+</p>
+<p>
+if you want <i>example</i> to be the top-level domain. (The backslash before the
+&#036; is another artefact of string expansion.)
+</font>
+</p>
+<a name="IX611"></a>
+<a name="IX612"></a>
+<a name="IX613"></a>
+<h2>
+<a name="SECT8.1" href="spec_toc.html#TOC81">
+8.1. Testing regular expressions
+</a></h2>
+<p>
+A program called <i>pcretest</i> forms part of the PCRE distribution and is built
+with PCRE during the process of building Exim. It is primarily intended for
+testing PCRE itself, but it can also be used for experimenting with regular
+expressions. After building Exim, the binary can be found in the build
+directory (it is not installed anywhere automatically). There is documentation
+of various options in <i>doc/pcretest.txt</i>, but for simple testing, none are
+needed. This is the output of a sample run of <i>pcretest</i>:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>  re&#062; <tt><b>/^([^&#064;]+)&#064;.+&#092;.(ac|edu)&#092;.(?!kr)[a-z]&#123;2&#125;&#036;/</b></tt></tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>data&#062; <tt><b>x&#064;y.ac.uk</b></tt></tt><br>
+<tt>&nbsp;&nbsp;</tt><tt> 0: x&#064;y.ac.uk</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt> 1: x</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt> 2: ac</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>data&#062; <tt><b>x&#064;y.ac.kr</b></tt></tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>No match</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>data&#062; <tt><b>x&#064;y.edu.com</b></tt></tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>No match</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>data&#062; <tt><b>x&#064;y.edu.co</b></tt></tt><br>
+<tt>&nbsp;&nbsp;</tt><tt> 0: x&#064;y.edu.co</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt> 1: x</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt> 2: edu</tt><br>
+</p>
+<p>
+After the &#147;re&#062;&#148; prompt, a regular expression enclosed in delimiters is
+expected. If this compiles without error, &#147;data&#062;&#148; prompts are given for strings
+against which the expression is matched. An empty data line causes a new
+regular expression to be read. If the match is successful, the captured
+substring values (that is, what would be in the variables <tt>$0</tt>, <tt>$1</tt>, <tt>$2</tt>,
+etc.) are shown. The above example tests for an email address whose domain ends
+with either &#147;ac&#148; or &#147;edu&#148; followed by a two-character top-level domain that is
+not &#147;kr&#148;. The local part is captured in <tt>$1</tt> and the &#147;ac&#148; or &#147;edu&#148; in <tt>$2</tt>.
+<hr>
+</p>
+<font size=2>
+<a href="spec_7.html">Previous</a>&nbsp;&nbsp;<a href="spec_9.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

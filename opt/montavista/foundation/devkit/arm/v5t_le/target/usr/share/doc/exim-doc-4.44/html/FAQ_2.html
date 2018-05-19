@@ -1,0 +1,149 @@
+<html>
+<head>
+<title>The Exim FAQ Section 2</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_1.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_3.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC112">2. ROUTING IN GENERAL</a></h2>
+<p>
+<a name="TOC113" href="FAQ.html#TOC113">Q0201:</a>&nbsp;&nbsp;How can I arrange that messages larger than some limit are handled by
+a special router?
+</p>
+<p>
+<font color="#00BB00">A0201:</font>&nbsp;&nbsp;You can use a <tt>condition</tt> option on the router line this:
+</p>
+<pre>
+   condition = ${if &#62;{$message_size}{100K}{yes}{no}}</pre>
+<p>
+<a name="TOC114" href="FAQ.html#TOC114">Q0202:</a>&nbsp;&nbsp;Can I specify a list of domains to explicitly reject?
+</p>
+<p>
+<font color="#00BB00">A0202:</font>&nbsp;&nbsp;Set up a named domain list containing the domains in the first section
+of the configuration, for example:
+</p>
+<pre>
+   domainlist reject_domains = list:of:domains:to:reject</pre>
+<p>
+You can use this list in an ACL to reject any SMTP recipients in those
+domains. You can also give a customized error message, like this:
+</p>
+<pre>
+   deny message = The domain $domain is no longer supported
+        domains = +reject_domains</pre>
+<p>
+If you also want to reject these domains in messages that are submitted
+from the command line (not using SMTP), you need to set up a router to
+do it, like this:
+</p>
+<pre>
+   reject_domains:
+     driver = redirect
+     domains = +reject_domains
+     allow_fail
+     data = :fail: The domain $domain is no longer supported</pre>
+<p>
+<a name="TOC115" href="FAQ.html#TOC115">Q0203:</a>&nbsp;&nbsp;How can I arrange to do my own qualification of non-fully-qualified
+domains, and then pass them on to the next router?
+</p>
+<p>
+<font color="#00BB00">A0203:</font>&nbsp;&nbsp;If you have some list of domains that you want to qualify, you can do
+this using a redirect router. For example,
+</p>
+<pre>
+   qualify:
+     driver = redirect
+     domains = *.a.b
+     data = ${quote:$local_part}@$domain.c.com</pre>
+<p>
+This adds <tt>.c.com</tt> to any domain that matches <tt>*.a.b</tt>.
+If you want to do this in conjunction with a <b>dnslookup</b> router, the
+<tt>widen_domains</tt> option of that router may be another way of achieving
+what you want.
+</p>
+<p>
+<a name="TOC116" href="FAQ.html#TOC116">Q0204:</a>&nbsp;&nbsp;Every system has a <tt>nobody</tt> account under which httpd etc run. I would
+like to know how to restrict mail which comes from that account to users
+on that host only.
+</p>
+<p>
+<font color="#00BB00">A0204:</font>&nbsp;&nbsp;Set up a first router like this:
+</p>
+<pre>
+   fail_nobody:
+      driver = redirect
+      senders = nobody@your.domain
+      domains = ! +local_domains
+      allow_fail
+      data = :fail: Nobody may not mail off-site</pre>
+<p>
+This assumes you have defined <tt>+local_domains</tt> as in the default
+configuration.
+</p>
+<p>
+<a name="TOC117" href="FAQ.html#TOC117">Q0205:</a>&nbsp;&nbsp;How can I get Exim to deliver to me locally and everyone else at the same
+domain via SMTP to the MX record specified host?
+</p>
+<p>
+<font color="#00BB00">A0205:</font>&nbsp;&nbsp;Create an <b>accept</b> router to pick off the one address and pass it to
+an appropriate transport. Put this router before the one that does MX
+routing:
+</p>
+<pre>
+   me:
+     driver = accept
+     domains = dom.com
+     local_parts = me
+     transport = local_delivery</pre>
+<p>
+In the transport you will have to specify the <tt>user</tt> option. An
+alternative way of doing this is to add a condition to the router that
+does MX lookups to make it skip your address. Subsequent routers can then
+deliver your address locally. You'll need a condition like this:
+</p>
+<pre>
+   condition = \
+     ${if and {{eq{$domain}{dom.com}}{eq{$local_part}{me}}}{no}{yes}}</pre>
+<p>
+<a name="TOC118" href="FAQ.html#TOC118">Q0206:</a>&nbsp;&nbsp;How can I get Exim to deliver certain domains to a different SMTP port
+on my local host?
+</p>
+<p>
+<font color="#00BB00">A0206:</font>&nbsp;&nbsp;You must set up a special <b>smtp</b> transport, where you can specify the
+<tt>port</tt> option, and then set up a router to route the domains to that
+transport. There are two possibilities for specifying the host:
+</p>
+<p>
+(1) &nbsp;If you use a <b>manualroute</b> router, you can specify the local host
+in the router options. You must also set
+</p>
+<pre>
+   self = send</pre>
+<p>
+so that it does not object to sending to the local host.
+</p>
+<p>
+(2) &nbsp;If you use a router that cannot specify hosts (for example, an
+<b>accept</b> router with appropriate conditions), you have to specify
+the host using the <tt>hosts</tt> option of the transport. In this case,
+you must also set <tt>allow_localhost</tt> on the transport.
+</p>
+<p>
+<a name="TOC119" href="FAQ.html#TOC119">Q0207:</a>&nbsp;&nbsp;Why does Exim lower-case the local-part of a non-local domain when
+routing?
+</p>
+<p>
+<font color="#00BB00">A0207:</font>&nbsp;&nbsp;Because <tt>caseful_local_part</tt> is not set (in the default configuration)
+for the <b>dnslookup</b> router. This does not matter because the local
+part takes no part in the routing, and the actual local part that is
+sent out in the RCPT command is always the original local part.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_1.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_3.html">Next</a>
+</body>
+</html>

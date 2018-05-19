@@ -1,0 +1,50 @@
+<html>
+<head>
+<title>The Exim FAQ Section 23</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_22.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_24.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC373">94. BSDI</a></h2>
+<p>
+<a name="TOC374" href="FAQ.html#TOC374">Q9401:</a>&nbsp;&nbsp;On BSDI 4.0, Exim built with Perl support exits with the error message
+</p>
+<pre>
+   ./exim: can't load library 'libperl.so'</pre>
+<p>
+<font color="#00BB00">A9401:</font>&nbsp;&nbsp;You probably compiled perl5 yourself, without looking into
+</p>
+<pre>
+   /usr/src/contrib/perl5/perl5.004_02/hints/bsdos.sh</pre>
+<p>
+first. The problem is that the command
+</p>
+<pre>
+   perl5 -MExtUtils::Embed -e ldopts</pre>
+<p>
+doesn't give you sufficient flags to link something with libperl.
+Since 5.004_02 the <i>hints/bsdos.sh</i> file has changed to adapt to the
+changes between BSDI 3.1 and 4.0, but it is still not entirely right.
+</p>
+<p>
+The solution is, when you compile perl, change the <tt>ccdlflags</tt>
+variable in config.sh to:
+</p>
+<pre>
+   -rdynamic -Wl,-rpath,/usr/local/lib/perl5/5.00502/i386-bsdos/CORE</pre>
+<p>
+(or something similar). Alternatively, you can run <i>./Configure</i> and
+answering the question <i>Any special flags to pass to cc to use dynamic
+loading?</i> with the above line. It is not known what <b>-rdynamic</b> means
+(it's not apparently documented in any man page), but that's what BSDI
+guys did to compile perl5 which comes with BSDI 4.0 distribution.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_22.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_24.html">Next</a>
+</body>
+</html>

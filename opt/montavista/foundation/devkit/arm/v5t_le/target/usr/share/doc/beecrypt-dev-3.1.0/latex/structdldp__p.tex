@@ -1,0 +1,78 @@
+\hypertarget{structdldp__p}{
+\section{dldp\_\-p Struct Reference}
+\label{structdldp__p}\index{dldp_p@{dldp\_\-p}}
+}
+Discrete Logarithm Domain Parameters over a prime field.  
+
+
+{\tt \#include $<$dldp.h$>$}
+
+\subsection*{Data Fields}
+\begin{CompactItemize}
+\item 
+\hyperlink{structmpbarrett}{mpbarrett} \hyperlink{structdldp__p_o0}{p}
+\begin{CompactList}\small\item\em The prime. \item\end{CompactList}\item 
+\hyperlink{structmpbarrett}{mpbarrett} \hyperlink{structdldp__p_o1}{q}
+\begin{CompactList}\small\item\em The cofactor. \item\end{CompactList}\item 
+\hyperlink{structmpnumber}{mpnumber} \hyperlink{structdldp__p_o2}{r}
+\item 
+\hyperlink{structmpnumber}{mpnumber} \hyperlink{structdldp__p_o3}{g}
+\begin{CompactList}\small\item\em The generator. \item\end{CompactList}\item 
+\hyperlink{structmpbarrett}{mpbarrett} \hyperlink{structdldp__p_o4}{n}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Discrete Logarithm Domain Parameters over a prime field. 
+
+For the variables in this structure /f\$p=qr+1/f\$; if /f\$p=2q+1 then r=2/f\$. 
+
+Definition at line 53 of file dldp.h.
+
+\subsection{Field Documentation}
+\hypertarget{structdldp__p_o3}{
+\index{dldp_p@{dldp\_\-p}!g@{g}}
+\index{g@{g}!dldp_p@{dldp\_\-p}}
+\subsubsection[g]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structdldp__p_o3}{dldp\_\-p::g}}}
+\label{structdldp__p_o3}
+
+
+The generator. 
+
+$g$ is either a generator of $\mathds{Z}^{*}_p$, or a generator of a cyclic subgroup $G$ of $\mathds{Z}^{*}_p$ of order $q$. \hypertarget{structdldp__p_o4}{
+\index{dldp_p@{dldp\_\-p}!n@{n}}
+\index{n@{n}!dldp_p@{dldp\_\-p}}
+\subsubsection[n]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structdldp__p_o4}{dldp\_\-p::n}}}
+\label{structdldp__p_o4}
+
+
+$n=p-1=qr$ \hypertarget{structdldp__p_o0}{
+\index{dldp_p@{dldp\_\-p}!p@{p}}
+\index{p@{p}!dldp_p@{dldp\_\-p}}
+\subsubsection[p]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structdldp__p_o0}{dldp\_\-p::p}}}
+\label{structdldp__p_o0}
+
+
+The prime. 
+
+\hypertarget{structdldp__p_o1}{
+\index{dldp_p@{dldp\_\-p}!q@{q}}
+\index{q@{q}!dldp_p@{dldp\_\-p}}
+\subsubsection[q]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structdldp__p_o1}{dldp\_\-p::q}}}
+\label{structdldp__p_o1}
+
+
+The cofactor. 
+
+$q$ is a prime divisor of $p-1$. \hypertarget{structdldp__p_o2}{
+\index{dldp_p@{dldp\_\-p}!r@{r}}
+\index{r@{r}!dldp_p@{dldp\_\-p}}
+\subsubsection[r]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structdldp__p_o2}{dldp\_\-p::r}}}
+\label{structdldp__p_o2}
+
+
+$p=qr+1$ 
+
+The documentation for this struct was generated from the following file:\begin{CompactItemize}
+\item 
+\hyperlink{dldp_8h}{dldp.h}\end{CompactItemize}

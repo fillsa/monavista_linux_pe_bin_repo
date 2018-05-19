@@ -1,0 +1,1662 @@
+<html>
+<head>
+<title>The Exim FAQ Section 0</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_1.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC0">0. GENERAL DEBUGGING</a></h2>
+<p>
+<a name="TOC1" href="FAQ.html#TOC1">Q0001:</a>&nbsp;&nbsp;Exim is crashing. What is wrong?
+</p>
+<p>
+<font color="#00BB00">A0001:</font>&nbsp;&nbsp;Exim should never crash. The author is always keen to know about
+crashes, so that they can be diagnosed and fixed. However, before you
+start sending me email, please check that you are running the latest
+release of Exim, in case the problem has already been fixed. The
+techniques described below can also be useful in trying to pin down
+exactly which circumstances caused the crash and what Exim was trying to
+do at the time. If the crash is reproducable (by a particular message,
+say) keep a copy of that message.
+</p>
+<p>
+<a name="TOC2" href="FAQ.html#TOC2">Q0002:</a>&nbsp;&nbsp;Exim is not working. What is wrong? How can I check what it is doing?
+</p>
+<p>
+<font color="#00BB00">A0002:</font>&nbsp;&nbsp;Exactly how is it not working? Check the more specific questions in the
+other sections of this FAQ. Some general techniques for debugging are:
+</p>
+<p>
+(1) &nbsp;Look for information in Exim's log files. These are in the <i>log</i>
+directory in Exim's spool directory, unless you have configured a
+different path for them. Serious operational problems are reported
+in paniclog.
+</p>
+<p>
+(2) &nbsp;If the problem involves the delivery of one or more messages, try
+forcing a delivery with the <b>-M</b> option and also set the <b>-d</b>
+option, to cause Exim to output debugging information. For example:
+</p>
+<pre>
+   exim -d -M 0z6CXU-0005RR-00</pre>
+<p>
+The output is written to the standard error stream. You need to have
+admin privileges to use <b>-M</b> and <b>-d</b>.
+</p>
+<p>
+(3) &nbsp;If the problem involves incoming SMTP mail, try using the <b>-bh</b>
+option to simulate an incoming connection from a specific host,
+for example:
+</p>
+<pre>
+   exim -bh 10.9.8.7</pre>
+<p>
+This goes through the motions of an SMTP session, without actually
+accepting a message. Information about various policy checks is
+output. You will need to know how to pretend to be an SMTP client.
+</p>
+<p>
+(4) &nbsp;If the problem involves lack of recognition or incorrect handling
+of local addresses, try using the <b>-bt</b> option with debugging turned
+on, to see how Exim is handling the address. For example,
+</p>
+<pre>
+   exim -d -bt z6abc</pre>
+<p>
+shows you how it would handle the local part <tt>z6abc</tt>.
+</p>
+<p>
+<a name="TOC3" href="FAQ.html#TOC3">Q0003:</a>&nbsp;&nbsp;What does the error <i>Child process of address_pipe transport returned
+69 from command xxx</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0003:</font>&nbsp;&nbsp;It means that when a transport called <b>address_pipe</b> was run to pass an
+email message by means of a pipe to another process running the command
+xxx, the return code from that command was 69, which indicates some kind
+of error (the success return code is 0).
+</p>
+<p>
+The most common meaning of exit code 69 is &#147;unavailable&#148;, and this often
+means that when Exim tried to run the command <i>xxx</i>, it failed. One
+cause of this might be incorrect permissions on the file containing the
+command. See also <a href="FAQ_0.html#TOC26">Q0026</a>.
+</p>
+<p>
+<a name="TOC4" href="FAQ.html#TOC4">Q0004:</a>&nbsp;&nbsp;My virtual domain setup isn't working. How can I debug it?
+</p>
+<p>
+<font color="#00BB00">A0004:</font>&nbsp;&nbsp;You can use an exim command with <b>-d</b> to get it to show you how it is
+processing addresses. You don't actually need to send a message; use the
+<b>-bt</b> option like this:
+</p>
+<pre>
+   exim -d -bt localpart@virtualhost</pre>
+<p>
+This will show you which routers it is using. If the problem appears
+to be with the expansion of an option setting, you can use the
+<tt>debug_print</tt> option on a router to get Exim to output the expanded
+string values as it goes along.
+</p>
+<p>
+<a name="TOC5" href="FAQ.html#TOC5">Q0005:</a>&nbsp;&nbsp;Why is Exim not rejecting incoming messages addressed to non-existent
+users at SMTP time?
+</p>
+<p>
+<font color="#00BB00">A0005:</font>&nbsp;&nbsp;This is controlled by the ACL that is run for each incoming RCPT
+command. It is defined by the <tt>acl_smtp_rcpt</tt> option. You can check this
+part of your configuration by using the <b>-bh</b> option to run a simulated
+SMTP session, during which Exim will tell you what things it is
+checking.
+</p>
+<p>
+<a name="TOC6" href="FAQ.html#TOC6">Q0006:</a>&nbsp;&nbsp;I've put an entry for <tt>*.my.domain</tt> in a DBM lookup file, but it isn't
+getting recognized.
+</p>
+<p>
+<font color="#00BB00">A0006:</font>&nbsp;&nbsp;You need to request &#147;partial matching&#148; by setting the search type to
+<tt>partial-dbm</tt> in order for this to work.
+</p>
+<p>
+<a name="TOC7" href="FAQ.html#TOC7">Q0007:</a>&nbsp;&nbsp;I've put the entry <tt>*@domain.com</tt> in a lookup database, but it isn't
+working. The expansion I'm using is:
+</p>
+<pre>
+   ${lookup{${lc:$sender_address}}dbm{/the/file} ...</pre>
+<p>
+<font color="#00BB00">A0007:</font>&nbsp;&nbsp;As no sender address will ever be <i>*@domain.com</i> this will indeed have
+no effect as it stands. You need to tell Exim that you want it to look
+for defaults after the normal lookup has failed. In this case, change the
+search type from <tt>dbm</tt> to <tt>dbm*@</tt>. See the section on <i>Default values in
+single-key lookups</i> in the chapter entitled <i>File and database
+lookups</i> in the Exim manual.
+</p>
+<p>
+<a name="TOC8" href="FAQ.html#TOC8">Q0008:</a>&nbsp;&nbsp;If I run <tt>./exim -d -bt user@domain</tt> all seems well, but when I send
+a message from my User Agent, it does not arrive at its destination.
+</p>
+<p>
+<font color="#00BB00">A0008:</font>&nbsp;&nbsp;Try sending a message directly to Exim by typing this:
+</p>
+<pre>
+   exim -v user@domain
+   &#60;some message, could be empty&#62;
+   .</pre>
+<p>
+If the message gets delivered to a remote host, but never arrives at its
+final destination, then the problem is at the remote host. If, however,
+the message gets through correctly, then the problem may be between your
+User Agent and Exim. Try setting Exim's <tt>log_selector</tt> option to include
+<tt>+arguments</tt>, to see with which arguments the UA is calling Exim.
+</p>
+<p>
+<a name="TOC9" href="FAQ.html#TOC9">Q0009:</a>&nbsp;&nbsp;What does <i>no immediate delivery: too many messages received in one SMTP
+connection</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0009:</font>&nbsp;&nbsp;An SMTP client may send any number of messages down a single SMTP
+connection to a server. Initially, an Exim server starts up a delivery
+process as soon as a message is received. However, in order not to start
+up too many processes when lots of messages are arriving (typically
+after a period of downtime), it stops doing immediate delivery after a
+certain number of messages have arrived down the same connection. The
+threshold is set by <tt>smtp_accept_queue_per_connection</tt>, and the default
+value is 10. On large systems, the value should be increased. If you are
+running a dial-in host and expecting to get all your mail down a single
+SMTP connection, then you can disable the limit altogether by setting
+the value to zero.
+</p>
+<p>
+<a name="TOC10" href="FAQ.html#TOC10">Q0010:</a>&nbsp;&nbsp;Exim puts <i>for &#60;<i>address</i>&#62;</i> in the <i>Received:</i> headers of some, but not all,
+messages. Is this a bug?
+</p>
+<p>
+<font color="#00BB00">A0010:</font>&nbsp;&nbsp;No. It is deliberate. Exim inserts a &#147;for&#148; phrase only if the incoming
+message has precisely one recipient. If there is more than one
+recipient, nothing is inserted. The reason for this is that not all
+recipients appear in the <i>To:</i> or <i>Cc:</i> headers, and it is considered a
+breach of privacy to expose such recipients to the others. A common
+case is when a message has come from a mailing list.
+</p>
+<p>
+<a name="TOC11" href="FAQ.html#TOC11">Q0011:</a>&nbsp;&nbsp;Instead of <i>exim_dbmbuild</i>, I'm using a homegrown program to build DBM
+(or cdb) files, but Exim doesn't seem to be able to use them.
+</p>
+<p>
+<font color="#00BB00">A0011:</font>&nbsp;&nbsp;Exim expects there to be a binary zero value on the end of each key used
+in a DBM file if you use the <tt>dbm</tt> lookup type, but not for the <tt>dbmnz</tt>
+lookup type or for the keys of a cdb file. Check that you haven't
+slipped up in this regard.
+</p>
+<p>
+<a name="TOC12" href="FAQ.html#TOC12">Q0012:</a>&nbsp;&nbsp;Exim is unable to route to any remote domains. It doesn't seen to be
+able to access the DNS.
+</p>
+<p>
+<font color="#00BB00">A0012:</font>&nbsp;&nbsp;Try running <tt>exim -d+resolver -bt &#60;<i>remote address</i>&#62;</tt>. The <b>-d</b>
+options turns on debugging output, and the addition of <tt>+resolver</tt>
+will make it show the resolver queries it is building and the results of
+its DNS queries. If it appears unable to contact any name servers, check
+the contents and permissions of <i>/etc/resolv.conf</i>.
+</p>
+<p>
+<a name="TOC13" href="FAQ.html#TOC13">Q0013:</a>&nbsp;&nbsp;What does the error message <i>transport system_aliases: cannot find
+transport driver "redirect" in line 92</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0013:</font>&nbsp;&nbsp;<b>redirect</b> is a router, not a transport. You have put a configuration
+for a router into the transports section of the configuration file.
+</p>
+<p>
+<a name="TOC14" href="FAQ.html#TOC14">Q0014:</a>&nbsp;&nbsp;Exim is timing out after receiving and responding to the DATA command
+from one particular host, and yet the client host also claims to be
+timing out. This seems to affect only certain messages.
+</p>
+<p>
+<font color="#00BB00">A0014:</font>&nbsp;&nbsp;This kind of problem can have many different causes.
+</p>
+<p>
+(1) &nbsp;This problem has been seen with a network that was dropping all
+packets over a certain size, which mean that the first part of the SMTP
+transaction worked, but when the body of a large message started
+flowing, the main data bits never got through the network. See also
+<a href="FAQ_0.html#TOC17">Q0017</a>.
+</p>
+<p>
+(2) &nbsp;This can also happen if a host has a broken TCP stack and won't
+reassemble fragmented datagrams.
+</p>
+<p>
+(3) &nbsp;A very few ISDN lines have been seen which failed when certain data
+patterns were sent through them, and replacing the routers at both end
+of the link did not fix things. One of them was triggered by more than 4
+X's in a row in the data.
+</p>
+<p>
+<a name="TOC15" href="FAQ.html#TOC15">Q0015:</a>&nbsp;&nbsp;What does the message <i>Socket bind() to port 25 for address (any)
+failed: address already in use</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0015:</font>&nbsp;&nbsp;You are trying to run an Exim daemon when there is one already running -
+or maybe some other MTA is running, or perhaps you have an SMTP line in
+<i>/etc/inetd.conf</i> which is causing <i>inetd</i> to listen on port 25.
+</p>
+<p>
+<a name="TOC16" href="FAQ.html#TOC16">Q0016:</a>&nbsp;&nbsp;I've set <tt>verify = header_syntax</tt> in my ACL, but this causes Exim to
+complain about header lines like <tt>To: Work: Jim &#60;jims@email&#62;,
+Home: Bob &#60;bobs@email&#62;</tt> which look all right to me. Is this a bug?
+</p>
+<p>
+<font color="#00BB00">A0016:</font>&nbsp;&nbsp;No. Header lines such as <i>From:</i>, <i>To:</i>, etc., which contain addresses, are
+structured, and have to be in a specific format which is defined in RFC
+2822. Unquoted colons are not allowed in the &#147;phrase&#148; part of an email
+address (they are OK in other headers such as <i>Subject:</i>). The correct
+form for that header is
+</p>
+<pre>
+   To: "Work: Jim" &#60;jims@email&#62;, "Home: Bob" &#60;bobs@email&#62;</pre>
+<p>
+You will sometimes see unquoted colons in <i>To:</i> and <i>Cc:</i> headers, but only
+in connection with name lists (called &#147;groups&#148;), for example:
+</p>
+<pre>
+   To: My friends: X &#60;x@y.x&#62;, Y &#60;y@w.z&#62;;,
+       My enemies: A &#60;a@b.c&#62;, B &#60;b@c.d&#62;;</pre>
+<p>
+Each list must be terminated by a semicolon, as shown.
+</p>
+<p>
+<a name="TOC17" href="FAQ.html#TOC17">Q0017:</a>&nbsp;&nbsp;Whenever Exim tries to deliver a specific message to a particular
+server, it fails, giving the error <i>Remote end closed connection after
+data</i> or <i>Broken pipe</i> or a timeout. What's going on?
+</p>
+<p>
+<font color="#00BB00">A0017:</font>&nbsp;&nbsp;<i>Broken pipe</i> is the error you get on some OS when the remote host just
+drops the connection. The alternative is <i>connection reset by peer</i>.
+There are many potential causes. Here are some of them (see also <a href="FAQ_0.html#TOC68">Q0068</a>):
+</p>
+<p>
+(1) &nbsp;There are some firewalls that fall over on binary zero characters
+in email. Have a look, e.g. with <tt>hexdump -c mymail | tail</tt> to see if
+your mail contains any binary zero characters.
+</p>
+<p>
+(2) &nbsp;There are broken SMTP servers around that just drop the connection
+after the data has been sent if they don't like the message for some
+reason (e.g. it is too big) instead of sending a 5xx error code. Have
+you tried sending a small message to the same address?
+</p>
+<p>
+It has been reported that some releases of Novell servers running NIMS
+are unable to handle lines longer than 1024 characters, and just close
+the connection. This is an example of this behaviour.
+</p>
+<p>
+(3) &nbsp;If the problem occurs right at the start of the mail, then it could
+be a network problem with mishandling of large packets. Many emails are
+small and thus appear to propagate correctly, but big emails will
+generate big IP datagrams.
+</p>
+<p>
+There have been problems when something in the middle of the network
+mishandles large packets due to IP tunnelling. In a tunnelled link, your
+IP datagrams gets wrapped in a larger datagram and sent over a network.
+This is how virtual private networks (VPNs), and some ISP transit
+circuits work. Since the datagrams going over the tunnel require a
+larger packet size, the tunnel needs a bigger maximum transfer unit
+(MTU) in the network handling the tunnelled packets. However, MTUs
+are often fixed, so the tunnel will try to fragment the packets.
+</p>
+<p>
+If the systems outside the tunnel are using path MTU discovery, (most
+Sun Sparc Solaris machines do by default), and set the DF (don't
+fragment) bit because they don't send packets larger than their <i>local</i>
+MTU, then ICMP control messages will be sent by the routers at the
+ends of the tunnel to tell them to reduce their MTU, since the tunnel
+can't fragment the data, and has to throw it away. If this mechanism
+stops working, e.g. a firewall blocks ICMP, then your host never
+knows it has hit the maximum path MTU, but it has received no ACK on
+the packet either, so it continues to resend the same packet and the
+connection stalls, eventually timing out.
+</p>
+<p>
+You can test the link using pings of large packets and see what works:
+</p>
+<pre>
+ 	 ping -s host 2048</pre>
+<p>
+Try reducing the MTU on the sending host:
+</p>
+<pre>
+ 	 ifconfig le0 mtu 1300</pre>
+<p>
+Alternatively, you can reduce the size of the buffer Exim uses for SMTP
+output by putting something like
+</p>
+<pre>
+   DELIVER_OUT_BUFFER_SIZE=512</pre>
+<p>
+in your <i>Local/Makefile</i> and rebuilding Exim (the default is 8192).
+While this should not in principle have any effect on the size of
+packets sent, in practice it does seem to have an effect on some OS.
+</p>
+<p>
+You can also try disabling path MTU discovery on the sending host. On
+Linux, try:
+</p>
+<pre>
+   echo 1 &#62;/proc/sys/net/ipv4/ip_no_pmtu_disc</pre>
+<p>
+For a general discussion and information about other operating systems, see
+<a href="http://www.netheaven.com/pmtu.html">http://www.netheaven.com/pmtu.html</a>. If disabling path MTU discovery
+fixes the problem, try to find the broken or misconfigured
+router/firewall that swallows the ICMP-unreachable packets. Increasing
+timeouts on the receiving host will not work around the problem.
+</p>
+<p>
+<a name="TOC18" href="FAQ.html#TOC18">Q0018:</a>&nbsp;&nbsp;Why do messages not get delivered down the same connection when I do
+something like: <tt>exim -v -R @aol.com</tt>? For other domains, I do this and
+I see the appropriate <i>waiting for passed connections to get used</i>
+messages.
+</p>
+<p>
+<font color="#00BB00">A0018:</font>&nbsp;&nbsp;Recall that Exim does not keep separate queues for each domain, but
+operates in a distributed fashion. Messages get into its `waiting for
+host x' hints database only when a delivery has been tried, and has had
+a temporary error. Here are some possibilities:
+</p>
+<p>
+(1) &nbsp;The messages to <i>aol.com</i> got put in your queue, but no previous
+delivery attempt occured before you did the <b>-R</b>. This might have been
+because of your settings of <tt>queue_only_load</tt>, <tt>smtp_accept_queue</tt>, or any
+other option that caused no immediate delivery attempt on arrival. If
+this is the case, you can try using <b>-qqR</b> instead of <b>-R</b>.
+</p>
+<p>
+(2) &nbsp;You have set <tt>connection_max_messages</tt> on the smtp transport, and
+that limit was reached. This would show as a sequence of messages
+down one connection, then another sequence down a new connection, etc.
+</p>
+<p>
+(3) &nbsp;Exim tried to pass on the SMTP connection to another message, but
+that message was in the process of being delivered to <i>aol.com</i> by some
+other process (typically, a normal queue runner). This will break the
+sequence, though the other delivery should pass its connection on to
+other messages if there are any.
+</p>
+<p>
+(4) &nbsp;The folk at <i>aol.com</i> changed the MX records so the host names have
+changed - or a new host has been added. I don't know how likely this is.
+</p>
+<p>
+(5) &nbsp;Exim is not performing as it should in this regard, for some reason.
+Next time you have mail queued up for <i>aol.com</i>, try running
+</p>
+<pre>
+   exim_dumpdb /var/spool/exim wait-remote_smtp</pre>
+<p>
+to see if those messages are listed among those waiting for the relevant
+<i>aol.com</i> hosts.
+</p>
+<p>
+<a name="TOC19" href="FAQ.html#TOC19">Q0019:</a>&nbsp;&nbsp;There seems to be a problem in the string expansion code: it doesn't
+recognize references to headers such as <tt>${h_to}</tt>.
+</p>
+<p>
+<font color="#00BB00">A0019:</font>&nbsp;&nbsp;The only valid syntax for header references is (for example) <tt>$h_to:</tt>
+because header names are permitted by RFC 2822 to contain a very wide
+range of characters. A colon (or white space) is required as the
+terminator.
+</p>
+<p>
+<a name="TOC20" href="FAQ.html#TOC20">Q0020:</a>&nbsp;&nbsp;Why do connections to my machine's SMTP port take a long time to respond
+with the banner, when connections to other ports respond instantly? The
+delay is sometimes as long as 30 seconds.
+</p>
+<p>
+<font color="#00BB00">A0020:</font>&nbsp;&nbsp;These kinds of delay are usually caused by some kind of network problem
+that affects outgoing calls made by Exim at the start of an incoming
+connection. Configuration options that cause outgoing calls are:
+</p>
+<p>
+(1) &nbsp;<tt>rfc1413_hosts</tt> and <tt>rfc1413_query_timeout</tt> (for <i>ident</i> calls).
+Firewalls sometimes block ident connections so that they time out,
+instead of refusing them immediately. This can cause this problem.
+See <a href="FAQ_19.html#TOC353">Q5023</a> for a discussion of the usefulness of <i>ident</i>.
+</p>
+<p>
+(2) &nbsp;The <tt>host_lookup</tt> option, the <tt>host_reject_connection</tt> option, or a
+condition in the ACL that runs at connection time requires the
+remote host's name to be looked up from its IP address. Sometimes
+these DNS lookups time out. You can get this effect with ACL
+statements like this:
+</p>
+<pre>
+   deny  hosts = *.x.example</pre>
+<p>
+If at all possible, you should use IP addresses instead of host
+names in blocking lists in order to to avoid this problem.
+</p>
+<p>
+You can use the <b>-bh</b> option to get more information about what is
+happening at the start of a connection. However, note that the <b>-bh</b>
+option does not provide a complete simulation. In particular, no
+<i>ident</i> checks are done, so it won't show up a delay problem that is
+related to (1) above.
+</p>
+<p>
+<a name="TOC21" href="FAQ.html#TOC21">Q0021:</a>&nbsp;&nbsp;What does <i>failed to create child process to send failure message</i> mean?
+This is a busy mail server with <tt>smtp_accept_max</tt> set to 500, but this
+problem started to occur at about 300 incoming connections.
+</p>
+<p>
+<font color="#00BB00">A0021:</font>&nbsp;&nbsp;Some message delivery failed, and when Exim wanted to send a bounce
+message, it was unable to create a process in which to do so. Probably
+the limit on the maximum number of simultaneously active processes has
+been reached. Most OS have some means of increasing this limit, and in
+some operating systems there is also a limit per uid which can be
+varied.
+</p>
+<p>
+<a name="TOC22" href="FAQ.html#TOC22">Q0022:</a>&nbsp;&nbsp;What does <i>No transport set by system filter</i> in a log line mean?
+</p>
+<p>
+<font color="#00BB00">A0022:</font>&nbsp;&nbsp;Your system filter contains a <tt>pipe</tt> or <tt>save</tt> or <tt>mail</tt> command,
+but you have not set the corresponding option which specifies which
+transport is to be used. You need to set whichever of
+<tt>system_filter_pipe_transport</tt>, <tt>system_filter_file_transport</tt> or
+<tt>system_filter_reply_transport</tt> is relevant.
+</p>
+<p>
+<a name="TOC23" href="FAQ.html#TOC23">Q0023:</a>&nbsp;&nbsp;Why is Exim refusing to relay, saying <i>failed to find host name from IP
+address</i> when I have the sender's IP address in an ACL condition? My
+configuration contains this ACL statement:
+</p>
+<pre>
+   accept hosts = lsearch;/etc/mail/relaydomains:192.168.96.0/24</pre>
+<p>
+<font color="#00BB00">A0023:</font>&nbsp;&nbsp;When checking a host list, the items are tested in left-to-right
+order. The first item in your list is a lookup on the incoming host's
+name, so Exim has to determine the name from the incoming IP address in
+order to perform the test. If it can't find the host name, it can't do
+the check, so it gives up. You would have discovered what was going
+on if you had run a test such as
+</p>
+<pre>
+   exim -bh 192.168.96.131</pre>
+<p>
+The solution is to put all explicit IP addresses first in the list.
+Alternatively, you can split the ACL statement into two like this:
+</p>
+<pre>
+   accept hosts = lsearch;/etc/mail/relaydomains
+   accept hosts = 192.168.96.0/24</pre>
+<p>
+If the host lookup fails, the first <tt>accept</tt> fails, but then the
+second one is considered.
+</p>
+<p>
+<a name="TOC24" href="FAQ.html#TOC24">Q0024:</a>&nbsp;&nbsp;When I run <tt>exim -bd -q10m</tt> I get <i>PANIC LOG: exec of exim -q failed</i>.
+</p>
+<p>
+<font color="#00BB00">A0024:</font>&nbsp;&nbsp;This probably means that Exim doesn't know its own path so it can't
+re-exec itself to do the first queue run. Check the output of
+</p>
+<pre>
+   exim -bP exim_path</pre>
+<p>
+<a name="TOC25" href="FAQ.html#TOC25">Q0025:</a>&nbsp;&nbsp;I can't seem to get a pipe command to run when I include a <tt>${if</tt>
+expansion in it. This fails:
+</p>
+<pre>
+   command = perl -T /usr/local/rt/bin/rtmux.pl \
+               rt-mailgate helpdesk \
+               ${if eq {$local_part}{rt} {correspond}{action}}</pre>
+<p>
+<font color="#00BB00">A0025:</font>&nbsp;&nbsp;You need some internal quoting in there. Exim expands each individual
+argument separately. Because you have (necessarily) got spaces in your
+<tt>${if</tt> item, you have to quote that argument. Try
+</p>
+<pre>
+   command = perl -T /usr/local/rt/bin/rtmux.pl \
+               rt-mailgate helpdesk \
+               "${if eq {$local_part}{rt} {correspond}{action}}"</pre>
+<p>
+<b>Warning:</b> If command starts with an item that requires quoting,
+you cannot just put it in quotes, because a leading quote means that the
+entire option setting is being quoted. What you have to do is to quote
+the entire value, and use internally escaped quotes for the ones you
+really want. For example:
+</p>
+<pre>
+   command = "\"${if ....}\" arg1 arg2"</pre>
+<p>
+Any backslashes in the expansion items will have to be doubled to stop
+them being interpreted by the string reader.
+</p>
+<p>
+<a name="TOC26" href="FAQ.html#TOC26">Q0026:</a>&nbsp;&nbsp;I'm trying to get Exim to connect an alias to a pipe, but it always
+gives error code 69, with the comment <i>(could mean service or program
+unavailable)</i>.
+</p>
+<p>
+<font color="#00BB00">A0026:</font>&nbsp;&nbsp;If your alias entry looks like this:
+</p>
+<pre>
+   alias:  |"/some/command some parameters"</pre>
+<p>
+change it to look like this:
+</p>
+<pre>
+   alias:  "|/some/command some parameters"</pre>
+<p>
+<a name="TOC27" href="FAQ.html#TOC27">Q0027:</a>&nbsp;&nbsp;What does the error <i>Spool file is locked</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0027:</font>&nbsp;&nbsp;This is not an error. All it means is that when an Exim delivery
+process (probably started by a queue runner process) looked at a message
+in order to start delivering it, it found that another Exim process was
+already busy delivering it. On a busy system this is quite a common
+occurrence. If you set <tt>-skip_delivery</tt> in the <tt>log_selector</tt> option,
+these messages are omitted from the log.
+</p>
+<p>
+The only time when this message might indicate a problem is if it is
+repeated for the same message for a very long time. That would suggest
+that the process that is delivering the message has somehow got stuck.
+</p>
+<p>
+<a name="TOC28" href="FAQ.html#TOC28">Q0028:</a>&nbsp;&nbsp;Exim is reporting IP addresses as 0.0.0.0 or 255.255.255.255 instead of
+their correct values. What's going on?
+</p>
+<p>
+<font color="#00BB00">A0028:</font>&nbsp;&nbsp;You are using a version of Exim built with gcc on an IRIX box.
+See <a href="">Q9502</a>.
+</p>
+<p>
+<a name="TOC29" href="FAQ.html#TOC29">Q0029:</a>&nbsp;&nbsp;I can't seem to figure out why PAM support doesn't work correctly.
+</p>
+<p>
+<font color="#00BB00">A0029:</font>&nbsp;&nbsp;There is a problem using PAM with shadow passwords when the calling
+program is not running as <i>root</i>. Exim is normally running as the
+Exim user when authenticating a remote host. See this posting for one
+way round the problem:
+</p>
+<p>
+<a href="http://www.exim.org/mailman/htdig/exim-users/Week-of-Mon-20010917/030371.html">http://www.exim.org/mailman/htdig/exim-users/Week-of-Mon-20010917/030371.html</a>
+</p>
+<p>
+Another solution can be found at <a href="http://www.e-admin.de/pam_exim/">http://www.e-admin.de/pam_exim/</a>.
+</p>
+<p>
+PAM 0.72 allows authorization as non-<i>root</i>, using setuid helper programs.
+Furthermore, in <i>/etc/pam.d/exim</i> you can explicitelly specify that
+this authorization (using setuid helpers) is only permitted for certain
+users and groups.
+</p>
+<p>
+<a name="TOC30" href="FAQ.html#TOC30">Q0030:</a>&nbsp;&nbsp;I'm trying to use a query-style lookup for hosts that are allowed to
+relay, but it is giving really weird errors.
+</p>
+<p>
+<font color="#00BB00">A0030:</font>&nbsp;&nbsp;Does your query contain a colon character? Remember that host lists are
+colon-separated, so you need to double any colons in the query. This
+applies even if the query is defined as a macro.
+</p>
+<p>
+<a name="TOC31" href="FAQ.html#TOC31">Q0031:</a>&nbsp;&nbsp;Exim is rejecting connections from hosts that have more than one IP
+address, for no apparent reason.
+</p>
+<p>
+<font color="#00BB00">A0031:</font>&nbsp;&nbsp;You are using Solaris 7 or earlier, and have <tt>nis dns files</tt> in
+<i>/etc/nsswitch.conf</i>. Change this to <tt>dns nis files</tt> to avoid hitting Sun
+bug 1154236 (a bad interaction between NIS and the DNS).
+</p>
+<p>
+<a name="TOC32" href="FAQ.html#TOC32">Q0032:</a>&nbsp;&nbsp;Exim is failing to find the MySQL library, even though is it present
+within <small>LD_LIBRARY_PATH</small>. I'm getting this error:
+</p>
+<pre>
+   /usr/local/bin/exim: fatal: libmysqlclient.so.6: open failed:
+   No such file or directory</pre>
+<p>
+<font color="#00BB00">A0032:</font>&nbsp;&nbsp;Exim is suid, and <small>LD_LIBRARY_PATH</small> is ignored for suid binaries on a
+Solaris (and other?) systems. What you should be doing is adding
+<tt>-R/local/lib/mysql</tt> to the same place in the compilation that you added
+<tt>-L/local/lib/mysql</tt>. This tells the binary where to look without
+needing a path variable.
+</p>
+<p>
+<a name="TOC33" href="FAQ.html#TOC33">Q0033:</a>&nbsp;&nbsp;What does the error <i>lookup of host "xx.xx.xx" failed in yyy router</i>
+mean?
+</p>
+<p>
+<font color="#00BB00">A0033:</font>&nbsp;&nbsp;You configured a <b>manualroute</b> router to send the message to xx.xx.xx. When
+it tried to look up the IP address for that host, the lookup failed
+with a permanent error. As this is a manual routing, this is a
+considered to be a serious error which the postmaster needs to know
+about (maybe you have a typo in your file), and there is little point
+in keeping on trying. So it freezes the message.
+</p>
+<p>
+(1) &nbsp;Don't set up routes to non-existent hosts.
+</p>
+<p>
+(2) &nbsp;If you must set up routes to non-existent hosts, and don't want
+freezing, set the <tt>host_find_failed</tt> option on the router to do something
+other than freeze.
+</p>
+<p>
+<a name="TOC34" href="FAQ.html#TOC34">Q0034:</a>&nbsp;&nbsp;Exim works fine on one host, but when I copied the binary to another
+identical host, it stopped working (it could not resolve DNS names).
+</p>
+<p>
+<font color="#00BB00">A0034:</font>&nbsp;&nbsp;Is the new host running exactly the same operating system? Most
+importantly, are the versions of the dynamically loaded libraries
+(files with names like <i>libsocket.so.1</i>) the same on both systems? If not,
+that is probably the cause of the problem. Either arrange for the
+libraries to be the same, or rebuild Exim from source on the new host.
+</p>
+<p>
+<a name="TOC35" href="FAQ.html#TOC35">Q0035:</a>&nbsp;&nbsp;I set a <tt>hosts</tt> condition in an ACL to do a lookup in a file of IP
+addresses, but it doesn't work.
+</p>
+<p>
+<font color="#00BB00">A0035:</font>&nbsp;&nbsp;Did you remember to put <tt>net-</tt> at the start of the the search type? If
+you set something like this:
+</p>
+<pre>
+   accept hosts = lsearch;/some/file</pre>
+<p>
+Exim searches the file for the host name, not the IP address. You need
+to set
+</p>
+<pre>
+   accept hosts = net-lsearch;/some/file</pre>
+<p>
+to make it use the IP address as the key to the lookup.
+</p>
+<p>
+<a name="TOC36" href="FAQ.html#TOC36">Q0036:</a>&nbsp;&nbsp;Why do I get the error <i>Permission denied: creating lock file hitching
+post</i> when Exim tries to do a local delivery?
+</p>
+<p>
+<font color="#00BB00">A0036:</font>&nbsp;&nbsp;Your configuration specifies that local mailboxes are all held in
+single directory, via configuration lines like these (taken from the
+default configuration):
+</p>
+<pre>
+   local_delivery:
+     driver = appendfile
+     file = /var/mail/$local_part</pre>
+<p>
+and the permissions on the directory probably look like this:
+</p>
+<pre>
+   drwxrwxr-x   3 root     mail         512 Jul  9 13:48 /var/mail/</pre>
+<p>
+Using the default configuration, Exim runs as the local user when doing
+a local delivery, and it uses a lock file to prevent any other process
+from updating the mailbox while it is writing to it. With those
+permissions the delivery process, running as the user, is unable to
+create a lock file in the <tt>(/var/mail(</tt> directory. There are two solutions
+to this problem:
+</p>
+<p>
+(1) &nbsp;Set the <tt>write</tt> and <tt>sticky bit</tt> permissions on the directory, so
+that it looks like this:
+</p>
+<pre>
+   drwxrwxrwt   3 root     mail         512 Jul  9 13:48 /var/mail/</pre>
+<p>
+The <tt>w</tt> allows any user to create new files in the directory, but
+the <tt>t</tt> bit means that only the creator of a file is able to remove
+it. This is the same setting as is normally used with the <i>/tmp</i>
+directory.
+</p>
+<p>
+(2) &nbsp;Arrange to run the local_delivery transport under a specific group
+by changing the configuration to read
+</p>
+<pre>
+   local_delivery:
+     driver = appendfile
+     file = /var/mail/${local_part}
+     group = mail</pre>
+<p>
+The delivery process still runs under the user's uid, but with the
+group set to <tt>mail</tt>. The group permission on the directory allows
+the process to create and remove the lock file.
+</p>
+<p>
+The choice between (1) and (2) is up to the administrator. If the
+second solution is used, users can empty their mailboxes by updating
+them, but cannot delete them.
+</p>
+<p>
+If your problem involves mail to <i>root</i>, see also <a href="FAQ_5.html#TOC186">Q0507</a>.
+</p>
+<p>
+<a name="TOC37" href="FAQ.html#TOC37">Q0037:</a>&nbsp;&nbsp;I am experiencing mailbox locking problems with Sun's <tt>mailtool</tt> used
+over a network.
+</p>
+<p>
+<font color="#00BB00">A0037:</font>&nbsp;&nbsp;See <a href="FAQ_26.html#TOC392">Q9705</a> in the Sun-specific section below.
+</p>
+<p>
+<a name="TOC38" href="FAQ.html#TOC38">Q0038:</a>&nbsp;&nbsp;What does the error message <i>error in forward file (filtering not
+enabled): missing or malformed local part</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0038:</font>&nbsp;&nbsp;If you are trying to use an Exim filter, you have forgotten to enable
+the facility, which is disabled by default. In the <b>redirect</b> router
+(in the Exim run time configuration file) you need to set
+</p>
+<pre>
+   allow_filter = true</pre>
+<p>
+to allow a <i>.forward</i> file to be used as an Exim filter. If you are not
+trying to use an Exim filter, then you have put a malformed address in
+the <i>.forward</i> file.
+</p>
+<p>
+<a name="TOC39" href="FAQ.html#TOC39">Q0039:</a>&nbsp;&nbsp;I have installed Exim, but now I can't mail to <i>root</i> any more. Why is
+this?
+</p>
+<p>
+<font color="#00BB00">A0039:</font>&nbsp;&nbsp;Most people set up <i>root</i> as an alias for the manager of the host. If
+you haven't done this, Exim will attempt to deliver to <i>root</i> as if it
+were a normal user. This isn't really a good idea because the delivery
+process would run as <i>root</i>. Exim has a trigger guard in the option
+</p>
+<pre>
+   never_users = root</pre>
+<p>
+in the default configuration file. This prevents it from running as <i>root</i>
+when doing any deliveries. If you really want to run local deliveries as
+<i>root</i>, remove this line, but it would be better to create an alias for
+<i>root</i> instead.
+</p>
+<p>
+<a name="TOC40" href="FAQ.html#TOC40">Q0040:</a>&nbsp;&nbsp;How can I stop undeliverable bounce messages (e.g. to routeable, but
+undeliverable, spammer senders) from clogging up the queue for days?
+</p>
+<p>
+<font color="#00BB00">A0040:</font>&nbsp;&nbsp;If at all possible, you should try to avoid getting into this situation
+in the first place, for example, by verifying recipients so that you
+do not accept undeliverable messages that lead to these bounces.
+You can, however, configure Exim to discard failing bounce messages
+early. Just set <tt>ignore_bounce_errors_after</tt> to specify a (short) time
+to keep them for.
+</p>
+<p>
+<a name="TOC41" href="FAQ.html#TOC41">Q0041:</a>&nbsp;&nbsp;What does the message <i>unable to set gid=ddd or uid=ddd (euid=ddd):
+local delivery to ... transport=ttt</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0041:</font>&nbsp;&nbsp;Have you remembered to make Exim setuid <i>root</i>? It needs root privilege if
+it is to do any local deliveries, because it does them &#147;as the user&#148;.
+Note also that the partition from which Exim is running (where the
+binary is installed) must not have the <tt>nosuid</tt> mount option set. You
+can check this by looking at its <i>/etc/fstab</i> entry (or <i>/etc/vfstab</i>,
+depending on your OS).
+</p>
+<p>
+<a name="TOC42" href="FAQ.html#TOC42">Q0042:</a>&nbsp;&nbsp;My ISP's mail server is rejecting bounce messages from Exim, complaining
+that they have no sender. The SMTP trace does indeed show that the
+sender address is <tt>&#60;&#62;</tt>. Why is the Sender on the bounce message empty?
+</p>
+<p>
+<font color="#00BB00">A0042:</font>&nbsp;&nbsp;Because the RFCs say it must be. Your ISP is at fault. Send them this
+extract from RFC 2821 section 6.1 (<i>Reliable Delivery and Replies by
+Email</i>):
+</p>
+<p>
+If there is a delivery failure after acceptance of a message, the
+receiver-SMTP MUST formulate and mail a notification message.  This
+notification MUST be sent using a null (<tt>&#60;&#62;</tt>) reverse path in the
+envelope.  The recipient of this notification MUST be the address
+from the envelope return path (or the <i>Return-Path:</i> header line).
+However, if this address is null (<tt>&#60;&#62;</tt>), the receiver-SMTP MUST NOT
+send a notification.
+</p>
+<p>
+The reason that bounce messages have no sender is so that they
+themselves cannot provoke further bounces, as this could lead to a
+unending exchange of undeliverable messages.
+</p>
+<p>
+<a name="TOC43" href="FAQ.html#TOC43">Q0043:</a>&nbsp;&nbsp;What does the error <i>Unable to get interface configuration: 22 Invalid
+argument</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0043:</font>&nbsp;&nbsp;This is an error that occurs when Exim is trying to find out the all the
+IP addresses on all of the local host's interfaces. If you have lots of
+virtual interfaces, this can occur if there are more than around 250 of
+them. The solution is to set the option <tt>local_interfaces</tt> to list just
+those IP addresses that you want to use for making and receiving SMTP
+connections.
+</p>
+<p>
+<a name="TOC44" href="FAQ.html#TOC44">Q0044:</a>&nbsp;&nbsp;What does the error <i>Failed to create spool file</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0044:</font>&nbsp;&nbsp;Exim has been unable to create a file in its spool area in which to
+store an incoming message. This is most likely to be either a
+permissions problem in the file hierarchy, or a problem with the uid
+under which Exim is running, though it could be something more drastic
+such as your disk being full.
+</p>
+<p>
+If you are running Exim with an alternate configuration file using a
+command such as <tt>exim -C altconfig...</tt>, remember that the use of -C
+takes away Exim's root privilege.
+</p>
+<p>
+Check that you have defined the spool directory correctly by running
+</p>
+<pre>
+   exim -bP spool_directory</pre>
+<p>
+and examining the output. Check the mode of this directory. It should
+look like this, assuming you are running Exim as user <i>exim</i>:
+</p>
+<pre>
+   drwxr-x---   6 exim  exim      512 Jul 16 12:29 /var/spool/exim</pre>
+<p>
+If there are any subdirectories already in existence, they should have
+the same permissions, owner, and group. Check also that you haven't got
+incorrect permissions on superior directories (for example, <i>/var/spool</i>).
+Check that you have set up the Exim binary to be setuid <i>root</i>. It should
+look like this:
+</p>
+<pre>
+   -rwsr-xr-x   1 root     xxx       502780 Jul 16 14:16 exim</pre>
+<p>
+Note that it is not just the owner that must be <i>root</i>, but also the third
+permission must be <tt>s</tt> rather than <tt>x</tt>.
+</p>
+<p>
+<a name="TOC45" href="FAQ.html#TOC45">Q0045:</a>&nbsp;&nbsp;I see entries in the log that mention two different IP addresses for the
+same connection. Why is this? For example:
+</p>
+<pre>
+   H=tip-mp8-ncs-13.stanford.edu ([36.173.0.189]) [36.173.0.156]</pre>
+<p>
+<font color="#00BB00">A0045:</font>&nbsp;&nbsp;The actual IP address from which the call came is the final one.
+Whenever there's something in parentheses in a host name, it is what the
+host quoted as the domain part of an SMTP HELO or EHLO command. So in
+this case, the client, despite being 36.173.0.156, issued the command
+</p>
+<pre>
+   EHLO [36.173.0.189]</pre>
+<p>
+when it sent your server the message. This is, of course, very
+misleading.
+</p>
+<p>
+<a name="TOC46" href="FAQ.html#TOC46">Q0046:</a>&nbsp;&nbsp;A short time after I start Exim I see a defunct zombie process. What
+is causing this?
+</p>
+<p>
+<font color="#00BB00">A0046:</font>&nbsp;&nbsp;Your system must be lightly loaded as far as mail is concerned. The
+daemon sets off a queue runner process when it is started, but it only
+tidies up completed child processes when it wakes up for some other
+reason. When there's nothing much going on, you occasionally see
+defunct processes like this waiting to be dealt with. This is
+perfectly normal.
+</p>
+<p>
+<a name="TOC47" href="FAQ.html#TOC47">Q0047:</a>&nbsp;&nbsp;On a reboot, or a restart of the mail system, I see the message <i>Mailer
+daemons: exim abandoned: unknown, malformed, or incomplete option
+-bz sendmail</i>. What does this mean?
+</p>
+<p>
+<font color="#00BB00">A0047:</font>&nbsp;&nbsp;<b>-bz</b> is a Sendmail option requesting it to create a `configuration freeze
+file'. Exim has no such concept and so does not support the option. You
+probably have a line like
+</p>
+<pre>
+   /usr/lib/sendmail -bz</pre>
+<p>
+in some start-up script (e.g. <i>/etc/init.d/mail</i>) immedately before
+</p>
+<pre>
+   /usr/lib/sendmail -bd -q15m</pre>
+<p>
+The first of these lines should be commented out.
+</p>
+<p>
+<a name="TOC48" href="FAQ.html#TOC48">Q0048:</a>&nbsp;&nbsp;Whenever exim restarts it takes up to 3-5 minutes to start responding on
+the SMTP port. Why is this?
+</p>
+<p>
+<font color="#00BB00">A0048:</font>&nbsp;&nbsp;Something else is hanging onto port 25 and not releasing it. One place
+to look is <i>/etc/inetd.conf</i> in case for any reason an SMTP stream is
+configured there.
+</p>
+<p>
+<a name="TOC49" href="FAQ.html#TOC49">Q0049:</a>&nbsp;&nbsp;What does the log message <i>no immediate delivery: more than 10 messages
+received in one connection</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0049:</font>&nbsp;&nbsp;A remote MTA sent a number of messages in a single SMTP session. Exim
+limits the number of immediate delivery processes it creates as a
+result of a single SMTP connection, in order to avoid creating a zillion
+processes on systems that can have many incoming connections. If you are
+dialing in to collect mail from your ISP, you should probably set
+<tt>smtp_accept_queue_per_connection</tt> to some number larger than 10, or
+arrange to start a queue runner for local delivery (using <b>-ql</b>)
+immediately after collecting the mail.
+</p>
+<p>
+<a name="TOC50" href="FAQ.html#TOC50">Q0050:</a>&nbsp;&nbsp;I am getting complaints from a customer who uses my Exim server for
+relaying that they are being blocked with a <i>Too many connections</i>
+error.
+</p>
+<p>
+<font color="#00BB00">A0050:</font>&nbsp;&nbsp;See <tt>smtp_accept_max</tt>, <tt>smep_accept_max_per_host</tt> and <tt>smtp_accept_reserve</tt>.
+</p>
+<p>
+<a name="TOC51" href="FAQ.html#TOC51">Q0051:</a>&nbsp;&nbsp;When I try <tt>exim -bf</tt> to test a system filter, I received the following
+error message: <i>Filter error: unavailable filtering command "fail" near
+line 8 of filter file</i>.
+</p>
+<p>
+<font color="#00BB00">A0051:</font>&nbsp;&nbsp;Use the <b>-bF</b> option to test system filters. This gives you access to the
+freeze and fail actions.
+</p>
+<p>
+<a name="TOC52" href="FAQ.html#TOC52">Q0052:</a>&nbsp;&nbsp;What does <i>ridiculously long message header</i> in an error report mean?
+</p>
+<p>
+<font color="#00BB00">A0052:</font>&nbsp;&nbsp;There has to be some limit to the length of a message's header lines,
+because otherwise a malefactor could open an SMTP channel to your host,
+start a message, and then just send characters continuously until your
+host ran out of memory. (Exim stores all the header lines in main
+memory while processing a message). For this reason a limit is imposed
+on the total amount of memory that can be used for header lines. The
+default is 1MB, but this can be changed by setting <small>HEADER_MAXSIZE</small> in
+<i>Local/Makefile</i> before building Exim. Exceeding the limit provokes
+the &#147;ridiculous&#148; error message.
+</p>
+<p>
+<a name="TOC53" href="FAQ.html#TOC53">Q0053:</a>&nbsp;&nbsp;Exim on my host responds to a connection with <tt>220 *****...</tt> and
+won't understand <small>EHLO</small> commands.
+</p>
+<p>
+<font color="#00BB00">A0053:</font>&nbsp;&nbsp;This is the sign of a Cisco Pix &#147;Mailguard&#148; sitting in front of your
+MTA. Pix breaks ESMTP and only does SMTP. It is a nuisance when you have
+a secure MTA running on your box. Something like ``no fixup protocol
+smtp 25'' in the Pix configuration is needed. It may be possible to do
+this by logging into the Pix (using <i>telnet</i> or <i>ssh</i>) and typing
+<tt>no fixup smtp</tt> to its console. (You may need to use other commands
+before or after to set up configuration mode and to activate a changed
+configuration. Consult your Pix documentation or expert.) See also
+<a href="FAQ_0.html#TOC78">Q0078</a>.
+</p>
+<p>
+<a name="TOC54" href="FAQ.html#TOC54">Q0054:</a>&nbsp;&nbsp;I'm getting an Exim configuration error <i>unknown rewrite flag
+character (m) in line 386</i> but I haven't used any flags on my rewriting
+rules.
+</p>
+<p>
+<font color="#00BB00">A0054:</font>&nbsp;&nbsp;You have probably forgotten to quote a replacement string that contains
+white space.
+</p>
+<p>
+<a name="TOC55" href="FAQ.html#TOC55">Q0055:</a>&nbsp;&nbsp;What does the error <i>Failed to open wait-remote_smtp database: Invalid
+argument</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0055:</font>&nbsp;&nbsp;This is something that happens if you have existing DBM hints files when
+you install a new version of Exim that is compiled to use a different or
+upgraded DBM library. The simplest thing to try is
+</p>
+<pre>
+   rm /var/spool/exim/db/*</pre>
+<p>
+This removes all the hints files. Exim will start afresh and build new
+ones. If the symptom recurs, it suggests there is some problem with your
+DBM library.
+</p>
+<p>
+<a name="TOC56" href="FAQ.html#TOC56">Q0056:</a>&nbsp;&nbsp;We are using Exim to send mail from our web server. However, whenever a
+user sends an email it gets sent with the return path (envelope sender)
+<i>apache@server_name.com</i> because the PHP script is running as
+<i>apache</i>.
+</p>
+<p>
+<font color="#00BB00">A0056:</font>&nbsp;&nbsp;You need to include <i>apache</i> in the <tt>trusted_users</tt> configuration option.
+Only trusted users are permitted to specify senders when mail is passed
+to Exim via the command line.
+</p>
+<p>
+<a name="TOC57" href="FAQ.html#TOC57">Q0057:</a>&nbsp;&nbsp;We've got people complaining about attachments that don't show up
+as attachments, but are included in the body of the message.
+</p>
+<p>
+<font color="#00BB00">A0057:</font>&nbsp;&nbsp;These symptoms can be seen when some software passes a CRLF line
+terminated message via the command line to an MTA that expects lines to
+be terminated by LF only, and so preserves the CRs as data. If you can
+identify the software that is doing this, try setting the <b>-dropcr</b>
+option on the command it uses to call Exim. Alternatively, you can set
+<tt>drop_cr</tt> in the configuration file, but then that will apply to all
+input.
+</p>
+<p>
+<a name="TOC58" href="FAQ.html#TOC58">Q0058:</a>&nbsp;&nbsp;What does the error <i>failed to open DB file <i>/var/spool/exim/db/retry</i>:
+File exists</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0058:</font>&nbsp;&nbsp;This error is most often caused when a hints file that was written with
+one version of the Berkeley DB library is read by another version.
+Sometimes this can happen if you change from a binary version of Exim to
+a locally compiled version. Or it can happen if you compile and install
+a new version of Exim after changing Berkeley DB versions. You can find
+out which version your Exim is using by running:
+</p>
+<pre>
+   ldd /usr/sbin/exim</pre>
+<p>
+The solution to the problem is to delete all the files in the
+<i>/var/spool/exim/db</i> directory, and let Exim recreate them.
+</p>
+<p>
+<a name="TOC59" href="FAQ.html#TOC59">Q0059:</a>&nbsp;&nbsp;When my Outlook Express 6.0 client sends a STARTTLS command to begin a
+TLS session, Exim doesn't seem to receive it. The Outlook log shows
+this:
+</p>
+<pre>
+   SMTP: 14:19:27 [tx] STARTTLS
+   SMTP: 14:19:27 [rx] 500 Unsupported command.</pre>
+<p>
+but the Exim debugging output shows this:
+</p>
+<pre>
+   SMTP&#60;&#60; EHLO xxxx
+   SMTP&#62;&#62; 250-yyyy Hello xxxx [nnn.nnn.nnn.nnn]
+   250-SIZE 52428800
+   250-PIPELINING
+   250-AUTH CRAM-MD5 PLAIN LOGIN
+   250-STARTTLS
+   250 HELP
+   SMTP&#60;&#60; QUIT</pre>
+<p>
+<font color="#00BB00">A0059:</font>&nbsp;&nbsp;Turn off scanning of outgoing email in Norton Antivirus. If you aren't
+running Norton Antivirus, see if you are running some other kind of SMTP
+proxying, either on the client or on a firewall between the client and
+server. &#147;Unsupported command&#148; is not an Exim message.
+</p>
+<p>
+<a name="TOC60" href="FAQ.html#TOC60">Q0060:</a>&nbsp;&nbsp;Why am I getting the error <i>failed to expand <tt>/data/lists/lists/${lc</tt>
+for require_files: <tt>${lc</tt> is not a known operator</i> for this setting:
+</p>
+<pre>
+   require_files = MAILMAN_HOME/lists/${lc:$local_part}/config.db</pre>
+<p>
+<font color="#00BB00">A0060:</font>&nbsp;&nbsp;The value of <tt>require_files</tt> is a <i>list</i> in which each item is
+separately expanded. You need either to double the colon, or switch to
+a different list separator.
+</p>
+<p>
+<a name="TOC61" href="FAQ.html#TOC61">Q0061:</a>&nbsp;&nbsp;What does the error <i>Too many &#147;Received&#148; headers - suspected mail
+loop</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0061:</font>&nbsp;&nbsp;Whenever a message passes through an MTA, a <i>Received:</i> header gets
+added. Exim counts the number of these headers in incoming messages. If
+there are more than the value of <tt>received_headers_max</tt> (default 30),
+Exim assumes there is some kind of mail routing loop occurring. For
+example, host A passes the message to host B, which immediately passes
+it back to host A. Check the <i>Received:</i> headers and the mail logs to
+determine exactly what is going on.
+</p>
+<p>
+One common cause of this problem is users with accounts on both systems
+who set up each one to forward to the other, thinking that will cause
+copies of all messages to be delivered on both of them.
+</p>
+<p>
+<a name="TOC62" href="FAQ.html#TOC62">Q0062:</a>&nbsp;&nbsp;When I try to start an Exim daemon it crashes. I ran a debugger and
+discovered that the crash is happening in the function <i>getservbyname()</i>.
+What's going on?
+</p>
+<p>
+<font color="#00BB00">A0062:</font>&nbsp;&nbsp;What have you got in the file <i>/etc/nsswitch.conf</i>? If it contains this
+line:
+</p>
+<pre>
+   services:       db files</pre>
+<p>
+try removing the <tt>db</tt>. (Your system is trying to look in some kind of
+database before searching the file <i>/etc/services</i>.)
+</p>
+<p>
+<a name="TOC63" href="FAQ.html#TOC63">Q0063:</a>&nbsp;&nbsp;When I try to start an Exim daemon, nothing happens. There is no
+process, and nothing is written to the Exim log.
+</p>
+<p>
+<font color="#00BB00">A0063:</font>&nbsp;&nbsp;Check to see if anything is written to <i>syslog</i>. This problem can be
+caused by a permission problem that stops Exim from writing to its log
+files, especially if you've specified that they should be written
+somewhere other than under Exim's spool directory. You could also try
+running the daemon with debugging turned on.
+</p>
+<p>
+<a name="TOC64" href="FAQ.html#TOC64">Q0064:</a>&nbsp;&nbsp;When I run <tt>exim -d test@domain</tt> it delivers fine, but when I send a
+message from the <i>mail</i> command, I get <i>User unknown</i> and the mail
+is saved in <i>dead.letter</i>.
+</p>
+<p>
+<font color="#00BB00">A0064:</font>&nbsp;&nbsp;It looks as if Exim isn't being called by <i>mail</i>; instead it is
+calling some other program (probably Sendmail). Try running the command
+</p>
+<pre>
+   /usr/sbin/sendmail -bV</pre>
+<p>
+(If you get <i>No such file or directory</i> or <i>Command not found</i> you
+are running Solaris or IRIX. Try again with <i>/usr/lib/sendmail</i>.) The
+output should be something like this:
+</p>
+<pre>
+   Exim version 4.05 #1 built 13-Jun-2002 10:27:15
+   Copyright (c) University of Cambridge 2002</pre>
+<p>
+If you don't see this, your Exim installation isn't fully operational.
+If you are running FreeBSD, see <a href="FAQ_21.html#TOC368">Q9201</a>. For other systems, see <a href="FAQ_1.html#TOC106">Q0114</a>.
+</p>
+<p>
+<a name="TOC65" href="FAQ.html#TOC65">Q0065:</a>&nbsp;&nbsp;When (as <i>root</i>) I use -C to run Exim with an alternate configuration
+file, it gives an error about being unable to create a spool file when
+trying to run an <b>autoreply</b> transport. Why is this?
+</p>
+<p>
+<font color="#00BB00">A0065:</font>&nbsp;&nbsp;When Exim is called with -C, it passes on -C to any instances of itself
+that it calls (so that the whole sequence uses the same config file). If
+it's running as <i>exim</i> when it does this, all is well. However, if it
+happens as a consequence of a non-privileged user running <b>autoreply</b>,
+the called Exim gives up its root privilege. Then it can't write to the
+spool.
+</p>
+<p>
+This means that you can't use -C (even as <i>root</i>) to run an instance of
+Exim that is going to try to run <b>autoreply</b> from a process that is
+neither <i>root</i> nor <i>exim</i>. Because of the architecture of Exim (using
+re-execs to regain privilege), there isn't any way round this
+restriction. Therefore, the only way you can make this scenario work is
+to run the <b>autoreply</b> transport as <i>exim</i> (that is, the user that
+owns the Exim spool files). This may be satisfactory for autoreplies
+that are essentially system-generated, but of course is no good for
+autoreplies from unprivileged users, where you want the <b>autoreply</b>
+transport to be run as the user. To get that to work with an alternate
+configuration, you'll have to use two Exim binaries, with different
+configuration file names in each. See <a href="S001.txt">S001</a> for a script that patches
+the configuration name in an Exim binary.
+</p>
+<p>
+<a name="TOC66" href="FAQ.html#TOC66">Q0066:</a>&nbsp;&nbsp;What does the message <i>unable to set gid=xxx or uid=xxx</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0066:</font>&nbsp;&nbsp;This message is given when an Exim process is unable to change uid or
+gid when it needs to, because it does not have root privilege. This is a
+serious problem that prevents Exim from carrying on with what it is
+doing. The two most common situations where Exim needs to change uid/gid
+are doing local deliveries and processing users' filter files. There are
+two common causes of this error:
+</p>
+<p>
+(1) &nbsp;You have forgotten to make the exim binary setuid to <i>root</i>. This
+means that it can never change uid/gid in any situation. Also, the
+setuid binary must reside on a disk partition that does not have the
+<tt>nosuid</tt> mount option set.
+</p>
+<p>
+(2) &nbsp;The exim binary is setuid, but you have configured Exim so that,
+while trying to verify an address at SMTP time, it runs a router
+that needs to change uid/gid. Because Exim runs as <i>exim</i> and not
+<i>root</i> while receiving messages, the router is unable to change
+uid and therefore it cannot operate. The usual example of this is a
+<b>redirect</b> router for users' filter files.
+</p>
+<p>
+Setting the <tt>user</tt> or <tt>check_local_user</tt> options on a <tt>redirect</tt>
+router causes this to happen (except in the special case when the
+redirection list is provided by the <tt>data</tt> option and does not
+contain <tt>:include:</tt>).
+</p>
+<p>
+The solution is to set <tt>no_verify</tt> on the router that is causing the
+problem. This means that it is skipped when an address is being
+verified. In &#147;normal&#148; configurations where the router is indeed
+handling users' filter files, this is quite acceptable, because you
+do not usually need to process a filter file in order to verify that
+the local part is valid. See, for example, the <b>userforward</b>
+router in the default configuration.
+</p>
+<p>
+<a name="TOC67" href="FAQ.html#TOC67">Q0067:</a>&nbsp;&nbsp;What does the error <i>too many unrecognized commands</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0067:</font>&nbsp;&nbsp;There have been instances of network abuse involving mail sent out by
+web servers. In most cases, unrecognizable commands are sent as part of
+the SMTP session. A real MTA never sends out such invalid commands. Exim
+allows a few unrecognized commands in a session to permit humans who are
+testing to make a few typos (it responds with a 5xx error). However, if
+Exim receives too many such commands, it assumes that it is dealing with
+an abuse of some kind, and so it drops the connection.
+</p>
+<p>
+<a name="TOC68" href="FAQ.html#TOC68">Q0068:</a>&nbsp;&nbsp;Exim times out when trying to connect to some hosts, though those hosts
+are known to be up and running. What's the problem?
+</p>
+<p>
+<font color="#00BB00">A0068:</font>&nbsp;&nbsp;There could be a number of reasons for this (see also <a href="FAQ_0.html#TOC17">Q0017</a>). The
+obvious one is that there is a networking problem between the hosts.
+If you can ping between the hosts or connect in other ways, the problem
+might be caused by ECN (Explicit Congestion Notification) being enabled
+in your kernel. ECN uses TCP flags originally assigned to TOS - it's a
+"new" invention, and some hosts and routers are known to be confused if
+a client uses it. If you are running Linux, you can turn ECN off by
+running this command:
+</p>
+<pre>
+   /bin/echo "0" &#62; /proc/sys/net/ipv4/tcp_ecn</pre>
+<p>
+This has also been reported to cure web connection problems from Mozilla
+and Netscape browsers in Linux when there were no problems with Windows
+Netscape browsers.
+</p>
+<p>
+<a name="TOC69" href="FAQ.html#TOC69">Q0069:</a>&nbsp;&nbsp;What does the error <i>SMTP data timeout (message abandoned) on connection
+from...</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0069:</font>&nbsp;&nbsp;It means that there was a timeout while Exim was reading the contents of
+a message on an incoming SMTP connection. That is, it had successfully
+accepted a MAIL command, one or more RCPT commands, and a DATA command,
+and was in the process of reading the data itself. The length of timeout
+is controlled by the <tt>smtp_receive_timeout</tt> option.
+</p>
+<p>
+If you get this error regularly, the cause may be incorrect handling of
+large packets by a router or firewall. The maximum size of a packet is
+restricted on some links; routers should split packets that are larger.
+There is a feature called &#147;path MTU discovery&#148; that enables a sender
+to discover the maximum packet size over an entire path (multiple
+Internet links). This can be broken by misconfigured firewalls and
+routers. There is a good explanation at <a href="http://www.netheaven.com/pmtu.html">http://www.netheaven.com/pmtu.html</a>.
+Reducing the MTU on your local network can sometimes work round this
+problem. See <a href="FAQ_0.html#TOC17">Q0017</a> (3) for further discussion.
+</p>
+<p>
+<a name="TOC70" href="FAQ.html#TOC70">Q0070:</a>&nbsp;&nbsp;What does the error <i>SMTP command timeout on connection from...</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0070:</font>&nbsp;&nbsp;Exim was expecting to read an SMTP command from the client, but no
+command was read within the <tt>smtp_receive_timeout</tt> time limit.
+</p>
+<p>
+<a name="TOC71" href="FAQ.html#TOC71">Q0071:</a>&nbsp;&nbsp;What does the error <i>failed to open DB file <i>/var/spool/exim//db/retry</i>:
+Illegal argument</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0071:</font>&nbsp;&nbsp;See <a href="FAQ_0.html#TOC58">Q0058</a>. The cause of this error is usually the same.
+</p>
+<p>
+<a name="TOC72" href="FAQ.html#TOC72">Q0072:</a>&nbsp;&nbsp;Exim will deliver to normal aliases, and aliases that are pipes or
+files, but it objects to aliases that involve <tt>:include:</tt> items,
+complaining that it can't change gid or uid. Why is this?
+</p>
+<p>
+<font color="#00BB00">A0072:</font>&nbsp;&nbsp;See <a href="FAQ_0.html#TOC66">Q0066</a> for a general answer. The problem happens during verification
+of an incoming SMTP message, not during delivery itself. In this
+particular case, you must have set up your aliasing router with a <tt>user</tt>
+setting. This causes Exim to change uid/gid when reading <tt>:include:</tt>
+files. If you do not need the detailed verification provided by the
+router, the easy solution is to set <tt>no_verify</tt> so that the router isn't
+used during verification.
+</p>
+<p>
+Otherwise, if you set <tt>user</tt> on the router in order to provide a user
+for delivery to pipes or files, one solution is to put the <tt>user</tt>
+setting on the transports instead of on the router. You may need to
+create some special transports just for this router. The alternative is
+to supply two different routers, one with <tt>user</tt> and <tt>no_verify</tt>, and
+the with <tt>verify_only</tt> but no <tt>user</tt> setting.
+</p>
+<p>
+<a name="TOC73" href="FAQ.html#TOC73">Q0073:</a>&nbsp;&nbsp;I'm seeing log file corruption, with parts of log lines getting mangled
+by other log entries.
+</p>
+<p>
+<font color="#00BB00">A0073:</font>&nbsp;&nbsp;The only time this has been seen is when several servers were writing to
+the same log files over NFS. Exim assumes that its log file is on local
+disk, and using NFS, especially for more than one server, will not work.
+</p>
+<p>
+<a name="TOC74" href="FAQ.html#TOC74">Q0074:</a>&nbsp;&nbsp;What does the error message <i>remote delivery process count got out of
+step</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0074:</font>&nbsp;&nbsp;Exim uses subprocesses for remote deliveries; this error means that the
+master process expected to have a child process running, but found there
+were none. Prior to release 4.11, this error could be caused by running
+Exim under <i>strace</i> on a Linux system, because stracing causes
+children to be &#147;stolen&#148; such that a parent that tries to wait for
+&#147;any of my children&#148; is told that it has none. Current releases of
+Exim have code to get round this problem.
+</p>
+<p>
+<a name="TOC75" href="FAQ.html#TOC75">Q0075:</a>&nbsp;&nbsp;I'm using LDAP, and some email addresses that contain special characters
+are causing parsing errors in my LDAP lookups.
+</p>
+<p>
+<font color="#00BB00">A0075:</font>&nbsp;&nbsp;You should be using <tt>${quote_ldap:$local_part}</tt> instead of just
+<tt>$local_part</tt> in your lookups.
+</p>
+<p>
+<a name="TOC76" href="FAQ.html#TOC76">Q0076:</a>&nbsp;&nbsp;I've configured Exim to use <i>syslog</i> for its logs, with the main and
+reject logs sent to different files, but whenever a message is rejected,
+I get one message on the reject log and two messages on the main log.
+</p>
+<p>
+<font color="#00BB00">A0076:</font>&nbsp;&nbsp;You are probably putting your reject items into the main log as well;
+remember <i>syslog</i> levels are inclusive (for example, <tt>mail.info</tt>
+includes all higher levels, so a <tt>mail.notice</tt> message will be caught
+by a <tt>mail.info</tt> descriptor).
+Test this by running the command:
+</p>
+<pre>
+ 	 logger -p mail.notice test</pre>
+<p>
+and seeing which logs it goes into.
+</p>
+<p>
+<a name="TOC77" href="FAQ.html#TOC77">Q0077:</a>&nbsp;&nbsp;I've installed Exim and it is delivering mail just fine. However, when I
+try to read mail from my PC I get <i>connection rejected</i> or <i>unable to
+connect</i>.
+</p>
+<p>
+<font color="#00BB00">A0077:</font>&nbsp;&nbsp;See <a href="FAQ_19.html#TOC351">Q5021</a>.
+</p>
+<p>
+<a name="TOC78" href="FAQ.html#TOC78">Q0078:</a>&nbsp;&nbsp;Exim is logging the unknown SMTP command <tt>XXXX</tt> from my client hosts,
+and they are unable to authenticate.
+</p>
+<p>
+<font color="#00BB00">A0078:</font>&nbsp;&nbsp;This is a sign of a Cisco PIX firewall getting in the way. It does not
+support ESMTP, and turns EHLO commands into XXXX. You should configure
+the Pix to leave SMTP alone; see <a href="FAQ_0.html#TOC53">Q0053</a> for how to do this.
+</p>
+<p>
+<a name="TOC79" href="FAQ.html#TOC79">Q0079:</a>&nbsp;&nbsp;Our new PIX firewall is causing problems with incoming mail. How can
+this be fixed?
+</p>
+<p>
+<font color="#00BB00">A0079:</font>&nbsp;&nbsp;See <a href="FAQ_0.html#TOC53">Q0053</a> and <a href="FAQ_0.html#TOC78">Q0078</a>. If some messages get through and others do not,
+see also <a href="FAQ_0.html#TOC17">Q0017</a>.
+</p>
+<p>
+<a name="TOC80" href="FAQ.html#TOC80">Q0080:</a>&nbsp;&nbsp;Am I to understand that the database lookups must only return one value?
+They can not return a list of values? The documentation seems to
+indicate that it's possible to return a list.
+</p>
+<p>
+<font color="#00BB00">A0080:</font>&nbsp;&nbsp;Lookups can be used in two different situations, and what they return is
+different in the two cases. (Be thankful Exim 3 is gone; there was yet
+another case!)
+</p>
+<p>
+(1) &nbsp;You can use a lookup in any expanded string. The syntax is
+</p>
+<pre>
+   ${lookup ..... }</pre>
+<p>
+In this case, whatever is looked up replaces the expansion item. It
+may be one value or a list of values. Whether a single value or a
+list is acceptable or not depends on where you are using the string
+expansion. If it is for an option that expects just one value, then
+only one value is allowed (for example).
+</p>
+<p>
+(2) &nbsp;You can make use of the lookup mechanism to test whether something
+(typically a host name or IP address) is in a list. For example,
+</p>
+<pre>
+   hosts = a : b : c</pre>
+<p>
+in an ACL tests whether the calling host's name matches &#147;a&#148;, or
+&#147;b&#148;, or &#147;c&#148;. Now, suppose you want to keep the list of names in
+a database, or cdb file, or NIS map, or...  By writing
+</p>
+<pre>
+   hosts = pgsql;select ....</pre>
+<p>
+you are saying to Exim: ``Run this lookup; if it succeeds, behave as
+if the host is in the list; if it fails, the host is not in the
+list.'' You are using the indexing mechanism of the database as a
+fast way of checking a list. A simpler example is
+</p>
+<pre>
+   hosts = lsearch;/some/file</pre>
+<p>
+where the file contains the list of hosts to be searched.
+</p>
+<p>
+The complication happens when a list is first expanded before being
+interpreted as a list. This happens in a lot of cases. You can therefore
+write either of these:
+</p>
+<pre>
+   hosts = cdb;/some/file
+   hosts = ${lookup{something}cdb{/some/file}}</pre>
+<p>
+but they have different meanings. The first means ``see if the host name
+is in the list in this file''. The second means ``run this lookup and
+use the result of the lookup as a list of host items to check''. In the
+second case, the list could contain multiple values (colon separated),
+and one of those values could even be &#147;cdb;/some/file&#148;.
+</p>
+<p>
+Flexibility does lead to complexity, I'm afraid.
+</p>
+<p>
+<a name="TOC81" href="FAQ.html#TOC81">Q0081:</a>&nbsp;&nbsp;What does <i>error in redirect data: included file xxxx is too big</i>
+mean?
+</p>
+<p>
+<font color="#00BB00">A0081:</font>&nbsp;&nbsp;You are trying to include a very large file in a redirection list, using
+the <tt>:include:</tt> feature. Exim has a built-in limit on the size, as a
+safety precaution. The default is 1 megabyte. If you want to increase
+this, you have to rebuild Exim. In your <i>Local/Makefile</i>, put
+</p>
+<pre>
+   MAX_INCLUDE_SIZE = whatever</pre>
+<p>
+and then rebuild Exim. The value is a number of bytes, but you can give
+it as a parenthesized arithmetic expression such as <tt>(3*1024*1024)</tt>.
+However, an included file of more than a megabyte is likely to be quite
+inefficient. How many addresses does yours contain? You get the best
+performance out of Exim if you arrange to send mailing list messages
+with no more than about 100 recipients (in order to get parallelism in
+the routing).
+</p>
+<p>
+<a name="TOC82" href="FAQ.html#TOC82">Q0082:</a>&nbsp;&nbsp;What does <i>relocation error: /lib/libnss_dns.so.2: symbol
+__libc_res_nquery, version GLIBC_PRIVATE not defined in file
+libresolv.so.2 with link time reference</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0082:</font>&nbsp;&nbsp;You have updated <i>glibc</i> while an Exim daemon is running. Stop and
+restart the daemon.
+</p>
+<p>
+<a name="TOC83" href="FAQ.html#TOC83">Q0083:</a>&nbsp;&nbsp;Netscape on Unix is sending messages containing an unqualified user name
+in the <i>Sender:</i> header line, which Exim is rejecting because I have
+set <tt>verify = header_syntax</tt>. How can I fix this?
+</p>
+<p>
+<font color="#00BB00">A0083:</font>&nbsp;&nbsp;The only thing you can do in Exim is to set the
+<tt>sender_unqualified_hosts</tt> option to allow unqualified sender addresses
+form the relevant hosts; of course, this applies to all sender
+addresses, not just the <i>Sender:</i> header line.
+</p>
+<p>
+Alternatively, you can configure Netscape not to include the header line
+in the first place. Add the following line to the
+<i>$HOME/.netscape/preferences.js</i> and <i>$HOME/.netscape/liprefs.js</i>
+files:
+</p>
+<pre>
+   user_pref("mail.suppress_sender_header", true);</pre>
+<p>
+Netscape <i>must</i> be shutdown while doing this.
+</p>
+<p>
+<a name="TOC84" href="FAQ.html#TOC84">Q0084:</a>&nbsp;&nbsp;I want to set up an alias that pipes a message to <i>gpg</i> and then pipes
+the result to <i>mailx</i> to resubmit the message, but when I use my
+tested command in an alias file, I get an error from <i>gpg</i>.
+</p>
+<p>
+<font color="#00BB00">A0084:</font>&nbsp;&nbsp;Probably you are using a shell command with two pipe symbols in it. An
+alias like this:
+</p>
+<pre>
+   gpg-xxx: "|gpg &#60;options&#62; | mailx &#60;options"</pre>
+<p>
+does not work, because Exim does not run pipes under a shell by default.
+You must call a shell explicitly if you want to make use of the shell's
+features for double-piping, either by piping to <tt>/bin/sh</tt> with a
+suitable <tt>-c</tt> option, or by piping to a shell script.
+</p>
+<p>
+<a name="TOC85" href="FAQ.html#TOC85">Q0085:</a>&nbsp;&nbsp;I see a lot of <i>rejected EHLO ... syntactically invalid argument(s)</i>.
+I know it's because of the underscore in the host name, but is there a
+switch to allow Exim to accept mail from such hosts?
+</p>
+<p>
+<font color="#00BB00">A0085:</font>&nbsp;&nbsp;Yes. Add this to your configuration:
+</p>
+<pre>
+   helo_allow_chars = _</pre>
+<p>
+For more seriously malformed host names, see <tt>helo_accept_junk_hosts</tt>.
+See also <a href="FAQ_7.html#TOC262">Q0732</a>.
+</p>
+<p>
+<a name="TOC86" href="FAQ.html#TOC86">Q0086:</a>&nbsp;&nbsp;What does <i>SMTP protocol violation: synchronization error (next input
+sent too soon)</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0086:</font>&nbsp;&nbsp;SMTP is a &#147;lock-step&#148; protocol, which means that, at certain points in
+the protocol, the client must wait for the server to respond before
+sending more data. Exim checks for correct behaviour, and issues this
+error if the client sends data too soon. This protects against
+malefactious clients who send a bunch of SMTP commands (usually to
+transmit spam) without waiting for any replies.
+</p>
+<p>
+This error is also provoked if the client is trying to start up a TLS
+session immediately on connection, without using the STARTTLS command.
+See <a href="FAQ_17.html#TOC326">Q1707</a> for a discussion of this case.
+</p>
+<p>
+<a name="TOC87" href="FAQ.html#TOC87">Q0087:</a>&nbsp;&nbsp;What does <i>rejected after DATA: malformed address: xx@yy may not follow
+&#60;xx@yy&#62; : failing address in "from" header</i> mean? (I've obscured the
+real email addresses.)
+</p>
+<p>
+<font color="#00BB00">A0087:</font>&nbsp;&nbsp;Your DATA ACL contains
+</p>
+<pre>
+   verify = header_syntax</pre>
+<p>
+and an incoming message contained the line
+</p>
+<pre>
+   From: xx@yy &#60;xx@yy&#62;</pre>
+<p>
+This is syntactically invalid. The contents of an address in a header
+line are either just the address, or a &#147;phrase&#148; followed by an address
+in angle brackets. In the latter case, the &#147;phrase&#148; must be quoted if
+it contains special characters such as @. The following are valid
+versions of the bad header:
+</p>
+<pre>
+   From: xx@yy
+   From: "xx@yy" &#60;xx@yy&#62;</pre>
+<p>
+though why on earth anything generates this kind of redundant nonsense I
+can't think.
+</p>
+<p>
+<a name="TOC88" href="FAQ.html#TOC88">Q0088:</a>&nbsp;&nbsp;The Windows mailer SENDFILE.EXE sometimes hangs while trying to send a
+message to Exim 4, and eventually times out. It worked flawlessly with
+Exim 3. What has changed?
+</p>
+<p>
+<font color="#00BB00">A0088:</font>&nbsp;&nbsp;Exim 4 sets an obscure TCP/IP parameter called TCP_NODELAY. This
+disables the "Nagle algorithm" for the TCP/IP transmission. The Nagle
+algorithm can improve network performance in interactive situations such
+as a human typing at a keyboard, by buffering up outgoing data until the
+previous packet has been acknowledged, and thereby reducing the number
+of packets used. This is not relevant for mail transmission, which
+mostly consists of quite large blocks of data; setting TCP_NODELAY
+should improve performance. However, it seems that some Windows clients
+do not function correctly if the server turns off the Nagle algorithm.
+If you are using Exim 4.23 or later, you can set
+</p>
+<pre>
+   tcp_nodelay = false</pre>
+<p>
+This stops Exim setting TCP_NODELAY on the sockets created by the
+listening daemon.
+</p>
+<p>
+<a name="TOC89" href="FAQ.html#TOC89">Q0089:</a>&nbsp;&nbsp;What does the error <i>kernel: application bug: exim(12099) has SIGCHLD
+set to SIG_IGN but calls wait()</i> mean?
+</p>
+<p>
+<font color="#00BB00">A0089:</font>&nbsp;&nbsp;This was a bad interaction between a relatively recent change to the
+Linux kernel and some &#147;belt and braces&#148; programming in Exim. The
+following explanation is taken from Exim's change log:
+</p>
+<p>
+When Exim is receiving multiple messages on a single connection, and
+spinning off delivery processess, it sets the SIGCHLD signal handling to
+SIG_IGN, because it doesn't want to wait for these processes. However,
+because on some OS this didn't work, it also has a paranoid call to
+<i>waitpid()</i> in the loop to reap any children that have finished. Some
+versions of Linux now complain (to the system log) about this
+&#147;illogical&#148; call to <i>waitpid()</i>. I have therefore put it inside a
+conditional compilation, and arranged for it to be omitted for Linux.
+</p>
+<p>
+I am pretty sure I caught all the places in Exim where this happened.
+However, there are still occasional reports of this error. I have not
+heard of any resolutions, but my current belief is that they are caused
+by something that Exim calls falling foul of the same check. There was
+at one time a suspicion that the IPv6 stack was involved.
+</p>
+<p>
+<a name="TOC90" href="FAQ.html#TOC90">Q0090:</a>&nbsp;&nbsp;I can't seem to get a pipe command to run when I include a <tt>${lookup</tt>
+expansion in it.
+</p>
+<p>
+<font color="#00BB00">A0090:</font>&nbsp;&nbsp;See <a href="FAQ_0.html#TOC25">Q0025</a>.
+</p>
+<p>
+<a name="TOC91" href="FAQ.html#TOC91">Q0091:</a>&nbsp;&nbsp;Why is Exim giving the error <i>Failed to send message from address_reply
+transport</i> when I run it using -C to specify an alternate
+configuration?
+</p>
+<p>
+<font color="#00BB00">A0091:</font>&nbsp;&nbsp;See <a href="FAQ_0.html#TOC65">Q0065</a>.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_1.html">Next</a>
+</body>
+</html>

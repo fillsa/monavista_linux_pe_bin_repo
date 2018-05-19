@@ -1,0 +1,1082 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 22</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_21.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_23.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX1720"></a>
+<a name="IX1721"></a>
+<a name="IX1722"></a>
+<a name="IX1723"></a>
+<h1>
+<a name="CHAP22" href="spec_toc.html#TOC180">
+22. The redirect router
+</a></h1>
+<p>
+The <b>redirect</b> router handles several kinds of address redirection. Its most
+common uses are for resolving local part aliases from a central alias file
+(usually called <i>/etc/aliases</i>) and for handling users' personal <i>.forward</i>
+files, but it has many other potential uses. The incoming address can be
+redirected in several different ways:
+</p>
+<ul>
+<li><p>
+It can be replaced by one or more new addresses which are themselves routed
+independently.
+</p>
+</li>
+<li><p>
+It can be routed to be delivered to a given file or directory.
+</p>
+</li>
+<li><p>
+It can be routed to be delivered to a specified pipe command.
+</p>
+</li>
+<li><p>
+It can cause an automatic reply to be generated.
+</p>
+</li>
+<li><p>
+It can be forced to fail, with a custom error message.
+</p>
+</li>
+<li><p>
+It can be temporarily deferred.
+</p>
+</li>
+<li><p>
+It can be discarded.
+</p>
+</li>
+</ul>
+<p>
+The generic <tt>transport</tt> option must not be set for <b>redirect</b> routers.
+However, there are some private options which define transports for delivery to
+files and pipes, and for generating autoreplies. See the <tt>file&#095;transport</tt>,
+<tt>pipe&#095;transport</tt> and <tt>reply&#095;transport</tt> descriptions below.
+</p>
+<h2>
+<a name="SECT22.1" href="spec_toc.html#TOC181">
+22.1. Redirection data
+</a></h2>
+<p>
+The router operates by interpreting a text string which it obtains either by
+expanding the contents of the <tt>data</tt> option, or by reading the entire contents
+of a file whose name is given in the <tt>file</tt> option. These two options are
+mutually exclusive. The first is commonly used for handling system aliases, in
+a configuration like this:
+<pre>
+&nbsp;&nbsp;system_aliases:
+&nbsp;&nbsp;  driver = redirect
+&nbsp;&nbsp;  data = ${lookup{$local_part}lsearch{/etc/aliases}}
+</pre>
+</p>
+<p>
+<font color=green>
+If the lookup fails, the expanded string in this example is empty. When the 
+expansion of <tt>data</tt> results in an empty string, the router declines. A forced
+expansion failure also causes the router to decline; other expansion failures
+cause delivery to be deferred.
+</font>
+</p>
+<p>
+A configuration using <tt>file</tt> is commonly used for handling users' <i>.forward</i>
+files, like this:
+<pre>
+&nbsp;&nbsp;userforward:
+&nbsp;&nbsp;  driver = redirect
+&nbsp;&nbsp;  check_local_user
+&nbsp;&nbsp;  file = $home/.forward
+&nbsp;&nbsp;  no_verify
+</pre>
+</p>
+<p>
+If the file does not exist, or causes no action to be taken (for example, it is
+empty or consists only of comments), the router declines. <b>Warning</b>: This
+is not the case when the file contains syntactically valid items that happen to
+yield empty addresses, for example, items containing only RFC 2822 address
+comments.
+</p>
+<a name="IX1724"></a>
+<h2>
+<a name="SECT22.2" href="spec_toc.html#TOC182">
+22.2. Forward files and address verification
+</a></h2>
+<p>
+It is usual to set <tt>no&#095;verify</tt> on <b>redirect</b> routers which handle users'
+<i>.forward</i> files, as in the example above. There are two reasons for this:
+</p>
+<ul>
+<li><p>
+When Exim is receiving an incoming SMTP message from a remote host, it is
+running under the Exim uid, not as root. 
+No additional groups are set up, even if the Exim uid is a member of other 
+groups (that is, the <i>initgroups()</i> function is not run).
+Exim is unable to change uid to read the file as the user, and it may not be
+able to read it as the Exim user. So in practice the router may not be able to
+operate.
+</p>
+</li>
+<li><p>
+However, even when the router can operate, the existence of a <i>.forward</i> file
+is unimportant when verifying an address. What should be checked is whether the
+local part is a valid user name or not. Cutting out the redirection processing
+saves some resources.
+</p>
+</li>
+</ul>
+<a name="IX1725"></a>
+<a name="IX1726"></a>
+<h2>
+<a name="SECT22.3" href="spec_toc.html#TOC183">
+22.3. Interpreting redirection data
+</a></h2>
+<p>
+The contents of the data string, whether obtained from <tt>data</tt> or <tt>file</tt>, can be
+interpreted in two different ways:
+</p>
+<ul>
+<li><p>
+If the <tt>allow&#095;filter</tt> option is set true, and the data begins with the text
+&#147;&#035;Exim filter&#148; or &#147;&#035;Sieve filter&#148;, it is interpreted as a list of
+<i>filtering</i> instructions in the form of an Exim or Sieve filter file,
+respectively. Details of the syntax and semantics of filter files are described
+in a separate document entitled <i>Exim's interfaces to mail filtering</i>; this
+document is intended for use by end users.
+</p>
+</li>
+<li><p>
+Otherwise, the data must be a comma-separated list of redirection items, as
+described in the next section.
+</p>
+</li>
+</ul>
+<p>
+When a message is redirected to a file (a &#147;mail folder&#148;), the file name given 
+in a non-filter redirection list must always be an absolute path. A filter may 
+generate a relative path &#150; how this is handled depends on the transport's 
+configuration. See section <a href="spec_26.html#SECT26.1">26.1</a> for a discussion of this issue for 
+the <b>appendfile</b> transport.
+</p>
+<a name="IX1727"></a>
+<h2>
+<a name="SECT22.4" href="spec_toc.html#TOC184">
+22.4. Items in a non-filter redirection list
+</a></h2>
+<p>
+When the redirection data is not an Exim or Sieve filter, for example, if it
+comes from a conventional alias or forward file, it consists of a list of
+addresses, file names, pipe commands, or certain special items (see section
+<a href="spec_22.html#SECT22.6">22.6</a> below). The special items can be individually enabled or
+disabled by means of options whose names begin with <tt>allow&#095;</tt> or <tt>forbid&#095;</tt>,
+depending on their default values. The items in the list are separated by
+commas or newlines.
+If a comma is required in an item, the entire item must be enclosed in double
+quotes.
+</p>
+<p>
+Lines starting with a &#035; character are comments, and are ignored, and &#035; may
+also appear following a comma, in which case everything between the &#035; and the
+next newline character is ignored.
+</p>
+<p>
+If an item is entirely enclosed in double quotes, these are removed. Otherwise
+double quotes are retained because some forms of mail address require their use
+(but never to enclose the entire address). In the following description, &#147;item&#148;
+refers to what remains after any surrounding double quotes have been removed.
+</p>
+<p>
+<b>Warning</b>: If you use an Exim expansion to construct a redirection address, 
+and the expansion contains a reference to <tt>$local&#095;part</tt>, you should make use 
+of the <tt>quote</tt> expansion operator, in case the local part contains special 
+characters. For example, to redirect all mail for the domain 
+<i>obsolete.example</i>, retaining the existing local part, you could use this 
+setting:
+<pre>
+&nbsp;&nbsp;data = ${quote:$local_part}@newdomain.example
+</pre>
+</p>
+<a name="IX1728"></a>
+<a name="IX1729"></a>
+<a name="IX1730"></a>
+<h2>
+<a name="SECT22.5" href="spec_toc.html#TOC185">
+22.5. Redirecting to a local mailbox
+</a></h2>
+<p>
+A redirection item may safely be the same as the address currently under
+consideration. This does not cause a routing loop, because a router is
+automatically skipped if any ancestor of the address that is being processed
+<font color=green>
+is the same as the current address and was processed by the current router. 
+</font>
+Such an address is therefore passed to the following routers, so it is handled
+as if there were no redirection. When making this loop-avoidance test, the
+complete local part, including any prefix or suffix, is used.
+<a name="IX1731"></a>
+</p>
+<p>
+Specifying the same local part without a domain is a common usage in personal
+filter files when the user wants to have messages delivered to the local
+mailbox and also forwarded elsewhere. For example, the user whose login is
+<i>cleo</i> might have a <i>.forward</i> file containing this:
+<pre>
+&nbsp;&nbsp;cleo, cleopatra@egypt.example
+</pre>
+<a name="IX1732"></a>
+<a name="IX1733"></a>
+</p>
+<p>
+For compatibility with other MTAs, such unqualified local parts may be
+preceeded by &#147;&#092;&#148;, but this is not a requirement for loop prevention. However,
+it does make a difference if more than one domain is being handled
+synonymously.
+</p>
+<p>
+If an item begins with &#147;&#092;&#148; and the rest of the item parses as a valid RFC 2822
+address that does not include a domain, the item is qualified using the domain
+of the incoming address. In the absence of a leading &#147;&#092;&#148;, unqualified
+addresses are qualified using the value in <tt>qualify&#095;recipient</tt>, but you can
+force the incoming domain to be used by setting <tt>qualify_preserve&#095;domain</tt>.
+</p>
+<p>
+Care must be taken if there are alias names for local users. 
+<font color=green>
+Consider an MTA handling a single local domain where the system alias file
+contains:
+<pre>
+&nbsp;&nbsp;Sam.Reman: spqr
+</pre>
+</p>
+<p>
+Now suppose that Sam (whose login id is <i>spqr</i>) wants to save copies of
+messages in the local mailbox, and also forward copies elsewhere. He creates 
+this forward file:
+<pre>
+&nbsp;&nbsp;Sam.Reman, spqr@reme.elsewhere.example
+</pre>
+</p>
+<p>
+With these settings, an incoming message addressed to <i>Sam.Reman</i> fails. The
+<b>redirect</b> router for system aliases does not process <i>Sam.Reman</i> the
+second time round, because it has previously routed it, 
+</font>
+and the following routers presumably cannot handle the alias. The forward file
+should really contain
+<pre>
+&nbsp;&nbsp;spqr, spqr@reme.elsewhere.example
+</pre>
+</p>
+<p>
+but because this is such a common error, the <tt>check&#095;ancestor</tt> option (see
+below) exists to provide a way to get round it. This is normally set on a
+<b>redirect</b> router that is handling users' <i>.forward</i> files.
+</p>
+<h2>
+<a name="SECT22.6" href="spec_toc.html#TOC186">
+22.6. Special items in redirection lists
+</a></h2>
+<p>
+In addition to addresses, the following types of item may appear in redirection
+lists (that is, in non-filter redirection data):
+</p>
+<ul>
+<li><a name="IX1734"></a>
+<a name="IX1735"></a>
+<p>
+An item is treated as a pipe command if it begins with &#147;|&#148; and does not parse
+as a valid RFC 2822 address that includes a domain. A transport for running the
+command must be specified by the <tt>pipe&#095;transport</tt> option. 
+<font color=green>
+Normally, either the router or the transport specifies a user and a group under
+which to run the delivery. The default is to use the Exim user and group.
+</font>
+</p>
+<p>
+Single or double quotes can be used for enclosing the individual arguments of
+the pipe command; no interpretation of escapes is done for single quotes. If
+the command contains a comma character, it is necessary to put the whole item
+in double quotes, for example:
+<pre>
+&nbsp;&nbsp;"|/some/command ready,steady,go"
+</pre>
+</p>
+<p>
+since items in redirection lists are terminated by commas. Do not, however,
+quote just the command. An item such as
+<pre>
+&nbsp;&nbsp;|"/some/command ready,steady,go"
+</pre>
+</p>
+<p>
+is interpreted as a pipe with a rather strange command name, and no arguments.
+</p>
+</li>
+<li><a name="IX1736"></a>
+<a name="IX1737"></a>
+<p>
+An item is interpreted as a path name if it begins with &#147;/&#148; and does not parse
+as a valid RFC 2822 address that includes a domain. For example,
+<pre>
+&nbsp;&nbsp;/home/world/minbari
+</pre>
+</p>
+<p>
+is treated as a file name, but
+<pre>
+&nbsp;&nbsp;/s=molari/o=babylon/@x400gate.way
+</pre>
+</p>
+<p>
+is treated as an address. For a file name, a transport must be specified using
+the <tt>file&#095;transport</tt> option. However, if the generated path name ends with a
+forward slash character, it is interpreted as a directory name rather than a
+file name, and <tt>directory&#095;transport</tt> is used instead.
+</p>
+<p>
+<a name="IX1738"></a>
+<font color=green>
+Normally, either the router or the transport specifies a user and a group under
+which to run the delivery. The default is to use the Exim user and group.
+However, if a redirection item is the path <i>/dev/null</i>, delivery to it is
+bypassed at a high level, and the log entry shows &#147;**bypassed**&#148;
+instead of a transport name. In this case the user and group are not used.
+</font>
+</p>
+</li>
+<li><a name="IX1739"></a>
+<a name="IX1740"></a>
+<p>
+If an item is of the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>:include:&#060;<em>path name</em>&#062;</tt><br>
+</p>
+<p>
+a list of further items is taken from the given file and included at that
+point. 
+<b>Note</b>: such a file can not be a filter file; it is just an out-of-line 
+addition to the list.
+The items in the included list are separated by commas or newlines and are not
+subject to expansion. If this is the first item in an alias list in an
+<b>lsearch</b> file, a colon must be used to terminate the alias name. This
+example is incorrect:
+<pre>
+&nbsp;&nbsp;list1    :include:/opt/lists/list1
+</pre>
+</p>
+<p>
+It must be given as
+<pre>
+&nbsp;&nbsp;list1:   :include:/opt/lists/list1
+</pre>
+</p>
+</li>
+<li><a name="IX1741"></a>
+<p>
+<a name="IX1742"></a>
+<a name="IX1743"></a>
+Sometimes you want to throw away mail to a particular local part. Making the
+<tt>data</tt> option expand to an empty string does not work, because that causes the
+router to decline. Instead, the alias item
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>:blackhole:</tt><br>
+</p>
+<p>
+can be used. It does what its name implies. No delivery is done, and no error
+message is generated. This has the same effect as specifing <i>/dev/null</i>, but
+can be independently disabled.
+</p>
+<p>
+<b>Warning</b>: If <tt>:blackhole:</tt> appears anywhere in a redirection list, no 
+delivery is done for the original local part, even if other redirection items 
+are present. If you are generating a multi-item list (for example, by reading a 
+database) and need the ability to provide a no-op item, you must use 
+<i>/dev/null</i>.
+</p>
+</li>
+<li><a name="IX1744"></a>
+<a name="IX1745"></a>
+<a name="IX1746"></a>
+<a name="IX1747"></a>
+<a name="IX1748"></a>
+<p>
+An attempt to deliver a particular address can be deferred or forced to fail by
+redirection items of the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>:defer:</tt><br>
+<tt>&nbsp;&nbsp;</tt>or<br>
+<tt>&nbsp;&nbsp;</tt><tt>:fail:</tt><br>
+</p>
+<p>
+respectively. When a redirection list contains such an item, it applies to the
+entire redirection; any other items in the list are ignored (<i>:blackhole:</i> is
+different). Any text following <i>:fail:</i> or <i>:defer:</i> is placed in the error
+text associated with the failure. For example, an alias file might contain:
+<pre>
+&nbsp;&nbsp;X.Employee:  :fail: Gone away, no forwarding address
+</pre>
+</p>
+<p>
+In the case of an address that is being verified from an ACL or as the subject
+of a <font size=-1>VRFY</font> command, the text is included in the SMTP error response by 
+default. In an ACL, an explicitly provided message overrides the default, but
+the default message is available in the variable <tt>$acl&#095;verify&#095;message</tt> and
+can therefore be included in a custom message if this is desired. Exim sends a
+451 SMTP code for a <i>:defer:</i>, and 550 for <i>:fail:</i>. In non-SMTP cases the
+text is included in the error message that Exim generates.
+</p>
+<p>
+Normally the error text is the rest of the redirection list &#150; a comma does not
+terminate it &#150; but a newline does act as a terminator. Newlines are not
+normally present in alias expansions. In <b>lsearch</b> lookups they are removed as
+part of the continuation process, but they may exist in other kinds of lookup
+and in <i>:include:</i> files.
+</p>
+<p>
+During routing for message delivery (as opposed to verification), a redirection
+containing <i>:fail:</i> causes an immediate failure of the incoming address,
+whereas <i>:defer:</i> causes the message to remain on the queue so that a
+subsequent delivery attempt can happen at a later time. If an address is
+deferred for too long, it will ultimately fail, because the normal retry
+rules still apply.
+</p>
+</li>
+<li><a name="IX1749"></a>
+<p>
+Sometimes it is useful to use a single-key search type with a default (see
+chapter <a href="spec_9.html">9</a>) to look up aliases. However, there may be a need for
+exceptions to the default. These can be handled by aliasing them to
+<pre>
+&nbsp;&nbsp;:unknown:
+</pre>
+</p>
+<p>
+This differs from <i>:fail:</i> in that it causes the <b>redirect</b> router to decline,
+whereas <i>:fail:</i> forces routing to fail. A lookup which results in an empty
+redirection list has the same effect.
+</p>
+</li>
+</ul>
+<a name="IX1750"></a>
+<a name="IX1751"></a>
+<a name="IX1752"></a>
+<h2>
+<a name="SECT22.7" href="spec_toc.html#TOC187">
+22.7. Duplicate addresses
+</a></h2>
+<p>
+Exim removes duplicate addresses from the list to which it is delivering, so as
+to deliver just one copy to each address. This does not apply to deliveries
+routed to pipes by different immediate parent addresses, but an indirect
+aliasing scheme of the type
+<pre>
+&nbsp;&nbsp;pipe:       |/some/command $local_part
+&nbsp;&nbsp;localpart1: pipe
+&nbsp;&nbsp;localpart2: pipe
+</pre>
+</p>
+<p>
+does not work with a message that is addressed to both local parts, because
+when the second is aliased to the intermediate local part &#147;pipe&#148; it gets
+discarded as being the same as a previously handled address. However, a scheme
+such as
+<pre>
+&nbsp;&nbsp;localpart1: |/some/command $local_part
+&nbsp;&nbsp;localpart2: |/some/command $local_part
+</pre>
+</p>
+<p>
+does result in two different pipe deliveries, because the immediate parents of
+the pipes are distinct.
+</p>
+<a name="IX1753"></a>
+<a name="IX1754"></a>
+<h2>
+<a name="SECT22.8" href="spec_toc.html#TOC188">
+22.8. Repeated redirection expansion
+</a></h2>
+<p>
+When a message cannot be delivered to all of its recipients immediately,
+leading to two or more delivery attempts, redirection expansion is carried out
+afresh each time for those addresses whose children were not all previously
+delivered. If redirection is being used as a mailing list, this can lead to new
+members of the list receiving copies of old messages. The <tt>one&#095;time</tt> option
+can be used to avoid this.
+</p>
+<a name="IX1755"></a>
+<h2>
+<a name="SECT22.9" href="spec_toc.html#TOC189">
+22.9. Errors in redirection lists
+</a></h2>
+<p>
+If <tt>skip&#095;syntax&#095;errors</tt> is set, a malformed address that causes a parsing
+error is skipped, and an entry is written to the main log. This may be useful
+for mailing lists that are automatically managed. Otherwise, if an error is
+detected while generating the list of new addresses, the original address is
+deferred. See also <tt>syntax&#095;errors&#095;to</tt>.
+</p>
+<h2>
+<a name="SECT22.10" href="spec_toc.html#TOC190">
+22.10. Private options for the redirect router
+</a></h2>
+<p>
+The private options for the <b>redirect</b> router are as follows:
+<a name="IX1756"></a>
+<hr></p>
+<a name="IX1757"></a>
+<h3>allow_defer</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+Setting this option allows the use of <i>:defer:</i> in non-filter redirection
+data,
+or the <tt>defer</tt> command in an Exim filter file.
+<hr></p>
+<a name="IX1758"></a>
+<a name="IX1759"></a>
+<h3>allow_fail</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, the <i>:fail:</i> item can be used in a redirection list,
+and the <tt>fail</tt> command may be used in a filter file.
+<hr></p>
+<a name="IX1760"></a>
+<a name="IX1761"></a>
+<a name="IX1762"></a>
+<h3>allow_filter</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+Setting this option allows Exim to interpret redirection data that starts with
+&#147;&#035;Exim filter&#148; or &#147;&#035;Sieve filter&#148; as a set of filtering instructions. There
+are some features of Exim filter files that some administrators may wish to
+lock out; see the <tt>forbid&#095;filter&#095;xxx</tt> options below. The filter is run using
+the uid and gid set by the generic <tt>user</tt> and <tt>group</tt> options. These take their
+defaults from the password data if <tt>check&#095;local&#095;user</tt> is set, so in the
+normal case of users' personal filter files, the filter is run as the relevant
+user. When <tt>allow&#095;filter</tt> is set true, Exim insists that either
+<tt>check&#095;local&#095;user</tt> or <tt>user</tt> is set.
+<hr></p>
+<a name="IX1763"></a>
+<a name="IX1764"></a>
+<h3>allow_freeze</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+Setting this option allows the use of the <tt>freeze</tt> command in an Exim filter.
+This command is more normally encountered in system filters, and is disabled by
+default for redirection filters because it isn't something you usually want to
+let ordinary users do.
+<hr></p>
+<a name="IX1765"></a>
+<h3>check_ancestor</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+This option is concerned with handling generated addresses that are the same
+as some address in the list of redirection ancestors of the current address.
+Although it is turned off by default in the code, it is set in the default
+configuration file for handling users' <i>.forward</i> files. It is recommended
+for this use of the <b>redirect</b> router.
+</p>
+<p>
+<font color=green>
+When <tt>check&#095;ancestor</tt> is set, if a generated address (including the domain) is
+the same as any ancestor of the current address, it is replaced by a copy of
+the current address. This helps in the case where local part A is aliased to B,
+and B has a <i>.forward</i> file pointing back to A. For example, within a single 
+domain, the local part &#147;Joe.Bloggs&#148; is aliased to &#147;jb&#148; and <i>&#126;jb/.forward</i>
+contains:
+</font>
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#092;Joe.Bloggs, &#060;<em>other item(s)</em>&#062;</tt><br>
+</p>
+<p>
+Without the <tt>check&#095;ancestor</tt> setting, either local part (&#147;jb&#148; or &#147;joe.bloggs&#148;)
+gets processed once by each router and so ends up as it was originally. If &#147;jb&#148;
+is the real mailbox name, mail to &#147;jb&#148; gets delivered (having been turned into
+&#147;joe.bloggs&#148; by the <i>.forward</i> file and back to &#147;jb&#148; by the alias), but mail
+to &#147;joe.bloggs&#148; fails. Setting <tt>check&#095;ancestor</tt> on the <b>redirect</b> router that
+handles the <i>.forward</i> file prevents it from turning &#147;jb&#148; back into
+&#147;joe.bloggs&#148; when that was the original address. See also the <tt>repeat&#095;use</tt>
+option below.
+<hr></p>
+<a name="IX1766"></a>
+<h3>check_group</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; see below<br>
+<p>
+When the <tt>file</tt> option is used, the group owner of the file is checked only
+when this option is set. The permitted groups are those listed in the
+<tt>owngroups</tt> option, together with the user's default group if
+<tt>check&#095;local&#095;user</tt> is set. If the file has the wrong group, routing is
+deferred. The default setting for this option is true if <tt>check&#095;local&#095;user</tt>
+is set and the <tt>modemask</tt> option permits the group write bit, or if the
+<tt>owngroups</tt> option is set. Otherwise it is false, and no group check occurs.
+<hr></p>
+<a name="IX1767"></a>
+<h3>check_owner</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; see below<br>
+<p>
+When the <tt>file</tt> option is used, the owner of the file is checked only when this
+option is set. If <tt>check&#095;local&#095;user</tt> is set, the local user is permitted;
+otherwise the owner must be one of those listed in the <tt>owners</tt> option. The
+default value for this option is true if <tt>check&#095;local&#095;user</tt> or <tt>owners</tt> is
+set. Otherwise the default is false, and no owner check occurs.
+<hr></p>
+<a name="IX1768"></a>
+<h3>data</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option is mutually exclusive with <tt>file</tt>. One or other of them must be
+set, but not both. The contents of <tt>data</tt> are expanded, and then used as the
+list of forwarding items, or as a set of filtering instructions. If the
+expansion is forced to fail, or the result is an empty string or a string that
+has no effect (consists entirely of comments), the router declines.
+</p>
+<p>
+When filtering instructions are used, the string must begin with &#147;&#035;Exim
+filter&#148;, and all comments in the string, including this initial one, must be
+terminated with newline characters. For example:
+<pre>
+&nbsp;&nbsp;data = #Exim filter\n\
+&nbsp;&nbsp;       if $h_to: contains Exim then save $home/mail/exim endif
+</pre>
+</p>
+<p>
+If you are reading the data from a database where newlines cannot be included,
+you can use the <tt>$&#123;sg&#125;</tt> expansion item to turn the escape string of your
+choice into a newline.
+<hr></p>
+<a name="IX1769"></a>
+<h3>directory_transport</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+A <b>redirect</b> router sets up a direct delivery to a directory when a path name
+ending with a slash is specified as a new &#147;address&#148;. The transport used is
+specified by this option, which, after expansion, must be the name of a
+configured transport. This should normally be an <b>appendfile</b> transport.
+<hr></p>
+<a name="IX1770"></a>
+<h3>file</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This option specifies the name of a file that contains the redirection data. It
+is mutually exclusive with the <tt>data</tt> option. The string is expanded before
+use; if the expansion is forced to fail, the router declines. Other expansion
+failures cause delivery to be deferred. The result of a successful expansion
+must be an absolute path. The entire file is read and used as the redirection
+data. If the data is an empty string or a string that has no effect (consists
+entirely of comments), the router declines.
+<a name="IX1771"></a>
+</p>
+<p>
+If the attempt to open the file fails with a &#147;does not exist&#148; error, Exim
+runs a check on the containing directory,
+unless <tt>ignore&#095;enotdir</tt> is true (see below).
+If the directory does not appear to exist, delivery is deferred. This can
+happen when users' <i>.forward</i> files are in NFS-mounted directories, and there
+is a mount problem. If the containing directory does exist, but the file does
+not, the router declines.
+<hr></p>
+<a name="IX1772"></a>
+<h3>file_transport</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+A <b>redirect</b> router sets up a direct delivery to a file when a path name not
+ending in a slash is specified as a new &#147;address&#148;. The transport used is
+specified by this option, which, after expansion, must be the name of a
+configured transport. 
+This should normally be an <b>appendfile</b> transport.
+When it is running, the file name is in <tt>$address&#095;file</tt>.
+<hr></p>
+<a name="IX1773"></a>
+<h3>forbid_blackhole</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, the <i>:blackhole:</i> item may not appear in a redirection
+list.
+<hr></p>
+<a name="IX1774"></a>
+<a name="IX1775"></a>
+<a name="IX1776"></a>
+<a name="IX1777"></a>
+<h3>forbid_file</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, this router may not generate a new address that
+specifies delivery to a local file or directory, either from a filter or from a
+conventional forward file. This option is forced to be true if <tt>one&#095;time</tt> is
+set. It applies to Sieve filters as well as to Exim filters, but if true, it
+locks out the Sieve's &#147;keep&#148; facility.
+<hr></p>
+<a name="IX1778"></a>
+<a name="IX1779"></a>
+<h3>forbid_filter_existstest</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, string expansions in Exim filters are not allowed to
+make use of the <tt>exists</tt> condition.
+<hr></p>
+<a name="IX1780"></a>
+<h3>forbid_filter_logwrite</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, use of the logging facility in Exim filters is not
+permitted. Logging is in any case available only if the filter is being run
+under some unprivileged uid (which is normally the case for ordinary users'
+<i>.forward</i> files).
+<hr></p>
+<a name="IX1781"></a>
+<h3>forbid_filter_lookup</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, string expansions in Exim filter files are not allowed
+to make use of <tt>lookup</tt> items.
+<hr></p>
+<a name="IX1782"></a>
+<h3>forbid_filter_perl</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+This option is available only if Exim is built with embedded Perl support. If
+it is true, string expansions in Exim filter files are not allowed to make use
+of the embedded Perl support.
+<hr></p>
+<a name="IX1783"></a>
+<h3>forbid_filter_readfile</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, string expansions in Exim filter files are not allowed
+to make use of <tt>readfile</tt> items.
+<hr></p>
+<a name="IX1784"></a>
+<h3>forbid_filter_readsocket</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, string expansions in Exim filter files are not allowed
+to make use of <tt>readsocket</tt> items.
+<hr></p>
+<a name="IX1785"></a>
+<h3>forbid_filter_reply</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, this router may not generate an automatic reply
+message. Automatic replies can be generated only from Exim filter files, not
+from traditional forward files or Sieve filters. This option is forced to be
+true if <tt>one&#095;time</tt> is set.
+<hr></p>
+<a name="IX1786"></a>
+<h3>forbid_filter_run</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, string expansions in Exim filter files are not allowed
+to make use of <tt>run</tt> items.
+<hr></p>
+<a name="IX1787"></a>
+<h3>forbid_include</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, items of the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>:include:&#060;<em>path name</em>&#062;</tt><br>
+</p>
+<p>
+are not permitted in non-filter redirection lists.
+<hr></p>
+<a name="IX1788"></a>
+<a name="IX1789"></a>
+<h3>forbid_pipe</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, this router may not generate a new address which
+specifies delivery to a pipe, either from an Exim filter or from a conventional
+forward file. This option is forced to be true if <tt>one&#095;time</tt> is set.
+<hr></p>
+<a name="IX1790"></a>
+<a name="IX1791"></a>
+<h3>hide_child_in_errmsg</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is true, it prevents Exim from quoting a child address if it
+generates a bounce or delay message for it. Instead it says &#147;an address
+generated from &#060;<em>the top level address</em>&#062;&#148;. Of course, this applies only to
+bounces generated locally. If a message is forwarded to another host, <em>its</em>
+bounce may well quote the generated address.
+<hr></p>
+<a name="IX1792"></a>
+<a name="IX1793"></a>
+<h3>ignore_eacces</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set and an attempt to open a redirection file yields the
+<font size=-1>EACCES</font> error (permission denied), the <b>redirect</b> router behaves as if the
+file did not exist.
+<hr></p>
+<a name="IX1794"></a>
+<a name="IX1795"></a>
+<h3>ignore_enotdir</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this option is set and an attempt to open a redirection file yields the
+<font size=-1>ENOTDIR</font> error (something on the path is not a directory), the <b>redirect</b>
+router behaves as if the file did not exist.
+</p>
+<p>
+Setting <tt>ignore&#095;enotdir</tt> has another effect as well: When a <b>redirect</b>
+router that has the <tt>file</tt> option set discovers that the file does not exist
+(the <font size=-1>ENOENT</font> error), it tries to <i>stat()</i> the parent directory, as a check
+against unmounted NFS directories. If the parent can not be statted, delivery
+is deferred. However, it seems wrong to do this check when <tt>ignore&#095;enotdir</tt> is
+set, because that option tells Exim to ignore &#147;something on the path is not a
+directory&#148; (the <font size=-1>ENOTDIR</font> error). This is a confusing area, because it seems
+that some operating systems give <font size=-1>ENOENT</font> where others give <font size=-1>ENOTDIR</font>.
+<hr></p>
+<a name="IX1796"></a>
+<h3>include_directory</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If this option is set, the path names of any <i>:include:</i> items in a redirection
+list must start with this directory.
+<hr></p>
+<a name="IX1797"></a>
+<h3>modemask</h3>
+<i>Type:</i>&nbsp; octal integer<br><i>Default:</i>&nbsp; 022<br>
+<p>
+This specifies mode bits which must not be set for a file specified by the
+<tt>file</tt> option. If any of the forbidden bits are set, delivery is deferred.
+<hr></p>
+<a name="IX1798"></a>
+<a name="IX1799"></a>
+<a name="IX1800"></a>
+<a name="IX1801"></a>
+<a name="IX1802"></a>
+<a name="IX1803"></a>
+<h3>one_time</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+Sometimes the fact that Exim re-evaluates aliases and reprocesses redirection
+files each time it tries to deliver a message causes a problem
+when one or more of the generated addresses fails be delivered at the first 
+attempt. The problem is not one of duplicate delivery &#150; Exim is clever enough 
+to handle that &#150; but of what happens when the redirection list changes during
+the time that the message is on Exim's queue. This is particularly true in the
+case of mailing lists, where new subscribers might receive copies of messages
+that were posted before they subscribed.
+</p>
+<p>
+If <tt>one&#095;time</tt> is set and any addresses generated by the router fail to
+deliver at the first attempt, the failing addresses are added to the message as
+&#147;top level&#148; addresses, and the parent address that generated them is marked
+&#147;delivered&#148;. Thus, redirection does not happen again at the next
+delivery attempt.
+</p>
+<p>
+<b>Warning 1</b>: This means that any header line addition or removal that is
+specified by this router would be lost if delivery did not succeed at the
+first attempt. For this reason, the <tt>headers&#095;add</tt> and <tt>headers&#095;remove</tt>
+generic options are not permitted when <tt>one&#095;time</tt> is set.
+</p>
+<p>
+<b>Warning 2</b>: To ensure that the router generates only addresses (as opposed
+to pipe or file deliveries or auto-replies) <tt>forbid&#095;file</tt>, <tt>forbid&#095;pipe</tt>,
+and <tt>forbid&#095;filter&#095;reply</tt> are forced to be true when <tt>one&#095;time</tt> is set.
+</p>
+<p>
+The original top-level address is remembered with each of the generated
+addresses, and is output in any log messages. However, any intermediate parent
+addresses are not recorded. This makes a difference to the log only if
+<tt>all_parents</tt> log selector is set. It is expected that <tt>one&#095;time</tt> will
+typically be used for mailing lists, where there is normally just one level of
+expansion.
+<hr></p>
+<a name="IX1804"></a>
+<a name="IX1805"></a>
+<a name="IX1806"></a>
+<a name="IX1807"></a>
+<a name="IX1808"></a>
+<h3>owners</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This specifies a list of permitted owners for the file specified by <tt>file</tt>.
+This list is in addition to the local user when <tt>check&#095;local&#095;user</tt> is set.
+See <tt>check&#095;owner</tt> above.
+<hr></p>
+<a name="IX1809"></a>
+<h3>owngroups</h3>
+<i>Type:</i>&nbsp; string list<br><i>Default:</i>&nbsp; unset<br>
+<p>
+This specifies a list of permitted groups for the file specified by <tt>file</tt>. The
+list is in addition to the local user's primary group when <tt>check&#095;local&#095;user</tt>
+is set. See <tt>check&#095;group</tt> above.
+<font color=green><hr></p>
+<a name="IX1810"></a>
+<h3>qualify_domain</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+If this option is set and an unqualified address (one without a domain) is
+generated, it is qualified with the domain specified by expanding this string,
+instead of the global setting in <tt>qualify&#095;recipient</tt>. If the expansion fails,
+the router declines. If you want to revert to the default, you can have the
+expansion generate <tt>$qualify&#095;recipient</tt>.
+</font>
+<hr></p>
+<a name="IX1811"></a>
+<h3>pipe_transport</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+A <b>redirect</b> router sets up a direct delivery to a pipe when a string starting
+with a vertical bar character is specified as a new &#147;address&#148;. The transport
+used is specified by this option, which, after expansion, must be the name of a
+configured transport. 
+This should normally be a <b>pipe</b> transport.
+When the transport is run, the pipe command is in <tt>$address&#095;pipe</tt>.
+<hr></p>
+<a name="IX1812"></a>
+<a name="IX1813"></a>
+<a name="IX1814"></a>
+<a name="IX1815"></a>
+<h3>qualify_preserve_domain</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If this is set and an unqualified address (one without a domain) is generated,
+it is qualified with the domain of the 
+<font color=green>
+parent address (the immediately preceding ancestor) instead of the local
+<tt>qualify&#095;domain</tt> or global <tt>qualify&#095;recipient</tt> value.
+</font>
+<hr></p>
+<a name="IX1816"></a>
+<h3>repeat_use</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+If this option is set false, the router is skipped for a child address that has
+any ancestor that was routed by this router. This test happens before any of
+the other preconditions are tested. Exim's default anti-looping rules skip
+only when the ancestor is the same as the current address. See also
+<tt>check&#095;ancestor</tt> above and the generic <tt>redirect&#095;router</tt> option.
+<hr></p>
+<a name="IX1817"></a>
+<h3>reply_transport</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+A <b>redirect</b> router sets up an automatic reply when a <tt>mail</tt> or <tt>vacation</tt>
+command is used in a filter file. The transport used is specified by this
+option, which, after expansion, must be the name of a configured transport.
+This should normally be an <b>autoreply</b> transport. Other transports are 
+unlikely to do anything sensible or useful.
+<hr></p>
+<a name="IX1818"></a>
+<a name="IX1819"></a>
+<h3>rewrite</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; true<br>
+<p>
+If this option is set false, addresses generated by the router are not
+subject to address rewriting. Otherwise, they are treated like new addresses
+and are rewritten according to the global rewriting rules.
+<hr></p>
+<a name="IX1820"></a>
+<a name="IX1821"></a>
+<a name="IX1822"></a>
+<a name="IX1823"></a>
+<a name="IX1824"></a>
+<a name="IX1825"></a>
+<a name="IX1826"></a>
+<a name="IX1827"></a>
+<h3>skip_syntax_errors</h3>
+<i>Type:</i>&nbsp; boolean<br><i>Default:</i>&nbsp; false<br>
+<p>
+If <tt>skip&#095;syntax&#095;errors</tt> is set, syntactically malformed addresses in
+non-filter redirection data are skipped, and each failing address is logged. If
+<tt>syntax&#095;errors&#095;to</tt> is set, a message is sent to the address it defines,
+giving details of the failures. If <tt>syntax&#095;errors&#095;text</tt> is set, its contents
+are expanded and placed at the head of the error message generated by
+<tt>syntax&#095;errors&#095;to</tt>. Usually it is appropriate to set <tt>syntax&#095;errors&#095;to</tt> to
+be the same address as the generic <tt>errors&#095;to</tt> option. The
+<tt>skip&#095;syntax&#095;errors</tt> option is often used when handling mailing lists.
+</p>
+<p>
+If all the addresses in a redirection list are skipped because of syntax
+errors, the router declines to handle the original address, and it is passed to
+the following routers.
+</p>
+<p>
+If <tt>skip&#095;syntax&#095;errors</tt> is set when an Exim filter is interpreted, any syntax
+error in the filter causes filtering to be abandoned without any action being
+taken. The incident is logged, and the router declines to handle the address,
+so it is passed to the following routers.
+<a name="IX1828"></a>
+</p>
+<p>
+Currently, any syntax errors in a Sieve filter file cause the &#147;keep&#148; action to 
+occur. The values of <tt>skip&#095;syntax&#095;errors</tt>, <tt>syntax&#095;errors&#095;to</tt>, and 
+<tt>syntax&#095;errors&#095;text</tt> are not used.
+</p>
+<p>
+<tt>skip&#095;syntax&#095;errors</tt> can be used to specify that errors in users' forward
+lists or filter files should not prevent delivery. The <tt>syntax&#095;errors&#095;to</tt>
+option, used with an address that does not get redirected, can be used to
+notify users of these errors, by means of a router like this:
+<pre>
+&nbsp;&nbsp;userforward:
+&nbsp;&nbsp;  driver = redirect
+&nbsp;&nbsp;  allow_filter
+&nbsp;&nbsp;  check_local_user
+&nbsp;&nbsp;  file = $home/.forward
+&nbsp;&nbsp;  file_transport = address_file
+&nbsp;&nbsp;  pipe_transport = address_pipe
+&nbsp;&nbsp;  reply_transport = address_reply
+&nbsp;&nbsp;  no_verify
+&nbsp;&nbsp;  skip_syntax_errors
+&nbsp;&nbsp;  syntax_errors_to = real-$local_part@$domain
+&nbsp;&nbsp;  syntax_errors_text = \
+&nbsp;&nbsp;    This is an automatically generated message. An error has\n\
+&nbsp;&nbsp;    been found in your .forward file. Details of the error are\n\
+&nbsp;&nbsp;    reported below. While this error persists, you will receive\n\
+&nbsp;&nbsp;    a copy of this message for every message that is addressed\n\
+&nbsp;&nbsp;    to you. If your .forward file is a filter file, or if it is\n\
+&nbsp;&nbsp;    a non-filter file containing no valid forwarding addresses,\n\
+&nbsp;&nbsp;    a copy of each incoming message will be put in your normal\n\
+&nbsp;&nbsp;    mailbox. If a non-filter file contains at least one valid\n\
+&nbsp;&nbsp;    forwarding address, forwarding to the valid addresses will\n\
+&nbsp;&nbsp;    happen, and those will be the only deliveries that occur.
+</pre>
+</p>
+<p>
+You also need a router to ensure that local addresses that are prefixed by
+<tt>real-</tt> are recognized, but not forwarded or filtered. For example, you could
+put this immediately before the <b>userforward</b> router:
+<pre>
+&nbsp;&nbsp;real_localuser:
+&nbsp;&nbsp;  driver = accept
+&nbsp;&nbsp;  check_local_user
+&nbsp;&nbsp;  local_part_prefix = real-
+&nbsp;&nbsp;  transport = local_delivery
+</pre>
+<hr></p>
+<a name="IX1829"></a>
+<h3>syntax_errors_text</h3>
+<i>Type:</i>&nbsp; string, expanded<br><i>Default:</i>&nbsp; unset<br>
+<p>
+See <tt>skip&#095;syntax&#095;errors</tt> above.
+<hr></p>
+<a name="IX1830"></a>
+<h3>syntax_errors_to</h3>
+<i>Type:</i>&nbsp; string<br><i>Default:</i>&nbsp; unset<br>
+<p>
+See <tt>skip&#095;syntax&#095;errors</tt> above.
+<hr><br>
+<hr>
+</p>
+<font size=2>
+<a href="spec_21.html">Previous</a>&nbsp;&nbsp;<a href="spec_23.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

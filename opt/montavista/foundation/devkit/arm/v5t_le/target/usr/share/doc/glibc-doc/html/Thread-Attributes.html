@@ -1,0 +1,199 @@
+<html lang="en">
+<head>
+<title>Thread Attributes - The GNU C Library</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU C Library">
+<meta name="generator" content="makeinfo 4.7">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="POSIX-Threads.html#POSIX-Threads" title="POSIX Threads">
+<link rel="prev" href="Basic-Thread-Operations.html#Basic-Thread-Operations" title="Basic Thread Operations">
+<link rel="next" href="Cancellation.html#Cancellation" title="Cancellation">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc { font-variant:small-caps }
+  span.roman { font-family: serif; font-weight: normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Thread-Attributes"></a>Next:&nbsp;<a rel="next" accesskey="n" href="Cancellation.html#Cancellation">Cancellation</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Basic-Thread-Operations.html#Basic-Thread-Operations">Basic Thread Operations</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="POSIX-Threads.html#POSIX-Threads">POSIX Threads</a>
+<hr><br>
+</div>
+
+<h3 class="section">34.2 Thread Attributes</h3>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<p>Threads have a number of attributes that may be set at creation time. 
+This is done by filling a thread attribute object <var>attr</var> of type
+<code>pthread_attr_t</code>, then passing it as second argument to
+<code>pthread_create</code>. Passing <code>NULL</code> is equivalent to passing a
+thread attribute object with all attributes set to their default values.
+
+   <p>Attribute objects are consulted only when creating a new thread.  The
+same attribute object can be used for creating several threads. 
+Modifying an attribute object after a call to <code>pthread_create</code> does
+not change the attributes of the thread previously created.
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_attr_init</b> (<var>pthread_attr_t *attr</var>)<var><a name="index-pthread_005fattr_005finit-3698"></a></var><br>
+<blockquote><p><code>pthread_attr_init</code> initializes the thread attribute object
+<var>attr</var> and fills it with default values for the attributes. (The
+default values are listed below for each attribute.)
+
+        <p>Each attribute <var>attrname</var> (see below for a list of all attributes)
+can be individually set using the function
+<code>pthread_attr_set</code><var>attrname</var> and retrieved using the function
+<code>pthread_attr_get</code><var>attrname</var>. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: int <b>pthread_attr_destroy</b> (<var>pthread_attr_t *attr</var>)<var><a name="index-pthread_005fattr_005fdestroy-3699"></a></var><br>
+<blockquote><p><code>pthread_attr_destroy</code> destroys the attribute object pointed to by
+<var>attr</var> releasing any resources associated with it.  <var>attr</var> is
+left in an undefined state, and you must not use it again in a call to
+any pthreads function until it has been reinitialized. 
+</p></blockquote></div>
+
+   <p><a name="index-pthread_005fattr_005fsetdetachstate-3700"></a><a name="index-pthread_005fattr_005fsetguardsize-3701"></a><a name="index-pthread_005fattr_005fsetinheritsched-3702"></a><a name="index-pthread_005fattr_005fsetschedparam-3703"></a><a name="index-pthread_005fattr_005fsetschedpolicy-3704"></a><a name="index-pthread_005fattr_005fsetscope-3705"></a><a name="index-pthread_005fattr_005fsetstack-3706"></a><a name="index-pthread_005fattr_005fsetstackaddr-3707"></a><a name="index-pthread_005fattr_005fsetstacksize-3708"></a><!-- pthread.h -->
+<!-- POSIX -->
+
+<div class="defun">
+&mdash; Function: int <b>pthread_attr_setattr</b> (<var>pthread_attr_t *obj, int value</var>)<var><a name="index-pthread_005fattr_005fsetattr-3709"></a></var><br>
+<blockquote><p>Set attribute <var>attr</var> to <var>value</var> in the attribute object pointed
+to by <var>obj</var>.  See below for a list of possible attributes and the
+values they can take.
+
+        <p>On success, these functions return 0.  If <var>value</var> is not meaningful
+for the <var>attr</var> being modified, they will return the error code
+<code>EINVAL</code>.  Some of the functions have other failure modes; see
+below. 
+</p></blockquote></div>
+
+   <p><a name="index-pthread_005fattr_005fgetdetachstate-3710"></a><a name="index-pthread_005fattr_005fgetguardsize-3711"></a><a name="index-pthread_005fattr_005fgetinheritsched-3712"></a><a name="index-pthread_005fattr_005fgetschedparam-3713"></a><a name="index-pthread_005fattr_005fgetschedpolicy-3714"></a><a name="index-pthread_005fattr_005fgetscope-3715"></a><a name="index-pthread_005fattr_005fgetstack-3716"></a><a name="index-pthread_005fattr_005fgetstackaddr-3717"></a><a name="index-pthread_005fattr_005fgetstacksize-3718"></a><!-- pthread.h -->
+<!-- POSIX -->
+
+<div class="defun">
+&mdash; Function: int <b>pthread_attr_getattr</b> (<var>const pthread_attr_t *obj, int *value</var>)<var><a name="index-pthread_005fattr_005fgetattr-3719"></a></var><br>
+<blockquote><p>Store the current setting of <var>attr</var> in <var>obj</var> into the variable
+pointed to by <var>value</var>.
+
+        <p>These functions always return 0. 
+</p></blockquote></div>
+
+   <p>The following thread attributes are supported:
+     <dl>
+<dt><span class="samp">detachstate</span><dd>Choose whether the thread is created in the joinable state (value
+<code>PTHREAD_CREATE_JOINABLE</code>) or in the detached state
+(<code>PTHREAD_CREATE_DETACHED</code>).  The default is
+<code>PTHREAD_CREATE_JOINABLE</code>.
+
+     <p>In the joinable state, another thread can synchronize on the thread
+termination and recover its termination code using <code>pthread_join</code>,
+but some of the thread resources are kept allocated after the thread
+terminates, and reclaimed only when another thread performs
+<code>pthread_join</code> on that thread.
+
+     <p>In the detached state, the thread resources are immediately freed when
+it terminates, but <code>pthread_join</code> cannot be used to synchronize on
+the thread termination.
+
+     <p>A thread created in the joinable state can later be put in the detached
+thread using <code>pthread_detach</code>.
+
+     <br><dt><span class="samp">schedpolicy</span><dd>Select the scheduling policy for the thread: one of <code>SCHED_OTHER</code>
+(regular, non-realtime scheduling), <code>SCHED_RR</code> (realtime,
+round-robin) or <code>SCHED_FIFO</code> (realtime, first-in first-out). 
+The default is <code>SCHED_OTHER</code>. 
+<!-- Not doc'd in our manual: FIXME. -->
+<!-- See @code{sched_setpolicy} for more information on scheduling policies. -->
+
+     <p>The realtime scheduling policies <code>SCHED_RR</code> and <code>SCHED_FIFO</code>
+are available only to processes with superuser privileges. 
+<code>pthread_attr_setschedparam</code> will fail and return <code>ENOTSUP</code> if
+you try to set a realtime policy when you are unprivileged.
+
+     <p>The scheduling policy of a thread can be changed after creation with
+<code>pthread_setschedparam</code>.
+
+     <br><dt><span class="samp">schedparam</span><dd>Change the scheduling parameter (the scheduling priority)
+for the thread.  The default is 0.
+
+     <p>This attribute is not significant if the scheduling policy is
+<code>SCHED_OTHER</code>; it only matters for the realtime policies
+<code>SCHED_RR</code> and <code>SCHED_FIFO</code>.
+
+     <p>The scheduling priority of a thread can be changed after creation with
+<code>pthread_setschedparam</code>.
+
+     <br><dt><span class="samp">inheritsched</span><dd>Choose whether the scheduling policy and scheduling parameter for the
+newly created thread are determined by the values of the
+<var>schedpolicy</var> and <var>schedparam</var> attributes (value
+<code>PTHREAD_EXPLICIT_SCHED</code>) or are inherited from the parent thread
+(value <code>PTHREAD_INHERIT_SCHED</code>).  The default is
+<code>PTHREAD_EXPLICIT_SCHED</code>.
+
+     <br><dt><span class="samp">scope</span><dd>Choose the scheduling contention scope for the created thread.  The
+default is <code>PTHREAD_SCOPE_SYSTEM</code>, meaning that the threads contend
+for CPU time with all processes running on the machine. In particular,
+thread priorities are interpreted relative to the priorities of all
+other processes on the machine. The other possibility,
+<code>PTHREAD_SCOPE_PROCESS</code>, means that scheduling contention occurs
+only between the threads of the running process: thread priorities are
+interpreted relative to the priorities of the other threads of the
+process, regardless of the priorities of other processes.
+
+     <p><code>PTHREAD_SCOPE_PROCESS</code> is not supported in LinuxThreads.  If you
+try to set the scope to this value, <code>pthread_attr_setscope</code> will
+fail and return <code>ENOTSUP</code>.
+
+     <br><dt><span class="samp">stackaddr</span><dd>Provide an address for an application managed stack.  The size of the
+stack must be at least <code>PTHREAD_STACK_MIN</code>.
+
+     <br><dt><span class="samp">stacksize</span><dd>Change the size of the stack created for the thread.  The value defines
+the minimum stack size, in bytes.
+
+     <p>If the value exceeds the system's maximum stack size, or is smaller
+than <code>PTHREAD_STACK_MIN</code>, <code>pthread_attr_setstacksize</code> will
+fail and return <code>EINVAL</code>.
+
+     <br><dt><span class="samp">stack</span><dd>Provide both the address and size of an application managed stack to
+use for the new thread.  The base of the memory area is <var>stackaddr</var>
+with the size of the memory area, <var>stacksize</var>, measured in bytes.
+
+     <p>If the value of <var>stacksize</var> is less than <code>PTHREAD_STACK_MIN</code>,
+or greater than the system's maximum stack size, or if the value of
+<var>stackaddr</var> lacks the proper alignment, <code>pthread_attr_setstack</code>
+will fail and return <code>EINVAL</code>.
+
+     <br><dt><span class="samp">guardsize</span><dd>Change the minimum size in bytes of the guard area for the thread's
+stack.  The default size is a single page.  If this value is set, it
+will be rounded up to the nearest page size.  If the value is set to 0,
+a guard area will not be created for this thread.  The space allocated
+for the guard area is used to catch stack overflow.  Therefore, when
+allocating large structures on the stack, a larger guard area may be
+required to catch a stack overflow.
+
+     <p>If the caller is managing their own stacks (if the <code>stackaddr</code>
+attribute has been set), then the <code>guardsize</code> attribute is ignored.
+
+     <p>If the value exceeds the <code>stacksize</code>, <code>pthread_atrr_setguardsize</code>
+will fail and return <code>EINVAL</code>. 
+</dl>
+
+   </body></html>
+

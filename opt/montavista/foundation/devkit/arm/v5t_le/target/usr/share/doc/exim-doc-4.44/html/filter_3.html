@@ -1,0 +1,1478 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim Filter Specification chapter 3</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="filter_2.html">Previous</a>&nbsp;&nbsp;
+<a href="filter_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim Filter Specification)
+</font><hr>
+<h1>
+<a name="CHAP3" href="filter_toc.html#TOC21">
+3. Exim filter files
+</a></h1>
+<p>
+This chapter contains a full description of the contents of Exim filter files.
+</p>
+<h2>
+<a name="SECT3.1" href="filter_toc.html#TOC22">
+3.1. Format of Exim filter files
+</a></h2>
+<p>
+Apart from leading white space, the first text in a filter file must be
+<pre>
+&nbsp;&nbsp;# Exim filter
+</pre>
+</p>
+<p>
+This is what distinguishes it from a conventional <i>.forward</i> file or a Sieve 
+filter file. If the file does not have this initial line (or the equivalent for 
+a Sieve filter), it is treated as a
+conventional <i>.forward</i> file, both when delivering mail and when using the
+<i>-bf</i> testing mechanism. The white space in the line is optional, and any
+capitalization may be used. Further text on the same line is treated as a
+comment. For example, you could have
+<pre>
+&nbsp;&nbsp;#   Exim filter   &#060;&#060;== do not edit or remove this line!
+</pre>
+</p>
+<p>
+The remainder of the file is a sequence of filtering commands, which consist of
+keywords and data values. For example, in the command
+<pre>
+&nbsp;&nbsp;deliver gulliver@lilliput.fict.example
+</pre>
+</p>
+<p>
+the keyword is <tt>deliver</tt> and the data value is
+<tt>gulliver&#064;lilliput.fict.example</tt>.
+White space or line breaks separate the components of a command, except in the
+case of conditions for the <tt>if</tt> command, where round brackets (parentheses)
+also act as separators. Complete commands are separated from each other by
+white space or line breaks; there are no special terminators. Thus, several
+commands may appear on one line, or one command may be spread over a number of
+lines.
+</p>
+<p>
+If the character &#035; follows a separator anywhere in a command, everything from
+&#035; up to the next newline is ignored. This provides a way of including comments
+in a filter file.
+</p>
+<h2>
+<a name="SECT3.2" href="filter_toc.html#TOC23">
+3.2. Data values in filter commands
+</a></h2>
+<p>
+There are two ways in which a data value can be input:
+</p>
+<ul>
+<li><p>
+If the text contains no white space then it can be typed verbatim. However, if
+it is part of a condition, it must also be free of round brackets
+(parentheses), as these are used for grouping in conditions.
+</p>
+</li>
+<li><p>
+Otherwise, it must be enclosed in double quotation marks. In this case, the
+character &#092; (backslash) is treated as an &#147;escape character&#148; within the string,
+causing the following character or characters to be treated specially:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;&#092;n&nbsp;&nbsp;</td><td>is replaced by a newline</td></tr>
+<tr><td>&nbsp;&nbsp;&#092;r&nbsp;&nbsp;</td><td>is replaced by a carriage return</td></tr>
+<tr><td>&nbsp;&nbsp;&#092;t&nbsp;&nbsp;</td><td>is replaced by a tab</td></tr>
+</table>
+</p>
+<p>
+Backslash followed by up to three octal digits is replaced by the character
+specified by those digits, and &#092;x followed by up to two hexadecimal digits is
+treated similarly. Backslash followed by any other character is replaced
+by the second character, so that in particular, &#092;" becomes " and &#092;&#092; becomes
+&#092;. A data item enclosed in double quotes can be continued onto the next line
+by ending the first line with a backslash. Any leading white space at the start
+of the continuation line is ignored.
+</p>
+</li>
+</ul>
+<p>
+In addition to the escape character processing that occurs when strings are
+enclosed in quotes, most data values are also subject to <em>string expansion</em>
+(as described in the next section), in which case the characters <tt>&#036;</tt> and <tt>&#092;</tt>
+are also significant. This means that if a single backslash is actually
+required in such a string, and the string is also quoted, &#092;&#092;&#092;&#092; has to be
+entered.
+</p>
+<p>
+The maximum permitted length of a data string, before expansion, is 1024 
+characters.
+</p>
+<h2>
+<a name="SECT3.3" href="filter_toc.html#TOC24">
+3.3. String expansion
+</a></h2>
+<p>
+Most data values are expanded before use. Expansion consists of replacing
+substrings beginning with <tt>&#036;</tt> with other text. The full expansion facilities
+available in Exim are extensive. If you want to know everything that Exim can
+do with strings, you should consult the chapter on string expansion in the Exim
+documentation.
+</p>
+<p>
+In filter files, by far the most common use of string expansion is the
+substitution of the contents of a variable. For example, the substring
+<pre>
+&nbsp;&nbsp;$reply_address
+</pre>
+</p>
+<p>
+is replaced by the address to which replies to the message should be sent. If
+such a variable name is followed by a letter or digit or underscore, it must be
+enclosed in curly brackets (braces), for example,
+<pre>
+&nbsp;&nbsp;${reply_address}
+</pre>
+</p>
+<p>
+If a <tt>&#036;</tt> character is actually required in an expanded string, it must be
+escaped with a backslash, and because backslash is also an escape character in
+quoted input strings, it must be doubled in that case. The following two
+examples illustrate two different ways of testing for a <tt>&#036;</tt> character in a
+message:
+<pre>
+&nbsp;&nbsp;if $message_body contains \$ then ...
+&nbsp;&nbsp;if $message_body contains "\\$" then ...
+</pre>
+</p>
+<p>
+You can prevent part of a string from being expanded by enclosing it between
+two occurrences of <tt>&#092;N</tt>. For example,
+<pre>
+&nbsp;&nbsp;if $message_body contains \N$$$$\N then ...
+</pre>
+</p>
+<p>
+tests for a run of four dollar characters.
+</p>
+<h2>
+<a name="SECT3.4" href="filter_toc.html#TOC25">
+3.4. Some useful general variables
+</a></h2>
+<p>
+A complete list of the available variables is given in the Exim documentation.
+This shortened list contains the ones that are most likely to be useful in
+personal filter files:
+</p>
+<p>
+<tt>$body&#095;linecount</tt>: The number of lines in the body of the message.
+</p>
+<p>
+<tt>$home</tt>: In conventional configurations, this variable normally contains the
+user's home directory. The system administrator can, however, change this.
+</p>
+<p>
+<tt>$local&#095;part</tt>: The part of the email address that precedes the &#064; sign &#150;
+normally the user's login name. If support for multiple personal mailboxes is
+enabled (see section <a href="filter_3.html#SECT3.29">3.29</a> below) and a prefix or suffix for the local
+part was recognized, it is removed from the string in this variable.
+</p>
+<p>
+<tt>$local&#095;part&#095;prefix</tt>: If support for multiple personal mailboxes is enabled
+(see section <a href="filter_3.html#SECT3.29">3.29</a> below), and a local part prefix was recognized,
+this variable contains the prefix. Otherwise it contains an empty string.
+</p>
+<p>
+<tt>$local&#095;part&#095;suffix</tt>: If support for multiple personal mailboxes is enabled
+(see section <a href="filter_3.html#SECT3.29">3.29</a> below), and a local part suffix was recognized,
+this variable contains the suffix. Otherwise it contains an empty string.
+</p>
+<p>
+<tt>$message&#095;body</tt>: The initial portion of the body of the message. By default,
+up to 500 characters are read into this variable, but the system administrator
+can configure this to some other value. Newlines in the body are converted into
+single spaces.
+</p>
+<p>
+<tt>$message&#095;body&#095;end</tt>: The final portion of the body of the message, formatted
+and limited in the same way as <tt>$message&#095;body</tt>.
+</p>
+<p>
+<tt>$message&#095;body&#095;size</tt>: The size of the body of the message, in bytes.
+</p>
+<p>
+<tt>$message&#095;headers</tt>: The header lines of the message, concatenated into a
+single string, with newline characters between them.
+</p>
+<p>
+<tt>$message&#095;id</tt>: The message's local identification string, which is unique for
+each message handled by a single host.
+</p>
+<p>
+<tt>$message&#095;size</tt>: The size of the entire message, in bytes.
+</p>
+<p>
+<tt>$original&#095;local&#095;part</tt>: When an address that arrived with the message is
+being processed, this contains the same value as the variable <tt>$local&#095;part</tt>.
+However, if an address generated by an alias, forward, or filter file is being
+processed, this variable contains the local part of the original address.
+</p>
+<p>
+<tt>$reply&#095;address</tt>: The contents of the <tt>Reply-to:</tt> header, if the message
+has one; otherwise the contents of the <tt>From:</tt> header. It is the address to
+which normal replies to the message should be sent.
+</p>
+<p>
+<tt>$return&#095;path</tt>: The return path &#150; that is, the sender field that will be
+transmitted as part of the message's envelope if the message is sent to another
+host. This is the address to which delivery errors are sent. In many cases,
+this variable has the same value as <tt>$sender&#095;address</tt>, but if, for example,
+an incoming message to a mailing list has been expanded, <tt>$return&#095;path</tt> may
+have been changed to contain the address of the list maintainer.
+</p>
+<p>
+<tt>$sender&#095;address</tt>: The sender address that was received in the envelope of
+the message. This is not necessarily the same as the contents of the <tt>From:</tt>
+or <tt>Sender:</tt> header lines. For delivery error messages (&#147;bounce messages&#148;)
+there is no sender address, and this variable is empty.
+</p>
+<p>
+<tt>$tod&#095;full</tt>: A full version of the time and date, for example: Wed, 18 Oct
+1995 09:51:40 +0100. The timezone is always given as a numerical offset from
+GMT.
+</p>
+<p>
+<tt>$tod&#095;log</tt>: The time and date in the format used for writing Exim's log files,
+without the timezone, for example: 1995-10-12 15:32:29.
+</p>
+<p>
+<tt>$tod&#095;zone</tt>: The local timezone offset, for example: +0100.
+</p>
+<h2>
+<a name="SECT3.5" href="filter_toc.html#TOC26">
+3.5. Header variables
+</a></h2>
+<p>
+There is a special set of expansion variables containing the header lines of
+the message being processed. These variables have names beginning with
+<tt>&#036;header&#095;</tt> followed by the name of the header line, terminated by a colon.
+For example,
+<pre>
+&nbsp;&nbsp;$header_from:
+&nbsp;&nbsp;$header_subject:
+</pre>
+</p>
+<p>
+The whole item, including the terminating colon, is replaced by the contents of
+the message header line. If there is more than one header line with the same
+name, their contents are concatenated. For header lines whose data consists of
+a list of addresses (for example, <i>From:</i> and <i>To:</i>), a comma and newline is
+inserted between each set of data. For all other header lines, just a newline
+is used.
+</p>
+<p>
+Leading and trailing white space is removed from header line data, and if there 
+are any MIME &#147;words&#148; that are encoded as defined by RFC 2047 (because they
+contain non-ASCII characters), they are decoded and translated, if possible, to
+a local character set. Translation is attempted only on operating systems that 
+have the <tt>iconv(&#041;</tt> function. This makes the header line look the same as it
+would when displayed by an MUA. The default character set is ISO-8859-1, but
+this can be changed by means of the <tt>headers</tt> command (see below).
+</p>
+<p>
+If you want to see the actual characters that make up a header line, you can
+specify <tt>&#036;rheader&#095;</tt> instead of <tt>&#036;header&#095;</tt>. This inserts the &#147;raw&#148;
+header line, unmodified.
+</p>
+<p>
+There is also an intermediate form, requested by <tt>&#036;bheader&#095;</tt>, which removes 
+leading and trailing space and decodes MIME &#147;words&#148;, but does not do any 
+character translation. If an attempt to decode what looks superficially like a 
+MIME &#147;word&#148; fails, the raw string is returned. If decoding produces a binary 
+zero character, it is replaced by a question mark.
+</p>
+<p>
+The capitalization of the name following <tt>&#036;header&#095;</tt> is not significant.
+Because any printing character except colon may appear in the name of a
+message's header (this is a requirement of RFC 2822, the document that
+describes the format of a mail message) curly brackets must <em>not</em> be used in
+this case, as they will be taken as part of the header name. Two shortcuts are
+allowed in naming header variables:
+</p>
+<ul>
+<li><p>
+The initiating <tt>&#036;header&#095;</tt>, <tt>&#036;rheader&#095;</tt>, or <tt>&#036;bheader&#095;</tt> can be
+abbreviated to <tt>&#036;h&#095;</tt>, <tt>&#036;rh&#095;</tt>, or <tt>&#036;bh&#095;</tt>, respectively.
+</p>
+</li>
+<li><p>
+The terminating colon can be omitted if the next character is white space. The
+white space character is retained in the expanded string. However, this is not
+recommended, because it makes it easy to forget the colon when it really is
+needed.
+</p>
+</li>
+</ul>
+<p>
+If the message does not contain a header of the given name, an empty string is
+substituted. Thus it is important to spell the names of headers correctly. Do
+not use <tt>&#036;header&#095;Reply&#095;to</tt> when you really mean <tt>&#036;header&#095;Reply-to</tt>.
+</p>
+<h2>
+<a name="SECT3.6" href="filter_toc.html#TOC27">
+3.6. User variables
+</a></h2>
+<p>
+There are ten user variables with names <tt>$n0</tt> &#150; <tt>$n9</tt> that can be
+incremented by the <tt>add</tt> command (see section <a href="filter_3.html#SECT3.10">3.10</a>). These can be used
+for &#147;scoring&#148; messages in various ways. If Exim is configured to run a &#147;system
+filter&#148; on every message, the values left in these variables are copied into
+the variables <tt>$sn0</tt> &#150; <tt>$sn9</tt> at the end of the system filter, thus making
+them available to users' filter files. How these values are used is entirely up
+to the individual installation.
+</p>
+<h2>
+<a name="SECT3.7" href="filter_toc.html#TOC28">
+3.7. Current directory
+</a></h2>
+<p>
+The contents of your filter file should not make any assumptions about the
+current directory. It is best to use absolute paths for file names; you
+can normally make use of the <tt>$home</tt> variable to refer to your home directory.
+The <tt>save</tt> command automatically inserts <tt>$home</tt> at the start of non-absolute 
+paths.
+</p>
+<h2>
+<a name="SECT3.8" href="filter_toc.html#TOC29">
+3.8. Significant deliveries
+</a></h2>
+<p>
+When in the course of delivery a message is processed by a filter file, what
+happens next, that is, after the whole filter file has been processed, depends
+on whether the filter has set up any <em>significant deliveries</em> or not. If
+there is at least one significant delivery, the filter is considered to
+have handled the entire delivery arrangements for the current address, and no
+further processing of the address takes place. If, however, no significant
+deliveries have been set up, Exim continues processing the current address as
+if there were no filter file, and typically sets up a delivery of a copy of the
+message into a local mailbox. In particular, this happens in the special case
+of a filter file containing only comments.
+</p>
+<p>
+The delivery commands <tt>deliver</tt>, <tt>save</tt>, and <tt>pipe</tt> are by default
+significant. However, if such a command is preceded by the word <tt>unseen</tt>, its
+delivery is not considered to be significant. In contrast, other commands such
+as <tt>mail</tt> and <tt>vacation</tt> do not count as significant deliveries unless
+preceded by the word <tt>seen</tt>.
+</p>
+<h2>
+<a name="SECT3.9" href="filter_toc.html#TOC30">
+3.9. Filter commands
+</a></h2>
+<p>
+The filter commands which are described in subsequent sections are listed
+below, with the section in which they are described in brackets:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>add</tt>&nbsp;&nbsp;</td><td>increment a user variable (section <a href="filter_3.html#SECT3.10">3.10</a>)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>deliver</tt>&nbsp;&nbsp;</td><td>deliver to an email address (section <a href="filter_3.html#SECT3.11">3.11</a>)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>fail</tt>&nbsp;&nbsp;</td><td>force delivery failure (sysadmin use) (section <a href="filter_3.html#SECT3.18">3.18</a>)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>finish</tt>&nbsp;&nbsp;</td><td>end processing (section <a href="filter_3.html#SECT3.16">3.16</a>)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>freeze</tt>&nbsp;&nbsp;</td><td>freeze message (sysadmin use) (section <a href="filter_3.html#SECT3.19">3.19</a>)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>headers</tt>&nbsp;&nbsp;</td><td>set the header character set (section <a href="filter_3.html#SECT3.20">3.20</a>)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>if</tt>&nbsp;&nbsp;</td><td>test condition(s) (section <a href="filter_3.html#SECT3.21">3.21</a>)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>logfile</tt>&nbsp;&nbsp;</td><td>define log file (section <a href="filter_3.html#SECT3.15">3.15</a>)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>logwrite</tt>&nbsp;&nbsp;</td><td>write to log file (section <a href="filter_3.html#SECT3.15">3.15</a>)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>mail</tt>&nbsp;&nbsp;</td><td>send a reply message (section <a href="filter_3.html#SECT3.14">3.14</a>)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>pipe</tt>&nbsp;&nbsp;</td><td>pipe to a command (section <a href="filter_3.html#SECT3.13">3.13</a>)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>save</tt>&nbsp;&nbsp;</td><td>save to a file (section <a href="filter_3.html#SECT3.12">3.12</a>)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>testprint</tt>&nbsp;&nbsp;</td><td>print while testing (section <a href="filter_3.html#SECT3.17">3.17</a>)</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>vacation</tt>&nbsp;&nbsp;</td><td>tailored form of <tt>mail</tt> (section <a href="filter_3.html#SECT3.14">3.14</a>)</td></tr>
+</table>
+</p>
+<p>
+In addition, when Exim's filtering facilities are being used as a system
+filter, the <tt>fail</tt>, <tt>freeze</tt>, and <tt>headers</tt> commands are available.
+However, since they are usable only by the system administrator and not by
+ordinary users, they are described in the main Exim specification rather than
+in this document.
+</p>
+<h2>
+<a name="SECT3.10" href="filter_toc.html#TOC31">
+3.10. The add command
+</a></h2>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     add &#060;<em>number</em>&#062; to &#060;<em>user variable</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>e.g. add 2 to n3</tt><br>
+</p>
+<p>
+There are 10 user variables of this type, and their values can be obtained by
+the normal expansion syntax (for example <tt>$n3</tt>) in other commands. At the
+start of filtering, these variables all contain zero. Both arguments of the
+<tt>add</tt> command are expanded before use, making it possible to add variables to
+each other. Subtraction can be obtained by adding negative numbers.
+</p>
+<h2>
+<a name="SECT3.11" href="filter_toc.html#TOC32">
+3.11. The deliver command
+</a></h2>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     deliver &#060;<em>mail address</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>e.g. deliver "Dr Livingstone &#060;David&#064;somewhere.africa.example&#062;"</tt><br>
+</p>
+<p>
+This provides a forwarding operation. The message is sent on to the given
+address, exactly as happens if the address had appeared in a traditional
+<i>.forward</i> file. If you want to deliver the message to a number of different
+addresses, you can use more than one <tt>deliver</tt> command (each one may have
+only one address). However, duplicate addresses are discarded.
+</p>
+<p>
+To deliver a copy of the message to your normal mailbox, your login name can be
+given as the address. Once an address has been processed by the filtering
+mechanism, an identical generated address will not be so processed again, so
+doing this does not cause a loop.
+</p>
+<p>
+However, if you have a mail alias, you should <em>not</em> refer to it here. For
+example, if the mail address <tt>L.Gulliver</tt> is aliased to <tt>lg103</tt> then all
+references in Gulliver's <i>.forward</i> file should be to <tt>lg103</tt>. A reference
+to the alias will not work for messages that are addressed to that alias,
+since, like <i>.forward</i> file processing, aliasing is performed only once on an
+address, in order to avoid looping.
+</p>
+<p>
+Following the new address, an optional second address, preceded by
+<tt>errors&#095;to</tt> may appear. This changes the address to which delivery errors on
+the forwarded message will be sent. Instead of going to the message's original
+sender, they go to this new address. For ordinary users, the only value that is
+permitted for this address is the user whose filter file is being processed.
+For example, the user <tt>lg103</tt> whose mailbox is in the domain
+<tt>lilliput.example</tt> could have a filter file that contains
+<pre>
+&nbsp;&nbsp;     deliver jon@elsewhere.example errors_to lg103@lilliput.example
+</pre>
+</p>
+<p>
+Clearly, using this feature makes sense only in situations where not all
+messages are being forwarded. In particular, bounce messages must not be
+forwarded in this way, as this is likely to create a mail loop if something
+goes wrong.
+</p>
+<h2>
+<a name="SECT3.12" href="filter_toc.html#TOC33">
+3.12. The save command
+</a></h2>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     save &#060;<em>file name</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>e.g. save &#036;home/mail/bookfolder</tt><br>
+</p>
+<p>
+This causes a copy of the message to be appended to the given file (that is,
+the file is used as a mail folder). More than one <tt>save</tt> command may appear;
+each one causes a copy of the message to be written to its argument file,
+provided they are different (duplicate <tt>save</tt> commands are ignored).
+</p>
+<p>
+If the file name does not start with a / character, the contents of the
+<tt>$home</tt> variable are prepended, unless it is empty. In conventional
+configurations, this variable is normally set in a user filter to the user's
+home directory, but the system administrator may set it to some other path. In
+some configurations, <tt>$home</tt> may be unset, in which case a non-absolute path
+name may be generated. Such configurations convert this to an absolute path
+when the delivery takes place. In a system filter, <tt>$home</tt> is never set.
+</p>
+<p>
+The user must of course have permission to write to the file, and the writing
+of the file takes place in a process that is running as the user, under the
+user's primary group. Any secondary groups to which the user may belong are not
+normally taken into account, though the system administrator can configure Exim
+to set them up. In addition, the ability to use this command at all is
+controlled by the system administrator &#150; it may be forbidden on some systems.
+</p>
+<p>
+An optional mode value may be given after the file name. The value for the mode
+is interpreted as an octal number, even if it does not begin with a zero. For
+example:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     save /some/folder 640</tt><br>
+</p>
+<p>
+This makes it possible for users to override the system-wide mode setting for
+file deliveries, which is normally 600. If an existing file does not have the
+correct mode, it is changed.
+</p>
+<p>
+An alternative form of delivery may be enabled on your system, in which each
+message is delivered into a new file in a given directory. If this is the case,
+this functionality can be requested by giving the directory name terminated by
+a slash after the <tt>save</tt> command, for example
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>    save separated/messages/</tt><br>
+</p>
+<p>
+There are several different formats for such deliveries; check with your system
+administrator or local documentation to find out which (if any) are available
+on your system. If this functionality is not enabled, the use of a path name
+ending in a slash causes an error.
+</p>
+<h2>
+<a name="SECT3.13" href="filter_toc.html#TOC34">
+3.13. The pipe command
+</a></h2>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     pipe &#060;<em>command</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>e.g. pipe "&#036;home/bin/countmail &#036;sender&#095;address"</tt><br>
+</p>
+<p>
+This command sets up delivery to a specified command using a pipe. Remember,
+however, that no deliveries are done while the filter is being processed. All
+deliveries happen later on. Therefore, the result of running the pipe is not
+available to the filter.
+</p>
+<p>
+When the deliveries are done, a separate process is run, and a copy of the
+message is passed on its standard input. The process runs as the user, under
+the user's primary group. Any secondary groups to which the user may belong are
+not normally taken into account, though the system administrator can configure
+Exim to set them up. More than one <tt>pipe</tt> command may appear; each one causes
+a copy of the message to be written to its argument pipe, provided they are
+different (duplicate <tt>pipe</tt> commands are ignored).
+</p>
+<p>
+When the time comes to transport the message, 
+the command supplied to <tt>pipe</tt> is split up by Exim into a command name and a
+number of arguments. These are delimited by white space except for arguments
+enclosed in double quotes, in which case backslash is interpreted as an escape,
+or in single quotes, in which case no escaping is recognized. Note that as the
+whole command is normally supplied in double quotes, a second level of quoting
+is required for internal double quotes. For example:
+<pre>
+&nbsp;&nbsp;     pipe "$home/myscript \"size is $message_size\""
+</pre>
+</p>
+<p>
+String expansion is performed on the separate components after the line has
+been split up, and the command is then run directly by Exim; it is not run
+under a shell. Therefore, substitution cannot change the number of arguments,
+nor can quotes, backslashes or other shell metacharacters in variables cause
+confusion.
+</p>
+<p>
+Documentation for some programs that are normally run via this kind of pipe
+often suggest that the command should start with
+<pre>
+&nbsp;&nbsp;IFS=" "
+</pre>
+</p>
+<p>
+This is a shell command, and should <em>not</em> be present in Exim filter files,
+since it does not normally run the command under a shell.
+</p>
+<p>
+However, there is an option that the administrator can set to cause a shell to
+be used. In this case, the entire command is expanded as a single string and
+passed to the shell for interpretation. It is recommended that this be avoided
+if at all possible, since it can lead to problems when inserted variables
+contain shell metacharacters.
+</p>
+<p>
+The default <font size=-1>PATH</font> set up for the command is determined by the system
+administrator, usually containing at least <tt>/usr/bin</tt> so that common commands
+are available without having to specify an absolute file name. However, it is
+possible for the system administrator to restrict the pipe facility so that the
+command name must not contain any / characters, and must be found in one of the
+directories in the configured <font size=-1>PATH</font>. It is also possible for the system
+administrator to lock out the use of the <tt>pipe</tt> command altogether.
+</p>
+<p>
+When the command is run, a number of environment variables are set up. The
+complete list for pipe deliveries may be found in the Exim reference manual.
+Those that may be useful for pipe deliveries from user filter files are:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>DOMAIN&nbsp;&nbsp;</tt></td><td>the domain of the address</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>HOME&nbsp;&nbsp;</tt></td><td>your home directory</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>LOCAL&#095;PART&nbsp;&nbsp;</tt></td><td>see below</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>LOCAL&#095;PART&#095;PREFIX&nbsp;&nbsp;</tt></td><td>see below</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>LOCAL&#095;PART&#095;SUFFIX&nbsp;&nbsp;</tt></td><td>see below</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>LOGNAME&nbsp;&nbsp;</tt></td><td>your login name</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>MESSAGE&#095;ID&nbsp;&nbsp;</tt></td><td>the message's unique id</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>PATH&nbsp;&nbsp;</tt></td><td>the command search path</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>RECIPIENT&nbsp;&nbsp;</tt></td><td>the complete recipient address</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>SENDER&nbsp;&nbsp;</tt></td><td>the sender of the message</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>SHELL&nbsp;&nbsp;</tt></td><td><tt><b>/bin/sh</b></tt></td></tr>
+<tr><td>&nbsp;&nbsp;<tt>USER&nbsp;&nbsp;</tt></td><td>see below</td></tr>
+</table>
+</p>
+<p>
+<font size=-1>LOCAL&#095;PART</font>, <font size=-1>LOGNAME</font>, and <font size=-1>USER</font> are all set to the same value,
+namely, your login id. <font size=-1>LOCAL&#095;PART&#095;PREFIX</font> and <font size=-1>LOCAL&#095;PART&#095;SUFFIX</font> may
+be set if Exim is configured to recognize prefixes or suffixes in the local
+parts of addresses. For example, a message addressed to
+<i>pat-suf2&#064;domain.example</i> may cause user <i>pat</i>'s filter file to be run. If
+this sets up a pipe delivery, <font size=-1>LOCAL&#095;PART&#095;SUFFIX</font> is <tt>-suf2</tt> when the
+pipe command runs. The system administrator has to configure Exim specially for
+this feature to be available.
+</p>
+<p>
+If you run a command that is a shell script, be very careful in your use of
+data from the incoming message in the commands in your script. RFC 2822 is very
+generous in the characters that are legally permitted to appear in mail
+addresses, and in particular, an address may begin with a vertical bar or a
+slash. For this reason you should always use quotes round any arguments that
+involve data from the message, like this:
+<pre>
+&nbsp;&nbsp;/some/command '$SENDER'
+</pre>
+</p>
+<p>
+so that inserted shell meta-characters do not cause unwanted effects.
+</p>
+<p>
+Remember that, as was explained earlier, the pipe command is not run at the
+time the filter file is interpreted. The filter just defines what deliveries
+are required for one particular addressee of a message. The deliveries
+themselves happen later, once Exim has decided everything that needs to be done
+for the message.
+</p>
+<p>
+A consequence of this is that you cannot inspect the return code from the pipe
+command from within the filter. Nevertheless, the code returned by the command
+is important, because Exim uses it to decide whether the delivery has succeeded
+or failed.
+</p>
+<p>
+The command should return a zero completion code if all has gone well. Most
+non-zero codes are treated by Exim as indicating a failure of the pipe. This is
+treated as a delivery failure, causing the message to be returned to its
+sender. However, there are some completion codes which are treated as temporary
+errors. The message remains on Exim's spool disk, and the delivery is tried
+again later, though it will ultimately time out if the delivery failures go on
+too long. The completion codes to which this applies can be specified by the
+system administrator; the default values are 73 and 75.
+</p>
+<p>
+The pipe command should not normally write anything to its standard output or
+standard error file descriptors. If it does, whatever is written is normally
+returned to the sender of the message as a delivery error, though this action
+can be varied by the system administrator.
+</p>
+<h2>
+<a name="SECT3.14" href="filter_toc.html#TOC35">
+3.14. Mail commands
+</a></h2>
+<p>
+There are two commands which cause the creation of a new mail message, neither
+of which count as a significant delivery unless the command is preceded by the
+word <tt>seen</tt>. This is a powerful facility, but it should be used with care,
+because of the danger of creating infinite sequences of messages. The system
+administrator can forbid the use of these commands altogether.
+</p>
+<p>
+To help prevent runaway message sequences, these commands have no effect when
+the incoming message is a delivery error message, and messages sent by this
+means are treated as if they were reporting delivery errors. Thus they should
+never themselves cause a delivery error message to be returned. The basic
+mail-sending command is
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     mail [to &#060;<em>address-list</em>&#062;]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>          [cc &#060;<em>address-list</em>&#062;]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>          [bcc &#060;<em>address-list</em>&#062;]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>          [from &#060;<em>address</em>&#062;]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>          [reply&#095;to &#060;<em>address</em>&#062;]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>          [subject &#060;<em>text</em>&#062;]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>          [extra&#095;headers &#060;<em>text</em>&#062;]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>          [text &#060;<em>text</em>&#062;]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>          [[expand] file &#060;<em>filename</em>&#062;]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>          [return message]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>          [log &#060;<em>log file name</em>&#062;]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>          [once &#060;<em>note file name</em>&#062;]</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>          [once&#095;repeat &#060;<em>time interval</em>&#062;]</tt><br>
+<br>
+<tt>&nbsp;&nbsp;</tt><tt>e.g. mail text "Your message about &#036;h&#095;subject: has been received"</tt><br>
+</p>
+<p>
+Each &#060;<em>address-list</em>&#062; can contain a number of addresses, separated by commas, 
+in the format of a <i>To:</i> or <i>Cc:</i> header line. In fact, the text you supply 
+here is copied exactly into the appropriate header line. Thus, it may contain 
+additional information as well as email addresses. For example:
+<pre>
+&nbsp;&nbsp;mail to "Julius Caesar &#060;jc@rome.example&#062;, \
+&nbsp;&nbsp;         &#060;ma@rome.example&#062; (Mark A.)"
+</pre>
+</p>
+<p>
+Similarly, the texts supplied for <i>From:</i> and <i>Reply-to:</i> are copied into 
+their respective header lines.
+</p>
+<p>
+As a convenience for use in one common case, there is also a command called
+<tt>vacation</tt>. It behaves in the same way as <tt>mail</tt>, except that the defaults for
+the 
+<tt>subject</tt>,
+<tt>file</tt>, <tt>log</tt>, <tt>once</tt>, and <tt>once&#095;repeat</tt> options are
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>subject "On vacation"</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>expand file .vacation.msg</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>log  .vacation.log</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>once .vacation</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>once&#095;repeat 7d</tt><br>
+</p>
+<p>
+respectively. These are the same file names and repeat period used by the
+traditional Unix <tt>vacation</tt> command. The defaults can be overridden by
+explicit settings, but if a file name is given its contents are expanded only
+if explicitly requested. 
+</p>
+<p>
+<b>Warning</b>: The <tt>vacation</tt> command should always be used conditionally,
+subject to at least the <tt>personal</tt> condition (see section <a href="filter_3.html#SECT3.26">3.26</a>
+below) so as not to send automatic replies to non-personal messages from
+mailing lists or elsewhere. Sending an automatic response to a mailing list or 
+a mailing list manager is an Internet Sin.
+</p>
+<p>
+For both commands, the key/value argument pairs can appear in any order. At
+least one of <tt>text</tt> or <tt>file</tt> must appear (except with <tt>vacation</tt>); if
+both are present, the text string appears first in the message. If <tt>expand</tt>
+precedes <tt>file</tt>, each line of the file is subject to string expansion as
+it is included in the message.
+</p>
+<p>
+Several lines of text can be supplied to <tt>text</tt> by including the escape
+sequence &#147;&#092;n&#148; in the string where newlines are required. If the command is
+output during filter file testing, newlines in the text are shown as &#147;&#092;n&#148;.
+</p>
+<p>
+Note that the keyword for creating a <tt>Reply-To:</tt> header is <tt>reply&#095;to</tt>,
+because Exim keywords may contain underscores, but not hyphens. If the <tt>from</tt>
+keyword is present and the given address does not match the user who owns the
+forward file, Exim normally adds a <tt>Sender:</tt> header to the message,
+though it can be configured not to do this.
+</p>
+<p>
+The <tt>extra&#095;headers</tt> keyword allows you to add custom header lines to the
+message. The text supplied must be one or more syntactically valid RFC 2882
+header lines. You can use &#147;&#092;n&#148; within quoted text to specify newlines between
+headers, and also to define continued header lines. For example:
+<pre>
+&nbsp;&nbsp;extra_headers "h1: first\nh2: second\n continued\nh3: third"
+</pre>
+</p>
+<p>
+No newline should appear at the end of the final header line.
+</p>
+<p>
+If no <tt>to</tt> argument appears, the message is sent to the address in the
+<tt>&#036;reply&#095;address</tt> variable (see section <a href="filter_3.html#SECT3.3">3.3</a> above).
+An <tt>In-Reply-To:</tt> header is automatically included in the created message,
+giving a reference to the message identification of the incoming message.
+</p>
+<p>
+If <tt>return message</tt> is specified, the incoming message that caused the filter
+file to be run is added to the end of the message, subject to a maximum size
+limitation.
+</p>
+<p>
+If a log file is specified, a line is added to it for each message sent.
+</p>
+<p>
+If a <tt>once</tt> file is specified, it is used to hold a database for remembering
+who has received a message, and no more than one message is ever sent to any
+particular address, unless <tt>once&#095;repeat</tt> is set. This specifies a time
+interval after which another copy of the message is sent. The interval is
+specified as a sequence of numbers, each followed by the initial letter of one
+of &#147;seconds&#148;, &#147;minutes&#148;, &#147;hours&#148;, &#147;days&#148;, or &#147;weeks&#148;. For example,
+<pre>
+&nbsp;&nbsp;once_repeat 5d4h
+</pre>
+</p>
+<p>
+causes a new message to be sent if 5 days and 4 hours have elapsed since the
+last one was sent. There must be no white space in a time interval.
+</p>
+<p>
+Commonly, the file name specified for <tt>once</tt> is used as the base name for
+direct-access (DBM) file operations. There are a number of different DBM
+libraries in existence. Some operating systems provide one as a default, but
+even in this case a different one may have been used when building Exim. With
+some DBM libraries, specifying <tt>once</tt> results in two files being created,
+with the suffixes <tt>.dir</tt> and <tt>.pag</tt> being added to the given name. With
+some others a single file with the suffix <tt>.db</tt> is used, or the name is used
+unchanged.
+</p>
+<p>
+Using a DBM file for implementing the <tt>once</tt> feature means that the file
+grows as large as necessary. This is not usually a problem, but some system
+administrators want to put a limit on it. The facility can be configured not to
+use a DBM file, but instead, to use a regular file with a maximum size. The
+data in such a file is searched sequentially, and if the file fills up, the
+oldest entry is deleted to make way for a new one. This means that some
+correspondents may receive a second copy of the message after an unpredictable
+interval. Consult your local information to see if your system is configured
+this way.
+</p>
+<p>
+More than one <tt>mail</tt> or <tt>vacation</tt> command may be obeyed in a single filter
+run; they are all honoured, even when they are to the same recipient.
+</p>
+<h2>
+<a name="SECT3.15" href="filter_toc.html#TOC36">
+3.15. Logging commands
+</a></h2>
+<p>
+A log can be kept of actions taken by a filter file. This facility is normally
+available in conventional configurations, but there are some situations where
+it might not be. Also, the system administrator may choose to disable it. Check
+your local information if in doubt.
+</p>
+<p>
+Logging takes place while the filter file is being interpreted. It does not
+queue up for later like the delivery commands. The reason for this is so that a
+log file need be opened only once for several write operations. There are two
+commands, neither of which constitutes a significant delivery. The first
+defines a file to which logging output is subsequently written:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     logfile &#060;<em>file name</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>e.g. logfile &#036;home/filter.log</tt><br>
+</p>
+<p>
+The file name must be fully qualified. You can use <tt>$home</tt>, as in this
+example, to refer to your home directory. The file name may optionally be
+followed by a mode for the file, which is used if the file has to be created.
+For example,
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     logfile &#036;home/filter.log 0644</tt><br>
+</p>
+<p>
+The number is interpreted as octal, even if it does not begin with a zero.
+The default for the mode is 600. It is suggested that the <tt>logfile</tt> command
+normally appear as the first command in a filter file. Once <tt>logfile</tt> has
+been obeyed, the <tt>logwrite</tt> command can be used to write to the log file:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     logwrite "&#060;<em>some text string</em>&#062;"</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>e.g. logwrite "&#036;tod&#095;log &#036;message&#095;id processed"</tt><br>
+</p>
+<p>
+It is possible to have more than one <tt>logfile</tt> command, to specify writing to
+different log files in different circumstances. Writing takes place at the end
+of the file, and a newline character is added to the end of each string if
+there isn't one already there. Newlines can be put in the middle of the string
+by using the &#147;&#092;n&#148; escape sequence. Lines from simultaneous deliveries may get
+interleaved in the file, as there is no interlocking, so you should plan your
+logging with this in mind. However, data should not get lost.
+</p>
+<h2>
+<a name="SECT3.16" href="filter_toc.html#TOC37">
+3.16. The finish command
+</a></h2>
+<p>
+The command <tt>finish</tt>, which has no arguments, causes Exim to stop
+interpreting the filter file. This is not a significant action unless preceded
+by <tt>seen</tt>. A filter file containing only <tt>seen finish</tt> is a black hole.
+</p>
+<h2>
+<a name="SECT3.17" href="filter_toc.html#TOC38">
+3.17. The testprint command
+</a></h2>
+<p>
+It is sometimes helpful to be able to print out the values of variables when
+testing filter files. The command
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     testprint &#060;<em>text</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>e.g. testprint "home=&#036;home reply&#095;address=&#036;reply&#095;address"</tt><br>
+</p>
+<p>
+does nothing when mail is being delivered. However, when the filtering code is
+being tested by means of the <i>-bf</i> option (see section <a href="filter_1.html#SECT1.2">1.2</a> above),
+the value of the string is written to the standard output.
+</p>
+<h2>
+<a name="SECT3.18" href="filter_toc.html#TOC39">
+3.18. The fail command
+</a></h2>
+<p>
+When Exim's filtering facilities are being used as a system filter, the
+<tt>fail</tt> command is available, to force delivery failure. Because this command
+is normally usable only by the system administrator, and not enabled for use by
+ordinary users, it is described in more detail in the main Exim specification
+rather than in this document.
+</p>
+<h2>
+<a name="SECT3.19" href="filter_toc.html#TOC40">
+3.19. The freeze command
+</a></h2>
+<p>
+When Exim's filtering facilities are being used as a system filter, the
+<tt>freeze</tt> command is available, to freeze a message on the queue. Because this
+command is normally usable only by the system administrator, and not enabled
+for use by ordinary users, it is described in more detail in the main Exim
+specification rather than in this document.
+</p>
+<h2>
+<a name="SECT3.20" href="filter_toc.html#TOC41">
+3.20. The headers command
+</a></h2>
+<p>
+The <tt>headers</tt> command can be used to change the target character set which is 
+used when translating the contents of encoded header lines for insertion by the
+<tt>&#036;header&#095;</tt> mechanism (see section <a href="filter_3.html#SECT3.5">3.5</a> above). The default
+can be set in the Exim configuration; if not specified, ISO-8859-1 is used. The
+only currently supported format for the <tt>headers</tt> command is as in this
+example:
+<pre>
+&nbsp;&nbsp;headers charset "UTF-8"
+</pre>
+</p>
+<p>
+That is, <tt>headers</tt> is followed by the word <tt>charset</tt> and then the name of a
+character set. This particular example would be useful if you wanted to compare
+the contents of a header to a UTF-8 string.
+</p>
+<h2>
+<a name="SECT3.21" href="filter_toc.html#TOC42">
+3.21. Obeying commands conditionally
+</a></h2>
+<p>
+Most of the power of filtering comes from the ability to test conditions and
+obey different commands depending on the outcome. The <tt>if</tt> command is used to
+specify conditional execution, and its general form is
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>if    &#060;<em>condition</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>then  &#060;<em>commands</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>elif  &#060;<em>condition</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>then  &#060;<em>commands</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>else  &#060;<em>commands</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>endif</tt><br>
+</p>
+<p>
+There may be any number of <tt>elif</tt> and <tt>then</tt> sections (including none) and
+the <tt>else</tt> section is also optional. Any number of commands, including nested
+<tt>if</tt> commands, may appear in any of the &#060;<em>commands</em>&#062; sections.
+</p>
+<p>
+Conditions can be combined by using the words <tt>and</tt> and <tt>or</tt>, and round
+brackets (parentheses) can be used to specify how several conditions are to
+combine. Without brackets, <tt>and</tt> is more binding than <tt>or</tt>.
+For example,
+<pre>
+&nbsp;&nbsp;if
+&nbsp;&nbsp;  $h_subject: contains "Make money" or
+&nbsp;&nbsp;  $h_precedence: is "junk" or
+&nbsp;&nbsp;  ($h_sender: matches ^\\d{8}@ and not personal) or
+&nbsp;&nbsp;  $message_body contains "this is spam"
+&nbsp;&nbsp;then
+&nbsp;&nbsp;  seen finish
+&nbsp;&nbsp;endif
+</pre>
+</p>
+<p>
+A condition can be preceded by <tt>not</tt> to negate it, and there are also some
+negative forms of condition that are more English-like.
+</p>
+<h2>
+<a name="SECT3.22" href="filter_toc.html#TOC43">
+3.22. String testing conditions
+</a></h2>
+<p>
+There are a number of conditions that operate on text strings, using the words
+&#147;begins&#148;, &#147;ends&#148;, &#147;is&#148;, &#147;contains&#148; and &#147;matches&#148;.
+</p>
+<p>
+Note that if you want to apply the same test to more than one header line, you 
+can easily concatenate them into a single string for testing, as in this 
+example:
+<pre>
+&nbsp;&nbsp;if "$h_to:, $h_cc:" contains me@domain.example then ...
+</pre>
+</p>
+<p>
+If any of the condition names are written in lower case, the testing of letters
+is done without regard to case; if they are written in upper case (for example,
+&#147;CONTAINS&#148;) then the case of letters is significant.
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     &#060;<em>text1</em>&#062; begins &#060;<em>text2</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#060;<em>text1</em>&#062; does not begin &#060;<em>text2</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>e.g. &#036;header&#095;from: begins "Friend&#064;"</tt><br>
+</p>
+<p>
+A &#147;begins&#148; test checks for the presence of the second string at the start of
+the first, both strings having been expanded.
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     &#060;<em>text1</em>&#062; ends &#060;<em>text2</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#060;<em>text1</em>&#062; does not end &#060;<em>text2</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>e.g. &#036;header&#095;from: ends "&#112;ublic.com.example"</tt><br>
+</p>
+<p>
+An &#147;ends&#148; test checks for the presence of the second string at the end of
+the first, both strings having been expanded.
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     &#060;<em>text1</em>&#062; is &#060;<em>text2</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#060;<em>text1</em>&#062; is not &#060;<em>text2</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>e.g. &#036;local&#095;part&#095;suffix is "-foo"</tt><br>
+</p>
+<p>
+An &#147;is&#148; test does an exact match between the strings, having first expanded
+both strings.
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     &#060;<em>text1</em>&#062; contains &#060;<em>text2</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#060;<em>text1</em>&#062; does not contain &#060;<em>text2</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>e.g. &#036;header&#095;subject: contains "evolution"</tt><br>
+</p>
+<p>
+A &#147;contains&#148; test does a partial string match, having expanded both strings.
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     &#060;<em>text1</em>&#062; matches &#060;<em>text2</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#060;<em>text1</em>&#062; does not match &#060;<em>text2</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>e.g. &#036;sender&#095;address matches "(bill|john)&#064;"</tt><br>
+</p>
+<p>
+For a &#147;matches&#148; test, after expansion of both strings, the second one is
+interpreted as a regular expression. Exim uses the PCRE regular expression
+library, which provides regular expressions that are compatible with Perl.
+</p>
+<p>
+<font color=green>
+The match succeeds if the regular expression matches any part of the first 
+string. If you want a regular expression to match only at the start or end of
+the subject string, you must encode that requirement explicitly, using the &#094;
+or &#036; metacharacters. The above example, which is not so constrained, matches
+all these addresses:
+<pre>
+&nbsp;&nbsp;bill@test.example
+&nbsp;&nbsp;john@some.example
+&nbsp;&nbsp;spoonbill@example.com
+&nbsp;&nbsp;littlejohn@example.com
+</pre>
+</p>
+<p>
+To match only the first two, you could use this:
+<pre>
+&nbsp;&nbsp;if $sender_address matches "^(bill|john)@" then ...
+</pre>
+</p>
+</font><p>
+Care must be taken if you need a backslash in a regular expression, because
+backslashes are interpreted as escape characters both by the string expansion
+code and by Exim's normal processing of strings in quotes. For example, if you
+want to test the sender address for a domain ending in <tt>.com</tt> the regular
+expression is
+<pre>
+&nbsp;&nbsp;\.com$
+</pre>
+</p>
+<p>
+The backslash and dollar sign in that expression have to be escaped when used
+in a filter command, as otherwise they would be interpreted by the expansion
+code. Thus what you actually write is
+<pre>
+&nbsp;&nbsp;if $sender_address matches \\.com\$
+</pre>
+</p>
+<p>
+An alternative way of handling this is to make use of the <tt>&#092;N</tt> expansion
+flag for suppressing expansion:
+<pre>
+&nbsp;&nbsp;if $sender_address matches \N\.com$\N
+</pre>
+</p>
+<p>
+Everything between the two occurrences of <tt>&#092;N</tt> is copied without change by
+the string expander (and in fact you do not need the final one, because it is
+at the end of the string).
+</p>
+<p>
+If the regular expression is given in quotes (mandatory only if it contains
+white space) you have to write either
+<pre>
+&nbsp;&nbsp;if $sender_address matches "\\\\.com\\$"
+</pre>
+</p>
+<p>
+or
+<pre>
+&nbsp;&nbsp;if $sender_address matches "\\N\\.com$\\N"
+</pre>
+</p>
+<p>
+If the regular expression contains bracketed sub-expressions, numeric
+variable substitutions such as <tt>$1</tt> can be used in the subsequent actions
+after a successful match. If the match fails, the values of the numeric
+variables remain unchanged. Previous values are not restored after <tt>endif</tt> &#150;
+in other words, only one set of values is ever available. If the condition
+contains several sub-conditions connected by <tt>and</tt> or <tt>or</tt>, it is the
+strings extracted from the last successful match that are available in
+subsequent actions. Numeric variables from any one sub-condition are also
+available for use in subsequent sub-conditions, since string expansion of a
+condition occurs just before it is tested.
+</p>
+<h2>
+<a name="SECT3.23" href="filter_toc.html#TOC44">
+3.23. Numeric testing conditions
+</a></h2>
+<p>
+The following conditions are available for performing numerical tests:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     &#060;<em>number1</em>&#062; is above &#060;<em>number2</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#060;<em>number1</em>&#062; is not above &#060;<em>number2</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#060;<em>number1</em>&#062; is below &#060;<em>number2</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#060;<em>number1</em>&#062; is not below &#060;<em>number2</em>&#062;</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>e.g. &#036;message&#095;size is not above 10k</tt><br>
+</p>
+<p>
+The &#060;<em>number</em>&#062; arguments must expand to strings of digits, optionally followed
+by one of the letters K or M (upper case or lower case) which cause
+multiplication by 1024 and 1024x1024 respectively.
+</p>
+<h2>
+<a name="SECT3.24" href="filter_toc.html#TOC45">
+3.24. Testing for significant deliveries
+</a></h2>
+<p>
+Whether or not any previously obeyed filter commands have resulted in a
+significant delivery can be tested by the condition <tt>delivered</tt>, for example:
+<pre>
+&nbsp;&nbsp;if not delivered then save mail/anomalous endif
+</pre>
+</p>
+<h2>
+<a name="SECT3.25" href="filter_toc.html#TOC46">
+3.25. Testing for error messages
+</a></h2>
+<p>
+The condition <tt>error&#095;message</tt> is true if the incoming message is a mail
+delivery error message (bounce message). Putting the command
+<pre>
+&nbsp;&nbsp;if error_message then finish endif
+</pre>
+</p>
+<p>
+at the head of your filter file is a useful insurance against things going
+wrong in such a way that you cannot receive delivery error reports, and is
+highly recommended. Note that <tt>error&#095;message</tt> is a condition, not an
+expansion variable, and therefore is not preceded by <tt>&#036;</tt>.
+</p>
+<h2>
+<a name="SECT3.26" href="filter_toc.html#TOC47">
+3.26. Testing for personal mail
+</a></h2>
+<p>
+A common requirement is to distinguish between incoming personal mail and mail
+from a mailing list,
+or from a robot or other automatic process (for example, a bounce message).
+In particular, this test is normally required for so-called &#147;vacation
+messages&#148;. The condition
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     personal</tt><br>
+</p>
+<p>
+is a shorthand for
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>     not error&#095;message and</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#036;header&#095;to: contains "&#036;local&#095;part&#064;&#036;domain" and</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#036;header&#095;from: does not contain "&#036;local&#095;part&#064;&#036;domain" and</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#036;header&#095;from: does not contain "server&#064;" and</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#036;header&#095;from: does not contain "daemon&#064;" and</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#036;header&#095;from: does not contain "root&#064;" and</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#036;header&#095;auto-submitted: does not contain "auto-" and</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#036;header&#095;subject: does not contain "circular" and</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#036;header&#095;precedence: does not contain "bulk" and</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#036;header&#095;precedence: does not contain "list" and</tt><br>
+<tt>&nbsp;&nbsp;</tt><tt>     &#036;header&#095;precedence: does not contain "junk"</tt><br>
+</p>
+<p>
+The variable <tt>$local&#095;part</tt> contains the local part of the mail address of
+the user whose filter file is being run &#150; it is normally your login id. The
+<tt>$domain</tt> variable contains the mail domain. This condition tests for the
+appearance of the current user in the <tt>To:</tt> header, checks that the sender is
+not the current user or one of a number of common daemons, and checks the
+content of the <tt>Subject:</tt> and <tt>Precedence:</tt> headers.
+</p>
+<p>
+If prefixes or suffixes are in use for local parts &#150; something which depends
+on the configuration of Exim (see section <a href="filter_3.html#SECT3.29">3.29</a> below) &#150; the first two
+tests above are also done with
+<pre>
+&nbsp;&nbsp;$local_part_prefix$local_part$local_part_suffix
+</pre>
+</p>
+<p>
+instead of just <tt>$local&#095;part</tt>. If the system is configured to rewrite local
+parts of mail addresses, for example, to rewrite &#147;dag46&#148; as &#147;Dirk.Gently&#148;,
+the rewritten form of the address is also used in the tests.
+</p>
+<p>
+This example shows the use of <tt>personal</tt> in a filter file that is sending out
+vacation messages:
+<pre>
+&nbsp;&nbsp;if personal then
+&nbsp;&nbsp;  mail
+&nbsp;&nbsp;   to $reply_address
+&nbsp;&nbsp;   subject "Re: $h_subject:"
+&nbsp;&nbsp;   file $home/vacation/message
+&nbsp;&nbsp;   once $home/vacation/once
+&nbsp;&nbsp;   once_repeat 10d
+&nbsp;&nbsp;endif
+</pre>
+</p>
+<p>
+It is quite common for people who have mail accounts on a number of different
+systems to forward all their mail to one system, and in this case a check for
+personal mail should test all their various mail addresses. To allow for this,
+the <tt>personal</tt> condition keyword can be followed by
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>alias &#060;<em>address</em>&#062;</tt><br>
+</p>
+<p>
+any number of times, for example
+<pre>
+&nbsp;&nbsp;if personal alias smith@else.where.example
+&nbsp;&nbsp;            alias jones@other.place.example
+&nbsp;&nbsp;then ...
+</pre>
+</p>
+<p>
+This causes messages containing the alias addresses in any places where the
+local address is tested to be treated as personal.
+</p>
+<h2>
+<a name="SECT3.27" href="filter_toc.html#TOC48">
+3.27. Testing delivery status
+</a></h2>
+<p>
+There are two conditions which are intended mainly for use in system filter
+files, but which are available in users' filter files as well. The condition
+<tt>first&#095;delivery</tt> is true if this is the first attempt to deliver the
+message, and false otherwise. 
+<font color=green>
+This indicator is not reset until the first delivery process successfully 
+terminates; if there is a crash or a power failure (for example), the next 
+delivery attempt is also a &#147;first delivery&#148;.
+</font>
+</p>
+<p>
+In a user filter file it will be false only if
+there was previously an error in the filter, or if a delivery for the user
+failed owing to, for example, a quota error, or forwarding to a remote
+address that was deferred for some reason.
+</p>
+<p>
+The condition <tt>manually&#095;thawed</tt> is true only if the message was &#147;frozen&#148; for
+some reason, and was subsequently released by the system administrator. It is
+unlikely to be of use in users' filter files.
+</p>
+<h2>
+<a name="SECT3.28" href="filter_toc.html#TOC49">
+3.28. Testing a list of addresses
+</a></h2>
+<p>
+There is a facility for looping through a list of addresses and applying a
+condition to each of them. It takes the form
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>foranyaddress &#060;<em>string</em>&#062; (&#060;<em>condition</em>&#062;)</tt><br>
+</p>
+<p>
+where &#060;<em>string</em>&#062; is interpreted as a list of RFC 2822 addresses, as in a
+typical header line, and &#060;<em>condition</em>&#062; is any valid filter condition or
+combination of conditions. The &#147;group&#148; syntax that is defined for certain
+header lines that contain addresses is supported.
+</p>
+<p>
+The parentheses surrounding the condition are mandatory, to delimit it from
+possible further sub-conditions of the enclosing <tt>if</tt> command. Within the
+condition, the expansion variable <tt>$thisaddress</tt> is set to the non-comment
+portion of each of the addresses in the string in turn. For example, if the
+string is
+<pre>
+&nbsp;&nbsp;B.Simpson &#060;bart@sfld.example&#062;, lisa@sfld.example (his sister)
+</pre>
+</p>
+<p>
+then <tt>$thisaddress</tt> would take on the values <tt>bart&#064;sfld.example</tt> and
+<tt>lisa&#064;sfld.example</tt> in turn.
+</p>
+<p>
+If there are no valid addresses in the list, the whole condition is false. If
+the internal condition is true for any one address, the overall condition is
+true and the loop ends. If the internal condition is false for all addresses in
+the list, the overall condition is false. This example tests for the presence
+of an eight-digit local part in any address in a <tt>To:</tt> header:
+<pre>
+&nbsp;&nbsp;if foranyaddress $h_to: ( $thisaddress matches ^\\d{8}@ ) then ...
+</pre>
+</p>
+<p>
+When the overall condition is true, the value of <tt>$thisaddress</tt> in the
+commands that follow <tt>then</tt> is the last value it took on inside the loop. At
+the end of the <tt>if</tt> command, the value of <tt>$thisaddress</tt> is reset to what it
+was before. It is best to avoid the use of multiple occurrences of
+<tt>foranyaddress</tt>, nested or otherwise, in a single <tt>if</tt> command, if the
+value of <tt>$thisaddress</tt> is to be used afterwards, because it isn't always
+clear what the value will be. Nested <tt>if</tt> commands should be used instead.
+</p>
+<p>
+Header lines can be joined together if a check is to be applied to more than
+one of them. For example:
+<pre>
+&nbsp;&nbsp;if foranyaddress $h_to:,$h_cc: ....
+</pre>
+</p>
+<p>
+scans through the addresses in both the <tt>To:</tt> and the <tt>Cc:</tt> headers.
+</p>
+<h2>
+<a name="SECT3.29" href="filter_toc.html#TOC50">
+3.29. Multiple personal mailboxes
+</a></h2>
+<p>
+The system administrator can configure Exim so that users can set up variants
+on their email addresses and handle them separately. Consult your system
+administrator or local documentation to see if this facility is enabled on your
+system, and if so, what the details are.
+</p>
+<p>
+The facility involves the use of a prefix or a suffix on an email address. For
+example, all mail addressed to <tt>lg103-&#060;<em>something</em>&#062;</tt> would be the property of
+user <tt>lg103</tt>, who could determine how it was to be handled, depending on the
+value of &#060;<em>something</em>&#062;.
+</p>
+<p>
+There are two possible ways in which this can be set up. The first possibility
+is the use of multiple <i>.forward</i> files. In this case, mail to <tt>lg103-foo</tt>,
+for example, is handled by looking for a file called <tt>.forward-foo</tt> in
+<tt>lg103's</tt> home directory. If such a file does not exist, delivery fails and the
+message is returned to its sender.
+</p>
+<p>
+The alternative approach is to pass all messages through a single <i>.forward</i>
+file, which must be a filter file in order to distinguish between the different
+cases by referencing the variables <tt>$local&#095;part&#095;prefix</tt> or
+<tt>$local&#095;part&#095;suffix</tt>, as in the final example in section <a href="filter_3.html#SECT3.31">3.31</a> below. If
+the filter file does not handle a prefixed or suffixed address, delivery fails
+and the message is returned to its sender.
+</p>
+<p>
+It is possible to configure Exim to support both schemes at once. In this case,
+a specific <tt>.forward-foo</tt> file is first sought; if it is not found, the basic
+<i>.forward</i> file is used.
+</p>
+<p>
+The <tt>personal</tt> test (see section <a href="filter_3.html#SECT3.26">3.26</a>) includes prefixes and
+suffixes in its checking.
+</p>
+<h2>
+<a name="SECT3.30" href="filter_toc.html#TOC51">
+3.30. Ignoring delivery errors
+</a></h2>
+<p>
+As was explained above, filtering just sets up addresses for delivery &#150; no
+deliveries are actually done while a filter file is active. If any of the
+generated addresses subsequently suffers a delivery failure, an error message
+is generated in the normal way. However, if the filter command which sets up a
+delivery is preceded by the word <tt>noerror</tt>, errors for that delivery,
+<em>and any deliveries consequent on it</em> (that is, from alias, forwarding, or
+filter files it invokes) are ignored.
+</p>
+<h2>
+<a name="SECT3.31" href="filter_toc.html#TOC52">
+3.31. Examples of Exim filter commands
+</a></h2>
+<p>
+Simple forwarding:
+<pre>
+&nbsp;&nbsp;# Exim filter
+&nbsp;&nbsp;deliver baggins@rivendell.middle-earth.example
+</pre>
+</p>
+<p>
+Vacation handling using traditional means, assuming that the <tt>.vacation.msg</tt>
+and other files have been set up in your home directory:
+<pre>
+&nbsp;&nbsp;# Exim filter
+&nbsp;&nbsp;unseen pipe "/usr/ucb/vacation \"$local_part\""
+</pre>
+</p>
+<p>
+Vacation handling inside Exim, having first created a file called
+<tt>.vacation.msg</tt> in your home directory:
+<pre>
+&nbsp;&nbsp;# Exim filter
+&nbsp;&nbsp;if personal then vacation endif
+</pre>
+</p>
+<p>
+File some messages by subject:
+<pre>
+&nbsp;&nbsp;# Exim filter
+&nbsp;&nbsp;if $header_subject: contains "empire" or
+&nbsp;&nbsp;   $header_subject: contains "foundation"
+&nbsp;&nbsp;then
+&nbsp;&nbsp;   save $home/mail/f+e
+&nbsp;&nbsp;endif
+</pre>
+</p>
+<p>
+Save all non-urgent messages by weekday:
+<pre>
+&nbsp;&nbsp;# Exim filter
+&nbsp;&nbsp;if $header_subject: does not contain "urgent" and
+&nbsp;&nbsp;   $tod_full matches "^(...),"
+&nbsp;&nbsp;then
+&nbsp;&nbsp;  save $home/mail/$1
+&nbsp;&nbsp;endif
+</pre>
+</p>
+<p>
+Throw away all mail from one site, except from postmaster:
+<pre>
+&nbsp;&nbsp;# Exim filter
+&nbsp;&nbsp;if $reply_address contains "@spam.site.example" and
+&nbsp;&nbsp;   $reply_address does not contain "postmaster@"
+&nbsp;&nbsp;then
+&nbsp;&nbsp;   seen finish
+&nbsp;&nbsp;endif
+</pre>
+</p>
+<p>
+Handle multiple personal mailboxes
+<pre>
+&nbsp;&nbsp;# Exim filter
+&nbsp;&nbsp;if $local_part_suffix is "-foo"
+&nbsp;&nbsp;then
+&nbsp;&nbsp;  save $home/mail/foo
+&nbsp;&nbsp;elif $local_part_suffix is "-bar"
+&nbsp;&nbsp;then
+&nbsp;&nbsp;  save $home/mail/bar
+&nbsp;&nbsp;endif
+</pre>
+<hr>
+</p>
+<font size=2>
+<a href="filter_2.html">Previous</a>&nbsp;&nbsp;<a href="filter_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim Filter Specification)
+</font>
+</body>
+</html>

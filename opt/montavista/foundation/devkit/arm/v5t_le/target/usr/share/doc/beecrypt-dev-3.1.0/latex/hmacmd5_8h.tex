@@ -1,0 +1,79 @@
+\hypertarget{hmacmd5_8h}{
+\section{hmacmd5.h File Reference}
+\label{hmacmd5_8h}\index{hmacmd5.h@{hmacmd5.h}}
+}
+HMAC-MD5 message authentication code, headers. 
+
+{\tt \#include \char`\"{}hmac.h\char`\"{}}\par
+{\tt \#include \char`\"{}md5.h\char`\"{}}\par
+\subsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \hyperlink{structhmacmd5Param}{hmacmd5Param}
+\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{hmacmd5_8h_a1}{hmacmd5Setup} (\hyperlink{structhmacmd5Param}{hmacmd5Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\item 
+int \hyperlink{hmacmd5_8h_a2}{hmacmd5Reset} (\hyperlink{structhmacmd5Param}{hmacmd5Param} $\ast$)
+\item 
+int \hyperlink{hmacmd5_8h_a3}{hmacmd5Update} (\hyperlink{structhmacmd5Param}{hmacmd5Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)
+\item 
+int \hyperlink{hmacmd5_8h_a4}{hmacmd5Digest} (\hyperlink{structhmacmd5Param}{hmacmd5Param} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)
+\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+const \hyperlink{structkeyedHashFunction}{keyed\-Hash\-Function} \hyperlink{hmacmd5_8h_a0}{hmacmd5}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+HMAC-MD5 message authentication code, headers. 
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{hmacmd5_8h-source}{hmacmd5.h}.
+
+\subsection{Function Documentation}
+\hypertarget{hmacmd5_8h_a4}{
+\index{hmacmd5.h@{hmacmd5.h}!hmacmd5Digest@{hmacmd5Digest}}
+\index{hmacmd5Digest@{hmacmd5Digest}!hmacmd5.h@{hmacmd5.h}}
+\subsubsection[hmacmd5Digest]{\setlength{\rightskip}{0pt plus 5cm}int hmacmd5Digest (\hyperlink{structhmacmd5Param}{hmacmd5Param} $\ast$, \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$)}}
+\label{hmacmd5_8h_a4}
+
+
+\hypertarget{hmacmd5_8h_a2}{
+\index{hmacmd5.h@{hmacmd5.h}!hmacmd5Reset@{hmacmd5Reset}}
+\index{hmacmd5Reset@{hmacmd5Reset}!hmacmd5.h@{hmacmd5.h}}
+\subsubsection[hmacmd5Reset]{\setlength{\rightskip}{0pt plus 5cm}int hmacmd5Reset (\hyperlink{structhmacmd5Param}{hmacmd5Param} $\ast$)}}
+\label{hmacmd5_8h_a2}
+
+
+\hypertarget{hmacmd5_8h_a1}{
+\index{hmacmd5.h@{hmacmd5.h}!hmacmd5Setup@{hmacmd5Setup}}
+\index{hmacmd5Setup@{hmacmd5Setup}!hmacmd5.h@{hmacmd5.h}}
+\subsubsection[hmacmd5Setup]{\setlength{\rightskip}{0pt plus 5cm}int hmacmd5Setup (\hyperlink{structhmacmd5Param}{hmacmd5Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)}}
+\label{hmacmd5_8h_a1}
+
+
+\hypertarget{hmacmd5_8h_a3}{
+\index{hmacmd5.h@{hmacmd5.h}!hmacmd5Update@{hmacmd5Update}}
+\index{hmacmd5Update@{hmacmd5Update}!hmacmd5.h@{hmacmd5.h}}
+\subsubsection[hmacmd5Update]{\setlength{\rightskip}{0pt plus 5cm}int hmacmd5Update (\hyperlink{structhmacmd5Param}{hmacmd5Param} $\ast$, const \hyperlink{beecrypt_8api_8h_a3}{byte} $\ast$, size\_\-t)}}
+\label{hmacmd5_8h_a3}
+
+
+
+
+\subsection{Variable Documentation}
+\hypertarget{hmacmd5_8h_a0}{
+\index{hmacmd5.h@{hmacmd5.h}!hmacmd5@{hmacmd5}}
+\index{hmacmd5@{hmacmd5}!hmacmd5.h@{hmacmd5.h}}
+\subsubsection[hmacmd5]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structkeyedHashFunction}{keyed\-Hash\-Function} \hyperlink{hmacmd5_8h_a0}{hmacmd5}}}
+\label{hmacmd5_8h_a0}
+
+

@@ -1,0 +1,4137 @@
+2003-10-11 23:31  mallum
+
+	* po/: Makefile.am, cs.po: added cs.po
+
+2003-10-10 18:59  mallum
+
+	* tests/Makefile.am, tests/test-hung-ping-handler.c,
+	  website/download.html, website/index.html,
+	  website/mbmediabox.html, website/screenshots.html: minor fixes
+	  and website updates for 0.7 release
+
+2003-10-09 22:44  mallum
+
+	* data/vfolders/: Games.directory, Other.directory,
+	  Settings.directory, Utilities.directory: Added german vfolders
+	  translation patch
+
+2003-10-09 21:48  mallum
+
+	* po/Makefile.am: added de.po
+
+2003-10-09 20:32  mallum
+
+	* tests/Makefile.am: added mising testrun.sh to Makefile
+
+2003-10-09 00:37  mallum
+
+	* desktop/mbdesktop.c: Add exposure event compression to desktop
+
+2003-10-08 22:31  mallum
+
+	* doc/testing/testing.docbook, tests/test-dock.sh,
+	  tests/test-interaction.sh, tests/test-windows.sh,
+	  tests/testrun.sh: Test suite updates
+
+2003-10-08 09:39  mallum
+
+	* tests/: test-interaction.sh, test-interaction.xwd:
+	  test-interaction tweaks
+
+2003-10-07 23:46  mallum
+
+	* desktop/modules/simplefilebrowser.c, doc/testing/testing.docbook,
+	  tests/test-all.sh, tests/test-gconf.sh, tests/test-pings.sh,
+	  tests/test.conf, tests/testrun.sh: test suite updates
+
+2003-10-07 20:53  mallum
+
+	* desktop/mbdesktop_view.c: fix to silly breakage
+
+2003-10-07 20:39  mallum
+
+	* desktop/: mbdesktop_view.c, modules/simplefilebrowser.c: Much
+	  improved desktop text layout rendering. Fixed bug in
+	  simplefilebrowser desktop module
+
+2003-10-07 11:07  mallum
+
+	* tests/test-all.sh: Command line options added to test-all.sh
+
+2003-10-06 18:49  mallum
+
+	* buildarm.sh, po/es_ES.po: fix to broken es_ES.po
+
+2003-10-06 17:29  mallum
+
+	* desktop/mbdesktop.c, tests/test-all.sh, tests/test-dock.sh,
+	  tests/test-gconf.sh, tests/test-interaction.sh,
+	  tests/test-pings.sh, tests/test-windows.sh, tests/test.conf,
+	  tests/winspew.c: Added test suite patch. Fixed desktop segv when
+	  theme prop missing from root/xsettings
+
+2003-10-06 14:25  mallum
+
+	* po/es_ES.po: Updated es_ES translation
+
+2003-10-06 13:17  mallum
+
+	* libmb/mbutil.h: libmb doc updates
+
+2003-10-06 13:04  mallum
+
+	* libmb/mbdotdesktop.h, libmb/mbutil.c, util/minitime.c: more
+	  minitime fixes. libmb updates
+
+2003-10-06 11:50  mallum
+
+	* util/minitime.c: small minitime mem leak plugged
+
+2003-10-06 10:17  mallum
+
+	* README, doc/manual.sgml, doc/testing/testing.docbook,
+	  tests/winspew.c, util/monolaunch.c, website/documentation.html,
+	  website/faq.html, website/news.html: spellings patch applied
+
+2003-10-05 22:17  mallum
+
+	* doc/manual.sgml, doc/testing/testing.docbook,
+	  doc/themes/theme.howto.docbook, website/faq.html: Various doc
+	  updates
+
+2003-10-03 22:33  mallum
+
+	* desktop/: mbdesktop.c, mbdesktop_item.c, modules/dotdesktop.c:
+	  removed spurious randon printf's from desktop code
+
+2003-10-03 18:11  mallum
+
+	* libmb/mbtray.c: Added --no-session switch to mbtray
+
+2003-10-02 20:30  mallum
+
+	* website/faq.html: faq updates
+
+2003-10-02 14:29  mallum
+
+	* data/vfolders-desktop/Root.order, website/faq.html: added
+	  beginnings of faq and missing alternate vfolder file
+
+2003-10-01 18:20  mallum
+
+	* desktop/modules/dotdesktop.c,
+	  desktop/modules/simplefilebrowser.c, src/dialog_client.c,
+	  util/mbmenu.c: fix to key focus getting messed up with a no
+	  parent dialog on desktop
+
+2003-10-01 14:49  mallum
+
+	* desktop/: mbdesktop.c, mbdesktop_view.c: desktop tweaks
+
+2003-10-01 14:24  mallum
+
+	* libmb/mbtray.c, libmb/mbtray.h, src/dialog_client.c: dialog
+	  positioning fixes
+
+2003-10-01 13:08  mallum
+
+	* dock/: dock.c, dock.h, panel_app.c: Added _NET_CLIENT_LIST
+	  property to dock. Gave dock window a sane name
+
+2003-10-01 11:27  mallum
+
+	* src/ewmh.c: fix and lesson to remember to check even simple
+	  changes should be compiled before commiting
+
+2003-10-01 10:39  mallum
+
+	* src/ewmh.c: fix to decorated desktop area propertys
+
+2003-10-01 10:02  mallum
+
+	* src/: dialog_client.c, mbtheme.c: more fixes to shaped east/west
+	  dialog borders
+
+2003-09-30 16:37  mallum
+
+	* desktop/mbdesktop_modules.in, libmb/mbmenu.c, util/mbsession:
+	  misc fixes on ipkg testing
+
+2003-09-30 15:00  mallum
+
+	* libmb/mbmenu.c: remove mbmenu flicker
+
+2003-09-30 14:28  mallum
+
+	* src/dialog_client.c: another quick dialog fix
+
+2003-09-30 14:25  mallum
+
+	* src/dialog_client.c: improvements to dialog positioning code
+
+2003-09-30 11:04  mallum
+
+	* data/themes/bluebox/theme.xml, dock/dock.c, dock/session.c,
+	  util/mbsession: fixes to dock sessioning
+
+2003-09-29 18:19  mallum
+
+	* libmb/mbtray.c: minor libmb tweaks
+
+2003-09-29 00:02  mallum
+
+	* data/themes/bluebox/theme.xml: added vera to bluebox
+
+2003-09-28 22:27  mallum
+
+	* packaging/ipkg/: control.in, specs/libmb1/control: fixed libjpeg
+	  dep in ipkg control
+
+2003-09-26 19:48  mallum
+
+	* desktop/mbdesktop_modules: ouch  corrupt mbdesktop_modules file
+	  uncorrupted
+
+2003-09-26 19:29  mallum
+
+	* desktop/mbdesktop.c: fix the mbdesktop xsettings segv
+
+2003-09-26 14:02  mallum
+
+	* configure.ac, libmb/mbpixbuf.c: mbpixbuf rotation bug fixed
+
+2003-09-26 12:44  mallum
+
+	* data/themes/blondie/theme.desktop,
+	  data/themes/bluebox/theme.desktop,
+	  data/themes/gorilla/theme.desktop, desktop/mbdesktop.c,
+	  desktop/mbdesktop.h, desktop/mbdesktop_view.c: desktop background
+	  now themeable
+
+2003-09-25 19:41  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop_view.c, desktop/mbdesktop_view.h, src/ewmh.c,
+	  src/main_client.c, src/wm.c: many desktop improvements + minor wm
+	  bug fixes
+
+2003-09-25 13:07  mallum
+
+	* src/: mbtheme.c, select_client.c, wm.c: wm menu improved. initial
+	  gconf theme support added
+
+2003-09-25 11:24  mallum
+
+	* libmb/mbmenu.c, util/mbmenu.c: mbmenu improvements
+
+2003-09-24 23:08  mallum
+
+	* doc/testing/testing.docbook, tests/test-all.sh: grammar patch for
+	  testing doc applied
+
+2003-09-24 23:05  mallum
+
+	* po/fi_FI.po: finnish translation updated
+
+2003-09-24 16:50  mallum
+
+	* doc/manual.sgml, tests/Makefile.am, tests/README,
+	  tests/test-gconf.sh, tests/test-interaction.sh,
+	  tests/test-pings.sh: doc and test suite updates
+
+2003-09-23 20:54  mallum
+
+	* desktop/modules/dotdesktop.c: minor desktop filebrowser fixes
+
+2003-09-23 13:26  mallum
+
+	* src/: base_client.c, client_common.c, client_common.h,
+	  dialog_client.c, main_client.c, mbtheme.c, select_client.c,
+	  structs.h: fix to reallow side window decorations to be shaped
+
+2003-09-22 21:42  mallum
+
+	* doc/testing/testing.docbook, tests/test-all.sh,
+	  tests/test-dock.sh, tests/test-gconf.sh, tests/test-windows.sh:
+	  test suite updates
+
+2003-09-22 18:14  mallum
+
+	* dock/panel_app.c: vertical alignment problem fixed in dock
+
+2003-09-22 13:11  mallum
+
+	* src/wm.c: usage typo fixed
+
+2003-09-22 09:47  mallum
+
+	* src/dialog_client.c: shape improvement
+
+2003-09-20 22:50  mallum
+
+	* desktop/: mbdesktop.h, mbdesktop_item.c, mbdesktop_item.h,
+	  modules/simplefilebrowser.c: desktop filebrowser module now
+	  handles sub dirs
+
+2003-09-19 15:08  mallum
+
+	* doc/testing/testing.docbook, tests/test-all.sh,
+	  tests/test-interaction.sh, tests/test-interaction.xwd,
+	  tests/test-pings.sh, tests/test-windows.sh, tests/winspew.c:
+	  tseting updates
+
+2003-09-17 23:10  mallum
+
+	* doc/testing/testing.docbook, tests/tests.sh: tests updated
+
+2003-09-17 18:23  mallum
+
+	* configure.ac, desktop/Makefile.am, desktop/modules/Makefile.am,
+	  doc/manual.sgml, doc/testing/testing.docbook, src/wm.c,
+	  tests/test-gconf.sh, tests/test-interaction.sh: - Improved some
+	  testing scripts - Added initial testing document - Fixed gcc 3.3
+	  warning - Changed how modules got built - Added new options to
+	  matchbox -help - Updated manual for new switches
+
+2003-09-12 14:35  mallum
+
+	* tests/test-interaction.xnee: added xnee data
+
+2003-09-12 14:24  mallum
+
+	* tests/: Makefile.am, sendkey.c, test-gconf.sh,
+	  test-interaction.sh, test-pings.sh: new test programs added
+
+2003-08-13 15:44  mallum
+
+	* po/en_GB.po, po/es_ES.po, po/fi_FI.po, src/ewmh.c,
+	  util/minitime.c, util/miniwave.c, util/apm/miniapm.c:
+	  Gettexterised more stuff
+
+2003-08-11 11:35  mallum
+
+	* src/font.c, src/wm.c, tests/winspew.c: Pango fixes to arabic
+	  rendering. Minor gconf with dbus fix
+
+2003-08-08 16:12  mallum
+
+	* src/font.c: silly font typo fixed
+
+2003-08-08 13:22  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop_view.c, src/ewmh.c, src/misc.c, src/structs.h,
+	  src/wm.c, tests/Makefile.am, tests/test-hung-ping-handler.c:
+	  Added support for external hung app handlers
+
+2003-08-07 16:34  mallum
+
+	* src/font.c: fix to read correct pango sizes from theme.xml
+
+2003-08-06 18:41  mallum
+
+	* src/toolbar_client.c: dialog positioning for toolbars tweaks
+
+2003-08-06 17:55  mallum
+
+	* buildarm.sh, util/mbmenu.c: minor fixups
+
+2003-08-06 15:53  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop.h, util/mbmenu.c,
+	  util/mbsession: fit to mbdesktop DNOTIFY segv. Stopped mbmenu
+	  parsing crusty /usr/lib/menu by default
+
+2003-08-06 12:38  mallum
+
+	* desktop/: mbdesktop.c, mbdesktop_item.c, mbdesktop_view.c:
+	  desktop scroll button positioning fixed. minor desktop cleanups
+
+2003-08-04 21:50  mallum
+
+	* configure.ac, po/Makefile.am, po/fi_FI.po: FI translation added
+
+2003-08-04 20:47  mallum
+
+	* desktop/mbdesktop.c: fix to mbdesktop compile breakage with
+	  dnotify
+
+2003-08-04 20:16  mallum
+
+	* src/: client_common.c, desktop_client.c, ewmh.c, main_client.c,
+	  mbtheme.c, structs.h, wm.c: Support for decorated desktop windows
+	  added
+
+2003-08-04 11:55  mallum
+
+	* dock/dock.h, src/ewmh.c, src/wm.c: fix to single client die
+	  crash, hung app politely sends TERM first, increased dock session
+	  timeout
+
+2003-08-03 23:16  mallum
+
+	* util/monolaunch.c: no animation option added to monolaunch
+
+2003-08-03 18:44  mallum
+
+	* packaging/ipkg/: Makefile.am, specs/matchbox-common/files,
+	  specs/matchbox-panel/files: added epoch to ipkg scripts
+
+2003-08-01 13:29  mallum
+
+	* desktop/modules/dotdesktop.c, src/desktop_client.c, src/wm.c:
+	  dotdesktop module empty cat segv fix
+
+2003-08-01 09:58  mallum
+
+	* libmb/mbutil.c, util/monolaunch.c: startup animation fixes.
+	  monolaunch tweak
+
+2003-07-31 14:41  mallum
+
+	* libmb/mbmenu.c: motion notify event compression added to mbmenu
+
+2003-07-31 13:57  mallum
+
+	* buildarm.sh, configure.ac, packaging/ipkg/Makefile.am,
+	  packaging/ipkg/specs/matchbox-desktop/files,
+	  packaging/ipkg/specs/matchbox-wm/files: ipkg build script tweaks
+
+2003-07-30 23:07  mallum
+
+	* dock/dock.c, dock/panel_app.c, dock/panel_menu.c,
+	  dock/panel_menu.h, po/Makefile.am, po/en_GB.po, po/es_ES.po,
+	  util/minisys.c: gettexted panel menu
+
+2003-07-30 11:12  mallum
+
+	* dock/dock.c, dock/dock.h, dock/panel_app.c, libmb/mbtray.c: utf8
+	  fixes to panel app names
+
+2003-07-30 01:02  mallum
+
+	* dock/msg.c, po/Makefile.am, po/en_GB.po, po/es_ES.po,
+	  util/minisys.c, util/minitime.c, util/minivol.c, util/miniwave.c,
+	  util/apm/miniapm.c: po fixes
+
+2003-07-29 16:49  mallum
+
+	* doc/manual.sgml, util/mbterm.desktop.in: minor manual updates
+
+2003-07-29 16:43  mallum
+
+	* configure.ac, packaging/ipkg/Makefile.am, po/Makefile.am,
+	  po/es_ES.po: spanish translation added. Broke ipkg makefile fixed
+
+2003-07-25 19:08  mallum
+
+	* desktop/: mbdesktop.c, mbdesktop.h, modules/Makefile.am,
+	  modules/dotdesktop.c, modules/simplefilebrowser-example.desktop,
+	  modules/simplefilebrowser.c, modules/tasks.c: browser desktop
+	  module improved
+
+2003-07-25 14:04  mallum
+
+	* desktop/mbdesktop_item.h, desktop/modules/dotdesktop.c,
+	  packaging/ipkg/specs/matchbox-desktop/files, util/Makefile.am,
+	  util/mbexit.png, util/mbexit.xpm, util/mblock.png,
+	  util/mblock.xpm: desktop now action category aware
+
+2003-07-25 13:23  mallum
+
+	* util/: Makefile.am, mbmenu-desktop.desktop, mbmenu.c: hardcoded
+	  GPE logout/lockscreen stuff unhardcoded
+
+2003-07-24 23:34  mallum
+
+	* data/vfolders-desktop/: Accessories.directory,
+	  Applications.directory, Development.directory, Games.directory,
+	  Graphics.directory, Internet.directory, Multimedia.directory,
+	  Office.directory, Root.directory, Settings.directory,
+	  System.directory: added first of alternate vfolders for desktop
+	  machines
+
+2003-07-24 22:15  mallum
+
+	* buildarm.sh, configure.ac, desktop/mbdesktop.c,
+	  desktop/mbdesktop.h, desktop/mbdesktop_item.c,
+	  desktop/mbdesktop_item.h, desktop/mbdesktop_module.c,
+	  desktop/modules/dotdesktop.c,
+	  desktop/modules/simplefilebrowser.c, desktop/modules/tasks.c,
+	  libmb/mbdotdesktop.c, packaging/ipkg/Makefile.am,
+	  packaging/ipkg/specs/matchbox-wm/postinst: more mbdesktop API
+	  improvements
+
+2003-07-24 19:31  mallum
+
+	* desktop/: mbdesktop.c, mbdesktop.h, mbdesktop_item.c,
+	  mbdesktop_item.h, mbdesktop_module.c, mbdesktop_module.h,
+	  modules/dotdesktop.c, modules/tasks.c: desktop module api cleanup
+	  started
+
+2003-07-23 12:38  mallum
+
+	* po/en_GB.po, util/minisys.c: gettext fixes/updates
+
+2003-07-23 11:16  mallum
+
+	* src/: ewmh.c, ewmh.h, toolbar_client.c, wm.c: ewmh tweaks, and
+	  borderless toolbar minimising fixed
+
+2003-07-23 00:13  mallum
+
+	* libmb/mbmenu.c: small fix to menu background color
+
+2003-07-22 13:09  mallum
+
+	* Makefile.am, buildarm.sh, libmb/mbmenu.c: mbmenu positioning
+	  tweaks
+
+2003-07-22 09:37  mallum
+
+	* packaging/ipkg/: Makefile.am, postrm, specs/libmb1/control,
+	  specs/libmb1/files, specs/libmb1/postinst,
+	  specs/matchbox/control, specs/matchbox/files,
+	  specs/matchbox-common/control, specs/matchbox-common/files,
+	  specs/matchbox-desktop/control, specs/matchbox-desktop/files,
+	  specs/matchbox-panel/control, specs/matchbox-panel/files,
+	  specs/matchbox-wm/control, specs/matchbox-wm/files,
+	  specs/matchbox-wm/postinst, specs/matchbox-wm/postrm: Added new
+	  multi ipkg packaging scripts
+
+2003-07-21 17:12  mallum
+
+	* configure.ac, po/Makefile.am, po/en_GB.po, util/minitime.c,
+	  util/minivol.c, util/miniwave.c, util/apm/miniapm.c,
+	  website/donations.html: Basic gettext support added to message
+	  bubbles
+
+2003-07-21 01:48  mallum
+
+	* configure.ac, data/schemas/Makefile.am,
+	  data/schemas/matchbox.schemas, libmb/mb.h, libmb/mbtray.h,
+	  libmb/mbutil.c, packaging/ipkg/Makefile.am, src/main_client.c,
+	  src/mbtheme-standalone.c, src/toolbar_client.c: fixes to
+	  standalone build
+
+2003-07-18 17:44  mallum
+
+	* data/schemas/matchbox.schemas, desktop/modules/tasks.c,
+	  libmb/mbutil.c, src/keys.c, src/keys.h, src/misc.c, src/misc.h,
+	  src/structs.h, src/wm.c: keybinding now changeable on the fly via
+	  gconf. keygrabbing improved
+
+2003-07-18 01:30  mallum
+
+	* data/Makefile.am, data/schemas/Makefile.am,
+	  data/schemas/matchbox.schemas, desktop/mbdesktop_item.c,
+	  src/desktop_client.c, src/desktop_client.h, src/main_client.c,
+	  src/structs.h, src/wm.c, src/wm.h: fix to active task keyboard
+	  focus crash. desktop menu button appearence fixes
+
+2003-07-17 13:31  mallum
+
+	* src/: font.c, font.h, mbtheme.c, select_client.c, structs.h: more
+	  pango improvements
+
+2003-07-16 18:50  mallum
+
+	* configure.ac, data/Makefile.am, data/kbdconfig,
+	  data/schemas/Makefile.am, data/schemas/matchbox.schemas,
+	  desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  doc/themes/theme.howto.docbook, dock/dock.c, dock/dock.h,
+	  src/font.c, src/font.h, src/mbtheme-standalone.c, src/mbtheme.c,
+	  src/mbtheme.h, src/structs.h, src/wm.c, util/mbcontrol.c: more
+	  gconf stuff
+
+2003-07-14 21:58  mallum
+
+	* configure.ac, desktop/mbdesktop_item.c, dock/panel_menu.c,
+	  libmb/mbtray.h, src/Makefile.am, src/font.c, src/font.h,
+	  src/mbtheme-standalone.c, src/mbtheme-standalone.h,
+	  src/mbtheme.c, src/mbtheme.h, src/structs.h,
+	  src/toolbar_client.c, src/wm.c, src/wm.h, src/xml.c: initial
+	  GConf musings. font code modulised a bit. standalone theme
+	  improved alot
+
+2003-07-14 00:14  mallum
+
+	* desktop/: mbdesktop.h, mbdesktop_item.c: fix to double active
+	  tasks
+
+2003-07-11 15:44  mallum
+
+	* desktop/modules/dotdesktop.c, libmb/mbutil.c, libmb/mbutil.h,
+	  src/xml.c, util/monolaunch.c: experimental app startup animation
+	  added
+
+2003-07-11 00:26  mallum
+
+	* libmb/mbtray.c, tests/winspew.c: small fix for better tray
+	  applets sizes in GNOME panel
+
+2003-07-10 22:27  mallum
+
+	* doc/manual.sgml: manual clean ups
+
+2003-07-10 20:56  mallum
+
+	* src/: xml.c, xml.h: minor warnings cleaned up
+
+2003-07-10 18:37  mallum
+
+	* website/: documentation.html, download.html, index.html,
+	  news.html, screenshots.html, style.css: website fixes
+
+2003-07-10 16:25  mallum
+
+	* src/: base_client.c, base_client.h, client_common.c,
+	  client_common.h, desktop_client.c, dialog_client.c,
+	  dialog_client.h, dockbar_client.c, dockbar_client.h,
+	  docked_client.c, docked_client.h, ewmh.h, main.c, main_client.c,
+	  main_client.h, mbtheme.h, select_client.c, select_client.h,
+	  structs.h, toolbar_client.c, toolbar_client.h, wm.c, wm.h: BIG
+	  header cleanup
+
+2003-07-09 18:25  mallum
+
+	* src/mbtheme.c: minor pango fix
+
+2003-07-09 18:04  mallum
+
+	* configure.ac, src/Makefile.am, src/base_client.c,
+	  src/client_common.c, src/mbtheme.c, src/mbtheme.h, src/structs.h,
+	  src/wm.c: intial hack at adding pango support
+
+2003-07-09 15:53  mallum
+
+	* ChangeLog, desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  packaging/ipkg/control.in, src/base_client.c,
+	  src/client_common.c, src/client_common.h, src/dialog_client.c,
+	  src/main_client.c, src/mbtheme.c, src/select_client.c,
+	  src/structs.h, website/download.html, website/news.html: source
+	  field added to ipkg control.in. speedups to shaped windows
+
+2003-07-08 17:56  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop.h, doc/matchbox-key.txt,
+	  libmb/mbdotdesktop.c, libmb/mbtray.c, tests/winspew.c,
+	  util/mbmenu.c, util/minisys.c, util/minivol.c, util/miniwave.c,
+	  util/apm/miniapm.c: many fixes to icon theme switching
+
+2003-07-08 16:06  mallum
+
+	* doc/themes/theme.howto.docbook, libmb/mbdotdesktop.c,
+	  tests/winspew.c: icon lookup fixes. theme howto updated. winspew
+	  now does initial utf8 tests
+
+2003-07-08 11:00  mallum
+
+	* util/minivol.c: minivol popup position improved for vertical
+	  panels
+
+2003-07-07 18:56  mallum
+
+	* libmb/mbmenu.c, libmb/mbmenu.h, libmb/mbtray.c, util/mbmenu.c:
+	  mbmenu positioning much improved for orientated panels
+
+2003-07-07 15:23  mallum
+
+	* configure.ac, dock/dock.h, dock/panel_app.c, dock/panel_menu.c,
+	  libmb/mbmenu.c, libmb/mbtray.c, libmb/mbtray.h, util/mbmenu.c,
+	  util/minisys.c, util/minitime.c, util/minivol.c, util/miniwave.c,
+	  util/monolaunch.c, util/apm/miniapm.c: Fixes to panel menu icons,
+	  ordering and naming
+
+2003-07-06 23:47  mallum
+
+	* src/: base_client.c, client_common.c, client_common.h,
+	  dialog_client.c, ewmh.c, ewmh.h, main_client.c, structs.h, wm.c:
+	  initial support for _NET_WIN_PING etc
+
+2003-07-06 19:15  mallum
+
+	* website/: download.html, news.html: website updates
+
+2003-07-05 00:46  mallum
+
+	* configure.ac, dock/dock.c, libmb/mbtray.c, src/client_common.c,
+	  src/ewmh.c, src/main_client.c, src/select_client.c,
+	  src/structs.h, src/wm.c: more fixed for pixmaped docks etc.
+	  safety harnesses for libmb. minor matchbox speedups
+
+2003-07-03 22:02  mallum
+
+	* dock/dock.c, libmb/mbtray.c: minor warning and valgrind clean up
+
+2003-07-03 18:17  mallum
+
+	* src/select_client.c: hacky fix to align center justifyed drop
+	  down menus
+
+2003-07-03 16:34  mallum
+
+	* RELEASE-NOTES-0.6, dock/dock.c, dock/dock.h, dock/panel_app.c,
+	  libmb/mbtray.c: fixed to various panel pixmap and rotation issues
+
+2003-07-01 21:27  mallum
+
+	* dock/dock.c: fix bad window errors for --no-menu
+
+2003-07-01 20:45  mallum
+
+	* dock/dock.c: fix for --no-menu panel switch
+
+2003-07-01 19:02  mallum
+
+	* src/main_client.c: fixes for fullscreen covering vertical panels
+
+2003-06-30 22:56  mallum
+
+	* util/minitime.c: fixed minitime build without xft
+
+2003-06-30 19:19  mallum
+
+	* configure.ac, desktop/mbdesktop.c, doc/manual.sgml, dock/dock.c,
+	  dock/dock.h, dock/panel_menu.c, libmb/mbpixbuf.h, libmb/mbtray.h,
+	  src/wm.c, util/mbterm.desktop.in: bite the bullet time
+
+2003-06-30 00:21  mallum
+
+	* RELEASE-NOTES-0.6, dock/dock.c, libmb/mbtray.c,
+	  website/documentation.html, website/download.html,
+	  website/index.html, website/news.html, website/style.css: final
+	  commit before 0.6 release. website updates
+
+2003-06-28 23:02  mallum
+
+	* dock/: dock.c, dock.h, panel_app.c: margin switches added
+
+2003-06-27 21:50  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop_view.c, doc/manual.sgml,
+	  dock/dock.c, dock/dock.h, src/base_client.c, src/wm.c,
+	  util/minisys.c, website/news.html, website/screenshots.html: dock
+	  flipping fixes. Desktop scrolling fixes. Doc updates
+
+2003-06-27 16:39  mallum
+
+	* Makefile.am, RELEASE-NOTES-0.6, doc/manual.sgml, dock/dock.c,
+	  dock/panel_menu.c, libmb/mbtray.c, src/ewmh.c, src/wm.c,
+	  util/minitime.png, util/minivol.desktop, util/miniwave.desktop:
+	  doc updates. panel rotation fixes. toolbar single instance fixed
+
+2003-06-26 20:09  mallum
+
+	* AUTHORS, README, doc/matchbox-key.txt, dock/dock.c,
+	  dock/panel_app.c, dock/panel_menu.c, dock/session.c,
+	  dock/session.h, libmb/mbtray.h, packaging/ipkg/postinst,
+	  packaging/ipkg/postrm, src/client_common.c, src/dialog_client.c,
+	  src/dockbar_client.c, src/toolbar_client.c, util/Makefile.am,
+	  util/minisys.c, util/monolaunch.c: wm dock layout fixes
+
+2003-06-26 11:29  mallum
+
+	* dock/session.c: fix to panel startup crash
+
+2003-06-25 23:41  mallum
+
+	* libmb/mbpixbuf.c, util/minivol.c: minor tweaks to libmb
+
+2003-06-25 19:08  mallum
+
+	* Doxyfile.in, desktop/mbdesktop.c, doc/manual.sgml, dock/dock.c,
+	  dock/dock.h, dock/panel_app.c, dock/panel_menu.c,
+	  libmb/mbpixbuf.c, packaging/ipkg/Makefile.am,
+	  packaging/ipkg/postinst, src/ewmh.c, src/mbtheme.c, src/wm.c,
+	  tests/Makefile.am, util/Makefile.am, util/mbcontrol.c,
+	  util/mbsession: doc updates, many minor fixes, etc
+
+2003-06-24 18:25  mallum
+
+	* BUILDING.howto, desktop/mbdesktop.c, desktop/mbdesktop_view.c,
+	  doc/manual.sgml, dock/panel_app.c, util/minisys.c: various minor
+	  fixes
+
+2003-06-24 14:30  mallum
+
+	* dock/dock.c, dock/panel_menu.c, libmb/mbdotdesktop.c,
+	  libmb/mbmenu.c, libmb/mbpixbuf.c, packaging/ipkg/Makefile.am:
+	  dock valgrind fixes
+
+2003-06-24 09:51  mallum
+
+	* data/mbdown.png, data/mbdown.xpm, data/mbfolder.png,
+	  data/mbfolder.xpm, data/mbnoapp.png, data/mbnoapp.xpm,
+	  data/mbup.png, data/mbup.xpm, desktop/mbdesktop.png,
+	  desktop/mbdesktop.xpm, desktop/modules/tasks.c,
+	  util/broken-0.png, util/broken-0.xpm, util/mbexit.png,
+	  util/mbexit.xpm, util/mblock.png, util/mblock.xpm,
+	  util/mbmenu.png, util/mbmenu.xpm, util/mbterm.png,
+	  util/minisys.png, util/minisys.xpm, util/no-link-0.png,
+	  util/no-link-0.xpm, util/signal-1-40.png, util/signal-1-40.xpm,
+	  util/signal-41-60.png, util/signal-41-60.xpm,
+	  util/signal-61-80.png, util/signal-61-80.xpm,
+	  util/signal-81-100.png, util/signal-81-100.xpm,
+	  util/apm/miniapm-power.png, util/apm/miniapm-power.xpm,
+	  util/apm/miniapm.png, util/apm/miniapm.xpm: put new icons in
+	  place
+
+2003-06-23 22:15  mallum
+
+	* Makefile.am, alternate-icons/README,
+	  alternate-icons/broken-0.png, alternate-icons/mbadd.png,
+	  alternate-icons/mbdesktop.png, alternate-icons/mbdown.png,
+	  alternate-icons/mbfolder.png, alternate-icons/mbfolderprev.png,
+	  alternate-icons/mblock.png, alternate-icons/mblogout.png,
+	  alternate-icons/mbmenu.png, alternate-icons/mbremove.png,
+	  alternate-icons/mbterm.png, alternate-icons/mbup.png,
+	  alternate-icons/miniapm-power.png, alternate-icons/miniapm.png,
+	  alternate-icons/minisys.png, alternate-icons/no-link-0.png,
+	  alternate-icons/signal-1-40.png,
+	  alternate-icons/signal-41-60.png,
+	  alternate-icons/signal-61-80.png,
+	  alternate-icons/signal-81-100.png, dock/Makefile.am: Added
+	  alternate icon set
+
+2003-06-23 18:54  mallum
+
+	* data/vfolders/Root.directory, desktop/mbdesktop.c,
+	  desktop/mbdesktop.h, desktop/mbdesktop_item.c,
+	  desktop/mbdesktop_item.h, desktop/modules/dotdesktop.c,
+	  doc/manual.sgml, doc/matchbox-key.txt, dock/dock.c,
+	  dock/menubutt-east.xpm, dock/menubutt-north.xpm,
+	  dock/menubutt-west.xpm, dock/panel_app.c, libmb/mbmenu.c,
+	  libmb/mbpixbuf.h, src/desktop_client.c, src/main_client.c:
+	  various minor desktop fixes
+
+2003-06-23 14:44  mallum
+
+	* dock/: dock.c, dock.h, session.c, session.h: many dock
+	  fixes/improvments
+
+2003-06-21 22:17  mallum
+
+	* dock/session.c, util/mbmenu.c: minor tweaks for mbmenu to dock
+	  right
+
+2003-06-21 22:13  mallum
+
+	* dock/: dock.c, dock.h, session.c, session.h: dock bug fixes.
+	  session file locations moved/made saner. defualt apps added to
+	  empty dock
+
+2003-06-21 20:28  mallum
+
+	* configure.ac, data/Makefile.am, data/mbdock/Makefile.am,
+	  data/mbdock/add.xpm, data/mbdock/down.xpm,
+	  data/mbdock/finddockapps.sh, data/mbdock/mbmenu.in,
+	  data/mbdock/mbmenu.xpm, data/mbdock/miniapm.in,
+	  data/mbdock/minisys.in, data/mbdock/minitime.in,
+	  data/mbdock/minivol.in, data/mbdock/miniwave.in,
+	  data/mbdock/move.xpm, data/mbdock/remove.xpm,
+	  data/mbdock/stop.xpm, data/mbmenu/Makefile.am,
+	  data/mbmenu/app.png, data/mbmenu/app.xpm, data/mbmenu/folder.png,
+	  data/mbmenu/folder.xpm, dock/Makefile.am, dock/mbadd.png,
+	  dock/mbadd.xpm, dock/mbremove.png, dock/mbremove.xpm: cleanup of
+	  uneeded data dirs and pixmaps
+
+2003-06-21 19:28  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop_item.c,
+	  desktop/mbdesktop_view.c, desktop/modules/dotdesktop.c,
+	  desktop/modules/simplefilebrowser.c, desktop/modules/tasks.c,
+	  doc/themes/theme.howto.docbook, dock/Makefile.am, dock/client.c,
+	  dock/client.h, dock/dock.c, dock/dock.h, dock/panel_app.c,
+	  dock/panel_app.h, dock/panel_menu.c, dock/scrollbutton.xpm,
+	  dock/session.c, libmb/mbdotdesktop.c, libmb/mbmenu.c,
+	  libmb/mbpixbuf.c, libmb/mbtray.c, libmb/mbtray.h,
+	  src/select_client.c, util/mbcontrol.c, util/mbmenu.c,
+	  util/minitime.c, util/minivol.c, util/miniwave.c,
+	  util/monolaunch.c: Big one. Printf cleanup. Panel movement stuff
+	  changed. Various theme fixes to desktop and dock
+
+2003-06-20 19:26  mallum
+
+	* src/: mbtheme-standalone.c, mbtheme-standalone.h, wm.c: fix to
+	  renable standalone compiles
+
+2003-06-19 14:09  mallum
+
+	* buildarm.sh, doc/manual.sgml, doc/matchbox-key.txt, dock/dock.c,
+	  dock/dock.h, dock/panel_app.c: manual updates
+
+2003-06-13 17:05  mallum
+
+	* buildarm.sh, data/themes/blondie/theme.xml.in,
+	  desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop_view.c, dock/dock.c, libmb/mbmenu.c,
+	  src/base_client.c, util/mbmenu.c: fix for base client over writes
+	  and other tweaks
+
+2003-06-12 16:04  mallum
+
+	* desktop/modules/dotdesktop.c, dock/panel_app.c,
+	  dock/panel_menu.c, libmb/mbtray.c, util/mbmenu.c: various minor
+	  fixes and tweaks from ipaq expeimentation
+
+2003-06-12 12:22  mallum
+
+	* src/: dialog_client.c, wm.c: message window lowlighting fix
+
+2003-06-12 10:17  mallum
+
+	* src/: main_client.c, wm.c: Fixes to desktop _NET_ACTIVE_ID
+	  updating
+
+2003-06-11 20:54  mallum
+
+	* libmb/mbpixbuf.c, src/xml.c: minor valgrind fixes
+
+2003-06-11 20:27  mallum
+
+	* data/vfolders/Games.directory, data/vfolders/Root.directory,
+	  desktop/mbdesktop.c, desktop/mbdesktop.h, src/dialog_client.c:
+	  desktop xsettings fixes. Make msg windows work nice with modal
+	  dialogs
+
+2003-06-10 20:34  mallum
+
+	* src/wm.c: fix for dead message queue windows
+
+2003-06-10 18:39  mallum
+
+	* buildarm.sh, configure.ac, data/vfolders/Settings.directory,
+	  libmb/mbpixbuf.c, packaging/ipkg/Makefile.am, src/mbtheme.c,
+	  src/toolbar_client.c, website/documentation.html,
+	  website/download.html, website/index.html, website/news.html,
+	  website/screenshots.html: fix to settings vfolder. wierd mask on
+	  dialog border possible fix. website update
+
+2003-06-10 15:53  mallum
+
+	* website/: documentation.html, download.html, index.html,
+	  news.html, screenshots.html: website updates
+
+2003-06-10 13:59  mallum
+
+	* libmb/mbtray.c: fix for broke libmb argv munching
+
+2003-06-10 13:17  mallum
+
+	* desktop/: Makefile.am, mbdesktop_module.c, mbfolderprev.png,
+	  mbfolderprev.xpm: addition of folder prev images
+
+2003-06-10 12:36  mallum
+
+	* libmb/: mbtray.c, mbtray.h: doc updates. X Event mask funcs added
+	  to libmb
+
+2003-06-09 22:34  mallum
+
+	* data/themes/blondie/theme.xml.in, libmb/mbtray.c: minor visual
+	  tweaks
+
+2003-06-09 21:02  mallum
+
+	* src/: base_client.c, client_common.c, main_client.c, mbtheme.c,
+	  wm.c: more valgrind fixes
+
+2003-06-09 17:15  mallum
+
+	* libmb/mbpixbuf.c, libmb/mbpixbuf.h, tests/tests.sh: Eero's pixbuf
+	  speedup patch applied
+
+2003-06-09 17:09  mallum
+
+	* src/: base_client.c, ewmh.c, mbtheme.c, xml.c: more valgrind
+	  fixes + fix to evil multi dialog wierdness bug - WOOHOO!
+
+2003-06-09 12:38  mallum
+
+	* src/: desktop_client.c, ewmh.c: small fix to _NET_ACTIVE getting
+	  updated properly with desktops
+
+2003-06-08 20:43  mallum
+
+	* src/base_client.c: fix for msg window to be super always on top
+
+2003-06-08 02:09  mallum
+
+	* data/themes/blondie/theme.xml.in, libmb/mbtray.c,
+	  util/monolaunch.c: fix monolaunch / mbtray to set name again
+
+2003-06-06 21:45  mallum
+
+	* doc/themes/theme.howto.docbook: small update to themeing howto
+
+2003-06-06 21:30  mallum
+
+	* data/themes/blondie/: Makefile.am, accept.png, closedown.png,
+	  hidedown.png, menudown.png, nextdown.png, prevdown.png, que.png,
+	  theme.xml.in: tweaked blondie a little
+
+2003-06-06 19:07  mallum
+
+	* data/mbdock/Makefile.in, data/themes/blondie/theme.xml,
+	  desktop/mbdesktop.c, desktop/mbdesktop_module.c,
+	  desktop/mbdesktop_view.h, doc/themes/dialog.png,
+	  doc/themes/main.png, doc/themes/menu.png,
+	  doc/themes/theme.howto.docbook, doc/themes/utility-max.png,
+	  doc/themes/utility-min.png,
+	  doc/themes/example/matchbox/close_button.png,
+	  doc/themes/example/matchbox/next_button.png,
+	  doc/themes/example/matchbox/theme.xml, dock/dock.c, dock/dock.h,
+	  libmb/mbtray.h, util/mbterm.desktop: some image tweaks, desktop
+	  warnings cleanup, removed bogus file dregs from merge
+
+2003-06-06 13:46  mallum
+
+	* dock/dock.c, dock/panel_menu.c, libmb/hash.c, libmb/mbmenu.c:
+	  fixes to valgrind reported issues in mbdock / libmb
+
+2003-06-06 11:30  mallum
+
+	* data/vfolders/: Applications.directory, Games.directory,
+	  Makefile.am, Other.directory, Root.directory, Root.order,
+	  Settings.directory, Utilities.directory: fixes to merge fallout
+
+2003-06-06 11:16  mallum
+
+	* desktop/modules/: Makefile.am, dotdesktop.c, simplefilebrowser.c,
+	  tasks.c: Re-added missing desktop module files
+
+2003-06-06 11:05  mallum
+
+	* ChangeLog, Doxyfile.in, Makefile.am, buildarm.sh, configure.ac,
+	  data/Makefile.am, data/kbdconfig, data/mbdock/Makefile.in,
+	  data/themes/blondie/Makefile.am,
+	  data/themes/blondie/dialogtopleft2.png,
+	  data/themes/blondie/dialogtopright2.png,
+	  data/themes/blondie/dialogtoptile2.png,
+	  data/themes/blondie/theme.xml, data/themes/blondie/theme.xml.in,
+	  desktop/Makefile.am, desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop_item.c, desktop/mbdesktop_item.h,
+	  desktop/mbdesktop_module.c, desktop/mbdesktop_module.h,
+	  desktop/mbdesktop_modules.in, desktop/mbdesktop_view.c,
+	  dock/dock.c, dock/dock.h, dock/msg.c, dock/panel_app.c,
+	  dock/panel_app.h, dock/panel_menu.c, dock/panel_menu.h,
+	  dock/panel_util.c, libmb/Makefile.am, libmb/libmb.pc.in,
+	  libmb/mb.h, libmb/mbdotdesktop.c, libmb/mbdotdesktop.h,
+	  libmb/mbmenu.c, libmb/mbmenu.h, libmb/mbpixbuf.c,
+	  libmb/mbpixbuf.h, libmb/mbtray.c, libmb/mbtray.h, libmb/mbutil.h,
+	  packaging/ipkg/Makefile.am, src/Makefile.am, src/base_client.c,
+	  src/client_common.c, src/dialog_client.c, src/ewmh.c, src/ewmh.h,
+	  src/keys.c, src/keys.h, src/list.c, src/main.c,
+	  src/main_client.c, src/mbtheme.c, src/mbtheme.h, src/misc.c,
+	  src/select_client.c, src/structs.h, src/toolbar_client.c,
+	  src/wm.c, src/wm.h, src/xml.c, tests/test-plan.txt,
+	  tests/tests.sh, tests/winspew.c, util/Makefile.am,
+	  util/broken-0.png, util/broken-0.xpm, util/mbmenu.c,
+	  util/mbterm.desktop, util/mbterm.desktop.in, util/minisys.c,
+	  util/minitime.c, util/minivol-high.png, util/minivol-high.xpm,
+	  util/minivol-low.png, util/minivol-low.xpm, util/minivol-mid.png,
+	  util/minivol-mid.xpm, util/minivol-zero.png,
+	  util/minivol-zero.xpm, util/minivol.c, util/minivol.png,
+	  util/minivol.xpm, util/miniwave.c, util/monolaunch.c,
+	  util/no-link-0.png, util/no-link-0.xpm, util/signal-1-40.png,
+	  util/signal-1-40.xpm, util/signal-41-60.png,
+	  util/signal-41-60.xpm, util/signal-61-80.png,
+	  util/signal-61-80.xpm, util/signal-81-100.png,
+	  util/signal-81-100.xpm, util/apm/miniapm.c,
+	  website/documentation.html, website/download.html: Merge from
+	  UNSTBALE_V6 into HEAD
+
+2003-06-05 21:25  mallum
+
+	* src/: base_client.c, list.c, main.c, mbtheme.c, misc.c, wm.c,
+	  xml.c: This commit is bought to you by the letters V A L G R I N
+	  and D. Thank you.
+
+2003-06-05 19:21  mallum
+
+	* configure.ac, desktop/mbdesktop.c,
+	  desktop/modules/simplefilebrowser.c, dock/msg.c,
+	  dock/panel_menu.c, src/Makefile.am, src/dialog_client.c,
+	  src/mbtheme.c, src/wm.c, src/xml.c, util/mbmenu.c,
+	  util/minisys.c, util/minitime.c, util/monolaunch.c,
+	  util/apm/miniapm.c: message wins configure option added. warnings
+	  cleanup. crash fixed on theme chang with no clients
+
+2003-06-05 18:00  mallum
+
+	* dock/: panel_app.c, panel_menu.c: move dock bashing head against
+	  brick wall fixes
+
+2003-06-05 15:42  mallum
+
+	* doc/themes/theme.howto.docbook, libmb/mbmenu.c, src/ewmh.c,
+	  src/ewmh.h, src/wm.c: fixes to broken theme property not getting
+	  set properly
+
+2003-06-05 10:30  mallum
+
+	* libmb/: mbmenu.h, mbpixbuf.h, mbtray.h: Doxygen warnings cleaned
+	  up for libmb
+
+2003-06-05 09:59  mallum
+
+	* doc/themes/theme.howto.docbook: spelling fixes + updates to theme
+	  howto
+
+2003-06-04 18:02  mallum
+
+	* dock/dock.c, dock/dock.h, dock/panel_app.c, libmb/Makefile.am,
+	  libmb/mbtray.c, src/wm.c, util/Makefile.am, util/mbmenu.c,
+	  util/minitest.c, util/monolaunch.c: lots. dock + dock app
+	  fixes/tweaks. libmb pkgconfig file fixed up. minitest removed to
+	  own module
+
+2003-06-04 10:24  mallum
+
+	* src/: misc.c, toolbar_client.c, wm.c: made toolbar/utility
+	  windows handle basic MWM evil
+
+2003-06-04 01:19  mallum
+
+	* util/miniwave.c: fixes to miniwave to handle vertical docking ok
+
+2003-06-03 22:02  mallum
+
+	* src/base_client.c, src/dialog_client.c, src/mbtheme.c,
+	  tests/winspew.c: workaround/hack for gravitys and -ive geometrys.
+	  fix for multiple dialogs and button distortion. new message
+	  windows now dont take input focus
+
+2003-06-03 16:34  mallum
+
+	* doc/themes/theme.howto.docbook, src/base_client.c, src/wm.c:
+	  Themeing howto updated
+
+2003-06-03 13:31  mallum
+
+	* libmb/mbpixbuf.c, libmb/mbpixbuf.h, src/dialog_client.c,
+	  src/ewmh.c, src/wm.c, tests/tests.sh, tests/winspew.c: fixes for
+	  bugs 21,20,24
+
+2003-05-27 01:14  mallum
+
+	* buildarm.sh, desktop/mbdesktop_modules.in, doc/themes/dialog.png,
+	  doc/themes/main.png, doc/themes/menu.png,
+	  doc/themes/theme.howto.docbook, doc/themes/utility-max.png,
+	  doc/themes/utility-min.png,
+	  doc/themes/example/matchbox/close_button.png,
+	  doc/themes/example/matchbox/next_button.png,
+	  doc/themes/example/matchbox/theme.xml, dock/panel_menu.c,
+	  libmb/mbpixbuf.c, libmb/mbtray.c, packaging/ipkg/Makefile.am,
+	  packaging/ipkg/control.in: themeing howto draft added. Some
+	  warning cleanups
+
+2003-05-26 00:51  mallum
+
+	* data/themes/blondie/theme.xml.in, desktop/mbdesktop.c,
+	  desktop/mbdesktop.h, desktop/mbdesktop_item.c,
+	  desktop/mbdesktop_module.c, desktop/mbdesktop_view.c,
+	  desktop/modules/simplefilebrowser.c, dock/dock.c,
+	  dock/panel_app.c, dock/panel_app.h, dock/panel_menu.c,
+	  libmb/mbmenu.c, libmb/mbtray.c, src/Makefile.am,
+	  src/base_client.c, src/ewmh.c, src/mbtheme.c, src/structs.h,
+	  src/wm.c, util/mbmenu.c, util/minisys.c, util/minitest.c,
+	  util/minitime.c: various fix to theme handling in libmb. random
+	  panel app bug fixes. new method of panel app dragginging -
+	  currently a little broke
+
+2003-05-23 10:05  mallum
+
+	* configure.ac, src/wm.c, tests/tests.sh: fix to msg window bug
+
+2003-05-22 18:03  mallum
+
+	* desktop/mbdesktop_view.c, desktop/modules/dotdesktop.c,
+	  desktop/modules/simplefilebrowser.c, dock/dock.c,
+	  dock/panel_app.c, dock/panel_menu.c, libmb/mbdotdesktop.h,
+	  libmb/mbmenu.c, libmb/mbmenu.h, libmb/mbpixbuf.h, libmb/mbtray.c,
+	  libmb/mbtray.h, src/dialog_client.c, src/wm.c, tests/winspew.c,
+	  util/mbmenu.c, util/monolaunch.c: Doc updates. various dock/app
+	  improvements. buf fixes
+
+2003-05-21 16:37  mallum
+
+	* libmb/mbtray.c, util/monolaunch.c: quick fixes to broke build
+
+2003-05-21 16:29  mallum
+
+	* util/Makefile.am: fix for broke util/Makefile
+
+2003-05-21 16:27  mallum
+
+	* data/themes/blondie/: Makefile.am, dialogtopleft2.png,
+	  dialogtopright2.png, dialogtoptile2.png, theme.xml.in: added
+	  north dialog theme stuff to blondie
+
+2003-05-21 16:20  mallum
+
+	* libmb/mbdotdesktop.h, libmb/mbmenu.h, libmb/mbpixbuf.h,
+	  libmb/mbtray.c, libmb/mbtray.h, libmb/mbutil.h, util/Makefile.am,
+	  util/broken-0.png, util/broken-0.xpm, util/mbmenu.c,
+	  util/miniwave.c, util/no-link-0.png, util/no-link-0.xpm,
+	  util/signal-1-40.png, util/signal-1-40.xpm,
+	  util/signal-41-60.png, util/signal-41-60.xpm,
+	  util/signal-61-80.png, util/signal-61-80.xpm,
+	  util/signal-81-100.png, util/signal-81-100.xpm: miniwave
+	  rewritten. documentation updates
+
+2003-05-21 00:12  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop_item.c, desktop/mbdesktop_module.c,
+	  desktop/mbdesktop_module.h, desktop/modules/dotdesktop.c,
+	  desktop/modules/simplefilebrowser.c, desktop/modules/tasks.c,
+	  dock/dock.c, dock/dock.h, dock/panel_util.c, util/Makefile.am,
+	  util/minivol-high.png, util/minivol-high.xpm,
+	  util/minivol-low.png, util/minivol-low.xpm, util/minivol-mid.png,
+	  util/minivol-mid.xpm, util/minivol-zero.png,
+	  util/minivol-zero.xpm, util/minivol.c, util/minivol.png,
+	  util/minivol.xpm: added support for per user config files for
+	  mbdesktop vfolders and modules. tweaks to dock background
+	  handling. new minivol images imported
+
+2003-05-20 14:04  mallum
+
+	* util/minisys.c: ported minisys to new api
+
+2003-05-20 11:54  mallum
+
+	* util/: minivol.c, apm/miniapm.c: minivol updated to use new api
+
+2003-05-19 20:44  mallum
+
+	* libmb/mbtray.c: small fix for compiling libmb _without_ xsettings
+
+2003-05-19 17:26  mallum
+
+	* desktop/modules/simplefilebrowser.c, dock/dock.c, dock/dock.h,
+	  dock/panel_app.c, libmb/mbmenu.h, libmb/mbtray.c,
+	  src/dialog_client.c, src/mbtheme.c, src/mbtheme.h, src/structs.h,
+	  util/mbmenu.c, util/apm/miniapm.c: dotdesktop module experiments.
+	  miniapm ported to new api. border only dialogs patch applied.
+	  doxygen doc updates. various mbtray fixes
+
+2003-05-16 19:36  mallum
+
+	* desktop/modules/simplefilebrowser.c, libmb/mbpixbuf.c,
+	  src/base_client.c, src/dialog_client.c, src/main_client.c,
+	  src/wm.c, tests/winspew.c, util/minitime.c: winspew help cleanup,
+	  mbpixbuf improvements, other minor bugs fixed
+
+2003-05-16 10:20  mallum
+
+	* src/dialog_client.c: another minor no decor and lowlight fix
+
+2003-05-16 10:05  mallum
+
+	* src/: dialog_client.c, mbtheme.c: fix for modal no decor dialogs
+
+2003-05-16 00:10  mallum
+
+	* libmb/mbtray.c, util/minitime.c: fix to minitime text sizing
+
+2003-05-15 21:07  mallum
+
+	* data/kbdconfig, src/keys.c: fixes to keyboard madness
+
+2003-05-15 20:23  mallum
+
+	* configure.ac, desktop/Makefile.am, desktop/mbdesktop.c,
+	  desktop/mbdesktop_item.c, desktop/mbdesktop_item.h,
+	  desktop/mbdesktop_modules.in, desktop/modules/Makefile.am,
+	  desktop/modules/simplefilebrowser.c, libmb/libmb.pc.in,
+	  libmb/mbdotdesktop.c, util/Makefile.am, util/mbterm.desktop,
+	  util/mbterm.desktop.in: desktop module fixes. mbterm.desktop
+	  prefix fixed
+
+2003-05-15 14:24  mallum
+
+	* data/themes/blondie/close.png, data/themes/blondie/closedown.png,
+	  data/themes/blondie/next.png, data/themes/blondie/nextdown.png,
+	  data/themes/blondie/prev.png, data/themes/blondie/prevdown.png,
+	  data/themes/blondie/theme.xml.in, src/dialog_client.c,
+	  src/mbtheme.c, src/structs.h, src/wm.c, tests/test-plan.txt,
+	  tests/winspew.c: initial message window implementation added
+
+2003-05-15 12:50  mallum
+
+	* buildarm.sh, data/themes/blondie/theme.xml.in,
+	  packaging/ipkg/control.in, src/ewmh.c, src/mbtheme.c: fixes the
+	  theme text alignment
+
+2003-05-14 16:15  mallum
+
+	* configure.ac, data/themes/blondie/theme.xml, dock/dock.c,
+	  libmb/libmb.pc.in, libmb/mbmenu.c, libmb/mbmenu.h,
+	  libmb/mbpixbuf.c, libmb/mbpixbuf.h, src/mbtheme.c,
+	  src/select_client.c, src/wm.c, util/mbmenu.c: build system fixes
+
+2003-05-13 23:40  mallum
+
+	* dock/dock.h, dock/panel_app.c, dock/panel_menu.c,
+	  dock/panel_menu.h, libmb/mbmenu.h, libmb/mbtray.c,
+	  util/monolaunch.c: various minor build fixes
+
+2003-05-13 18:23  mallum
+
+	* libmb/mbdotdesktop.h, libmb/mbmenu.h, libmb/mbpixbuf.c,
+	  libmb/mbpixbuf.h, libmb/mbtray.c, libmb/mbtray.h, util/mbmenu.c,
+	  util/minitest.c, util/minitime.c: fixes to minitime, mbmenu. some
+	  cleanups to mbmenuwidget lib
+
+2003-05-13 00:38  mallum
+
+	* desktop/mbdesktop.h, libmb/mbmenu.c, libmb/mbmenu.h,
+	  libmb/mbpixbuf.c, libmb/mbtray.h, util/mbmenu.c, util/minitime.c:
+	  example added to mbtray doxygen docs. minitime initial
+	  re-implementation with new api
+
+2003-05-12 16:58  mallum
+
+	* src/ewmh.c, src/ewmh.h, src/main_client.c, src/structs.h,
+	  src/wm.c, tests/winspew.c: fixes for fullscreen window handling
+
+2003-05-12 15:33  mallum
+
+	* libmb/mbmenu.c, libmb/mbmenu.h, src/ewmh.c, tests/test-plan.txt:
+	  added test plan doc
+
+2003-05-10 15:35  mallum
+
+	* libmb/mbdotdesktop.c, libmb/mbtray.c, util/Makefile.am,
+	  util/mbmenu.c: mbmenu fixed up more for new api and vfolders
+
+2003-05-09 18:25  mallum
+
+	* configure.ac, libmb/Makefile.am, libmb/mbmenu.c, libmb/mbmenu.h,
+	  libmb/mbtray.c, libmb/mbtray.h, util/mbmenu.c, util/minitest.c:
+	  fixup of libmbmenu begins. mbmenu made to work with new tray api
+
+2003-05-09 09:53  mallum
+
+	* data/themes/blondie/theme.xml.in: minor fix
+
+2003-05-08 17:37  mallum
+
+	* data/themes/blondie/theme.xml.in, libmb/mbpixbuf.h,
+	  libmb/mbutil.h, src/Makefile.am, src/dialog_client.c, src/ewmh.c,
+	  src/main_client.c, src/structs.h, src/wm.c, src/wm.h,
+	  tests/winspew.c, util/minitest.c: doc fixes, message window work.
+	  minor bug fixes to window ordering
+
+2003-05-08 14:04  mallum
+
+	* doc/matchbox-key.txt, packaging/ipkg/Makefile.am,
+	  src/main_client.c: fix to dumb window close bug not showing prev
+	  client
+
+2003-05-07 18:50  mallum
+
+	* libmb/mbdotdesktop.c, libmb/mbdotdesktop.h, libmb/mbmenu.h,
+	  libmb/mbpixbuf.c, libmb/mbpixbuf.h, libmb/mbtray.h, src/keys.c:
+	  more doc updates
+
+2003-05-06 21:36  mallum
+
+	* libmb/mbpixbuf.c, libmb/mbpixbuf.h, libmb/mbtray.c,
+	  libmb/mbtray.h, util/minitest.c, util/minitime.c: more
+	  improvements to mbtray and more doco to libmb
+
+2003-05-05 17:53  mallum
+
+	* desktop/mbdesktop.c, doc/manual.sgml: vfolder warning removed.
+	  manual typo fixed
+
+2003-05-05 17:51  mallum
+
+	* data/themes/blondie/theme.xml, desktop/mbdesktop.c,
+	  desktop/mbdesktop.h, desktop/modules/dotdesktop.c,
+	  libmb/mbpixbuf.c, libmb/mbpixbuf.h, libmb/mbtray.c,
+	  libmb/mbtray.h, util/minitest.c: various improvements mainly to
+	  libmb
+
+2003-05-03 23:51  mallum
+
+	* libmb/: mb.h, mbdotdesktop.c, mbdotdesktop.h, mbmenu.h,
+	  mbpixbuf.h, mbutil.h: doxygen documentation work and minor fixes
+	  / syncing to libmb
+
+2003-05-02 18:45  mallum
+
+	* dock/dock.c, dock/dock.h, dock/panel_app.c, libmb/mbpixbuf.c,
+	  libmb/mbpixbuf.h, libmb/mbtray.c, libmb/mbtray.h, libmb/mbutil.h,
+	  src/wm.c, util/minitest.c, util/monolaunch.c: monolaunch 'hacked
+	  ' to use new tray api. some doco done. fixes to dock / mbtray to
+	  handle resizes / orientation changes
+
+2003-05-01 22:06  mallum
+
+	* dock/dock.c, dock/dock.h, libmb/mbmenu.c, libmb/mbmenu.h,
+	  libmb/mbpixbuf.c, libmb/mbpixbuf.h, libmb/mbtray.c,
+	  libmb/mbtray.h, src/wm.c, util/minisys.c, util/minitest.c: much
+	  work on mbtray / minitest
+
+2003-04-30 23:05  mallum
+
+	* data/themes/: blondie/close.png, blondie/closedown.png,
+	  blondie/next.png, blondie/nextdown.png, blondie/prev.png,
+	  blondie/prevdown.png, blondie/theme.xml, blondie/theme.xml.in,
+	  gorilla/theme.xml.in: buttons tweaked on themes
+
+2003-04-30 23:05  mallum
+
+	* Doxyfile.in, Makefile.am, configure.ac, libmb/mbmenu.c,
+	  libmb/mbmenu.h, libmb/mbpixbuf.c, libmb/mbpixbuf.h,
+	  libmb/mbtray.c, libmb/mbtray.h: libmb experiments/cleanups
+
+2003-04-29 18:19  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop_view.c, src/dialog_client.c, src/structs.h,
+	  src/wm.c, util/miniwave.xpm: wm.c cleaned up a little - event
+	  loop improved
+
+2003-04-29 10:44  mallum
+
+	* configure.ac, dock/dock.c, dock/dock.h,
+	  packaging/ipkg/Makefile.am: small fix to hardcoded dock size
+
+2003-04-28 01:33  mallum
+
+	* data/themes/blondie/theme.desktop, desktop/mbdesktop.c,
+	  packaging/ipkg/Makefile.am, packaging/ipkg/menu: minor cleanups (
+	  ipkg mainly ) ready for 0.5.1
+
+2003-04-27 01:12  mallum
+
+	* src/misc.c, util/mbmenu.c, util/miniwave.xpm: minor compiler
+	  warnings cleaned up
+
+2003-04-26 02:47  mallum
+
+	* configure.ac, data/mbdock/Makefile.in, desktop/mbdesktop_view.c,
+	  libmb/Makefile.am, libmb/mbpixbuf.c, libmb/mbpixbuf.h,
+	  src/keys.c, src/keys.h, src/wm.c: Jpeg supported added to
+	  mbpixbuf. Mem usages improvements to mbpixbuf
+
+2003-04-24 23:28  mallum
+
+	* data/kbdconfig, desktop/mbdesktop_view.c, libmb/mbdotdesktop.c,
+	  libmb/mbpixbuf.c, libmb/mbpixbuf.h, libmb/mbtray.c,
+	  libmb/mbtray.h, src/base_client.c, src/client_common.c,
+	  src/dialog_client.c, src/ewmh.c, src/keys.c, src/main_client.c,
+	  src/mbtheme.c, src/mbtheme.h, src/misc.c, src/structs.h,
+	  src/toolbar_client.c, src/wm.c: mbpixbuf made to deal with non
+	  alpha images. mb key shortcut handling improved.
+
+2003-04-23 21:16  mallum
+
+	* src/wm.c, ChangeLog, buildarm.sh, configure.ac,
+	  libmb/mbdotdesktop.c, packaging/ipkg/control.in,
+	  website/documentation.html, website/download.html,
+	  website/news.html: final fixes for 0.5
+
+2003-04-23 00:34  mallum
+
+	* configure.ac, libmb/mbdotdesktop.c, packaging/ipkg/control.in,
+	  src/client_common.c: strndup hopeful fix. configure
+	  cleanups/fixes
+
+2003-04-19 14:50  mallum
+
+	* configure.ac, data/Makefile.am,
+	  data/vfolders/Applications.directory,
+	  data/vfolders/Games.directory, data/vfolders/Makefile.am,
+	  data/vfolders/Other.directory, data/vfolders/Root.directory,
+	  data/vfolders/Root.order, data/vfolders/Settings.directory,
+	  data/vfolders/Utilities.directory, desktop/mbdesktop.c,
+	  desktop/mbdesktop.h, desktop/mbdesktop_item.c,
+	  desktop/mbdesktop_item.h, desktop/mbdesktop_view.c,
+	  desktop/modules/Makefile.am, desktop/modules/dotdesktop.c,
+	  desktop/modules/tasks.c, libmb/mbpixbuf.c: desktop/build system
+	  updates
+
+2003-04-18 12:03  mallum
+
+	* buildarm.sh, configure.ac, src/keys.c: configure fixes and extra
+	  mod keys added to keys.c
+
+2003-04-17 17:21  mallum
+
+	* desktop/mbdesktop.c, dock/dock.c: minor fixes to stupid crashes
+	  when DISPLAY is missing
+
+2003-04-15 19:58  mallum
+
+	* desktop/: Makefile.am, mbdesktop.c, mbdesktop.h,
+	  mbdesktop_dotdesktop_folder.c, mbdesktop_dotdesktop_folder.h,
+	  mbdesktop_item.c, mbdesktop_module.c, mbdesktop_module.h,
+	  mbdesktop_view.c, modules/Makefile.am, modules/dotdesktop.c,
+	  modules/tasks.c: more desktop improvements
+
+2003-04-15 10:22  mallum
+
+	* buildarm.sh, configure.ac, packaging/ipkg/Makefile.am,
+	  packaging/ipkg/control.in, src/dialog_client.c, src/mbtheme.c,
+	  src/toolbar_client.c, util/minitime.c: fixes to invalid
+	  theme_frame_defined_height_get call
+
+2003-04-14 23:02  mallum
+
+	* configure.ac, data/mbdock/Makefile.in, desktop/Makefile.am,
+	  desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/modules/Makefile.am, desktop/modules/tasks.c,
+	  libmb/mbdotdesktop.c, libmb/mbtray.c, libmb/mbtray.h: Makefile
+	  added for desktop modules + cleanups to modules code. Panel apps
+	  experiments
+
+2003-04-13 01:48  mallum
+
+	* src/: dialog_client.c, toolbar_client.c, wm.c: fixes to make
+	  dialog position / size themselves more intelligently with dialogs
+
+2003-04-12 02:45  mallum
+
+	* desktop/: mbdesktop.c, mbdesktop.h, mbdesktop_item.c,
+	  mbdesktop_item.h, mbdesktop_module.c, mbdesktop_view.c: scrolling
+	  now working hopefully in desktop
+
+2003-04-11 10:48  mallum
+
+	* src/ewmh.c: minor fix to advertising help/accept buttons when run
+	  with no titlebar
+
+2003-04-11 00:44  mallum
+
+	* desktop/: mbdesktop.c, mbdesktop_dotdesktop_folder.c,
+	  mbdesktop_item.c, mbdesktop_item.h, mbdesktop_module.c,
+	  mbdesktop_view.c: more fixups
+
+2003-04-10 16:06  mallum
+
+	* desktop/: mbdesktop.c, mbdesktop.h,
+	  mbdesktop_dotdesktop_folder.c, mbdesktop_item.c,
+	  mbdesktop_item.h, mbdesktop_module.c, mbdesktop_module.h,
+	  modules/tasks.c: more improvemnts to module loading. tasks module
+	  nearly functioning
+
+2003-04-10 00:27  mallum
+
+	* desktop/: Makefile.am, mbdesktop.c, mbdesktop.h,
+	  mbdesktop_dotdesktop_folder.c, mbdesktop_item.c,
+	  mbdesktop_item.h, mbdesktop_module.c, mbdesktop_module.h,
+	  mbdesktop_view.c, modules/tasks.c: initial module/plugin desktop
+	  code added
+
+2003-04-07 15:16  mallum
+
+	* desktop/Makefile.am, desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop_dotdesktop_folder.c,
+	  desktop/mbdesktop_dotdesktop_folder.h, desktop/mbdesktop_item.c,
+	  desktop/mbdesktop_item.h, dock/dock.c, libmb/mbdotdesktop.c,
+	  libmb/mbdotdesktop.h, libmb/mbtray.c, libmb/mbtray.h: desktop
+	  improvements
+
+2003-04-06 22:24  mallum
+
+	* src/: main_client.c, misc.c: fixes to moz/phoenix dialogs not
+	  getting correct decorartions. hidden titlebars now work with
+	  northern panels
+
+2003-04-06 01:05  mallum
+
+	* BUILDING.howto, configure.ac, doc/manual.sgml, util/minitime.c:
+	  fixed core font support in minitime. Build system now enables PNG
+	  and XFT by defualt. docs updated to reflect this
+
+2003-04-05 00:23  mallum
+
+	* configure.ac, data/mbdock/Makefile.in, src/mbtheme.h,
+	  util/Makefile.am, util/mbmenu.c, util/minivol.c: bsd audio fixes.
+	  dnotify cleanups to mbmenu. extra x11 includes removed from
+	  mbtheme.c
+
+2003-04-04 23:30  mallum
+
+	* doc/matchbox-key.txt, libmb/mbdotdesktop.c,
+	  packaging/ipkg/control.in: removed strndup call, causing problems
+	  on netbsd
+
+2003-04-01 00:30  mallum
+
+	* libmb/libmb.pc.in, src/ewmh.c, src/structs.h: hopeful fix for
+	  gnome-session hang. minor fix to pkgconfig
+
+2003-03-31 21:51  mallum
+
+	* configure.ac, libmb/Makefile.am, libmb/libmb.pc.in, libmb/mb.h,
+	  packaging/ipkg/Makefile.am: added pkgconfig file for libmb
+
+2003-03-28 14:16  mallum
+
+	* BUILDING.howto, README, configure.ac,
+	  data/themes/gorilla/Makefile.am, doc/manual.sgml, dock/dock.h,
+	  dock/msg.c, dock/scrollbutton.xpm, src/wm.c,
+	  website/download.html, website/news.html,
+	  website/screenshots.html: gnome integration fixes. doc updates.
+	  build updates
+
+2003-03-27 22:56  mallum
+
+	* libmb/mbdotdesktop.c: fix for absolute path icon lookup
+
+2003-03-27 16:57  mallum
+
+	* libmb/mbtray.c, libmb/mbtray.h, util/Makefile.am: beginning of
+	  new improved mbtray api
+
+2003-03-27 00:04  mallum
+
+	* dock/dock.c, dock/dock.h, dock/msg.c, dock/panel_app.c, src/wm.c:
+	  code added for dock flipping
+
+2003-03-26 00:31  mallum
+
+	* buildarm.sh, configure.ac, desktop/mbdesktop.c,
+	  desktop/mbdesktop_view.c, packaging/ipkg/control.in, src/wm.c:
+	  fixs to missing -l's for png. Desktop rotation / resizing
+	  handling improved
+
+2003-03-24 23:17  mallum
+
+	* desktop/mbdesktop.c, doc/Makefile.am, dock/panel_util.c,
+	  dock/panel_util.h, libmb/mbdotdesktop.c, libmb/mbmenu.c,
+	  libmb/mbpixbuf.c, src/Makefile.am, src/ewmh.c, src/misc.c,
+	  src/wm.c, util/mbcontrol.c, util/mbmenu.c, util/monolaunch.c,
+	  website/download.html, website/news.html,
+	  website/screenshots.html: fixes to website, minor code clean ups
+
+2003-03-24 15:16  mallum
+
+	* README, doc/Makefile.am, doc/manual.sgml, doc/style.css,
+	  dock/panel_menu.c, src/wm.c, util/mbcontrol.c, util/minivol.c,
+	  website/documentation.html, website/index.html,
+	  website/screenshots.html: man pages updated. minor website
+	  updates
+
+2003-03-22 20:35  mallum
+
+	* doc/manual.sgml, doc/matchbox-key.txt, doc/matchbox.pdf,
+	  dock/dock.c, website/Makefile, website/documentation.html,
+	  website/index.html, website/news.html, website/screenshots.html,
+	  website/style.css: website and manual updates
+
+2003-03-21 19:11  mallum
+
+	* buildarm.sh, configure.ac, desktop/mbdesktop.c,
+	  desktop/mbdesktop_view.c, doc/manual.sgml, dock/dock.c,
+	  libmb/mbdotdesktop.c, libmb/mbmenu.c, libmb/mbpixbuf.c,
+	  packaging/ipkg/control.in, src/main_client.c, src/mbtheme.c,
+	  src/wm.c, src/xml.c, tests/winspew.c, util/mbmenu.c,
+	  util/minisys.c, util/minitime.c, util/minivol.c,
+	  util/apm/miniapm.c, website/Makefile, website/documentation.html,
+	  website/screenshots.html: manual updates. dock no menu fixed.
+	  uneeded prinfs removed. warnings cleanup. this is 0.5rc1
+
+2003-03-20 02:01  mallum
+
+	* desktop/mbdesktop.c, doc/manual.sgml, libmb/mbmenu.c,
+	  src/main_client.c, src/wm.c, tests/tests.sh, website/Makefile,
+	  website/documentation.html, website/download.html,
+	  website/index.html, website/news.html, website/screenshots.html,
+	  website/style.css, website/hires/matchbox-sodi.svg,
+	  website/img/matchbox-179x73.png,
+	  website/img/openedhand-62x73.png: minor fixes to folder desktop
+	  themeing. Manual updates. initial website bits added. new
+	  tests.sh
+
+2003-03-19 02:22  mallum
+
+	* desktop/mbdesktop.c, libmb/mbmenu.c, libmb/mbpixbuf.c,
+	  src/base_client.c, src/main_client.c, src/structs.h: fix to wierd
+	  titlebar dissapears afer toggle close bug thing. dekstop folders
+	  should now theme right. experimentally lowered mem use of
+	  matchbox by freeing c->backing - needs testing
+
+2003-03-18 18:00  mallum
+
+	* data/themes/gorilla/Makefile.am, desktop/item_tasks.c,
+	  desktop/mbdesktop.c, desktop/mbdesktop.h, libmb/mbdotdesktop.c,
+	  libmb/mbmenu.c, libmb/mbmenu.h, util/mbmenu.c: minor theme img
+	  tweaks to mbmenu, desktop etc
+
+2003-03-18 15:06  mallum
+
+	* desktop/mbdesktop.c, libmb/mbdotdesktop.c, src/dialog_client.c,
+	  src/mbtheme.c, src/misc.c, src/misc.h, src/structs.h, src/wm.c,
+	  tests/winspew.c: border only support added. small change to bg
+	  handling of mbdesktop
+
+2003-03-15 02:04  mallum
+
+	* dock/panel_app.c, libmb/mbmenu.c, libmb/mbmenu.h,
+	  src/dialog_client.c, src/mbtheme.c, src/select_client.c,
+	  util/minisys.c: minor cleanups. dock remove menu fixed
+
+2003-03-14 13:51  mallum
+
+	* data/themes/gorilla/next.png, doc/manual.sgml, tests/tests.sh,
+	  tests/winspew.c: missing next.png added. manual work. test script
+	  added.
+
+2003-03-13 18:01  mallum
+
+	* doc/manual.sgml, libmb/mbmenu.c: basic fixes to enable menu
+	  scrolling. manual updates
+
+2003-03-12 19:18  mallum
+
+	* buildarm.sh, data/kbdconfig, doc/manual.sgml, src/base_client.c,
+	  src/ewmh.c, src/structs.h, src/wm.c: Major manual update, fix to
+	  single instance
+
+2003-03-11 01:44  mallum
+
+	* dock/dock.c, libmb/mbtray.c, src/base_client.c,
+	  src/toolbar_client.c, util/minitime.c: fixes to panel apps
+	  waiting for dock to appear
+
+2003-03-10 21:29  mallum
+
+	* data/themes/blondie/theme.xml, data/themes/blondie/theme.xml.in,
+	  data/themes/gorilla/Makefile.am,
+	  data/themes/gorilla/theme.xml.in, src/base_client.c,
+	  src/client_common.c, src/main_client.c: fixes to possible
+	  pixmap/xft drawable leak in XServer. fullscreen windows fixed for
+	  north docks
+
+2003-03-10 17:17  mallum
+
+	* doc/manual.sgml, dock/dock.c, dock/session.c, src/Makefile.am,
+	  src/base_client.c, src/mbtheme-standalone.h, src/mbtheme.h,
+	  src/wm.c, src/xml.c: fixes to valgrind issues, esp xml leak.
+
+2003-03-08 12:44  mallum
+
+	* dock/panel_app.c, src/dialog_client.c: small fix to position of
+	  un titlled dialogs. fix to allow dock apps set -ive positions
+
+2003-03-07 22:18  mallum
+
+	* desktop/item_tasks.c, dock/dock.c, dock/panel_app.c,
+	  dock/panel_menu.c, libmb/mbtray.c, src/main_client.c,
+	  util/mbmenu.c, util/minisys.c, util/minitime.c, util/minivol.c:
+	  minor cleanups. whiteing out fixes to dock apps. minor tweaks
+
+2003-03-06 17:13  mallum
+
+	* desktop/mbdesktop.c, src/main_client.c, src/mbtheme.c,
+	  src/structs.h, src/wm.h: small fix to broke non standalone themes
+
+2003-03-03 17:42  mallum
+
+	* libmb/mbpixbuf.c, src/mbtheme-standalone.c,
+	  src/mbtheme-standalone.h: standalone now reworking fine
+
+2003-02-28 18:12  mallum
+
+	* configure.ac, desktop/mbdesktop.c, dock/dock.c, dock/dock.h,
+	  src/Makefile.am, src/client_common.c, src/dialog_client.h,
+	  src/main_client.h, src/mbtheme-standalone.c,
+	  src/mbtheme-standalone.h, src/select_client.h, src/wm.c,
+	  src/wm.h: standalone kind of works again :)
+
+2003-02-28 12:02  mallum
+
+	* data/themes/blondie/theme.desktop, desktop/mbdesktop.c,
+	  desktop/mbdesktop.h, desktop/mbdesktop_view.c, doc/manual.sgml,
+	  dock/dock.c, libmb/mbpixbuf.c, src/Makefile.am,
+	  src/mbtheme-standalone.c: comments added to blondie/theme.desktop
+	  . background setting updated. small updates to manual /
+	  theme-standalone
+
+2003-02-27 00:55  mallum
+
+	* data/themes/blondie/theme.desktop, data/themes/blondie/theme.xml,
+	  data/themes/blondie/theme.xml.in, data/themes/bluebox/theme.xml,
+	  data/themes/bluebox/theme.xml.in,
+	  data/themes/gorilla/theme.xml.in, dock/dock.c, dock/panel_menu.c,
+	  libmb/mbmenu.c, libmb/mbpixbuf.c, libmb/mbtray.c,
+	  src/Makefile.am, src/base_client.c, src/mbtheme.c, src/wm.c,
+	  util/minisys.c, util/minitime.c, util/apm/miniapm.c: Theme file
+	  fixes. valgrind bugs fixed. dock hiding / menu crashes fixed.
+	  gnome-panel now works. broken theme icons fixed
+
+2003-02-26 00:15  mallum
+
+	* buildarm.sh, data/themes/blondie/theme.xml,
+	  data/themes/blondie/theme.xml.in, desktop/mbdesktop.c,
+	  desktop/mbdesktop.h, desktop/mbdesktop_view.c,
+	  desktop/mbdesktop_view.h, dock/client.c, dock/dock.c,
+	  libmb/mbdotdesktop.c, packaging/ipkg/Makefile.am,
+	  packaging/ipkg/control.in, src/Makefile.am, src/base_client.c,
+	  src/dialog_client.c, src/ewmh.c, src/ewmh.h, src/main_client.c,
+	  src/mbtheme.c, src/misc.c, src/structs.h, src/wm.c, src/wm.h,
+	  tests/winspew.c, util/minitime.c: fixes to lowlight only
+	  effecting modal dialogs
+
+2003-02-25 01:12  mallum
+
+	* data/Makefile.am, data/down.png, data/down.xpm, data/mbdown.png,
+	  data/mbdown.xpm, data/mbup.png, data/mbup.xpm, data/up.png,
+	  data/up.xpm, desktop/mbdesktop.c, dock/dock.c, dock/panel_menu.c,
+	  libmb/mbmenu.c, libmb/mbmenu.h, libmb/mbpixbuf.c,
+	  libmb/mbpixbuf.h, src/base_client.c, util/mbmenu.c,
+	  util/minisys.c, util/minitime.c, util/apm/miniapm.c: mit-shm
+	  support added mbpixbuf. random fixes to mbmenu and mbdesktop
+
+2003-02-23 13:41  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop_view.c, libmb/mbdotdesktop.c, libmb/mbtray.c,
+	  src/dialog_client.c, src/main_client.c, src/mbtheme.c, src/wm.c,
+	  util/Makefile.am, util/mbmenu.c, util/minitime.c, util/minivol.c:
+	  experimental new smooth theme changing. miniapm orientates
+	  correctly when north. possible fixes to minitime mapping problems
+
+2003-02-22 01:49  mallum
+
+	* desktop/Makefile.am, desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop_view.c, libmb/mbutil.c, libmb/mbutil.h,
+	  src/wm.c, util/minitime.c, util/apm/miniapm.c: fixes after ipaq
+	  testing
+
+2003-02-20 23:28  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop_view.c, src/mbtheme.c: Matchbox now falls back
+	  to defualt theme on a parse error. mbdesktop background code made
+	  ready for on the fly change
+
+2003-02-20 19:09  mallum
+
+	* src/mbtheme.c: fix for correct icons to appear in titlebars
+
+2003-02-20 17:09  mallum
+
+	* configure.ac, data/themes/Makefile.am,
+	  data/themes/gorilla/Makefile.am, data/themes/gorilla/blank.png,
+	  data/themes/gorilla/close.png, data/themes/gorilla/minimise.png,
+	  data/themes/gorilla/theme.desktop,
+	  data/themes/gorilla/theme.xml.in, libmb/mbpixbuf.c,
+	  libmb/mbpixbuf.h, src/mbtheme.c, src/mbtheme.h, src/wm.c: many
+	  theme fixes. minor bugs squashed. new test theme added
+
+2003-02-20 01:32  mallum
+
+	* data/themes/blondie/theme.xml, data/themes/blondie/theme.xml.in,
+	  libmb/Makefile.am, libmb/mbdotdesktop.c, libmb/mbdotdesktop.h,
+	  libmb/mbmenu.c, libmb/mbmenu.h, src/base_client.c, src/ewmh.c,
+	  src/mbtheme.c, src/structs.h, src/wm.c, src/wm.h, util/mbmenu.c,
+	  util/apm/miniapm.c: single instance stuff fixed for theme
+	  changes. Quick icon theme implementation added to libMB
+
+2003-02-18 18:17  mallum
+
+	* desktop/item_tasks.c, libmb/mbpixbuf.h, src/base_client.c,
+	  src/dialog_client.c, src/list.c, src/list.h, src/mbtheme.c,
+	  src/mbtheme.h, src/structs.h, tests/winspew.c, util/mbcontrol.c:
+	  Theme switches now avoid re-exec - still needs some work. window
+	  handling bugs fixed
+
+2003-02-18 01:45  mallum
+
+	* data/themes/blondie/Makefile.am, data/themes/blondie/theme.xml,
+	  data/themes/blondie/theme.xml.in,
+	  data/themes/bluebox/Makefile.am, data/themes/bluebox/theme.xml,
+	  data/themes/bluebox/theme.xml.in, libmb/mbpixbuf.c,
+	  src/Makefile.am, src/base_client.c, src/dialog_client.c,
+	  src/mbtheme.c, src/structs.h, src/wm.c, tests/winspew.c: minor
+	  bugs fixes, defualt theme locations changed to be more fd.org
+	  like
+
+2003-02-17 15:47  mallum
+
+	* dock/dock.c, dock/dock.h, src/main_client.c, src/wm.c: minor
+	  fixes / tweaks/ experiments to improved dock handling
+
+2003-02-17 12:03  mallum
+
+	* buildarm.sh, configure.ac, data/mbfolder.png, data/mbnoapp.png,
+	  data/themes/Makefile.am, data/themes/blondie/Makefile.am,
+	  data/themes/blondie/close.png, data/themes/blondie/closedown.png,
+	  data/themes/blondie/dialogbottomleft.png,
+	  data/themes/blondie/dialogbottomright.png,
+	  data/themes/blondie/dialogbottomtile.png,
+	  data/themes/blondie/dialogtopleft.png,
+	  data/themes/blondie/dialogtopright.png,
+	  data/themes/blondie/dialogtoptile.png,
+	  data/themes/blondie/hide.png, data/themes/blondie/hidedown.png,
+	  data/themes/blondie/menu.png, data/themes/blondie/menudown.png,
+	  data/themes/blondie/next.png, data/themes/blondie/nextdown.png,
+	  data/themes/blondie/prev.png, data/themes/blondie/prevdown.png,
+	  data/themes/blondie/theme.desktop, data/themes/blondie/theme.xml,
+	  data/themes/blondie/theme.xml.in,
+	  data/themes/blondie/titleleft.png,
+	  data/themes/blondie/titleright.png,
+	  data/themes/blondie/titlestrip.png,
+	  data/themes/bluebox/theme.xml, data/themes/bluebox/theme.xml.in,
+	  desktop/item_tasks.c, dock/panel_menu.c, libmb/Makefile.am,
+	  libmb/mbdotdesktop.c, libmb/mbpixbuf.c, libmb/mbpixbuf.h,
+	  libmb/mbtray.c, packaging/ipkg/control.in, src/Makefile.am,
+	  src/base_client.c, src/base_client.h, src/client_common.c,
+	  src/client_common.h, src/desktop_client.c, src/desktop_client.h,
+	  src/dialog_client.c, src/dialog_client.h, src/dockbar_client.c,
+	  src/dockbar_client.h, src/ewmh.c, src/list.c, src/list.h,
+	  src/main.c, src/main_client.c, src/main_client.h,
+	  src/mbtheme-standalone.c, src/mbtheme.c, src/mbtheme.h,
+	  src/misc.c, src/misc.h, src/select_client.c, src/select_client.h,
+	  src/structs.h, src/toolbar_client.c, src/toolbar_client.h,
+	  src/win_util.c, src/win_util.h, src/wm.c, src/wm.h,
+	  tests/winspew.c, util/mbmenu.c, util/minitime.c, util/minivol.c:
+	  USTABLE branch merged in. win_util removed and merged into dialog
+	  client. slight improvements to dialog dragging. -use_lowlight
+	  switch not takes rrggbbaa parameter
+
+2003-02-16 22:01  mallum
+
+	* libmb/mbdotdesktop.c: fixed compile breakage
+
+2003-02-16 21:58  mallum
+
+	* src/: dialog_client.c, dockbar_client.c, main_client.c,
+	  mbtheme-standalone.c, mbtheme.c, mbtheme.h, select_client.c,
+	  structs.h, toolbar_client.c, win_util.c, wm.c: gradient code
+	  added. some work on freeing a theme. mbtheme-standalone work
+
+2003-02-16 01:48  mallum
+
+	* data/themes/blondie/Makefile.am, desktop/item_tasks.c,
+	  libmb/Makefile.am, libmb/mbdotdesktop.c, src/Makefile.am,
+	  src/base_client.c, src/client_common.c, src/client_common.h,
+	  src/dockbar_client.c, src/mbtheme-standalone.c, src/mbtheme.c,
+	  src/misc.c, src/select_client.c, src/select_client.h,
+	  src/structs.h, src/toolbar_client.c, src/win_util.c, src/wm.c,
+	  util/minivol.c: more cleanups. beginning of mbtheme-standalon.
+	  bad icon crash fix to mbdesktop
+
+2003-02-15 02:19  mallum
+
+	* data/themes/blondie/theme.xml, data/themes/blondie/theme.xml.in,
+	  src/main_client.c, src/mbtheme.c, src/select_client.c,
+	  src/structs.h, src/wm.c: border theming for main clients cleaned
+	  up
+
+2003-02-14 02:39  mallum
+
+	* data/themes/blondie/theme.xml, data/themes/blondie/theme.xml.in,
+	  libmb/mbdotdesktop.c, src/main_client.c, src/mbtheme.c,
+	  src/mbtheme.h, src/select_client.c, src/structs.h,
+	  src/toolbar_client.c, src/wm.c: more cleanups to themeing
+
+2003-02-13 18:00  mallum
+
+	* src/: client_common.c, client_common.h, mbtheme.c,
+	  select_client.c: more cleanups to themeing
+
+2003-02-13 16:10  mallum
+
+	* data/themes/blondie/theme.xml, data/themes/blondie/theme.xml.in,
+	  data/themes/bluebox/theme.xml, data/themes/bluebox/theme.xml.in,
+	  src/client_common.c, src/dialog_client.c, src/ewmh.c, src/list.c,
+	  src/mbtheme-standalone.c, src/mbtheme.c, src/mbtheme.h,
+	  src/select_client.c, src/structs.h, src/toolbar_client.c,
+	  src/wm.c: lots of continued cleanups to theming. committing as
+	  hardrive is making wierd noises
+
+2003-02-11 11:19  mallum
+
+	* data/themes/blondie/theme.xml, data/themes/blondie/theme.xml.in,
+	  libmb/mbpixbuf.c, src/client_common.c, src/client_common.h,
+	  src/dialog_client.c, src/mbtheme.c, src/mbtheme.h,
+	  src/select_client.c: cleaned up shaped/theme code a little
+
+2003-02-10 18:03  mallum
+
+	* src/: dialog_client.c, mbtheme.c, win_util.c: Window lowlighting
+	  fixed
+
+2003-02-10 15:04  mallum
+
+	* buildarm.sh, desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop_view.c, packaging/ipkg/control.in,
+	  src/mbtheme.c, src/wm.c: Clean ups, fixes and better error
+	  reporting added to theming
+
+2003-02-06 17:09  mallum
+
+	* buildarm.sh, data/mbnoapp.png, data/themes/blondie/theme.xml,
+	  data/themes/blondie/theme.xml.in, packaging/ipkg/control.in,
+	  src/Makefile.am, src/base_client.c, src/dialog_client.c,
+	  src/select_client.c, src/structs.h, src/wm.c, util/minitime.c:
+	  minor tweaks
+
+2003-02-05 21:27  mallum
+
+	* data/mbfolder.png, data/themes/blondie/Makefile.am,
+	  data/themes/blondie/hide.png, data/themes/blondie/hidedown.png,
+	  data/themes/blondie/theme.xml, src/mbtheme.c,
+	  src/select_client.c: More misc improvements to themeing
+
+2003-02-05 18:29  mallum
+
+	* configure.ac, data/themes/Makefile.am,
+	  data/themes/blondie/Makefile.am,
+	  data/themes/blondie/theme.desktop, data/themes/blondie/theme.xml,
+	  data/themes/blondie/theme.xml.in,
+	  data/themes/blondie/titleright.png, dock/panel_menu.c,
+	  libmb/mbtray.c, src/Makefile.am, src/dialog_client.c,
+	  src/main_client.c, src/mbtheme.c, src/mbtheme.h,
+	  src/select_client.c, src/toolbar_client.c, src/wm.c,
+	  util/mbmenu.c: many fixes
+
+2003-02-05 09:14  mallum
+
+	* util/: mbmenu.c, minitime.c: Comments added to minitime
+
+2003-02-05 00:24  mallum
+
+	* data/themes/bluebox/theme.desktop,
+	  data/themes/camo/theme.desktop, dock/panel_app.c,
+	  libmb/mbdotdesktop.c, libmb/mbpixbuf.c, libmb/mbtray.c: minor
+	  fixes to mbpixbuf not closing xpms
+
+2003-02-05 00:19  mallum
+
+	* libmb/mbpixbuf.c, src/client_common.c, src/mbtheme.c,
+	  src/mbtheme.h, src/select_client.c, src/toolbar_client.c: more
+	  improvements to themeing
+
+2003-02-04 19:20  mallum
+
+	* data/themes/blondie/close.png, data/themes/blondie/closedown.png,
+	  data/themes/blondie/dialogbottomleft.png,
+	  data/themes/blondie/dialogbottomright.png,
+	  data/themes/blondie/dialogbottomtile.png,
+	  data/themes/blondie/dialogtopleft.png,
+	  data/themes/blondie/dialogtopright.png,
+	  data/themes/blondie/dialogtoptile.png,
+	  data/themes/blondie/menu.png, data/themes/blondie/menudown.png,
+	  data/themes/blondie/next.png, data/themes/blondie/nextdown.png,
+	  data/themes/blondie/prev.png, data/themes/blondie/prevdown.png,
+	  data/themes/blondie/theme.xml, data/themes/blondie/titleleft.png,
+	  data/themes/blondie/titleright.png,
+	  data/themes/blondie/titlestrip.png,
+	  data/themes/bluebox/theme.xml, libmb/mbpixbuf.c,
+	  libmb/mbpixbuf.h, src/base_client.c, src/base_client.h,
+	  src/client_common.c, src/client_common.h, src/dialog_client.c,
+	  src/dialog_client.h, src/dockbar_client.h, src/list.c,
+	  src/main.c, src/main_client.h, src/mbtheme.c, src/mbtheme.h,
+	  src/misc.h, src/select_client.h, src/structs.h,
+	  src/toolbar_client.h, src/win_util.h, src/wm.h: Initial Shaped,
+	  multi pixmapped dialog support added. New blondie theme that
+	  supports this added
+
+2003-02-03 19:29  mallum
+
+	* libmb/mbtray.c: fixed borked mbtray.c
+
+2003-02-03 18:10  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop_view.c, libmb/mbtray.c: minor mbdesktop fixes
+	  to reenable scrolling and enable icon boxes only after keyboard
+	  input
+
+2003-02-03 16:54  mallum
+
+	* data/themes/bluebox/theme.xml, src/Makefile.am,
+	  src/base_client.c, src/client_common.c, src/client_common.h,
+	  src/list.c, src/list.h, src/main_client.c, src/mbtheme.c,
+	  src/mbtheme.h, src/structs.h: buttons in main client now just
+	  about working, very buggy
+
+2003-02-02 10:43  mallum
+
+	* TODO, data/themes/bluebox/theme.xml.in, src/Makefile.am,
+	  src/client_common.c, src/dialog_client.c, src/dockbar_client.c,
+	  src/main_client.c, src/main_client.h, src/mbtheme.c,
+	  src/mbtheme.h, src/select_client.c, src/structs.h,
+	  src/toolbar_client.c, src/win_util.h, util/minitime.c: Initial
+	  addition of new theme code
+
+2003-02-01 18:39  mallum
+
+	* TODO, util/minitime.c: small fix for minitime to accept
+	  -geometry. TODO updated
+
+2003-02-01 17:15  mallum
+
+	* data/themes/bluebox/theme.xml: Final commit before branch
+
+2003-01-30 22:46  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop_view.c, dock/dock.c, libmb/mbdotdesktop.c,
+	  libmb/mbmenu.c, libmb/mbpixbuf.c, libmb/mbutil.c, libmb/mbutil.h,
+	  util/mbcontrol.c, util/mbmenu.c, util/minisys.c, util/minitime.c,
+	  util/monolaunch.c: Annoying printf's cleanup. Added check for bad
+	  pixmaps and mbpixbuf_new_from_drawable
+
+2003-01-30 10:23  mallum
+
+	* dock/dock.c, libmb/mbpixbuf.c: Hopeful fix for transparent dock
+	  on 16bpp
+
+2003-01-30 00:41  mallum
+
+	* dock/dock.c, dock/dock.h, libmb/mbpixbuf.c, libmb/mbpixbuf.h,
+	  libmb/mbtray.c, src/wm.c: dock background color handling
+	  improvemnets
+
+2003-01-28 21:07  mallum
+
+	* dock/dock.c, dock/dock.h, dock/panel_menu.c, src/wm.c, src/wm.h,
+	  util/miniwave.c: XSettings improvements. Panel bug fixes.
+
+2003-01-27 23:25  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop.h, dock/dock.c,
+	  dock/panel_app.c, libmb/mbtray.c, packaging/ipkg/mbstart,
+	  src/keys.c, src/wm.c: Fixes to dock X-errors, dock acting
+	  sensibly when root pixmap id aqusition fails, reparenting fix to
+	  unmapping splash windows
+
+2003-01-27 13:09  mallum
+
+	* ChangeLog, configure.ac, data/mbdock/Makefile.in,
+	  desktop/Makefile.am, dock/Makefile.am, dock/dock.c,
+	  dock/panel_app.c, dock/panel_menu.c, dock/session.c,
+	  libmb/Makefile.am, libmb/mbpixbuf.c, libmb/mbtray.c,
+	  src/Makefile.am, util/Makefile.am, util/monolaunch.c: autotools
+	  library linking cleaned up. Panel orientation improvements
+
+2003-01-25 10:03  mallum
+
+	* dock/dock.c, dock/dock.h, dock/session.c, libmb/mbtray.c: Dock
+	  transparency improved - levels now supported. Multiple dock
+	  support added.
+
+2003-01-24 14:21  mallum
+
+	* TODO, dock/dock.c, dock/dock.h, dock/panel_app.c,
+	  dock/panel_menu.c, dock/panel_util.c, dock/panel_util.h,
+	  packaging/ipkg/Makefile.am, src/main_client.c, src/wm.c,
+	  util/Makefile.am, util/minisys.c, util/monolaunch.c: dock now
+	  supports transparency. DESTDIR build fix. minor bux fixes
+
+2003-01-24 00:14  mallum
+
+	* doc/manual.sgml: Small documentation updates
+
+2003-01-23 22:32  mallum
+
+	* TODO, data/Makefile.am, data/down.xpm, data/mbnoapp.xpm,
+	  data/up.xpm, desktop/Makefile.am, desktop/item_tasks.c,
+	  desktop/mbdesktop.c, desktop/mbdesktop.h, desktop/mbdesktop.xpm,
+	  libmb/mbdotdesktop.c, libmb/mbdotdesktop.h, util/Makefile.am,
+	  util/mbexit.xpm, util/mblock.xpm, util/mbmenu.c, util/minisys.c,
+	  util/minisys.xpm, util/minivol.c, util/minivol.xpm,
+	  util/monolaunch.c: Many fixes to panel pixmap alpha blending. Big
+	  xmp/png cleanup. beginnings of vfolder code. various other minor
+	  fixes
+
+2003-01-22 22:47  mallum
+
+	* BUILDING.howto, autoconfigure.sh, data/mbdock/Makefile.in,
+	  src/wm.c, util/mbmenu.c: updated and improved autoconfigure.sh -
+	  _automake-1.4_now_used_. Lowlight stripes 'flattened'. Now at
+	  least compiles without --enable-png
+
+2003-01-22 18:15  mallum
+
+	* dock/dock.c, dock/panel_app.c, libmb/mbtray.c, libmb/mbtray.h,
+	  util/mbmenu.c, util/minisys.c, util/minitime.c, util/minivol.c,
+	  util/monolaunch.c, util/apm/miniapm.c: pixmap panel alphablending
+	  just about works, mbmenu, monoluanch still need some work.
+	  use_titlebar no working
+
+2003-01-22 01:01  mallum
+
+	* configure.ac, data/mbmenu/Makefile.am, data/mbmenu/app.png,
+	  data/mbmenu/folder.png, dock/dock.c, dock/dock.h, libmb/mbtray.c,
+	  libmb/mbtray.h, util/mbmenu.c, util/minisys.c,
+	  util/apm/miniapm.c: xpm build improvemnts. panel now take
+	  orientaion flag / sets background pixmap ( buggy )
+
+2003-01-20 21:11  mallum
+
+	* TODO, configure.ac, desktop/mbdesktop_view.c, doc/manual.sgml,
+	  dock/dock.c, dock/panel_app.c, dock/panel_menu.c, libmb/mbmenu.c,
+	  libmb/mbtray.c, src/dockbar_client.c, src/ewmh.c, src/keys.c,
+	  src/select_client.c, src/structs.h, src/wm.c, util/minitime.c,
+	  util/apm/Makefile.am, util/apm/miniapm-power.xpm,
+	  util/apm/miniapm.c, util/apm/miniapm.xpm: numerous minor fixes to
+	  panel. external app handling of multi-orientation docks improved.
+	  Beginning of fixing to compile without --enable-png. TODO updated
+
+2003-01-20 13:13  mallum
+
+	* util/miniwave.c: improvement to miniwaves bubble - thanks to
+	  florian
+
+2003-01-20 12:06  mallum
+
+	* configure.ac, data/mbdock/Makefile.in, packaging/ipkg/mbstart,
+	  util/Makefile.am, util/miniapm-power.png, util/miniapm.c,
+	  util/miniapm.desktop, util/miniapm.png, util/apm/Makefile.am,
+	  util/apm/miniapm-power.png, util/apm/miniapm.c,
+	  util/apm/miniapm.desktop, util/apm/miniapm.png: fixes to autoconf
+	  apm lib nightmare
+
+2003-01-20 11:10  mallum
+
+	* desktop/mbdesktop_view.c, src/dockbar_client.c,
+	  src/main_client.c, src/toolbar_client.c, src/wm.c: fixes to multi
+	  orientation panel layout
+
+2003-01-19 23:21  mallum
+
+	* src/dockbar_client.c, src/main_client.c, src/wm.c,
+	  util/mbcontrol.c: More work on multi-orientation docks. Small fix
+	  to unmap windows
+
+2003-01-17 15:13  mallum
+
+	* dock/panel_menu.c, src/dialog_client.c, src/dockbar_client.c,
+	  src/ewmh.c, src/main_client.c, src/select_client.c,
+	  src/structs.h, src/toolbar_client.c, src/wm.c, src/wm.h: Support
+	  for docks at top of display added
+
+2003-01-17 10:33  mallum
+
+	* TODO, buildarm.sh, configure.ac, dock/dock.c, dock/panel_app.c,
+	  dock/panel_app.h, dock/session.h, libmb/mbmenu.c,
+	  packaging/ipkg/postinst, src/wm.c, util/minitime.c: random fixes
+	  after ipaq testing
+
+2003-01-16 02:26  mallum
+
+	* TODO, dock/Makefile.am, dock/dock.c, dock/dock.h, dock/execs.c,
+	  dock/execs.h, dock/msg.c, dock/msg.h, dock/panel_app.c,
+	  dock/panel_app.h, dock/panel_menu.c, dock/panel_menu.h,
+	  dock/panel_util.c, dock/panel_util.h, dock/session.c,
+	  dock/session.h, libmb/mbdotdesktop.c, libmb/mbmenu.c,
+	  libmb/mbmenu.h, libmb/mbtray.c, libmb/mbtray.h,
+	  src/dialog_client.c, src/main_client.c, src/main_client.h,
+	  src/wm.c, src/wm.h, util/mbcontrol.c, util/mbmenu.c,
+	  util/miniapm.c, util/minitime.c: Big commit of - Major dock/panel
+	  cleanup rewrite. Window lowlighting fixes. Misc wm new client
+	  creation fixes - libmb menu improvements. Minor build
+	  improvements
+
+2003-01-11 01:10  mallum
+
+	* desktop/mbdesktop.c: XRender call ifdefed
+
+2003-01-10 13:44  mallum
+
+	* util/minitime.c: minitime fg color now changes with theme
+
+2003-01-10 01:24  mallum
+
+	* desktop/mbdesktop.c, dock/client.c, libmb/mbmenu.c,
+	  libmb/mbutil.c, libmb/mbutil.h, src/dialog_client.c,
+	  util/Makefile.am, util/mbmenu.c: mb_exec() func added to utils.
+	  Various minor bug fixes. mbmenu now highlights. Build fixes.
+
+2003-01-09 22:56  mallum
+
+	* configure.ac: got rid of small configure error
+
+2003-01-09 22:44  mallum
+
+	* desktop/mbdesktop.h: non ifdefed xft include fixed
+
+2003-01-09 22:32  mallum
+
+	* BUILDING.howto: Added gpe ftp link
+
+2003-01-09 22:31  mallum
+
+	* util/Makefile.am: removed lingering -lmbdock
+
+2003-01-08 16:23  mallum
+
+	* ChangeLog, desktop/mbdesktop.c, desktop/mbdesktop.h: small fix
+	  for mbdesktop to work with non-xft fonts
+
+2003-01-08 13:54  mallum
+
+	* libmb/mbmenu.c, src/main_client.c: Updated mbmenu to use utf8 xft
+	  calls
+
+2003-01-08 13:44  mallum
+
+	* src/: dialog_client.c, main_client.c, main_client.h,
+	  mbminipixbuf.c, wm.c: Improvements to 'lowlighted' dialog parents
+	  look and resize handling
+
+2003-01-08 10:18  mallum
+
+	* configure.ac, src/keys.c, src/keys.h, src/wm.c: Fixed
+	  --disable-keyboard option
+
+2003-01-08 00:20  mallum
+
+	* configure.ac, data/mbdock/Makefile.in, desktop/Makefile.am,
+	  desktop/mbdesktop.c, desktop/mbdesktop_view.c, dock/Makefile.am,
+	  libmb/Makefile.am, libmb/mbmenu.c, src/Makefile.am,
+	  src/structs.h, util/Makefile.am, util/minitime.c:
+	  Fixes/Improvements to build scripts and X11 linking missing
+	  librarys. Misc fixes to enable compiling with fewer configure
+	  opts
+
+2003-01-07 20:58  mallum
+
+	* TODO: Todo updated
+
+2003-01-07 20:48  mallum
+
+	* desktop/: mbdesktop.c, mbdesktop.h, mbdesktop_view.c: USE_XFT
+	  ifdefs added to mbdesktop
+
+2003-01-07 19:21  mallum
+
+	* src/wm.c: small fix to hiding fullscreen windows
+
+2003-01-07 18:55  mallum
+
+	* tests/README: Added tests/README
+
+2003-01-07 17:16  mallum
+
+	* data/themes/bluebox/Makefile.am,
+	  data/themes/bluebox/butthelpdown.xpm,
+	  data/themes/bluebox/butthelpup.xpm,
+	  data/themes/bluebox/theme.xml, data/themes/bluebox/theme.xml.in,
+	  desktop/mbdesktop.c, dock/dock.c, libmb/mbmenu.c, libmb/mbutil.c,
+	  src/base_client.c, src/dialog_client.c, src/ewmh.c,
+	  src/main_client.c, src/mbtheme.c, src/select_client.c, src/xml.c,
+	  src/xml.h, tests/Makefile.am, tests/winspew.c, util/mbmenu.c,
+	  util/minitime.c: Warnings cleanup. _WM_CONTEXT_HELP etc handling
+	  improvements. Winspew improved ( now does extended options,
+	  deletion, improved -help etc ). tests README initially created
+
+2003-01-05 19:37  mallum
+
+	* BUILDING.howto, Makefile.am, TODO, configure.ac,
+	  data/themes/bluebox/theme.xml, desktop/Makefile.am,
+	  dock/Makefile.am, libmb/Makefile.am, libmb/hash.c, libmb/hash.h,
+	  libmb/mb.h, libmb/mbdotdesktop.c, libmb/mbdotdesktop.h,
+	  libmb/mbmenu.c, libmb/mbmenu.h, libmb/mbpixbuf.c,
+	  libmb/mbpixbuf.h, libmb/mbtray.c, libmb/mbtray.h, libmb/mbutil.c,
+	  libmb/mbutil.h, libmbdock/Makefile.am, libmbdock/hash.c,
+	  libmbdock/hash.h, libmbdock/libmbdock.h,
+	  libmbdock/mbdotdesktop.c, libmbdock/mbdotdesktop.h,
+	  libmbdock/mbmenu.c, libmbdock/mbmenu.h, libmbdock/mbpixbuf.c,
+	  libmbdock/mbpixbuf.h, libmbdock/mbtray.c, libmbdock/mbtray.h,
+	  libmbdock/mbutil.c, libmbdock/mbutil.h,
+	  packaging/ipkg/Makefile.am, util/Makefile.am: building howto
+	  updated. libmbdock renamed to libmb. libmb build scripts now
+	  install headers / library version
+
+2003-01-05 01:30  mallum
+
+	* BUILDING.howto, TODO, src/wm.c: added initial building notes
+
+2003-01-04 10:49  mallum
+
+	* TODO, src/wm.c, tests/winspew.c: added patterned background and
+	  initial option parsing to winspew
+
+2003-01-03 21:48  mallum
+
+	* TODO: Updated TODO
+
+2003-01-03 18:41  mallum
+
+	* Makefile.am, configure.ac, data/themes/bluebox/theme.xml.in,
+	  desktop/item_tasks.c, src/dialog_client.c, tests/Makefile.am,
+	  tests/winspew.c: Bad xml in bluebox theme fixed. configure now
+	  takes CFLAGS. patches for tests/winspew.c applied
+
+2003-01-03 16:19  mallum
+
+	* ChangeLog, data/themes/bluebox/theme.desktop,
+	  data/themes/bluebox/theme.xml, data/themes/depno/theme.desktop,
+	  desktop/Makefile.am, desktop/item_tasks.c, desktop/mbdesktop.c,
+	  desktop/mbdesktop.h, libmbdock/mbmenu.c, libmbdock/mbmenu.h,
+	  libmbdock/mbutil.c, libmbdock/mbutil.h, src/base_client.c,
+	  src/base_client.h, src/dialog_client.c, src/ewmh.c,
+	  src/main_client.c, src/select_client.c, src/win_util.c, src/wm.c,
+	  tests/winspew.c, util/mbexit.png, util/mblock.png, util/mbmenu.c,
+	  util/mbmenu.png, util/minisys.png, util/minitime.c,
+	  util/minivol.png, util/term.png: Fixes to matchbox updating ewmh
+	  props and single instance handling. Hardcoded /usr/share values
+	  removed. mbmenu cleanups / highlighting. Missing files added
+
+2003-01-02 00:28  mallum
+
+	* src/ewmh.c, src/structs.h, src/wm.c, tests/winspew.c: startup
+	  notification improvements
+
+2002-12-31 01:01  mallum
+
+	* data/themes/bluebox/theme.xml, data/themes/bluebox/theme.xml.in,
+	  desktop/mbdesktop.c, desktop/mbdesktop.h, dock/dock.c,
+	  libmbdock/Makefile.am, libmbdock/mbmenu.c, libmbdock/mbmenu.h,
+	  libmbdock/mbpixbuf.c, libmbdock/mbpixbuf.h, src/base_client.c,
+	  src/ewmh.c, src/keys.c, src/main_client.c, src/select_client.c,
+	  src/structs.h, src/wm.c, src/wm.h, util/mbmenu.c,
+	  util/minitime.c, util/minivol.c: Improvements to minitime ( sets
+	  window icon, changes color with panel ). Experiments to reduce
+	  window change flicker in matchbox. mbmenu improvements
+
+2002-12-27 01:31  mallum
+
+	* dock/client.c, dock/dock.c, dock/dock.h, libmbdock/mbmenu.c,
+	  libmbdock/mbmenu.h, libmbdock/mbtray.c, util/mbmenu.c,
+	  util/miniapm.c: Dock fixes. Remove menu now shows icons
+
+2002-12-24 10:48  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  libmbdock/mbdotdesktop.c, libmbdock/mbdotdesktop.h,
+	  libmbdock/mbpixbuf.c, libmbdock/mbtray.c, src/base_client.c,
+	  src/dialog_client.c, src/ewmh.c, src/mbtheme.c,
+	  src/select_client.c, util/mbmenu.c, util/minisys.c,
+	  util/minitime.c, util/minivol.c, util/monolaunch.c: warnings
+	  cleaned up
+
+2002-12-24 02:18  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop_view.c, src/ewmh.c, src/mbminipixbuf.c,
+	  src/mbtheme.c, src/wm.c: bug fixes to startupnotify. desktop icon
+	  fixed. mbdesktop visual improvements
+
+2002-12-23 00:57  mallum
+
+	* buildarm.sh, desktop/mbdesktop.c, src/mbtheme.c,
+	  src/select_client.c, src/wm.c: Toughened up startupnotify event
+	  funcs in matchbox. Imporved startupnotify timeout detection.
+	  Blocked dnotify signals around critical sections of desktop code
+
+2002-12-20 18:57  mallum
+
+	* TODO, buildarm.sh, configure.ac, data/themes/bluebox/theme.xml,
+	  data/themes/bluebox/theme.xml.in, data/themes/camo/theme.xml.in,
+	  desktop/Makefile.am, desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop.png, libmbdock/mbpixbuf.c, libmbdock/mbtray.c,
+	  packaging/ipkg/Makefile.am, packaging/ipkg/control.in,
+	  packaging/ipkg/mbmenu-method, packaging/ipkg/postinst,
+	  src/Makefile.am, src/mbminipixbuf.c, src/mbtheme.c,
+	  src/select_client.c, src/wm.c, util/Makefile.am,
+	  util/mbmenu.desktop, util/mbterm.desktop, util/mbterm.png,
+	  util/minitime.png, util/miniwave-icon.png, util/miniwave.desktop,
+	  util/monolaunch.c: Various bug fixes after ipaq testing
+
+2002-12-19 18:14  mallum
+
+	* buildarm.sh, configure.ac, data/Makefile.am, data/kbdconfig,
+	  data/themes/bluebox/Makefile.am, data/themes/bluebox/dock.cfg,
+	  data/themes/bluebox/theme.xml, data/themes/camo/Makefile.am,
+	  data/themes/camo/dock.cfg, data/themes/camo/theme.desktop,
+	  data/themes/depno/Makefile.am, data/themes/depno/dock.cfg,
+	  data/themes/depno/theme.desktop, desktop/mbdesktop.c,
+	  dock/Makefile.am, dock/dock.c, libmbdock/mbdotdesktop.c,
+	  libmbdock/mbmenu.c, libmbdock/mbmenu.h,
+	  packaging/ipkg/control.in, packaging/ipkg/mbstart,
+	  src/dialog_client.c, src/wm.c, util/Makefile.am, util/mbmenu.c,
+	  util/mbmenu.desktop, util/miniapm-power.png, util/miniapm.c,
+	  util/miniapm.desktop, util/miniapm.png, util/minisys.c,
+	  util/minisys.desktop, util/minitime.c, util/minitime.desktop,
+	  util/minivol.c, util/minivol.desktop, util/miniwave.desktop:
+	  multiple fixes / build rearangements for 0.4 pre
+
+2002-12-17 18:02  mallum
+
+	* dock/dock.c, dock/dock.h, libmbdock/mbmenu.c, libmbdock/mbmenu.h,
+	  util/Makefile.am, util/minivol.c: miniapm 90 precent rewritten.
+	  dock now uses desktop files. mbmenu currently broken
+
+2002-12-17 00:28  mallum
+
+	* dock/dock.c, libmbdock/mbmenu.c, libmbdock/mbpixbuf.h,
+	  libmbdock/mbtray.c, src/base_client.c, src/base_client.h,
+	  src/main_client.c, src/wm.c, util/miniapm.c, util/minisys.c,
+	  util/minitime.c, util/monolaunch.c: various random minor bug
+	  fixes / improvements. minisys rewritten
+
+2002-12-16 01:33  mallum
+
+	* libmbdock/mbdotdesktop.c, libmbdock/mbdotdesktop.h,
+	  libmbdock/mbpixbuf.c, src/base_client.c, src/wm.c, util/mbmenu.c,
+	  util/miniapm.c, util/monolaunch.c: rewrite of miniapm. minor bug
+	  fixes to libmb. Initial dbg/general  cleanup on matchbox
+
+2002-12-14 18:32  mallum
+
+	* libmbdock/mbtray.c, libmbdock/mbtray.h, src/ewmh.c,
+	  src/structs.h, util/minitime.c, util/monolaunch.c:
+	  fixes/improvements to monolaunch. mbtray can now set tray window
+	  icon. minitime rewritten
+
+2002-12-13 16:44  mallum
+
+	* libmbdock/mbtray.c, libmbdock/mbtray.h, util/monolaunch.c:
+	  monolaunch abomination rewritten ... at last
+
+2002-12-12 23:56  mallum
+
+	* libmbdock/mbpixbuf.c, src/base_client.c, src/ewmh.c, src/ewmh.h,
+	  src/main_client.c, src/mbminipixbuf.c, src/mbminipixbuf.h,
+	  src/mbtheme.c, src/mbtheme.h, src/select_client.c, src/structs.h,
+	  src/wm.c: Added RGBA Window title / task menu icon support. Fixed
+	  random bugs in mbpixbuf. Minor desktop bugs fixed
+
+2002-12-12 18:14  mallum
+
+	* configure.ac, dock/dock.c, libmbdock/mbtray.c, src/Makefile.am,
+	  src/mbtheme.c, src/wm.c, src/xml.c, src/xml.h, util/mbmenu.c:
+	  Matchbox now optionally uses expat rather than its internal xml
+	  parser
+
+2002-12-12 12:19  mallum
+
+	* Makefile.am, configure.ac, desktop/Makefile.am,
+	  desktop/mbdesktop.c, desktop/mbdesktop.h, dock/Makefile.am,
+	  dock/dock.c, dock/dock.h, src/Makefile.am: Updated to dock to
+	  work with new mb libs
+
+2002-12-11 19:29  mallum
+
+	* libmbdock/hash.c, libmbdock/hash.h, libmbdock/mbmenu.c,
+	  libmbdock/mbmenu.h, libmbdock/mbpixbuf.c, libmbdock/mbpixbuf.h,
+	  libmbdock/mbtray.c, libmbdock/mbtray.h,
+	  packaging/ipkg/control.in, src/keys.c, util/mbmenu.c,
+	  util/minivol.c: Major cleanups to mbmenu library/app code. Added
+	  LGPL license to all libmb files
+
+2002-12-09 16:48  mallum
+
+	* libmbdock/mbmenu.c, libmbdock/mbpixbuf.h, src/Makefile.am,
+	  src/dialog_client.c, src/mbminipixbuf.c, src/mbminipixbuf.h,
+	  src/structs.h, src/win_util.c, src/wm.c, src/wm.h, util/mbmenu.c:
+	  Experimented with dialog parent shading
+
+2002-12-08 22:49  mallum
+
+	* desktop/mbdesktop.c, desktop/mbdesktop.h, libmbdock/Makefile.am,
+	  libmbdock/dotdesktop.c, libmbdock/dotdesktop.h,
+	  libmbdock/libmbmenu.c, libmbdock/libmbmenu.h,
+	  libmbdock/mbdotdesktop.c, libmbdock/mbdotdesktop.h,
+	  libmbdock/mbmenu.c, libmbdock/mbmenu.h, libmbdock/mbpixbuf.h,
+	  libmbdock/pngloader.c, libmbdock/pngloader.h, util/Makefile.am,
+	  util/mbmenu.c: mbmenu now uses mbpixbuf. Clean ups of libmbdock
+
+2002-12-07 20:20  mallum
+
+	* configure.ac, data/mbdock/minitime.in, desktop/mbdesktop.c: fix
+	  for shift problem on exotic layouts
+
+2002-12-06 17:53  mallum
+
+	* libmbdock/Makefile.am, libmbdock/libmbdock.h,
+	  libmbdock/libmbmenu.h, libmbdock/mbtray.c, libmbdock/mbtray.h,
+	  libmbdock/tray.c, libmbdock/tray.h, src/base_client.c,
+	  src/ewmh.c, src/ewmh.h, src/keys.c, src/structs.h, src/wm.c,
+	  util/Makefile.am, util/mbmenu.c, util/miniapm.c, util/minisys.c,
+	  util/minitime.c, util/minivol.c, util/miniwave.c,
+	  util/monolaunch.c: Experimental single instance with startup
+	  notification implemented. Beginnings of library clean ups
+
+2002-12-06 12:30  mallum
+
+	* configure.ac, desktop/mbdesktop.c, libmbdock/mbpixbuf.c,
+	  src/ewmh.c, src/select_client.c, src/structs.h, src/wm.c,
+	  src/wm.h: Utf8 fixed. desktop entry added to title 'task' menu.
+	  Initial startup-notification added
+
+2002-12-05 20:01  mallum
+
+	* Makefile.am, configure.ac, data/Makefile.am, data/down.png,
+	  data/down.xpm, data/mbfolder.png, data/mbfolder.xpm,
+	  data/mbnoapp.png, data/mbnoapp.xpm, data/up.png, data/up.xpm,
+	  desktop/Makefile.am, desktop/item_tasks.c, desktop/item_tasks.h,
+	  desktop/mbdesktop.c, desktop/mbdesktop.h,
+	  desktop/mbdesktop_view.c, desktop/mbdesktop_view.h,
+	  libmbdock/Makefile.am, libmbdock/dotdesktop.c,
+	  libmbdock/mbpixbuf.c, libmbdock/mbpixbuf.h, src/ewmh.c,
+	  src/ewmh.h, src/mbtheme.c, src/select_client.c: Utf8 fixes.
+	  Finally imported mbdesktop files
+
+2002-12-05 17:02  mallum
+
+	* src/: base_client.c, ewmh.c, ewmh.h, main.c, mbtheme.c,
+	  mbtheme.h, select_client.c, structs.h, wm.c: fixes to utf8
+	  handling
+
+2002-12-04 17:07  mallum
+
+	* src/: base_client.c, ewmh.c, main.c, wm.c: fixes to utf8 support,
+	  initial startup notification implementation
+
+2002-12-04 10:59  mallum
+
+	* doc/manual.sgml, src/client_common.c, src/ewmh.c, src/keys.c,
+	  src/keys.h, src/main.c, src/mbtheme.c, src/select_client.c,
+	  src/structs.h, src/wm.c, util/minitime.c: keyboard control now
+	  reads correct config files. Docs updated for keyboard control.
+	  Experiments for improved utf8 handling added
+
+2002-12-03 21:23  mallum
+
+	* src/: Makefile.am, keys.c, main.c, wm.c: Improved keyboard
+	  control now working
+
+2002-12-03 17:55  mallum
+
+	* src/: Makefile.am, keys.c, keys.h, structs.h, wm.c, wm.h: Added
+	  initial improvements to keyboard control code
+
+2002-12-03 00:53  mallum
+
+	* dock/dock.c, dock/dock.h, libmbdock/dotdesktop.c,
+	  libmbdock/dotdesktop.h, util/mbmenu.c, util/minitime.c: Began
+	  cleanup on minitime
+
+2002-11-30 01:32  mallum
+
+	* data/themes/bluebox/Makefile.am, libmbdock/Makefile.am,
+	  libmbdock/dotdesktop.c, libmbdock/dotdesktop.h, libmbdock/hash.c,
+	  libmbdock/hash.h, libmbdock/libmbdock.h, libmbdock/libmbmenu.c,
+	  libmbdock/tray.c, libmbdock/tray.h, packaging/ipkg/control.in,
+	  src/desktop_client.c, src/ewmh.c, src/wm.c, util/Makefile.am,
+	  util/mbmenu.c, util/minivol.c: added dotdesktop functionality to
+	  mbmenu
+
+2002-11-08 17:45  mallum
+
+	* buildarm.sh, configure.ac, dock/client.c, libmbdock/Makefile.am,
+	  packaging/ipkg/postinst, src/base_client.c, src/desktop_client.c,
+	  src/main_client.c, src/wm.c, util/Makefile.am, util/mbmenu.c,
+	  util/miniapm.c: Minor patches to build system. BSD patch for
+	  miniapm. Fixes to desktop window handling"
+
+2002-10-18 11:11  mallum
+
+	* data/themes/bluebox/theme.xml.in, src/structs.h: small fix to
+	  accept hint
+
+2002-10-18 10:29  mallum
+
+	* data/themes/bluebox/buttacceptdown.xpm,
+	  data/themes/bluebox/buttacceptup.xpm,
+	  data/themes/bluebox/theme.xml.in, dock/dock.c,
+	  src/dialog_client.c, src/main_client.c, src/mbtheme.c,
+	  src/structs.h: Added more handling of _NET_CONTEXT special window
+	  decoration hints
+
+2002-10-18 01:13  mallum
+
+	* data/themes/camo/dock.cfg, src/base_client.c,
+	  src/client_common.c, src/client_common.h, src/dialog_client.c,
+	  src/ewmh.c, src/main_client.c, src/main_client.h, src/structs.h,
+	  src/wm.c: Fixed XSettings flag problem. Added missing dock.cfg
+	  file. Added initial support for OPIE / KDE help and accept
+	  buttons / wm_protocols
+
+2002-10-16 01:52  mallum
+
+	* data/themes/bluebox/theme.xml.in, data/themes/camo/theme.xml.in,
+	  src/ewmh.c: Added WM_STATE_FULLSCREEN parsing re EWMH. Improved
+	  theme toolbar definitions for bluebox and camo themes
+
+2002-10-15 12:37  mallum
+
+	* configure.ac, src/structs.h, src/wm.c, src/wm.h: Added initial
+	  xsettings functionality
+
+2002-10-14 11:14  mallum
+
+	* configure.ac, data/themes/camo/theme.xml.in, dock/client.c,
+	  dock/dock.c, dock/dock.h, dock/msg.c, libmbdock/tray.c, src/wm.c,
+	  util/mbmenu.c, util/miniapm.c, util/minisys.c, util/minitime.c,
+	  util/minivol.c: fixes for 0.3.6
+
+2002-10-11 00:06  mallum
+
+	* ChangeLog, data/themes/package_old_themes.sh, libmbdock/tray.c,
+	  src/wm.c, util/mbmenu.c: fix for utf8 window titles changing.
+	  Added script to package older themes
+
+2002-10-07 17:11  mallum
+
+	* ChangeLog, configure.ac,
+	  data/themes/bluebox/buttsmallclosedown.xpm,
+	  data/themes/bluebox/buttsmallcloseup.xpm,
+	  data/themes/bluebox/buttsmallmaxdown.xpm,
+	  data/themes/bluebox/buttsmallmaxup.xpm,
+	  data/themes/bluebox/buttsmallmindown.xpm,
+	  data/themes/bluebox/buttsmallminup.xpm,
+	  data/themes/bluebox/dock.cfg, data/themes/bluebox/theme.xml.in,
+	  data/themes/camo/theme.xml.in, packaging/ipkg/control.in,
+	  src/client_common.c, src/main_client.c, src/mbtheme.c,
+	  src/structs.h, src/toolbar_client.c, util/mbmenu.c: final fixes
+	  for 0.3.5 release
+
+2002-10-06 22:37  mallum
+
+	* Makefile.am, configure.ac, data/themes/bluebox/dock.cfg,
+	  data/themes/camo/theme.xml.in, libmbdock/libmbmenu.c,
+	  src/dialog_client.c, src/structs.h, src/wm.c, util/mbmenu.c:
+	  Dialogs are now sized not to cover toolbars
+
+2002-10-05 15:17  mallum
+
+	* data/themes/bluebox/theme.xml.in, src/ewmh.h,
+	  src/select_client.c, src/structs.h, src/wm.c, util/mbcontrol.c:
+	  various minor bug fixes
+
+2002-10-04 17:00  mallum
+
+	* src/select_client.c: fixed highlighting on task menu
+
+2002-10-03 00:51  mallum
+
+	* configure.ac, data/themes/Makefile.am,
+	  data/themes/camo/Makefile.am, data/themes/camo/close.xpm,
+	  data/themes/camo/closedown.xpm, data/themes/camo/next.xpm,
+	  data/themes/camo/nextdown.xpm, data/themes/camo/prev.xpm,
+	  data/themes/camo/prevdown.xpm, data/themes/camo/select.xpm,
+	  data/themes/camo/small-close-button-down.xpm,
+	  data/themes/camo/small-close-button.xpm,
+	  data/themes/camo/small-down-button.xpm,
+	  data/themes/camo/small-min-button.xpm,
+	  data/themes/camo/smallmax.xpm, data/themes/camo/smallmaxdown.xpm,
+	  data/themes/camo/smallmin.xpm, data/themes/camo/smallmindown.xpm,
+	  data/themes/camo/theme.xml.in, packaging/ipkg/menu, src/ewmh.h,
+	  src/select_client.c, src/wm.c: Added new camo theme
+
+2002-09-30 17:56  mallum
+
+	* dock/dock.c, libmbdock/libmbmenu.c, libmbdock/libmbmenu.h,
+	  src/main_client.c, src/wm.c, src/wm.h: removed pointed menus -
+	  bah. fixed focus problems with gpe-calc and other toolbar clients
+	  that want keyboard focus
+
+2002-09-20 00:26  mallum
+
+	* dock/: client.c, client.h, dock.c: fixes to dock app position
+	  code
+
+2002-09-19 21:53  mallum
+
+	* Makefile.am, dock/dock.c, libmbdock/libmbmenu.c,
+	  libmbdock/pngloader.c, src/xml.c: fixed minor bug in xml parser
+	  where an ='s in attr value caused problems. fixed non xft build
+
+2002-09-15 11:22  mallum
+
+	* dock/dock.c, dock/dock.h, src/ewmh.c, src/ewmh.h, src/wm.c: Added
+	  wm_net_struct prop to dock. Experimented with forcing a workspace
+	  number on clients, so fspanel works ok
+
+2002-09-11 11:12  mallum
+
+	* configure.ac, dock/dock.c, libmbdock/libmbmenu.c,
+	  libmbdock/libmbmenu.h, src/misc.c, src/misc.h, src/testcn.c,
+	  src/wm.c, src/img/close.xpm, src/img/next.xpm, src/img/prev.xpm,
+	  src/img/tb_arrow.xpm, src/img/toolbar.xpm,
+	  src/img/toolbar_close.xpm: fix for compile on solaris missing
+	  strsep
+
+2002-09-04 00:07  mallum
+
+	* data/: mbdock/Makefile.in, themes/Makefile.am: Removed old theme
+	  makefiles
+
+2002-09-03 21:18  mallum
+
+	* buildarm.sh, configure.ac, data/Makefile.am,
+	  data/mbdock/Makefile.am, data/mbdock/Makefile.in,
+	  data/mbdock/mbmenu.in, data/mbdock/mbmenu.xpm,
+	  data/mbdock/move.xpm, data/mbmenu/Makefile.am,
+	  data/mbmenu/app.xpm, data/mbmenu/folder.xpm,
+	  data/themes/Makefile.am, data/themes/bluebox/Makefile.am,
+	  data/themes/bluebox/buttclosedown.xpm,
+	  data/themes/bluebox/buttcloseup.xpm,
+	  data/themes/bluebox/buttmenudown.xpm,
+	  data/themes/bluebox/buttmenuup.xpm,
+	  data/themes/bluebox/buttsmallclosedown.xpm,
+	  data/themes/bluebox/buttsmallcloseup.xpm,
+	  data/themes/bluebox/buttsmallmaxdown.xpm,
+	  data/themes/bluebox/buttsmallmaxup.xpm,
+	  data/themes/bluebox/buttsmallmindown.xpm,
+	  data/themes/bluebox/buttsmallminup.xpm,
+	  data/themes/bluebox/dialogbg.xpm, data/themes/bluebox/dock.cfg,
+	  data/themes/bluebox/theme.xml.in,
+	  data/themes/bluebox/titlebg.xpm,
+	  data/themes/bluebox/titleleft.xpm,
+	  data/themes/bluebox/titleright.xpm,
+	  data/themes/bluebox/titleseperator.xpm, libmbdock/Makefile.am,
+	  libmbdock/libmbdock.h, libmbdock/libmbmenu.c,
+	  libmbdock/libmbmenu.h, libmbdock/pngloader.c,
+	  libmbdock/pngloader.h, libmbdock/tray.c, libmbdock/tray.h,
+	  packaging/ipkg/Makefile.am, packaging/ipkg/control.in,
+	  packaging/ipkg/mbmenu-method, packaging/ipkg/menu,
+	  packaging/ipkg/postinst, packaging/ipkg/postrm: Fixes to CVS
+	  borkage
+
+2002-09-03 19:26  mallum
+
+	* dock/client.c, dock/dock.c, src/Makefile.am: Added bluebox theme,
+	  removed older ones
+
+2002-08-31 11:26  mallum
+
+	* data/themes/depno/theme.xml, data/themes/depno/theme.xml.in,
+	  dock/dock.c, dock/scrollbutton.xpm, src/base_client.c,
+	  util/Makefile.am, util/mbmenu.c, util/mbmenu.xpm: fixes to mbmenu
+	  'next click hides' functionaility
+
+2002-08-31 00:51  mallum
+
+	* dock/client.c, dock/dock.c, src/select_client.c: changed select
+	  menu behaviour  to show current window aswell. added ipkg build
+	  stuff for mbmenu. Improved dock app movement grabbing
+
+2002-08-29 17:02  mallum
+
+	* src/: mbtheme.c, select_client.c, xml.c, xml.h: slight
+	  improvements to safer theme loading / parsing
+
+2002-08-29 11:44  mallum
+
+	* util/: Makefile.am, mbmenu.c: mbmenu now added to dist. libmbdock
+	  seems to work
+
+2002-08-28 17:17  mallum
+
+	* data/mbdock/Makefile.in, data/themes/depno/dock.cfg,
+	  data/themes/depno/theme.xml, data/themes/depno/theme.xml.in,
+	  dock/Makefile.am, dock/libmbmenu.c, dock/libmbmenu.h,
+	  src/select_client.c, util/Makefile.am, util/mbmenu.c,
+	  util/tray.c, util/tray.h: Buildscripts updated to include
+	  libmbmenu. Initial attempt to move mbmenu into matchbox source
+	  tree
+
+2002-08-27 17:00  mallum
+
+	* data/themes/depno/theme.xml, data/themes/depno/theme.xml.in,
+	  dock/client.c, dock/dock.c, dock/dock.h, dock/libmbmenu.c,
+	  packaging/ipkg/Makefile.am, src/mbtheme.c, src/select_client.c,
+	  src/structs.h, util/miniwave.c, util/miniwave.xpm: Dock app
+	  positioning/scrolling fixes. Picture tiling added to theme
+	  engine. Depno theme improved
+
+2002-08-25 13:26  mallum
+
+	* configure.ac, dock/dock.c, dock/dock.h: Dock buttons improved.
+	  Dock cursor problem fixed
+
+2002-08-24 01:32  mallum
+
+	* dock/dock.c, dock/menubutt.xpm, src/mbtheme.c, src/structs.h:
+	  more minor improvements to dock
+
+2002-08-23 17:08  mallum
+
+	* dock/: Makefile.am, dock.c, dock.h, menubutt.xpm,
+	  scrollbutton.xpm: more improvements to dock ( icons for buttons
+	  added )
+
+2002-08-23 00:35  mallum
+
+	* dock/dock.c, dock/libmbmenu.c, dock/libmbmenu.h, src/mbtheme.c:
+	  Dock now changes menu look with a theme change
+
+2002-08-22 16:35  mallum
+
+	* dock/client.c, dock/dock.c, dock/dock.h, src/select_client.c,
+	  src/structs.h, src/xml.c: more dock scroll improvements
+
+2002-08-21 16:55  mallum
+
+	* dock/client.c, dock/client.h, dock/dock.c, dock/dock.h,
+	  util/minisys.c: more improvements to scrolling
+
+2002-08-20 17:14  mallum
+
+	* dock/: dock.c, dock.h: initial work on dock scrolling
+
+2002-08-19 00:25  mallum
+
+	* configure.ac, dock/client.c, dock/client.h, dock/dock.c,
+	  dock/dock.h, packaging/ipkg/control.in, src/base_client.c,
+	  src/wm.c, src/wm.h: Beginnings of xsettings and dock scrolling
+	  added
+
+2002-08-18 01:28  mallum
+
+	* dock/client.c, dock/dock.c, util/miniapm.c: dockapps now moveable
+	  ... finally! configure problems with mmenu fixed
+
+2002-08-16 11:56  mallum
+
+	* src/misc.h, util/miniapm.c, util/monolaunch.c: miniapm alert on
+	  charge bug fixed
+
+2002-08-15 19:05  mallum
+
+	* dock/dock.c: more work on movable dock apps
+
+2002-08-11 23:59  mallum
+
+	* dock/client.c, dock/dock.c, dock/dock.h, dock/libmbmenu.c,
+	  src/ewmh.c, src/ewmh.h, src/wm.c, src/wm.h: Work on user moveable
+	  dock apps. Show desktop ewmh compliance
+
+2002-08-09 16:04  mallum
+
+	* src/wm.c: checkin on minor 0.3.3 fixes
+
+2002-08-07 12:17  mallum
+
+	* configure.ac, data/themes/akwa/dock.cfg,
+	  data/themes/keramik/dock.cfg, packaging/ipkg/control.in,
+	  src/wm.c: final fixes for 0.3.3
+
+2002-08-06 13:37  mallum
+
+	* util/: miniapm.c, minisys.c, minitime.c, miniwave.c,
+	  monolaunch.c, tray.c, tray.h: minor fixes to monolaunch. miniapm
+	  now alerts when battery low. Messageing dock apps now timeout
+
+2002-08-05 23:39  mallum
+
+	* src/select_client.c, util/monolaunch.c: iconized windows added to
+	  task list window
+
+2002-08-05 17:00  mallum
+
+	* dock/dock.c, dock/dock.h, dock/msg.c, src/wm.c, util/tray.c:
+	  Timeout now works for dock messages. Dock messages also now
+	  dissapear if the sending app is destroyed
+
+2002-07-31 15:41  mallum
+
+	* src/wm.c, util/monolaunch.c: Added some in progress xrm stuff
+
+2002-07-30 15:29  mallum
+
+	* standalone_header_gen.sh, packaging/ipkg/postinst,
+	  util/monolaunch.c: monolaunch now works like a 'button'. segfualt
+	  fix to standalone option
+
+2002-07-24 20:41  mallum
+
+	* ChangeLog, debian/changelog, debian/postinst, dock/dock.c,
+	  src/structs.h, src/toolbar_client.h, src/wm.c, src/wm.h: Phil
+	  Blundells optional no cursor patch applied. Fixed theme chdir bug
+
+2002-07-22 21:50  mallum
+
+	* ChangeLog, configure.ac, debian/changelog, dock/dock.c,
+	  packaging/ipkg/control.in: final fixes for 0.3.2 release
+
+2002-07-22 20:45  mallum
+
+	* debian/postinst, debian/prerm, debian/rules, dock/client.c,
+	  dock/client.h, dock/dock.c, dock/dock.h: fixes to dock sessioning
+	  handling quoted cmd lines
+
+2002-07-22 11:48  mallum
+
+	* dock/: Makefile.am, dock.c, execs.c, execs.h: Added Phil
+	  Blundell's patch for sh-less execs. Added alarm code to clean up
+	  dying dock app sessions safely
+
+2002-07-21 23:43  mallum
+
+	* doc/manual.sgml, packaging/ipkg/control.in, util/monolaunch.c:
+	  fixed monolaunch problem with gtk apps
+
+2002-07-18 17:03  mallum
+
+	* ChangeLog, debian/changelog, dock/dock.c, src/ewmh.h, src/wm.c:
+	  popup remove list now refeshes on HUP
+
+2002-07-17 19:14  mallum
+
+	* configure.ac, dock/libmbmenu.c: final fixeds for 0.3.1
+
+2002-07-17 16:07  mallum
+
+	* AUTHORS, doc/manual.sgml, dock/dock.c, dock/dock.h,
+	  dock/libmbmenu.c, dock/libmbmenu.h, util/miniwave.c: Dock now
+	  reloads menu on a HUP. Patch to manual.sgml's grammar
+
+2002-07-16 23:53  mallum
+
+	* debian/rules, dock/dock.c, dock/dock.h, src/xml.c,
+	  util/monolaunch.c: More fixes to xml parser memory usage. dock
+	  menu now 'autopops'. update-alternatives fix to debian/rules
+
+2002-07-15 23:53  mallum
+
+	* src/mbtheme.c, src/xml.c, util/miniwave.c: fixes to xml parser
+
+2002-07-14 10:24  mallum
+
+	* ChangeLog, Makefile.am, doc/manual.sgml, dock/dock.c,
+	  dock/dock.h, dock/msg.c, src/ewmh.c, src/ewmh.h,
+	  src/main_client.c, src/misc.c, src/misc.h, src/wm.c: basic
+	  support for mwm hints added ( no decorations ). titlebar collapse
+	  bug fixed
+
+2002-07-12 11:51  mallum
+
+	* Makefile.am, README, configure.ac, doc/manual.sgml, dock/dock.c,
+	  dock/dock.h, dock/msg.c, src/wm.c: final commit for 0.3
+
+2002-07-12 01:00  mallum
+
+	* data/themes/akwa/dockbg.xpm, data/themes/greeno/Makefile.am,
+	  data/themes/greeno/dock.cfg, data/themes/greeno/dockbg.xpm,
+	  data/themes/greeno/theme.xml.in, src/Makefile.am,
+	  src/select_client.c, src/wm.c: small theme changes
+
+2002-07-11 21:53  mallum
+
+	* src/: base_client.c, base_client.h, dialog_client.c,
+	  main_client.c, select_client.c, structs.h, toolbar_client.c,
+	  wm.c: fixed iconic problems
+
+2002-07-11 18:47  mallum
+
+	* configure.ac, data/mbdock/finddockapps.sh,
+	  data/themes/keramik/Makefile.am, doc/manual.sgml, dock/client.c,
+	  dock/dock.c, dock/libmbmenu.c, src/client_common.c,
+	  src/dialog_client.c, src/ewmh.c, src/main_client.c, src/wm.c,
+	  util/monolaunch.c: broken
+
+2002-07-09 00:10  mallum
+
+	* configure.ac, data/themes/Makefile.am,
+	  data/themes/classic/Makefile.am, data/themes/classic/bg.xpm,
+	  data/themes/classic/close-button.xpm,
+	  data/themes/classic/dock.cfg,
+	  data/themes/classic/hide-button.xpm,
+	  data/themes/classic/next-button.xpm,
+	  data/themes/classic/prev-button.xpm,
+	  data/themes/classic/select.xpm,
+	  data/themes/classic/small-close-button.xpm,
+	  data/themes/classic/small-down-button.xpm,
+	  data/themes/classic/small-min-button.xpm,
+	  data/themes/classic/theme.xml.in,
+	  data/themes/keramik/Makefile.am, data/themes/keramik/dock.cfg,
+	  dock/client.c, dock/client.h, dock/dock.c, dock/msg.c,
+	  packaging/ipkg/menu, util/minisys.c, util/monolaunch.c: classic
+	  theme added. now 0.3rc1
+
+2002-07-08 01:11  mallum
+
+	* dock/dock.c, dock/dock.h, dock/msg.c, src/dialog_client.c,
+	  src/toolbar_client.c, util/monolaunch.c: dock popup button
+	  sensitivity now configuarbale, dock bubbles now have titles,
+	  minor bug fixes to dock background and some window management
+	  problems ( dialogs going under toolbars ).
+
+2002-07-05 15:32  mallum
+
+	* Makefile.am, configure.ac, standalone_header_gen.sh,
+	  data/themes/depno/theme.xml, data/themes/depno/theme.xml.in,
+	  dock/dock.c, src/mbtheme.c, src/wm.c: standalone builds now dont
+	  segfualt. minor fixes to help switch etc
+
+2002-07-03 14:37  mallum
+
+	* configure.ac, data/mbdock/Makefile.in, data/themes/Makefile.am,
+	  data/themes/greeno/Makefile.am, data/themes/greeno/bggrad.xpm,
+	  data/themes/greeno/close.xpm, data/themes/greeno/closedown.xpm,
+	  data/themes/greeno/dock.cfg, data/themes/greeno/next.xpm,
+	  data/themes/greeno/nextdown.xpm, data/themes/greeno/prev.xpm,
+	  data/themes/greeno/prevdown.xpm,
+	  data/themes/greeno/small-close-button.xpm,
+	  data/themes/greeno/small-close-buttondown.xpm,
+	  data/themes/greeno/theme.xml.in, dock/client.c, dock/dock.c,
+	  dock/libmbmenu.c, dock/libmbmenu.h, packaging/ipkg/menu,
+	  src/dialog_client.c, src/mbtheme.c, src/structs.h: added new
+	  greeno theme
+
+2002-07-02 21:00  mallum
+
+	* data/mbdock/Makefile.in, data/mbdock/add.xpm,
+	  data/mbdock/finddockapps.sh, data/mbdock/miniapm.in,
+	  data/mbdock/minisys.in, data/mbdock/minitime.in,
+	  data/mbdock/minivol.in, data/mbdock/miniwave.in,
+	  data/mbdock/remove.xpm, data/mbdock/stop.xpm, debian/changelog,
+	  doc/Makefile.am, dock/client.c, dock/dock.c, dock/dock.h,
+	  dock/libmbmenu.c, dock/libmbmenu.h, dock/msg.c, dock/msg.h,
+	  src/mbtheme.c: more dock improvements. Minor bug fixes. message
+	  bubbles now AA
+
+2002-07-02 01:37  mallum
+
+	* data/mbdock/Makefile.am, data/mbdock/Makefile.in,
+	  data/mbdock/add.xpm, data/mbdock/down.xpm,
+	  data/mbdock/finddockapps.sh, data/mbdock/remove.xpm,
+	  data/mbdock/stop.xpm, dock/dock.c, dock/dock.h, dock/libmbmenu.c,
+	  packaging/ipkg/Makefile.am, packaging/ipkg/mbstart,
+	  packaging/ipkg/startMB, src/toolbar_client.c, src/win_util.c,
+	  src/wm.c, util/Makefile.am, util/mbstart.in: lots of minor bug
+	  fixes to layout. icons added for dock menu
+
+2002-07-01 18:22  mallum
+
+	* configure.ac, data/Makefile.am, data/mbdock/Makefile.am,
+	  data/mbdock/Makefile.in, data/mbdock/finddockapps.sh,
+	  data/mbdock/miniapm.in, data/mbdock/minisys.in,
+	  data/mbdock/minitime.in, data/mbdock/minivol.in,
+	  data/mbdock/miniwave.in, data/themes/akwa/theme.xml.in,
+	  data/themes/depno/theme.xml, data/themes/depno/theme.xml.in,
+	  data/themes/keramik/theme.xml, data/themes/keramik/theme.xml.in,
+	  dock/Makefile.am, dock/dock.c, dock/msg.c,
+	  packaging/ipkg/postinst, packaging/ipkg/postrm, src/ewmh.c,
+	  src/main_client.c, src/mbtheme.c, src/wm.c, util/Makefile.am,
+	  util/mbcontrol.c, util/mbstart.in, util/minitime.c,
+	  util/monolaunch.c: numerous minor bug fixes. Dock menu greatly
+	  improved. now 0.3pre4
+
+2002-06-29 17:46  mallum
+
+	* dock/client.c, dock/dock.c, dock/dock.h, dock/libmbmenu.c,
+	  dock/libmbmenu.h, src/mbtheme.c, util/miniapm.c: dock menu now
+	  allows apps to be removed
+
+2002-06-28 18:32  mallum
+
+	* dock/dock.c, dock/libmbmenu.c, dock/libmbmenu.h,
+	  src/base_client.c, src/dialog_client.c, src/mbtheme.c,
+	  src/structs.h, src/wm.c, util/miniapm.c, util/minisys.c,
+	  util/minitime.c, util/minivol.c, util/miniwave.c,
+	  util/monolaunch.c, util/oval_filled.xpm: minisys made square.
+	  dockapps now set name. 1x1 window min size bug fixed. Theme
+	  engine now does circles. libmbmenu made a little prettier
+
+2002-06-28 01:36  mallum
+
+	* data/themes/depno/theme.xml, data/themes/keramik/theme.xml,
+	  dock/Makefile.am, dock/dock.c, dock/libmbmenu.c,
+	  dock/libmbmenu.h, dock/msg.c, packaging/ipkg/Makefile.am,
+	  packaging/ipkg/menu, src/select_client.c, src/wm.c: minor bug
+	  visual fixes
+
+2002-06-27 16:08  mallum
+
+	* data/themes/akwa/theme.xml.in, data/themes/depno/theme.xml.in,
+	  data/themes/keramik/theme.xml, data/themes/keramik/theme.xml.in,
+	  dock/Makefile.am, dock/dock.c, dock/dock.h, dock/libmbmenu.c,
+	  dock/libmbmenu.h, packaging/ipkg/Makefile.am, src/mbtheme.c: xft
+	  support fixed in themes and dock. menu theme entries added
+
+2002-06-26 19:31  mallum
+
+	* configure.ac, dock/Makefile.am, dock/dock.c, dock/dock.h,
+	  dock/libmbmenu.c, dock/libmbmenu.h: added menu to dock
+
+2002-06-25 23:31  mallum
+
+	* data/themes/depno/theme.xml, data/themes/keramik/theme.xml,
+	  data/themes/keramik/theme.xml.in, dock/Makefile.am, dock/msg.c,
+	  src/mbtheme.c, src/structs.h, src/toolbar_client.c, src/wm.c:
+	  minor xft related bug fixes. mb now remembers last selected theme
+
+2002-06-25 19:18  mallum
+
+	* data/themes/akwa/dock.cfg: added missing dock.cfg file
+
+2002-06-25 18:55  mallum
+
+	* configure.ac, data/themes/akwa/Makefile.am,
+	  data/themes/depno/Makefile.am, src/base_client.c, src/ewmh.c,
+	  src/ewmh.h, src/mbtheme.c, src/misc.c, src/structs.h,
+	  util/minivol.c: xft backing bug fixed. _NET_WM_NAME hint
+	  implemented. standalone target added - though not yet working.
+	  minivol mouse handling improved
+
+2002-06-24 21:32  mallum
+
+	* configure.ac, data/themes/Makefile.am,
+	  data/themes/akwa/Makefile.am, data/themes/akwa/button.xpm,
+	  data/themes/akwa/dockbg.xpm, data/themes/akwa/left.xpm,
+	  data/themes/akwa/mid.xpm, data/themes/akwa/right.xpm,
+	  data/themes/akwa/theme.xml.in, data/themes/depno/Makefile.am,
+	  data/themes/depno/dock.cfg, dock/dock.c, dock/dock.h, dock/msg.c,
+	  src/base_client.c, src/client_common.c, src/dialog_client.c,
+	  src/dockbar_client.c, src/ewmh.c, src/main.c, src/mbtheme.c,
+	  src/mbtheme.h, src/misc.c, src/select_client.c,
+	  src/select_client.h, src/structs.h, src/win_util.c, src/wm.c,
+	  src/wm.h, src/xml.c, util/mbcontrol.c: warnings cleaned up. dock
+	  themeing integrated with matchbox ( reads same root prop ). xft
+	  support reintroduced. new akwa theme created
+
+2002-06-21 21:59  mallum
+
+	* dock/client.c, dock/dock.c, src/main_client.c, src/wm.c: fixes to
+	  select window
+
+2002-06-21 18:53  mallum
+
+	* dock/client.c, dock/dock.c, dock/dock.h, src/desktop_client.c,
+	  util/tray.c, util/tray.h: tray/dock code improved
+
+2002-06-21 12:15  mallum
+
+	* dock/msg.c, src/base_client.c, src/desktop_client.c,
+	  src/dialog_client.c, src/ewmh.c, src/ewmh.h, src/main_client.c,
+	  src/structs.h, src/wm.c, src/wm.h, util/mbcontrol.c: splash
+	  window type now supported. mbcontrol improved - added exit and
+	  desktop switches
+
+2002-06-20 18:56  mallum
+
+	* dock/dock.c, dock/dock.h, dock/msg.c, src/base_client.c,
+	  src/client_common.c, src/client_common.h, src/dialog_client.c,
+	  src/dialog_client.h, src/ewmh.c, src/ewmh.h, src/main_client.c,
+	  src/select_client.c, src/wm.c: Dock improvements - now
+	  configurable via cmd line. ewmh improved. bug fixes
+
+2002-06-19 23:24  mallum
+
+	* configure.ac, data/themes/depno/theme.xml,
+	  data/themes/depno/theme.xml.in, data/themes/keramik/theme.xml,
+	  dock/dock.c, src/main_client.c, src/mbtheme.c, src/wm.c,
+	  util/minisys.c, util/tray.c, util/tray.h: many bug fixes version
+	  now 0.3pre1
+
+2002-06-18 23:48  mallum
+
+	* configure.ac, data/themes/Makefile.am, data/themes/close.xpm,
+	  data/themes/default_theme_rc.in, data/themes/next.xpm,
+	  data/themes/prev.xpm, data/themes/select.xpm,
+	  data/themes/toolbar.xpm, data/themes/toolbar_close.xpm,
+	  data/themes/depno/Makefile.am, data/themes/depno/theme.xml,
+	  data/themes/depno/theme.xml.in, data/themes/keramik/Makefile.am,
+	  data/themes/keramik/button-close-active.xpm,
+	  data/themes/keramik/button-close-inactive.xpm,
+	  data/themes/keramik/button-menu-active.xpm,
+	  data/themes/keramik/button-menu-inactive.xpm,
+	  data/themes/keramik/theme.xml, data/themes/keramik/theme.xml.in,
+	  dock/dock.c, dock/dock.h, dock/msg.c, src/base_client.c,
+	  src/dockbar_client.c, src/main_client.c, src/mbtheme.c,
+	  src/select_client.c, src/structs.h, src/wm.c, src/xml.c,
+	  util/Makefile.am, util/miniapm.c, util/minisys.c: various small
+	  fixes to bugs discovered after first ipaq test
+
+2002-06-18 20:33  mallum
+
+	* src/: Makefile.am, client_common.c, client_common.h,
+	  dockbar_client.c, ewmh.c, ewmh.h, mbtheme.c, select_client.c,
+	  wm.c, wm.h, xml.c, xml.h: numberous improvements. 0.3pre0
+	  released
+
+2002-06-17 19:28  mallum
+
+	* src/: Makefile.am, client_common.h, desktop_client.h,
+	  dialog_client.c, dockbar_client.c, hash.c, hash.h, main_client.c,
+	  main_client.h, mbtheme.c, mbtheme.h, misc.c, rcfile.c, rcfile.h,
+	  select_client.c, structs.h, theme.c, theme.h, toolbar_client.c,
+	  win_util.c, win_util.h, wm.c, wm.h: new theme engine now fully
+	  plugged in. Old engine removed
+
+2002-06-15 00:49  mallum
+
+	* data/themes/keramik/: button-close-active.xpm,
+	  button-close-inactive.xpm, button-menu-active.xpm,
+	  button-menu-inactive.xpm, caption-active-small-center.xpm,
+	  caption-active-small-left.xpm, caption-active-small-right.xpm,
+	  deleteme.xpm, theme.xml, titlebar-active-center.xpm,
+	  titlebar-active-left.xpm, titlebar-active-right.xpm: Added
+	  keramic new style theme - taken from metacity
+
+2002-06-14 23:00  mallum
+
+	* dock/client.c, dock/dock.c, dock/dock.h, src/client_common.c,
+	  src/main_client.c, src/main_client.h, src/mbtheme.c,
+	  src/structs.h, src/wm.c: Windows, dock now collapse again.
+	  transparent buttons + defualts added to themeing. Other small
+	  fixes
+
+2002-06-14 01:52  mallum
+
+	* dock/Makefile.am, dock/client.c, dock/dock.c, dock/dock.h,
+	  dock/msg.c, dock/msg.h, src/base_client.c, src/client_common.c,
+	  src/main_client.c, src/mbtheme.c, src/mbtheme.h,
+	  src/select_client.c, src/wm.c, util/minitime.c: Theme engine now
+	  on main windows. Dock does bubbles and slider
+
+2002-06-12 18:37  mallum
+
+	* src/: client_common.c, client_common.h, dialog_client.c,
+	  main_client.c, mbtheme.c, mbtheme.h, structs.h, wm.c: more work
+	  on theme engine
+
+2002-06-11 23:28  mallum
+
+	* dock/client.c, src/client_common.c, src/client_common.h,
+	  src/dialog_client.c, src/mbtheme.c, src/mbtheme.h, src/structs.h,
+	  src/win_util.c: More work on theme engine
+
+2002-06-11 00:32  mallum
+
+	* dock/dock.c, dock/dock.h, dock/msg.c, src/base_client.c,
+	  src/dialog_client.c, src/dialog_client.h, src/ewmh.c, src/ewmh.h,
+	  src/mbtheme.c, src/mbtheme.h, src/structs.h, src/wm.c,
+	  util/minitime.c, util/tray.c: More improvements to dock and new
+	  theme engine
+
+2002-06-10 01:07  mallum
+
+	* dock/: msg.c, msg.h: Message source files added
+
+2002-06-10 01:06  mallum
+
+	* dock/Makefile.am, dock/dock.c, dock/dock.h, util/minitime.c,
+	  util/tray.c, util/tray.h: Initial messaging functionaility added
+	  to dock
+
+2002-06-08 01:32  mallum
+
+	* dock/client.c, dock/dock.c, src/base_client.c,
+	  src/dialog_client.c, src/dialog_client.h, src/mbtheme.c,
+	  src/mbtheme.h, src/structs.h, src/wm.c: small improvements to
+	  dock and themeing engine
+
+2002-06-05 21:32  mallum
+
+	* dock/dock.c, dock/dock.h, src/Makefile.am, src/dialog_client.c,
+	  src/dialog_client.h, src/mbtheme.c, src/mbtheme.h, src/structs.h,
+	  src/wm.c, src/wm.h, src/xml.c, src/xml.h: dock code improved. New
+	  themeing code added, but not plugged in as yet
+
+2002-06-05 00:32  mallum
+
+	* dock/client.c, dock/client.h, dock/dock.c, dock/dock.h,
+	  util/minivol.c: dock improvements
+
+2002-06-04 20:15  mallum
+
+	* util/monolaunch.c: small arg passing bug in monolaunch fixed
+
+2002-05-29 01:18  mallum
+
+	* dock/client.c, dock/client.h, dock/dock.c, dock/dock.h,
+	  src/ewmh.c, util/Makefile.am, util/miniapm.c, util/minisys.c,
+	  util/minitime.c, util/minivol.c, util/miniwave.c,
+	  util/monolaunch.c, util/tray.c, util/tray.h: much improvement on
+	  dock sessioning
+
+2002-05-28 01:42  mallum
+
+	* dock/client.c, dock/client.h, dock/dock.c, dock/dock.h,
+	  src/ewmh.c, src/ewmh.h, util/miniwave.c: Work on new dock, now
+	  allows basic alignment
+
+2002-05-27 17:00  mallum
+
+	* data/Makefile.am, data/icon.xpm, src/Makefile.am,
+	  src/base_client.c, src/ewmh.c, src/ewmh.h, src/misc.c,
+	  src/select_client.c, src/structs.h, src/wm.c, src/wm.h: Alot more
+	  ewmh support added. More improving of icon code in select
+	  dropdown
+
+2002-05-26 18:28  mallum
+
+	* doc/manual.sgml, src/Makefile.am, src/base_client.c,
+	  src/client_common.c, src/dockbar_client.c, src/dockbar_client.h,
+	  src/main_client.c, src/main_client.h, src/misc.c, src/misc.h,
+	  src/select_client.c, src/structs.h, src/wm.c, src/wm.h,
+	  util/minisys.c: improved new dock handling ( still not perfect ).
+	  Added basic fullscreen handling. began work on adding icons to
+	  select window
+
+2002-05-23 23:44  mallum
+
+	* doc/Makefile.am, dock/dock.c, dock/dock.h, src/dockbar_client.c,
+	  src/hash.h, src/wm.c, util/miniapm.c, util/tray.c, util/tray.h:
+	  matchbox builtin dock removed. improvements to seperate system
+	  tray dock
+
+2002-05-19 01:30  mallum
+
+	* doc/: docbook.dsl, style.css: added css stylesheet to html docs
+
+2002-05-10 18:07  mallum
+
+	* dock/: client.c, client.h, dock.c, dock.h: more work on dock
+
+2002-05-09 22:22  mallum
+
+	* Makefile.am, configure.ac, dock/Makefile.am, dock/client.c,
+	  dock/client.h, dock/dock.c, dock/dock.h, src/structs.h,
+	  util/Makefile.am, util/miniwave.c, util/monolaunch.c,
+	  util/tray.c, util/tray.h: added beginnings of new dock and xembed
+	  tray code
+
+2002-05-03 17:31  mallum
+
+	* configure.ac, src/Makefile.am, src/desktop_client.c,
+	  src/desktop_client.h, src/structs.h, src/wm.c, src/wm.h,
+	  util/monolaunch.c: added support for _NET_WM_TYPE_DESKTOP
+
+2002-04-30 13:02  mallum
+
+	* src/dialog_client.c, src/theme.c, util/minivol.c: focus problem
+	  with root dialogs fixed. minivol now aligns right, attempt at fix
+	  for tinyX running mb at 8bit
+
+2002-04-29 16:49  mallum
+
+	* debian/changelog, debian/files, util/Makefile.am,
+	  util/minitime.c: debian updates
+
+2002-04-26 16:53  mallum
+
+	* util/: miniapm.c, miniwave.c: fixes to xpm colors on mini apps
+
+2002-04-26 11:26  mallum
+
+	* util/minitime.c: minitime xpm 8bit fix
+
+2002-04-26 01:25  mallum
+
+	* configure.ac, src/main_client.c, src/misc.c, src/misc.h,
+	  src/structs.h, src/toolbar_client.c, src/wm.c, util/minivol.c:
+	  rolled back to old title painting code, changed dbg to define
+
+2002-04-25 13:33  mallum
+
+	* src/theme.c: anothere attempt at a fix for xpms and 8bit displays
+
+2002-04-25 12:38  mallum
+
+	* src/Makefile.am, src/theme.c, util/Makefile.am,
+	  util/monolaunch.c: attempt at fix so xpms load ok on multiple
+	  depths. Small change to add X_CFLAGS to Makefile.ams
+
+2002-04-22 18:35  mallum
+
+	* src/main_client.c, src/wm.c, util/minivol.c, util/monolaunch.c:
+	  fixes to minivol ( now shows if dock is at the top of the display
+	  ), fix to monolauch segfault when a open window is closed
+
+2002-04-14 01:37  mallum
+
+	* configure.ac, data/Makefile.am, data/themes/Makefile.am,
+	  doc/manual.sgml, src/base_client.c, src/main_client.c,
+	  src/theme.c, src/wm.c, util/minivol.c: doc updates, more window
+	  background pixmap experiments, cmd line options now overide
+	  resource settings, minor  bug fixes
+
+2002-04-11 21:24  mallum
+
+	* configure.ac, src/base_client.c, src/dialog_client.c,
+	  src/main_client.c, src/structs.h, src/wm.c, util/Makefile.am,
+	  util/miniapm.c, util/miniwave.c, util/miniwave.xpm: miniwave now
+	  written, miniapm now correctly displays ac power, evil segfualt
+	  bug with gaim fixed, more experiments with window backgrounds
+
+2002-04-10 13:20  mallum
+
+	* TODO, configure.ac, src/base_client.c, src/dockbar_client.c,
+	  src/docked_client.c, src/main_client.c, src/select_client.c,
+	  src/structs.h, src/toolbar_client.c, src/wm.c, util/minisys.c:
+	  docked clients now resized if to high for dock, dialogs allowed
+	  to resize, more itelligent dialog handling with window_groups,
+	  experimental window backgrounds now used to reduce flicker
+
+2002-04-09 21:39  mallum
+
+	* src/main_client.c, src/wm.c, util/monolaunch.c: storm related
+	  fixes and tidying of monolaunch
+
+2002-04-09 13:12  mallum
+
+	* TODO, debian/changelog, debian/copyright, debian/rules,
+	  src/main_client.c, src/structs.h, src/toolbar_client.c, src/wm.c:
+	  title bars now collapseable via a double click, toolbar detaching
+	  removed, debian build stuff synced with prh
+
+2002-04-08 22:11  mallum
+
+	* TODO, src/main_client.c, src/select_client.c, src/wm.c,
+	  util/miniapm.c: minor fixes to dropdown menu
+
+2002-04-08 17:27  mallum
+
+	* util/: Makefile.am, mbcontrol.c, miniapm.c, minisys.c,
+	  oval_filled.xpm: miniapm fixed, minisys improvements
+
+2002-04-08 10:08  mallum
+
+	* TODO, util/Makefile.am, util/battery.xpm, util/miniapm.c,
+	  util/minivol.c: added Xresource settings to minivol, new battery
+	  xpm for miniapm
+
+2002-04-07 15:52  mallum
+
+	* TODO, configure.ac, src/client_common.c, src/dialog_client.c,
+	  src/docked_client.c, src/misc.c, src/wm.c, util/Makefile.am,
+	  util/mbcontrol.c, util/minisys.c: transients for root now allowed
+
+2002-04-07 15:44  mallum
+
+	* src/base_client.c: transients for root now allowed
+
+2002-04-03 18:03  mallum
+
+	* src/docked_client.c, src/wm.c, util/monolaunch.c: new volume
+	  dockapp, monoluanch made so it dont need a window name, minor wm
+	  fixes - xterms now lauch quickly
+
+2002-04-01 02:35  mallum
+
+	* src/docked_client.c, util/Makefile.am, util/minivol.c,
+	  util/minivolume.xpm: added minivol - a volume dock app, minor
+	  fixes to dock
+
+2002-03-28 18:39  mallum
+
+	* src/toolbar_client.c: syncing...
+
+2002-03-20 00:25  mallum
+
+	* src/: client_common.c, dialog_client.c, docked_client.c, wm.c:
+	  played with window morphing and configureRequests - no luck :(
+
+2002-03-19 18:04  mallum
+
+	* configure.ac, src/docked_client.c, src/wm.c: gtk menu fixed
+
+2002-03-19 14:59  mallum
+
+	* src/dockbar_client.c, src/docked_client.c, src/docked_client.h,
+	  src/win_util.c, src/wm.c, src/wm.h, util/Makefile.am,
+	  util/minisys.c, util/minitime.c, util/minitimestrip.xpm,
+	  util/monolaunch.c: Improved dock layout, dock apps can now align
+	  to the right via _MB_DOCK_ALIGN atom .. added this ability to
+	  miniapps via a -r switch
+
+2002-03-19 03:03  mallum
+
+	* util/: miniwave, miniwave.c: added beginning of miniwave
+
+2002-03-19 03:01  mallum
+
+	* doc/Makefile.am, doc/manual.sgml, doc/matchbox.1.in,
+	  packaging/ipkg/Makefile.am, src/client_common.c,
+	  src/detached_client.c, src/detached_client.h, src/main.c,
+	  src/main_client.c, src/main_client.h, src/theme.c,
+	  src/toolbar_client.c, src/win_util.c, src/wm.c, src/wm.h,
+	  util/minitime.c, util/miniwave: fixed 'on the fly theme changing
+	  - wm now restarts itself. started work on detatchable toolbars,
+	  rewrote minitime
+
+2002-03-13 01:25  mallum
+
+	* doc/manual.sgml: added sgml manual
+
+2002-03-13 01:24  mallum
+
+	* ChangeLog, Makefile.am, README: more doc updates
+
+2002-03-13 00:20  mallum
+
+	* Makefile.am, README, doc/Makefile.am, src/dockbar_client.c,
+	  src/main_client.c, src/win_util.c, src/wm.c, util/minisys.c: doc
+	  changes, final fixes for 0.1.8 release
+
+2002-03-12 00:01  mallum
+
+	* src/main_client.c, src/theme.c, src/toolbar_client.c, src/wm.c,
+	  util/minisys.c: more improvements to layout
+
+2002-03-11 20:01  mallum
+
+	* util/minisys.c: small fixes to minisys
+
+2002-03-11 19:53  mallum
+
+	* src/: main_client.c, toolbar_client.c, wm.c: Finally fixed the
+	  bug that nearly maybe me want to stamp on my laptop and smash it
+	  into tiny pieces, then give up computers for ever and rear goats.
+	  - win borders line up better
+
+2002-03-10 12:06  mallum
+
+	* util/minisys.c: More inprovements to minisys
+
+2002-03-10 01:01  mallum
+
+	* util/: minisys.c, monolaunch.c: exec bug in monolauch fixed, more
+	  work on minisys
+
+2002-03-09 01:57  mallum
+
+	* src/dockbar_client.c, src/theme.c, util/Makefile.am,
+	  util/minisys.c: added minisys dock app
+
+2002-03-08 01:17  mallum
+
+	* packaging/ipkg/Makefile.am, src/base_client.c,
+	  src/dialog_client.c, src/main_client.c, src/select_client.c,
+	  src/structs.h, src/theme.c, src/win_util.c, src/win_util.h,
+	  src/wm.c: fixs to single window, too long window names handled, a
+	  little code tidying
+
+2002-03-07 14:32  mallum
+
+	* configure.ac, packaging/ipkg/Makefile.am, src/main_client.c,
+	  src/structs.h, src/wm.c: more build changes
+
+2002-03-06 18:21  mallum
+
+	* debian/control, src/main_client.c, src/main_client.h,
+	  src/structs.h, src/win_util.c, src/win_util.h, src/wm.c,
+	  src/wm.h: added exp atoms for xstroke, build-dep added to debian
+	  control
+
+2002-03-06 15:58  mallum
+
+	* configure.ac, util/Makefile.am: Makefile hacks
+
+2002-03-05 16:35  mallum
+
+	* Makefile.am, configure.ac, data/Makefile.am, data/close.xpm,
+	  data/default_theme_rc.in, data/next.xpm, data/prev.xpm,
+	  data/select.xpm, data/toolbar.xpm, data/toolbar_close.xpm,
+	  data/themes/Makefile.am, data/themes/close.xpm,
+	  data/themes/default_theme_rc.in, data/themes/next.xpm,
+	  data/themes/prev.xpm, data/themes/select.xpm,
+	  data/themes/toolbar.xpm, data/themes/toolbar_close.xpm,
+	  debian/changelog, debian/conffiles, debian/control,
+	  debian/copyright, debian/dirs, debian/docs, debian/files,
+	  debian/rules, doc/Makefile.am: added debian build scripts
+
+2002-03-05 00:32  mallum
+
+	* ChangeLog, Makefile.am, README, TODO, configure.ac,
+	  doc/Makefile.am, doc/matchbox.1.in, src/base_client.c,
+	  src/dialog_client.c, src/dialog_client.h, src/main_client.c,
+	  src/structs.h, src/theme.c, src/win_util.c, src/win_util.h,
+	  src/wm.c: work on single window nav and improved dialog handling
+	  - cleaner drags
+
+2002-02-27 15:16  mallum
+
+	* ChangeLog, Makefile.am, TODO: updated TODO
+
+2002-02-27 15:10  mallum
+
+	* configure.ac, src/base_client.c, src/base_client.h,
+	  src/client_common.c, src/client_common.h, src/docked_client.c,
+	  src/wm.c: added basic support for windows changing type
+
+2002-02-27 00:11  mallum
+
+	* Makefile.am, README, configure.ac, data/Makefile.am,
+	  data/defaults.in: readme written
+
+2002-02-26 09:11  mallum
+
+	* configure.ac, src/Makefile.am, src/base_client.c,
+	  src/dockbar_client.c, src/docked_client.c, src/main.c,
+	  src/main_client.c, src/structs.h, src/theme.c, src/wm.c,
+	  src/wm.h, util/Makefile.am: many bug fixes, beggining of xrm db
+	  usage
+
+2002-02-23 11:45  mallum
+
+	* src/: docked_client.c, main_client.c, wm.c: drop down menu now
+	  'cencels' better. dock apps kept after a close
+
+2002-02-22 18:26  mallum
+
+	* src/base_client.c, src/dialog_client.c, src/dialog_client.h,
+	  src/main.c, src/main_client.c, src/misc.c, src/select_client.c,
+	  src/structs.h, src/toolbar_client.c, src/wm.c, util/monolaunch.c:
+	  suttle fixes to transient window handling, select menu and
+	  monolaunch. Most XErrors now removed
+
+2002-02-21 23:55  mallum
+
+	* README, data/default_theme_rc.in, src/theme.c, src/theme.h,
+	  util/miniapm.c: made miniapm actually look like a battery
+
+2002-02-21 13:36  mallum
+
+	* util/monolaunch.c: monolaunch fixed, now takes -k switch, to kill
+	  an app rather than iconize it
+
+2002-02-21 11:19  mallum
+
+	* TODO, configure.ac, src/base_client.c, src/client_common.c,
+	  src/dialog_client.c, src/dockbar_client.c, src/docked_client.c,
+	  src/main_client.c, src/structs.h, src/theme.c,
+	  src/toolbar_client.c, src/wm.c, util/monolaunch.c: buttons now
+	  provide feedback, keyboard control improved, fixes to xft ( to
+	  test ), monolauch improved slightly
+
+2002-02-19 16:02  mallum
+
+	* src/dockbar_client.c, src/hash.c, src/hash.h, src/main_client.c,
+	  src/rcfile.c, src/rcfile.h, src/structs.h, src/theme.c,
+	  src/theme.h, src/toolbar_client.c, src/wm.c, src/wm.h,
+	  util/mbcontrol.c: keyboard shortcuts added, basic theme changing
+	  on the fly - see mbcontrol.c
+
+2002-02-18 23:20  mallum
+
+	* src/: client_common.c, wm.c: gtk hide() problems hopefully fixed
+
+2002-02-18 22:09  mallum
+
+	* src/: client_common.c, main_client.c, select_client.c, structs.h,
+	  wm.c: possible fix to gtk hide() problems
+
+2002-02-17 10:47  mallum
+
+	* TODO, configure.ac, data/Makefile.am, data/default_theme_rc.in,
+	  data/select.xpm, src/main_client.c, src/structs.h, src/theme.c,
+	  src/theme.h, src/wm.c: added icon to show drop down exists, title
+	  bar names now change, TODO updated
+
+2002-02-15 17:10  mallum
+
+	* src/base_client.c, src/dockbar_client.c, src/docked_client.c,
+	  src/main_client.c, src/select_client.c, src/structs.h,
+	  src/theme.c, src/toolbar_client.c, src/wm.c, src/wm.h,
+	  util/Makefile.am, util/mbcontrol.c, util/miniapm.c,
+	  util/minitime.c: warnings removal, small non-xft font fixes,
+	  beginnings of mbcontrol app
+
+2002-02-14 00:17  mallum
+
+	* TODO, src/dialog_client.c, src/main_client.c, src/wm.c, src/wm.h:
+	  TODO updates, xft dialog bug squashed, beginnings of key grabbing
+
+2002-02-13 17:13  mallum
+
+	* src/main_client.c: window select menu now only drops down when
+	  title text is clicked on
+
+2002-02-13 17:04  mallum
+
+	* src/: base_client.c, client_common.c, dialog_client.c,
+	  dialog_client.h, dockbar_client.h, docked_client.h, main.c,
+	  main_client.c, main_client.h, misc.c, misc.h, select_client.c,
+	  select_client.h, structs.h, theme.c, theme.h, toolbar_client.c,
+	  toolbar_client.h, win_util.h, wm.c, xtools.c: xft fonts now
+	  working - just
+
+2002-02-12 17:08  mallum
+
+	* TODO: updated TODO
+
+2002-02-11 00:18  mallum
+
+	* Makefile.am, packaging/Makefile.am, packaging/ipkg/Makefile.am,
+	  packaging/ipkg/startMB, src/Makefile.am: fixes and improvements
+	  to auto(make|conf) scripts
+
+2002-02-10 21:59  mallum
+
+	* packaging/ipkg/Makefile.am, packaging/ipkg/postinst,
+	  packaging/ipkg/postrm, src/main.c, src/wm.c, src/wm.h: ipkg build
+	  improvements, dock bugs squashed
+
+2002-02-10 15:20  mallum
+
+	* data/default_theme_rc.in, src/dialog_client.c,
+	  src/dockbar_client.c, src/docked_client.c, src/docked_client.h,
+	  src/main.c, src/main_client.c, src/misc.c, src/structs.h,
+	  src/theme.c, src/theme.h, src/wm.c: themes now more or less
+	  working
+
+2002-02-10 01:33  mallum
+
+	* Makefile.am, configure.ac, data/Makefile.am, data/close.xpm,
+	  data/default_theme_rc.in, data/next.xpm, data/prev.xpm,
+	  data/toolbar.xpm, data/toolbar_close.xpm, packaging/Makefile.am,
+	  packaging/ipkg/Makefile.am, packaging/ipkg/control.in,
+	  src/Makefile.am, src/base_client.c, src/dockbar_client.c,
+	  src/main_client.c, src/theme.c, src/wm.c: improved automake
+	  scripts, added v.basic ipkg target support, intial work on
+	  default theme bootstrapping
+
+2002-02-06 04:48  mallum
+
+	* src/: hash.h, rcfile.c, rcfile.h: added rc source files
+
+2002-02-06 04:48  mallum
+
+	* src/: Makefile.am, hash.c, structs.h, theme.c, theme.h: Added
+	  more to rcfile support
+
+2002-02-05 00:59  mallum
+
+	* src/hash.c: Added beginning of an rc file reader
+
+2002-01-30 19:33  mallum
+
+	* src/base_client.c: oops, tiny bug in nameing fixed
+
+2002-01-30 19:20  mallum
+
+	* src/base_client.c, util/monolaunch.c: fixed bug in monolaunch
+	  when bigger than 16x16 icon, matchbox now renames windows with
+	  the same name
+
+2002-01-29 21:26  mallum
+
+	* src/docked_client.c, util/monolaunch.c: more minor fixes to
+	  dockbar and monolaunch
+
+2002-01-29 21:12  mallum
+
+	* configure.ac, src/dialog_client.c, src/docked_client.c,
+	  util/monolaunch.c: font fixed on dialog client, xpms fixed on
+	  monolaunch, small changes to doced app layout
+
+2002-01-29 17:11  mallum
+
+	* src/dialog_client.c: fixed dialog_client to use new theme stuff
+
+2002-01-29 16:08  mallum
+
+	* util/: miniapm.c, minitime.c: minitime now works
+
+2002-01-29 00:03  mallum
+
+	* src/: theme.h, toolbar_client.c, wm.c: toolbar delete bug fixed,
+	  more breaking of miniapm
+
+2002-01-28 21:27  mallum
+
+	* src/img/: dot_close.xpm, dot_down.xpm, dot_next.xpm,
+	  dot_prev.xpm, dot_toolbar.xpm, toolbar.xpm, toolbar_close.xpm:
+	  old buttons removed
+
+2002-01-28 21:21  mallum
+
+	* src/: base_client.c, dockbar_client.c, main_client.c, structs.h,
+	  theme.c, theme.h, img/close.xpm, img/next.xpm, img/prev.xpm:
+	  backing memory leak plugged, news buttons
+
+2002-01-28 17:25  mallum
+
+	* src/: base_client.c, main_client.c, select_client.c, theme.c,
+	  theme.h, toolbar_client.c, wm.c: Small bug fixes, pixmaps should
+	  handle rotations now, moved toolbox_client over to use newer
+	  themeing code
+
+2002-01-25 15:31  cworth
+
+	* src/: base_client.c, wm.c: Added quick patch to make matchbox
+	  survive clients with no names
+
+2002-01-24 22:16  mallum
+
+	* src/: docked_client.c, main.c, main_client.c, wm.c: yet more
+	  attempts at damn rotaion survival
+
+2002-01-24 21:56  mallum
+
+	* src/: main_client.c, wm.c: more attempts at rotaion survival
+
+2002-01-24 21:15  mallum
+
+	* src/: main_client.c, theme.c, theme.h, toolbar_client.c, wm.c:
+	  minor tidying up, attempts at reducing flicker, rotation handling
+	  improved
+
+2002-01-24 19:48  cworth
+
+	* ChangeLog, src/dialog_client.c, src/main_client.c, src/theme.h,
+	  util/.cvsignore, util/miniapm.c, util/minitime.c: Eliminated
+	  several compiler warnings
+
+2002-01-24 17:23  mallum
+
+	* src/: structs.h, theme.c, theme.h: Pixmap loading tidy'd up
+
+2002-01-23 23:54  mallum
+
+	* src/: client_common.c, dockbar_client.c, toolbar_client.c, wm.c:
+	  Improved dockbar look, focus fix to client_want_focus, another
+	  attempt at surviving rotation
+
+2002-01-23 23:13  mallum
+
+	* src/: dockbar_client.c, main_client.c, toolbar_client.c: Minor
+	  bug fixes.  Focus now occuer after a map Toolbars should work
+	  when 'externally' iconised / mapped Made sure dockbar always get
+	  painted in whatever state
+
+2002-01-23 17:30  mallum
+
+	* src/wm.c, util/monolaunch.c: Crap fix for monolaunch not being
+	  able to raise windows
+
+2002-01-22 20:19  mallum
+
+	* ChangeLog, TODO, src/base_client.c, src/client_common.c,
+	  src/docked_client.c, src/main_client.c, src/structs.h,
+	  src/theme.c: added backing store to main_client title bar
+
+2002-01-22 17:23  mallum
+
+	* src/: base_client.c, base_client.h, client_common.c,
+	  client_common.h, dialog_client.c, dialog_client.h,
+	  dockbar_client.c, dockbar_client.h, docked_client.h,
+	  main_client.c, main_client.h, select_client.c, select_client.h,
+	  structs.h, theme.c, toolbar_client.c, toolbar_client.h, wm.c:
+	  Theme improvements - beveling + tiled pixmaps added
+
+2002-01-22 14:07  mallum
+
+	* src/theme.h: Added XPM_TILE definition
+
+2002-01-22 14:00  mallum
+
+	* src/structs.h: Added a tile pixmap attribute of Theme struct
+
+2002-01-22 13:54  mallum
+
+	* src/base_client.c: New clients now insert after main_client ptr
+	  rather than previous head_client
+
+2002-01-22 13:52  mallum
+
+	* src/wm.c: Fix to screen rotation handling
+
+2002-01-22 13:49  mallum
+
+	* src/select_client.c: Fixed window to unmap when destroyed
+
+2002-01-21 23:59  mallum
+
+	* TODO, src/base_client.c, src/dialog_client.c,
+	  src/dockbar_client.c, src/main_client.c, src/theme.c,
+	  src/theme.h, src/toolbar_client.c, src/win_util.h, src/wm.c: more
+	  work on borders. added Nils Patch, other minor bugs fixed
+
+2002-01-21 19:59  mallum
+
+	* src/: dockbar_client.c, main_client.c, theme.c, toolbar_client.c,
+	  wm.c: more work on borders, though still a few issues
+
+2002-01-21 17:13  mallum
+
+	* src/main_client.c, src/structs.h, src/theme.c, src/theme.h,
+	  util/miniapm.c: Initial work on cleaning up theme engine
+
+2002-01-21 11:26  mallum
+
+	* src/main_client.c: initial add of window border code
+
+2002-01-21 11:03  mallum
+
+	* src/: base_client.c, base_client.h, main_client.c, main_client.h,
+	  structs.h, theme.c: Readded base client
+
+2002-01-20 19:50  mallum
+
+	* TODO: checking TODO
+
+2002-01-20 10:40  mallum
+
+	* src/: dialog_client.c, main_client.c, select_client.c, structs.h,
+	  toolbar_client.c, win_util.c, win_util.h, wm.c, wm.h: more cruft
+	  removed, TODO file added, Alpha code to handle a rotation
+
+2002-01-20 01:12  mallum
+
+	* src/: client_common.c, client_common.h, main_client.c,
+	  toolbar_client.c, toolbar_client.h, wm.c: All clients now working
+	  - toolbar fixed
+
+2002-01-19 18:38  mallum
+
+	* src/: dialog_client.c, dockbar_client.c, docked_client.c,
+	  docked_client.h, main_client.c, structs.h, toolbar_client.c,
+	  toolbar_client.h, wm.c, wm.h: toolbar cleaned, though a little
+	  buggy
+
+2002-01-19 11:04  mallum
+
+	* src/: client_common.c, client_common.h, dialog_client.c,
+	  dialog_client.h, main_client.c, main_client.h, select_client.c,
+	  select_client.h, toolbar_client.c, toolbar_client.h, wm.c: All
+	  rejjiged apart from toolbar_client. Still some cruft to be
+	  removed + work on events
+
+2002-01-18 17:25  mallum
+
+	* Makefile.am, README, configure.ac, src/dockbar_client.c,
+	  src/dockbar_client.h, src/docked_client.c, src/docked_client.h,
+	  src/main_client.c, src/structs.h, src/wm.c, src/wm.h,
+	  util/Makefile.am, util/miniapm.c, util/minitime.c,
+	  util/monolaunch.c: work on docked clients
+
+2002-01-17 23:28  mallum
+
+	* src/: client_common.c, client_common.h, dockbar_client.c,
+	  dockbar_client.h, main_client.c, structs.h: dockbar client
+	  cleaned, a little
+
+2002-01-17 17:35  mallum
+
+	* src/: client_common.c, client_common.h, dockbar_client.c,
+	  dockbar_client.h, main.c, main_client.c, main_client.h,
+	  structs.h, wm.c, wm.h: main_client.c much improved
+
+2002-01-17 00:20  mallum
+
+	* src/: Makefile.am, client_common.c, dialog_client.c,
+	  dockbar_client.c, main_client.c, main_client.h, misc.c,
+	  select_client.c, structs.h, theme.c, theme.h, toolbar_client.c,
+	  wm.h: more tidying, base_client started, main_client tidy up
+	  start, applied Nils patches to remove warning fix a couple of
+	  bugs
+
+2002-01-16 14:00  mallum
+
+	* src/: Makefile.am, base_client.c, base_client.h, client_common.h,
+	  dialog_client.c, dialog_client.h, dockbar_client.c,
+	  dockbar_client.h, docked_client.c, docked_client.h,
+	  main_client.c, main_client.h, misc.h, select_client.c,
+	  select_client.h, theme.h, toolbar_client.c, toolbar_client.h,
+	  win_util.h, wm.c, wm.h: moved base_client.c ->main_client.c
+
+2002-01-15 00:28  mallum
+
+	* src/: client_common.c, client_common.h: added client_common src
+	  and header
+
+2002-01-15 00:27  mallum
+
+	* src/: Makefile.am, structs.h, wm.c, wm.h: began cleanup, warning
+	  now gone from wm.c, other changes cosmetic to code
+
+2002-01-13 23:15  mallum
+
+	* src/wm.c: small fix to catch docked client deaths
+
+2002-01-11 00:44  mallum
+
+	* README: some notes added to readme
+
+2002-01-10 21:49  mallum
+
+	* configure.ac, src/Makefile.am: added xft and debug switches to
+	  autoconf
+
+2002-01-08 22:22  cworth
+
+	* README, src/base_client.c, src/base_client.h,
+	  src/dialog_client.c, src/dialog_client.h, src/dockbar_client.c,
+	  src/dockbar_client.h, src/docked_client.c, src/docked_client.h,
+	  src/main.c, src/misc.c, src/misc.h, src/select_client.c,
+	  src/select_client.h, src/structs.h, src/testcn.c, src/theme.c,
+	  src/theme.h, src/toolbar_client.c, src/toolbar_client.h,
+	  src/win_util.c, src/win_util.h, src/wm.c, src/wm.h, src/xtools.c:
+	  Added GPL blurbs to all source files
+
+2002-01-08 20:59  cworth
+
+	* COPYING, ChangeLog: Added GPL COPYING file
+
+2002-01-08 19:37  cworth
+
+	* src/Makefile.am: Re-added the USE_XFT and DEBUG defines to
+	  Makefile.am. (These really need to be shifted to be controlled by
+	  configure).
+
+2002-01-08 19:28  cworth
+
+	* img/: close.xpm, dot_close.xpm, dot_down.xpm, dot_next.xpm,
+	  dot_prev.xpm, dot_toolbar.xpm, next.xpm, prev.xpm, tb_arrow.xpm:
+	  Removed Makefile as it is auto-generated
+
+2002-01-08 19:25  cworth
+
+	* src/img/: close.xpm, dot_close.xpm, dot_down.xpm, dot_next.xpm,
+	  dot_prev.xpm, dot_toolbar.xpm, next.xpm, prev.xpm, tb_arrow.xpm:
+	  Moved images to src/img
+
+2002-01-08 19:19  cworth
+
+	* .cvsignore, AUTHORS, ChangeLog, INSTALL, Makefile, Makefile.am,
+	  NEWS, README, autoconfigure.sh, base_client.c, base_client.h,
+	  configure.ac, dialog_client.c, dialog_client.h, dockbar_client.c,
+	  dockbar_client.h, docked_client.c, docked_client.h, main.c,
+	  misc.c, misc.h, select_client.c, select_client.h, structs.h,
+	  testcn.c, theme.c, theme.h, toolbar_client.c, toolbar_client.h,
+	  win_util.c, win_util.h, wm.c, wm.h, xtools.c, src/.cvsignore,
+	  src/Makefile.am, src/base_client.c, src/base_client.h,
+	  src/dialog_client.c, src/dialog_client.h, src/dockbar_client.c,
+	  src/dockbar_client.h, src/docked_client.c, src/docked_client.h,
+	  src/main.c, src/misc.c, src/misc.h, src/select_client.c,
+	  src/select_client.h, src/structs.h, src/testcn.c, src/theme.c,
+	  src/theme.h, src/toolbar_client.c, src/toolbar_client.h,
+	  src/win_util.c, src/win_util.h, src/wm.c, src/wm.h, src/xtools.c:
+	  Added autoconf support, moved all source down to src directory
+
+2002-01-08 16:49  cworth
+
+	* img/.xvpics/: close.xpm, prev.xpm, tb_arrow.xpm: Removed bogus
+	  .xvpics directory
+
+2002-01-08 16:47  cworth
+
+	* Makefile, base_client.c, base_client.h, dialog_client.c,
+	  dialog_client.h, dockbar_client.c, dockbar_client.h,
+	  docked_client.c, docked_client.h, main.c, misc.c, misc.h,
+	  select_client.c, select_client.h, structs.h, testcn.c, theme.c,
+	  theme.h, toolbar_client.c, toolbar_client.h, win_util.c,
+	  win_util.h, wm.c, wm.h, xtools.c, img/close.xpm,
+	  img/dot_close.xpm, img/dot_down.xpm, img/dot_next.xpm,
+	  img/dot_prev.xpm, img/dot_toolbar.xpm, img/next.xpm,
+	  img/prev.xpm, img/tb_arrow.xpm, img/.xvpics/close.xpm,
+	  img/.xvpics/prev.xpm, img/.xvpics/tb_arrow.xpm: Initial import of
+	  matchbox from Matthew Allum
+
+2002-01-08 16:47  cworth
+
+	* Makefile, base_client.c, base_client.h, dialog_client.c,
+	  dialog_client.h, dockbar_client.c, dockbar_client.h,
+	  docked_client.c, docked_client.h, main.c, misc.c, misc.h,
+	  select_client.c, select_client.h, structs.h, testcn.c, theme.c,
+	  theme.h, toolbar_client.c, toolbar_client.h, win_util.c,
+	  win_util.h, wm.c, wm.h, xtools.c, img/close.xpm,
+	  img/dot_close.xpm, img/dot_down.xpm, img/dot_next.xpm,
+	  img/dot_prev.xpm, img/dot_toolbar.xpm, img/next.xpm,
+	  img/prev.xpm, img/tb_arrow.xpm, img/.xvpics/close.xpm,
+	  img/.xvpics/prev.xpm, img/.xvpics/tb_arrow.xpm: Initial revision
+

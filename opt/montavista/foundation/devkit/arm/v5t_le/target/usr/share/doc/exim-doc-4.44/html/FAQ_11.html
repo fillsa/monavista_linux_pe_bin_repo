@@ -1,0 +1,84 @@
+<html>
+<head>
+<title>The Exim FAQ Section 11</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_10.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_12.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC290">11. MAJORDOMO</a></h2>
+<p>
+<a name="TOC291" href="FAQ.html#TOC291">Q1101:</a>&nbsp;&nbsp;How do I set up Majordomo to work with Exim?
+</p>
+<p>
+<font color="#00BB00">A1101:</font>&nbsp;&nbsp;Users have found several ways of setting up Exim for use with Majordomo.
+One way has been documented at
+<a href="http://www.averillpark.net/exim/majordomo.html">http://www.averillpark.net/exim/majordomo.html</a>.
+</p>
+<p>
+Somewhere in the Majordomo docs or FAQ it mentions using batchmail or
+other additional programs to improve the performance of large lists.
+They are not needed with Exim, and their use can actually make things
+worse. However, it's a good idea to set <tt>remote_max_parallel</tt> to a value
+greater than 1 in the Exim configuration.
+</p>
+<p>
+<a name="TOC292" href="FAQ.html#TOC292">Q1102:</a>&nbsp;&nbsp;I have set <i>$mailer</i> in <i>majordomo.cf</i>, but it still isn't setting the
+sender correctly in the messages it sends.
+</p>
+<p>
+<font color="#00BB00">A1102:</font>&nbsp;&nbsp;Make sure you have got the quoting correct in the <i>$mailer</i> setting. For
+example,
+</p>
+<pre>
+   $mailer = "$sendmail_command -oi -oee -f$sender\@lists.mydomain.de";</pre>
+<p>
+is not correct. It needs three backslashes, not one, and the $ at the
+start of <i>$sender</i> has to be escaped with a backslash.
+</p>
+<p>
+<a name="TOC293" href="FAQ.html#TOC293">Q1103:</a>&nbsp;&nbsp;I'm trying to set up majordomo, but I'm getting a wrong mode error
+when I try to send it mail.
+</p>
+<p>
+<font color="#00BB00">A1103:</font>&nbsp;&nbsp;Check the mode of <i>/var/lib/majordomo/lists/lists.aliases</i> and compare it
+with the setting of the <tt>modemask</tt> option in the Majordomo aliases
+router. This option specifies bits which must not be set for the alias
+file, and it defaults to 022.
+</p>
+<p>
+<a name="TOC294" href="FAQ.html#TOC294">Q1104:</a>&nbsp;&nbsp;I'm getting return code 9 from <i>/home/majordomo/majordomo-1.94.4/wrapper</i>
+when it is passed a message from Exim.
+</p>
+<p>
+<font color="#00BB00">A1104:</font>&nbsp;&nbsp;A problem like this turned out to be the Perl version that came with
+RedHat 5.2. Rebuilding Perl 5.005x solved it.
+</p>
+<p>
+<a name="TOC295" href="FAQ.html#TOC295">Q1105:</a>&nbsp;&nbsp;Exim is complaining about an invalid command line when Majordomo tries
+to send it a message for delivery.
+</p>
+<p>
+<font color="#00BB00">A1105:</font>&nbsp;&nbsp;Take a look at your <i>majordomo.cf</i> file,  It should have something that
+looks like
+</p>
+<pre>
+   $sendmail_command = "/usr/lib/sendmail";</pre>
+<p>
+and another line like
+</p>
+<pre>
+   $mailer = "$sendmail_command -oi -oee -f\$sender";</pre>
+<p>
+If you have modified <i>resend</i> (one of the majordomo programs) to use
+<i>$sendmail_command</i> instead of <i>$mailer</i> you will be calling Exim with no
+command line arguments.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_10.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_12.html">Next</a>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<html>
+<head>
+<title>The Exim FAQ Section 5</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_4.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_6.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC179">5. FILTERING</a></h2>
+<p>
+<a name="TOC180" href="FAQ.html#TOC180">Q0501:</a>&nbsp;&nbsp;My filter isn't working. How can I test it?
+</p>
+<p>
+<font color="#00BB00">A0501:</font>&nbsp;&nbsp;Use the <b>-bf</b> option (<b>-bF</b> for a system filter) to test the basic operation
+of your filter. You can request debugging information for filtering only
+by adding <tt>-d-all+filter</tt> to the command.
+</p>
+<p>
+<a name="TOC181" href="FAQ.html#TOC181">Q0502:</a>&nbsp;&nbsp;What I really need is the ability to obtain the result of a pipe
+command so that I can filter externally and redirect internally. Is
+this possible?
+</p>
+<p>
+<font color="#00BB00">A0502:</font>&nbsp;&nbsp;The result of a pipe command is not available to a filter, because Exim
+does not run any actual deliveries while filtering. It just sets up
+deliveries at this time. They all actually happen later. If you want to
+run pipes and examine their results, you need to set up a single
+delivery to a delivery agent such as <i>procmail</i> which provides this kind
+of facility.
+</p>
+<p>
+An possible alternative is to use the <tt>${run</tt> expansion item to run an
+external command while filtering. In this case, you can make use of some
+of the results of the command.
+</p>
+<p>
+<a name="TOC182" href="FAQ.html#TOC182">Q0503:</a>&nbsp;&nbsp;I received a message with a <i>Subject:</i> line that contained a non-printing
+character (a carriage return). This messed up my filter file. Is there a
+way to get round it?
+</p>
+<p>
+<font color="#00BB00">A0503:</font>&nbsp;&nbsp;Instead of <tt>$h_subject:</tt> use <tt>${escape:$h_subject:}</tt>
+</p>
+<p>
+<a name="TOC183" href="FAQ.html#TOC183">Q0504:</a>&nbsp;&nbsp;I want to search for <tt>$</tt> in the subject line, but I can't seem to get
+the syntax.
+</p>
+<p>
+<font color="#00BB00">A0504:</font>&nbsp;&nbsp;Try one of these:
+</p>
+<pre>
+   if $h_subject: contains \$ then ...
+   if $h_subject: contains "\\$" then ...</pre>
+<p>
+<a name="TOC184" href="FAQ.html#TOC184">Q0505:</a>&nbsp;&nbsp;My problem is that Exim replaces <i>$local_part</i> with an empty string in the
+system filtering. What's wrong or what did I miss?
+</p>
+<p>
+<font color="#00BB00">A0505:</font>&nbsp;&nbsp;A message may have many recipients. The system filter is run just once
+at the start of a delivery attempt. Consequently, it does not make sense
+to set <i>$local_part</i>. Which recipient should it be set to? However, you
+can access all the recipients from a system filter via the variable
+called <i>$recipients</i>.
+</p>
+<p>
+<a name="TOC185" href="FAQ.html#TOC185">Q0506:</a>&nbsp;&nbsp;Using <i>$recipients</i> in a system filter gives me another problem: how can
+I do a string lookup if <i>$recipients</i> is a list of addresses?
+</p>
+<p>
+<font color="#00BB00">A0506:</font>&nbsp;&nbsp;Check out the section of the filter specification called <i>Testing a list of
+addresses</i>. If that doesn't help, you may have to resort to calling an
+embedded Perl interpreter - but that is expensive.
+</p>
+<p>
+<a name="TOC186" href="FAQ.html#TOC186">Q0507:</a>&nbsp;&nbsp;What are the main differences between using an Exim filter and using
+<i>procmail</i>?
+</p>
+<p>
+<font color="#00BB00">A0507:</font>&nbsp;&nbsp;Exim filters and <i>procmail</i> provide different facilities. Exim filters run
+at routing time, before any deliveries are done. A filter is like a
+&#147;<i>.forward</i> file with conditions&#148;. One of the benefits is de-duplication.
+Another is that if you forward, you are forwarding the original message.
+</p>
+<p>
+However, this does mean that pipes etc. are not run at filtering time,
+nor can you change the headers, because the message may have other
+recipients and Exim keeps only a single set of headers.
+</p>
+<p>
+<i>procmail</i> runs at delivery time. This is for one recipient only, and so
+it can change headers, run pipes and check the results, etc. However, if
+it wants to forward, it has to create a new message containing a copy
+of the original message.
+</p>
+<p>
+It's your choice as to which of these you use. You can of course use
+both.
+</p>
+<p>
+<a name="TOC187" href="FAQ.html#TOC187">Q0508:</a>&nbsp;&nbsp;How can I allow the use of relative paths in users' filter files when
+the directories concerned are not available from the password data?
+</p>
+<p>
+<font color="#00BB00">A0508:</font>&nbsp;&nbsp;You need to be running Exim 4.11 or later. You can then specify a value
+for <i>$home</i> by setting the router_home_directory option on the
+<b>redirect</b> router.
+</p>
+<p>
+For earlier releases, there is no way to specify the value of <i>$home</i>
+for a <b>redirect</b> router; it either comes from the password data as a
+result of <tt>check_local_user</tt>, or is unset.
+</p>
+<p>
+<a name="TOC188" href="FAQ.html#TOC188">Q0509:</a>&nbsp;&nbsp;How can I set up a filter file to detect and block virus attachments?
+</p>
+<p>
+<font color="#00BB00">A0509:</font>&nbsp;&nbsp;Exim's filter facilities aren't powerful enough to do much more than
+very crude testing. Most people that want virus checking are nowadays
+using one of the separate scanning programs such as <i>exiscan</i> (see
+<a href="http://duncanthrax.net/exiscan/">http://duncanthrax.net/exiscan/</a>). There is some further information
+about scanning with Exim via <a href="http://www.timj.co.uk/linux/exim.php">http://www.timj.co.uk/linux/exim.php</a>.
+</p>
+<p>
+<a name="TOC189" href="FAQ.html#TOC189">Q0510:</a>&nbsp;&nbsp;Is it possible to write code for scanning messages in Python?
+</p>
+<p>
+<font color="#00BB00">A0510:</font>&nbsp;&nbsp;<i>elspy</i> is a layer of glue code that enables you to write Python code
+to scan email messages at SMTP time. <i>elspy</i> also includes a small
+Python library with common mail-scanning tools, including an interface
+to SpamAssassin and a simple but effective virus detector. You can
+optain <i>elspy</i> from <a href="http://elspy.sourceforge.net/">http://elspy.sourceforge.net/</a>.
+</p>
+<p>
+<a name="TOC190" href="FAQ.html#TOC190">Q0511:</a>&nbsp;&nbsp;Whenever my system filter uses a <tt>mail</tt> command to send a message, I get
+the error <i>User 0 set for address_reply transport is on the never_users
+list</i>. What does this mean?
+</p>
+<p>
+<font color="#00BB00">A0511:</font>&nbsp;&nbsp;The system filter runs as <i>root</i> in Exim 4, unless you set
+<tt>system_filter_user</tt> to specify otherwise. When you set up a delivery
+direct from a system filter (an autoreply is a special kind of
+&#147;delivery&#148;) the transport runs as the same user, unless it has a
+<tt>user</tt> setting of its own. Normally, deliveries are not allowed to run
+as <i>root</i> as a security precaution; this is implemented by the
+<tt>never_users</tt> option.
+</p>
+<p>
+The easiest solution is to add this to your configuration:
+</p>
+<pre>
+   system_filter_user = exim</pre>
+<p>
+The system filter then runs as <i>exim</i> instead of <i>root</i>.
+Alternatively, you can arrange for autoreplies from the system filter to
+use a special transport of their own, and set the <tt>user</tt> option on that
+transport.
+</p>
+<p>
+<a name="TOC191" href="FAQ.html#TOC191">Q0512:</a>&nbsp;&nbsp;I'm trying to reference the <i>Envelope-To:</i> header in my filter, but
+<i>$h_envelope-to:</i> is always empty.
+</p>
+<p>
+<font color="#00BB00">A0512:</font>&nbsp;&nbsp;<i>Envelope-To:</i> is added at delivery time, by the transport. Therefore,
+the header doesn't exist at filter time. In a user filter, the values
+you probably want are in <i>$original_local_part</i> and
+<i>$original_domain</i>. In a system filter, the complete list of all
+envelope recipients is in <i>$recipients</i>.
+</p>
+<p>
+<a name="TOC192" href="FAQ.html#TOC192">Q0513:</a>&nbsp;&nbsp;I want my system filter to freeze all mails greater than 500K in size,
+but to exclude those to a specific domain. However, I don't seem to be
+able to use <i>$domain</i> in a system filter.
+</p>
+<p>
+<font color="#00BB00">A0513:</font>&nbsp;&nbsp;You cannot do this in a system filter, because a single message may have
+multiple recipients, some in the special domain, and some not. That is
+also the reason why <i>$domain</i> is not set in a system filter.
+</p>
+<p>
+If you want to take actions on a per-recipient basis, you have to do it
+in a router. However, freezing is not appropriate, because freezing
+stops all deliveries. You could, however, delay delivery to all but the
+special domains by using something like this:
+</p>
+<pre>
+   delay_if_too_big:
+     driver = redirect
+     domains = !the.special.domain
+     condition = ${if &#62;{$message_size}{500K}{yes}{no}}
+     allow_defer
+     data = :defer: message too big.</pre>
+<p>
+However, there isn't an easy way of &#147;releasing&#148; such messages at
+present.
+</p>
+<p>
+<a name="TOC193" href="FAQ.html#TOC193">Q0514:</a>&nbsp;&nbsp;When I try to send to two addresses I get an error in the filter
+file <i>malformed address: , e@fgh.com may not follow a@bcd.com</i>. What
+is going on?
+</p>
+<p>
+<font color="#00BB00">A0514:</font>&nbsp;&nbsp;Have you got
+</p>
+<pre>
+   deliver "a@bcd.com, e@fgh.com"</pre>
+<p>
+in your filter? If so, that is your problem. You should have
+</p>
+<pre>
+   deliver a@bcd.com
+   deliver e@fgh.com</pre>
+<p>
+Each <tt>deliver</tt> command expects just one address.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_4.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_6.html">Next</a>
+</body>
+</html>

@@ -1,0 +1,37 @@
+Bee\-Crypt started its life when the need for a portable and fast cryptography library arose at Virtual Unlimited in 1997. I'm still trying to make it faster, easier to use and more portable, in addition to providing better documentation.
+
+Bee\-Crypt is released under the following license:
+
+This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+Legal disclaimer: note that depending on where you are, the use of cryptography may be limited or forbidden by law. Before using this library, make sure you are legally entitled to do so.
+
+Included in the library are: \begin{itemize}
+\item entropy sources for initializing pseudo-random generators \item pseudo-random generators \begin{itemize}
+\item FIPS-186 \end{itemize}
+\item block ciphers \begin{itemize}
+\item AES \item Blowfish \end{itemize}
+\item hash functions \begin{itemize}
+\item MD5 \item SHA-1 \item SHA-256 \end{itemize}
+\item keyed hash functions (a.k.a. message authentication codes) \begin{itemize}
+\item HMAC-MD5 \item HMAC-SHA-1 \item HMAC-SHA-256 \end{itemize}
+\item multi-precision integer library, with assembler-optimized routines for a range of processors; optimized to perform well on both 32-bit and 64-bit machines \item probabilistic primality testing, with optimized small prime trial division \item discrete logarithm parameter generation over a prime field \item Diffie-Hellman key agreement \item DHAES encryption scheme \item DSA signature scheme \item El\-Gamal signature scheme (two variants) \item RSA keypair generation with chinese remainder theorem variables \item RSA public \& private key operations \end{itemize}
+
+
+Planned for the future are: \begin{itemize}
+\item compliance with and compliance statements for IEEE P1363 \item more blockciphers (Twofish, ... ) \item more blockcipher modes (OFB, ... ) \item more hash functions (RIPEMD-160, SHA-384, SHA-512, HAVAL, Tiger) \item RSA signatures as specified by RFC-2440. \item Elliptic Curves (ECDSA, ... ) \end{itemize}
+
+
+The library has been tested on the following platforms: \begin{itemize}
+\item Linux glibc 2.x alpha \item Linux glibc 2.x arm \item Linux glibc 2.x ia64 \item Linux glibc 2.x m68k \item Linux glibc 2.x ppc \item Linux glibc 2.x s390x \item Linux glibc 2.x sparc \item Linux glibc 2.x x86 \item Solaris 2.\mbox{[}6789\mbox{]} sparc (with Forte or GNU compilers) \item Solaris 2.\mbox{[}78\mbox{]} x86 (with Forte or GNU compilers) \item Tru64 Unix alpha \item Win32 (Windows 95, 98, NT 4.0, 2000, XP) \end{itemize}
+
+
+The library is currently in the process of being ported to: \begin{itemize}
+\item AIX (shared libraries don't seem to work in 64-bit mode) \item Darwin (javaglue doesn't compile yet) \item Cygwin (the DLL builds now, but needs to be tested) \end{itemize}
+
+
+The structures in the library are geared towards exchange with Java and its security and cryptography classes. This library can also be accessed from Java by installing Bee\-Crypt for Java, a JCE 1.2 crypto provider and the counterpart of this library. 

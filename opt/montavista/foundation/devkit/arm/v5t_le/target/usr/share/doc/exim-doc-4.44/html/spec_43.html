@@ -1,0 +1,798 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 43</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_42.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_44.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2512"></a>
+<a name="IX2513"></a>
+<h1>
+<a name="CHAP43" href="spec_toc.html#TOC333">
+43. SMTP processing
+</a></h1>
+<p>
+Exim supports a number of different ways of using the SMTP protocol, and its
+LMTP variant, which is an interactive protocol for transferring messages into a
+closed mail store application. This chapter contains details of how SMTP is
+processed. For incoming mail, the following are available:
+</p>
+<ul>
+<li><p>
+SMTP over TCP/IP (Exim daemon or <i>inetd</i>);
+</p>
+</li>
+<li><p>
+SMTP over the standard input and output (the <i>-bs</i> option);
+</p>
+</li>
+<li><p>
+Batched SMTP on the standard input (the <i>-bS</i> option).
+</p>
+</li>
+</ul>
+<p>
+For mail delivery, the following are available:
+</p>
+<ul>
+<li><p>
+SMTP over TCP/IP (the <b>smtp</b> transport);
+</p>
+</li>
+<li><p>
+LMTP over TCP/IP (the <b>smtp</b> transport with the <tt>protocol</tt> option set to
+&#147;lmtp&#148;);
+</p>
+</li>
+<li><p>
+LMTP over a pipe to a process running in the local host (the <b>lmtp</b>
+transport);
+</p>
+</li>
+<li><p>
+Batched SMTP to a file or pipe (the <b>appendfile</b> and <b>pipe</b> transports with
+the <tt>use&#095;bsmtp</tt> option set).
+</p>
+</li>
+</ul>
+<p>
+<i>Batched SMTP</i> is the name for a process in which batches of messages are
+stored in or read from files (or pipes), in a format in which SMTP commands are
+used to contain the envelope information.
+</p>
+<a name="IX2514"></a>
+<a name="IX2515"></a>
+<a name="IX2516"></a>
+<a name="IX2517"></a>
+<a name="IX2518"></a>
+<a name="IX2519"></a>
+<a name="IX2520"></a>
+<h2>
+<a name="SECT43.1" href="spec_toc.html#TOC334">
+43.1. Outgoing SMTP and LMTP over TCP/IP
+</a></h2>
+<p>
+Outgoing SMTP and LMTP over TCP/IP is implemented by the <b>smtp</b> transport.
+The <tt>protocol</tt> option selects which protocol is to be used, but the actual
+processing is the same in both cases.
+</p>
+<p>
+<a name="IX2521"></a>
+<a name="IX2522"></a>
+If, in response to its <font size=-1>EHLO</font> command, Exim is told that the <font size=-1>SIZE</font>
+parameter is supported, it adds <font size=-1>SIZE</font>=&#060;<em>n</em>&#062; to each subsequent <font size=-1>MAIL</font>
+command. The value of &#060;<em>n</em>&#062; is the message size plus the value of the
+<tt>size&#095;addition</tt> option (default 1024) to allow for additions to the message
+such as per-transport header lines, or changes made in a
+transport filter. If <tt>size&#095;addition</tt> is set negative, the use of <font size=-1>SIZE</font> is
+suppressed.
+</p>
+<p>
+If the remote server advertises support for <font size=-1>PIPELINING</font>, Exim uses the
+pipelining extension to SMTP (RFC 2197) to reduce the number of TCP/IP packets
+required for the transaction.
+</p>
+<p>
+If the remote server advertises support for the <font size=-1>STARTTLS</font> command, and Exim
+was built to support TLS encryption, it tries to start a TLS session unless the
+server matches <tt>hosts&#095;avoid&#095;tls</tt>. See chapter <a href="spec_37.html">37</a> for more details.
+</p>
+<p>
+If the remote server advertises support for the <font size=-1>AUTH</font> command, Exim scans
+the authenticators configuration for any suitable client settings, as described
+in chapter <a href="spec_33.html">33</a>.
+<a name="IX2523"></a>
+<a name="IX2524"></a>
+</p>
+<p>
+Responses from the remote host are supposed to be terminated by CR followed by
+LF. However, there are known to be hosts that do not send CR characters, so in
+order to be able to interwork with such hosts, Exim treats LF on its own as a
+line terminator.
+</p>
+<p>
+If a message contains a number of different addresses, all those with the same
+characteristics (for example, the same envelope sender) that resolve to the
+same set of hosts, in the same order, are sent in a single SMTP transaction,
+even if they are for different domains, unless there are more than the setting
+of the <tt>max&#095;rcpts</tt> option in the <b>smtp</b> transport allows, in which case they
+are split into groups containing no more than <tt>max&#095;rcpts</tt> addresses each. If
+<tt>remote&#095;max&#095;parallel</tt> is greater than one, such groups may be sent in
+parallel sessions. The order of hosts with identical MX values is not
+significant when checking whether addresses can be batched in this way.
+</p>
+<p>
+<a name="IX2525"></a>
+When the <b>smtp</b> transport suffers a temporary failure that is not
+message-related, Exim updates its transport-specific database, which contains
+records indexed by host name that remember which messages are waiting for each
+particular host. It also updates the retry database with new retry times.
+Exim's retry hints are based on host name plus IP address, so if one address of
+a multi-homed host is broken, it will soon be skipped most of the time.
+See the next section for more detail about error handling.
+<a name="IX2526"></a>
+<a name="IX2527"></a>
+</p>
+<p>
+When a message is successfully delivered over a TCP/IP SMTP connection, Exim
+looks in the hints database for the transport to see if there are any queued
+messages waiting for the host to which it is connected. If it finds one, it
+creates a new Exim process using the <i>-MC</i> option (which can only be used by a
+process running as root or the Exim user) and passes the TCP/IP socket to it so
+that it can deliver another message using the same socket. The new process does
+only those deliveries that are routed to the connected host, and may in turn
+pass the socket on to a third process, and so on.
+</p>
+<p>
+<a name="IX2528"></a>
+The <tt>connection&#095;max&#095;messages</tt> option of the <b>smtp</b> transport can be used to
+limit the number of messages sent down a single TCP/IP connection.
+The second and subsequent messages delivered down an existing connection are
+identified in the main log by the addition of an asterisk after the closing
+square bracket of the IP address.
+</p>
+<a name="IX2529"></a>
+<a name="IX2530"></a>
+<a name="IX2531"></a>
+<h2>
+<a name="SECT43.2" href="spec_toc.html#TOC335">
+43.2. Errors in outgoing SMTP
+</a></h2>
+<p>
+Three different kinds of error are recognized for outgoing SMTP: host errors,
+message errors, and recipient errors.
+</p>
+<ol>
+<li TYPE="1"><p>
+A host error is not associated with a particular message or with a
+particular recipient of a message. The host errors are:
+</p>
+<ul>
+<li><p>
+Connection refused or timed out,
+</p>
+</li>
+<li><p>
+Any error response code on connection,
+</p>
+</li>
+<li><p>
+Any error response code to <font size=-1>EHLO</font> or <font size=-1>HELO</font>,
+</p>
+</li>
+<li><p>
+Loss of connection at any time, except after &#147;.&#148;,
+</p>
+</li>
+<li><p>
+I/O errors at any time,
+</p>
+</li>
+<li><p>
+Timeouts during the session, other than in response to <font size=-1>MAIL</font>, <font size=-1>RCPT</font> or
+the &#147;.&#148; at the end of the data.
+</p>
+</li>
+</ul>
+<p>
+For a host error, a permanent error response on connection, or in response to
+<font size=-1>EHLO</font>, causes all addresses routed to the host to be failed. Any other host
+error causes all addresses to be deferred, and retry data to be created for the
+host. It is not tried again, for any message, until its retry time arrives. If
+the current set of addresses are not all delivered in this run (to some
+alternative host), the message is added to the list of those waiting for this
+host, so if it is still undelivered when a subsequent successful delivery is
+made to the host, it will be sent down the same SMTP connection.
+</p>
+</li>
+<li TYPE="1"><a name="IX2532"></a>
+<p>
+A message error is associated with a particular message when sent to a
+particular host, but not with a particular recipient of the message. The
+message errors are:
+</p>
+<ul>
+<li><p>
+Any error response code to <font size=-1>MAIL</font>, <font size=-1>DATA</font>, or the &#147;.&#148; that terminates
+the data,
+</p>
+</li>
+<li><p>
+Timeout after <font size=-1>MAIL</font>,
+</p>
+</li>
+<li><p>
+Timeout
+or loss of connection after the &#147;.&#148; that terminates the data. A timeout after
+the <font size=-1>DATA</font> command itself is treated as a host error, as is loss of
+connection at any other time.
+</p>
+</li>
+</ul>
+<p>
+For a message error, a permanent error response (5<em>xx</em>) causes all addresses
+to be failed, and a delivery error report to be returned to the sender. A
+temporary error response (4<em>xx</em>), or one of the timeouts, causes all
+addresses to be deferred. Retry data is not created for the host, but instead,
+a retry record for the combination of host plus message id is created. The
+message is not added to the list of those waiting for this host. This ensures
+that the failing message will not be sent to this host again until the retry
+time arrives. However, other messages that are routed to the host are not
+affected, so if it is some property of the message that is causing the error,
+it will not stop the delivery of other mail.
+</p>
+<p>
+If the remote host specified support for the <font size=-1>SIZE</font> parameter in its response
+to <font size=-1>EHLO</font>, Exim adds SIZE=<em>nnn</em> to the <font size=-1>MAIL</font> command, so an
+over-large message will cause a message error because the error arrives as a
+response to <font size=-1>MAIL</font>.
+</p>
+</li>
+<li TYPE="1"><a name="IX2533"></a>
+<p>
+A recipient error is associated with a particular recipient of a message. The
+recipient errors are:
+</p>
+<ul>
+<li><p>
+Any error response to <font size=-1>RCPT</font>,
+</p>
+</li>
+<li><p>
+Timeout after <font size=-1>RCPT</font>.
+</p>
+</li>
+</ul>
+<p>
+For a recipient error, a permanent error response (5<em>xx</em>) causes the
+recipient address to be failed, and a bounce message to be returned to the
+sender. A temporary error response (4<em>xx</em>) or a timeout causes the failing
+address to be deferred, and routing retry data to be created for it. This is
+used to delay processing of the address in subsequent queue runs, until its
+routing retry time arrives. This applies to all messages, but because it
+operates only in queue runs, one attempt will be made to deliver a new message
+to the failing address before the delay starts to operate. This ensures that,
+if the failure is really related to the message rather than the recipient
+(&#147;message too big for this recipient&#148; is a possible example), other messages
+have a chance of getting delivered. If a delivery to the address does succeed,
+the retry information gets cleared, so all stuck messages get tried again, and
+the retry clock is reset.
+</p>
+<p>
+The message is not added to the list of those waiting for this host. Use of the
+host for other messages is unaffected, and except in the case of a timeout,
+other recipients are processed independently, and may be successfully delivered
+in the current SMTP session. After a timeout it is of course impossible to
+proceed with the session, so all addresses get deferred. However, those other
+than the one that failed do not suffer any subsequent retry delays. Therefore,
+if one recipient is causing trouble, the others have a chance of getting
+through when a subsequent delivery attempt occurs before the failing
+recipient's retry time.
+</p>
+</li>
+</ol>
+<p>
+In all cases, if there are other hosts (or IP addresses) available for the
+current set of addresses (for example, from multiple MX records), they are
+tried in this run for any undelivered addresses, subject of course to their
+own retry data. In other words, recipient error retry data does not take effect
+until the next delivery attempt.
+</p>
+<p>
+Some hosts have been observed to give temporary error responses to every
+<font size=-1>MAIL</font> command at certain times (&#147;insufficient space&#148; has been seen). It
+would be nice if such circumstances could be recognized, and defer data for the
+host itself created, but this is not possible within the current Exim design.
+What actually happens is that retry data for every (host, message) combination
+is created.
+</p>
+<p>
+The reason that timeouts after <font size=-1>MAIL</font> and <font size=-1>RCPT</font> are treated specially is
+that these can sometimes arise as a result of the remote host's verification
+procedures. Exim makes this assumption, and treats them as if a temporary error
+response had been received. A timeout after &#147;.&#148; is treated specially because it
+is known that some broken implementations fail to recognize the end of the
+message if the last character of the last line is a binary zero. Thus, it is
+helpful to treat this case as a message error.
+</p>
+<p>
+Timeouts at other times are treated as host errors, assuming a problem with the
+host, or the connection to it. If a timeout after <font size=-1>MAIL</font>, <font size=-1>RCPT</font>,
+or &#147;.&#148; is really a connection problem, the assumption is that at the next try
+the timeout is likely to occur at some other point in the dialogue, causing it
+then to be treated as a host error.
+</p>
+<p>
+There is experimental evidence that some MTAs drop the connection after the
+terminating &#147;.&#148; if they do not like the contents of the message for some
+reason, in contravention of the RFC, which indicates that a 5<em>xx</em> response
+should be given. That is why Exim treats this case as a message rather than a
+host error, in order not to delay other messages to the same host.
+</p>
+<a name="IX2534"></a>
+<a name="IX2535"></a>
+<a name="IX2536"></a>
+<h2>
+<a name="SECT43.3" href="spec_toc.html#TOC336">
+43.3. Variable Envelope Return Paths (VERP)
+</a></h2>
+<p>
+Variable Envelope Return Paths &#150; see
+<a href="ftp://koobera.math.uic.edu/www/proto/verp.txt">ftp://koobera.math.uic.edu/www/proto/verp.txt</a> &#150; can be supported in Exim
+by using the <tt>return&#095;path</tt> generic transport option to rewrite the return path
+at transport time. For example, the following could be used on an <b>smtp</b>
+transport:
+<pre>
+&nbsp;&nbsp;return_path = \
+&nbsp;&nbsp;  ${if match {$return_path}{^(.+?)-request@your.dom.example\$}\
+&nbsp;&nbsp;  {$1-request=$local_part%$domain@your.dom.example}fail}
+</pre>
+</p>
+<p>
+This has the effect of rewriting the return path (envelope sender) on all
+outgoing SMTP messages, if the local part of the original return path ends in
+&#147;-request&#148;, and the domain is <i>your.dom.example</i>. The rewriting inserts the
+local part and domain of the recipient into the return path. Suppose, for
+example, that a message whose return path has been set to
+<i>somelist-request&#064;your.dom.example</i> is sent to
+<i>subscriber&#064;other.dom.example</i>. In the transport, the return path is
+rewritten as
+<pre>
+&nbsp;&nbsp;somelist-request=subscriber%other.dom.example@your.dom.example
+</pre>
+</p>
+<p>
+For this to work, you must arrange for outgoing messages that have &#147;-request&#148;
+in their return paths to have just a single recipient. This can be done by
+setting
+<pre>
+&nbsp;&nbsp;max_rcpt = 1
+</pre>
+</p>
+<p>
+in the <b>smtp</b> transport. Otherwise a single copy of a message might be
+addressed to several different recipients in the same domain, in which case
+<tt>$local&#095;part</tt> is not available (because it is not unique). Of course, if you
+do start sending out messages with this kind of return path, you must also
+configure Exim to accept the bounce messages that come back to those paths.
+Typically this would be done by setting an <tt>local&#095;part&#095;suffix</tt> option for a
+suitable router.
+</p>
+<p>
+The overhead incurred in using VERP depends very much on the size of the
+message, the number of recipient addresses that resolve to the same remote
+host, and the speed of the connection over which the message is being sent. If
+a lot of addresses resolve to the same host and the connection is slow, sending
+a separate copy of the message for each address may take substantially longer
+than sending a single copy with many recipients (for which VERP cannot be
+used).
+</p>
+<a name="IX2537"></a>
+<a name="IX2538"></a>
+<a name="IX2539"></a>
+<a name="IX2540"></a>
+<h2>
+<a name="SECT43.4" href="spec_toc.html#TOC337">
+43.4. Incoming SMTP messages over TCP/IP
+</a></h2>
+<p>
+Incoming SMTP messages can be accepted in one of two ways: by running a
+listening daemon, or by using <i>inetd</i>. In the latter case, the entry in
+<i>/etc/inetd.conf</i> should be like this:
+<pre>
+&nbsp;&nbsp;smtp  stream  tcp  nowait  exim  /opt/exim/bin/exim  in.exim  -bs
+</pre>
+</p>
+<p>
+Exim distinguishes between this case and the case of a locally running user
+agent using the <i>-bs</i> option by checking whether or not the standard input is
+a socket. When it is, either the port must be privileged (less than 1024), or
+the caller must be root or the Exim user. If any other user passes a socket
+with an unprivileged port number, Exim prints a message on the standard error
+stream and exits with an error code.
+</p>
+<p>
+By default, Exim does not make a log entry when a remote host connects or
+disconnects (either via the daemon or <i>inetd</i>), unless the disconnection is
+unexpected. It can be made to write such log entries by setting the
+<tt>smtp&#095;connection</tt> log selector.
+<a name="IX2541"></a>
+<a name="IX2542"></a>
+</p>
+<p>
+Commands from the remote host are supposed to be terminated by CR followed by
+LF. However, there are known to be hosts that do not send CR characters. In
+order to be able to interwork with such hosts, Exim treats LF on its own as a
+line terminator.
+Furthermore, because common code is used for receiving messages from all
+sources, a CR on its own is also interpreted as a line terminator. However, the
+sequence &#147;CR, dot, CR&#148; does not terminate incoming SMTP data.
+<a name="IX2543"></a>
+<a name="IX2544"></a>
+</p>
+<p>
+One area that sometimes gives rise to problems concerns the <font size=-1>EHLO</font> or
+<font size=-1>HELO</font> commands. Some clients send syntactically invalid versions of these
+commands, which Exim rejects by default. (This is nothing to do with verifying
+the data that is sent, so <tt>helo&#095;verify&#095;hosts</tt> is not relevant.) You can tell
+Exim not to apply a syntax check by setting <tt>helo&#095;accept&#095;junk&#095;hosts</tt> to
+match the broken hosts that send invalid commands.
+<a name="IX2545"></a>
+<a name="IX2546"></a>
+</p>
+<p>
+The amount of disk space available is checked whenever <font size=-1>SIZE</font> is received on
+a <font size=-1>MAIL</font> command, independently of whether <tt>message&#095;size&#095;limit</tt> or
+<tt>check&#095;spool&#095;space</tt> is configured, unless <tt>smtp_check_spool_space</tt> is set
+false. A temporary error is given if there is not enough space. If
+<tt>check&#095;spool&#095;space</tt> is set, the check is for that amount of space plus the
+value given with <font size=-1>SIZE</font>, that is, it checks that the addition of the incoming
+message will not reduce the space below the threshold.
+</p>
+<p>
+When a message is successfully received, Exim includes the local message id in
+its response to the final &#147;.&#148; that terminates the data. If the remote host logs
+this text it can help with tracing what has happened to a message.
+</p>
+<p>
+The Exim daemon can limit the number of simultaneous incoming connections it is
+prepared to handle (see the <tt>smtp&#095;accept&#095;max</tt> option). It can also limit the
+number of simultaneous incoming connections from a single remote host (see the
+<tt>smtp&#095;accept&#095;max&#095;per&#095;host</tt> option). Additional connection attempts are
+rejected using the SMTP temporary error code 421.
+</p>
+<p>
+The Exim daemon does not rely on the <font size=-1>SIGCHLD</font> signal to detect when a
+subprocess has finished, as this can get lost at busy times. Instead, it looks
+for completed subprocesses every time it wakes up. Provided there are other
+things happening (new incoming calls, starts of queue runs), completed
+processes will be noticed and tidied away. On very quiet systems you may
+sometimes see a &#147;defunct&#148; Exim process hanging about. This is not a problem; it
+will be noticed when the daemon next wakes up.
+</p>
+<p>
+When running as a daemon, Exim can reserve some SMTP slots for specific hosts,
+and can also be set up to reject SMTP calls from non-reserved hosts at times of
+high system load &#150; for details see the <tt>smtp&#095;accept&#095;reserve</tt>,
+<tt>smtp&#095;load&#095;reserve</tt>, and <tt>smtp&#095;reserve&#095;hosts</tt> options. The load check
+applies in both the daemon and <i>inetd</i> cases.
+</p>
+<p>
+Exim normally starts a delivery process for each message received, though this
+can be varied by means of the <i>-odq</i> command line option and the
+<tt>queue&#095;only</tt>, <tt>queue&#095;only&#095;file</tt>, and <tt>queue&#095;only&#095;load</tt> options. The number
+of simultaneously running delivery processes started in this way from SMTP
+input can be limited by the <tt>smtp_accept_queue</tt> and
+<tt>smtp_accept_queue_per_connection</tt> options. When either limit is reached,
+subsequently received messages are just put on the input queue without starting
+a delivery process.
+</p>
+<p>
+The controls that involve counts of incoming SMTP calls (<tt>smtp&#095;accept&#095;max</tt>,
+<tt>smtp&#095;accept&#095;queue</tt>, <tt>smtp_accept_reserve</tt>) are not available when Exim is
+started up from the <i>inetd</i> daemon, because in that case each connection is
+handled by an entirely independent Exim process. Control by load average is,
+however, available with <i>inetd</i>.
+</p>
+<p>
+Exim can be configured to verify addresses in incoming SMTP commands as they
+are received. See chapter <a href="spec_38.html">38</a> for details. It can also be configured to
+rewrite addresses at this time &#150; before any syntax checking is done. See
+section <a href="spec_31.html#SECT31.9">31.9</a>.
+</p>
+<p>
+Exim can also be configured to limit the rate at which a client host submits
+<font size=-1>MAIL</font> and <font size=-1>RCPT</font> commands in a single SMTP session. See the
+<tt>smtp&#095;ratelimit&#095;hosts</tt> option.
+</p>
+<a name="IX2547"></a>
+<h2>
+<a name="SECT43.5" href="spec_toc.html#TOC338">
+43.5. Unrecognized SMTP commands
+</a></h2>
+<p>
+If Exim receives more than <tt>smtp&#095;max&#095;unknown&#095;commands</tt> unrecognized SMTP
+commands during a single SMTP connection, it drops the connection after sending
+the error response to the last command. The default value for
+<tt>smtp&#095;max&#095;unknown&#095;commands</tt> is 3. This is a defence against some kinds of
+abuse that subvert web servers into making connections to SMTP ports; in these
+circumstances, a number of non-SMTP lines are sent first.
+</p>
+<a name="IX2548"></a>
+<a name="IX2549"></a>
+<h2>
+<a name="SECT43.6" href="spec_toc.html#TOC339">
+43.6. Syntax and protocol errors in SMTP commands
+</a></h2>
+<p>
+A syntax error is detected if an SMTP command is recognized, but there is 
+something syntactically wrong with its data, for example, a malformed email
+address in a <font size=-1>RCPT</font> command. Protocol errors include invalid command
+sequencing such as <font size=-1>RCPT</font> before <font size=-1>MAIL</font>. If Exim receives more than 
+<tt>smtp&#095;max&#095;synprot&#095;errors</tt> such commands during a single SMTP connection, it 
+drops the connection after sending the error response to the last command. The 
+default value for <tt>smtp_max_synprot_errors</tt> is 3. This is a defence against 
+broken clients that loop sending bad commands (yes, it has been seen).
+</p>
+<a name="IX2550"></a>
+<h2>
+<a name="SECT43.7" href="spec_toc.html#TOC340">
+43.7. Use of non-mail SMTP commands
+</a></h2>
+<p>
+The &#147;non-mail&#148; SMTP commands are those other than <font size=-1>MAIL</font>, <font size=-1>RCPT</font>, and
+<font size=-1>DATA</font>. Exim counts such commands, and drops the connection if there are too
+many of them in a single SMTP session. This action catches some
+denial-of-service attempts and things like repeated failing <font size=-1>AUTH</font>s, or a mad
+client looping sending <font size=-1>EHLO</font>. The global option <tt>smtp&#095;accept&#095;max&#095;nonmail</tt>
+defines what &#147;too many&#148; means. Its default value is 10.
+</p>
+<p>
+When a new message is expected, one occurrence of <font size=-1>RSET</font> is not counted. This
+allows a client to send one <font size=-1>RSET</font> between messages (this is not necessary,
+but some clients do it). Exim also allows one uncounted occurence of <font size=-1>HELO</font>
+or <font size=-1>EHLO</font>, and one occurrence of <font size=-1>STARTTLS</font> between messages. After
+starting up a TLS session, another <font size=-1>EHLO</font> is expected, and so it too is not
+counted.
+</p>
+<p>
+The first occurrence of <font size=-1>AUTH</font> in a connection, or immediately following
+<font size=-1>STARTTLS</font> is also not counted. Otherwise, all commands other than <font size=-1>MAIL</font>,
+<font size=-1>RCPT</font>, <font size=-1>DATA</font>, and <font size=-1>QUIT</font> are counted.
+</p>
+<p>
+You can control which hosts are subject to the limit set by
+<tt>smtp&#095;accept&#095;max&#095;nonmail</tt> by setting
+<tt>smtp&#095;accept&#095;max&#095;nonmail&#095;hosts</tt>. The default value is <tt>*</tt>, which makes 
+the limit apply to all hosts. This option means that you can exclude any
+specific badly-behaved hosts that you have to live with.
+</p>
+<h2>
+<a name="SECT43.8" href="spec_toc.html#TOC341">
+43.8. The <font size=-1>VRFY</font> and <font size=-1>EXPN</font> commands
+</a></h2>
+<p>
+When Exim receives a <font size=-1>VRFY</font> or <font size=-1>EXPN</font> command on a TCP/IP connection, it
+runs the ACL specified by <tt>acl&#095;smtp&#095;vrfy</tt> or <tt>acl&#095;smtp&#095;expn</tt> (as
+appropriate) in order to decide whether the command should be accepted or not.
+If no ACL is defined, the command is rejected.
+<a name="IX2551"></a>
+</p>
+<p>
+<a name="IX2552"></a>
+When <font size=-1>VRFY</font> is accepted, it runs exactly the same code as when Exim is
+called with the <i>-bv</i> option.
+When <font size=-1>EXPN</font> is accepted, a single-level expansion of the address is done.
+<font size=-1>EXPN</font> is treated as an &#147;address test&#148; (similar to the <i>-bt</i> option) rather
+than a verification (the <i>-bv</i> option). If an unqualified local part is given
+as the argument to <font size=-1>EXPN</font>, it is qualified with <tt>qualify&#095;domain</tt>. Rejections
+of <font size=-1>VRFY</font> and <font size=-1>EXPN</font> commands are logged on the main and reject logs, and
+<font size=-1>VRFY</font> verification failures are logged on the main log for consistency with
+<font size=-1>RCPT</font> failures.
+</p>
+<a name="IX2553"></a>
+<h2>
+<a name="SECT43.9" href="spec_toc.html#TOC342">
+43.9. The <font size=-1>ETRN</font> command
+</a></h2>
+<p>
+RFC 1985 describes an SMTP command called <font size=-1>ETRN</font> that is designed to
+overcome the security problems of the <font size=-1>TURN</font> command (which has fallen into
+disuse). When Exim receives an <font size=-1>ETRN</font> command on a TCP/IP connection, it runs
+the ACL specified by <tt>acl&#095;smtp&#095;etrn</tt> in order to decide whether the command
+should be accepted or not. If no ACL is defined, the command is rejected.
+</p>
+<p>
+The <font size=-1>ETRN</font> command is concerned with &#147;releasing&#148; messages that are awaiting
+delivery to certain hosts. As Exim does not organize its message queue by host,
+the only form of <font size=-1>ETRN</font> that is supported by default is the one where the
+text starts with the &#147;&#035;&#148; prefix, in which case the remainder of the text is
+specific to the SMTP server. A valid <font size=-1>ETRN</font> command causes a run of Exim with
+the <i>-R</i> option to happen, with the remainder of the <font size=-1>ETRN</font> text as its
+argument. For example,
+<pre>
+&nbsp;&nbsp;ETRN #brigadoon
+</pre>
+</p>
+<p>
+runs the command
+<pre>
+&nbsp;&nbsp;exim -R brigadoon
+</pre>
+</p>
+<p>
+which causes a delivery attempt on all messages with undelivered addresses
+containing the text &#147;brigadoon&#148;. When <tt>smtp&#095;etrn&#095;serialize</tt> is set (the
+default), Exim prevents the simultaneous execution of more than one queue run
+for the same argument string as a result of an <font size=-1>ETRN</font> command. This stops
+a misbehaving client from starting more than one queue runner at once.
+<a name="IX2554"></a>
+</p>
+<p>
+Exim implements the serialization by means of a hints database in which a
+record is written whenever a process is started by <font size=-1>ETRN</font>, and deleted when
+the process completes. However, Exim does not keep the SMTP session waiting for
+the <font size=-1>ETRN</font> process to complete. Once <font size=-1>ETRN</font> is accepted, the client is sent
+a &#147;success&#148; return code. Obviously there is scope for hints records to get left
+lying around if there is a system or program crash. To guard against this, Exim
+ignores any records that are more than six hours old.
+<a name="IX2555"></a>
+</p>
+<p>
+For more control over what <font size=-1>ETRN</font> does, the <tt>smtp&#095;etrn&#095;command</tt> option can
+used. This specifies a command that is run whenever <font size=-1>ETRN</font> is received,
+whatever the form of its argument. For
+example:
+<pre>
+&nbsp;&nbsp;smtp_etrn_command = /etc/etrn_command $domain $sender_host_address
+</pre>
+</p>
+<p>
+The string is split up into arguments which are independently expanded. The
+expansion variable <tt>$domain</tt> is set to the argument of the <font size=-1>ETRN</font> command,
+and no syntax checking is done on the contents of this argument. Exim does not
+wait for the command to complete, so its status code is not checked. Exim runs
+under its own uid and gid when receiving incoming SMTP, so it is not possible
+for it to change them before running the command.
+</p>
+<a name="IX2556"></a>
+<h2>
+<a name="SECT43.10" href="spec_toc.html#TOC343">
+43.10. Incoming local SMTP
+</a></h2>
+<p>
+Some user agents use SMTP to pass messages to their local MTA using the
+standard input and output, as opposed to passing the envelope on the command
+line and writing the message to the standard input. This is supported by the
+<i>-bs</i> option. This form of SMTP is handled in the same way as incoming
+messages over TCP/IP (including the use of ACLs), except that the envelope
+sender given in a <font size=-1>MAIL</font> command is ignored unless the caller is trusted. In
+an ACL you can detect this form of SMTP input by testing for an empty host
+identification. It is common to have this as the first line in the ACL that
+runs for <font size=-1>RCPT</font> commands:
+<pre>
+&nbsp;&nbsp;accept hosts = :
+</pre>
+</p>
+<p>
+This accepts SMTP messages from local processes without doing any other tests.
+</p>
+<a name="IX2557"></a>
+<a name="IX2558"></a>
+<h2>
+<a name="SECT43.11" href="spec_toc.html#TOC344">
+43.11. Outgoing batched SMTP
+</a></h2>
+<p>
+Both the <b>appendfile</b> and <b>pipe</b> transports can be used for handling batched
+SMTP. Each has an option called <tt>use&#095;bsmtp</tt> which causes messages to be output
+in BSMTP format. No SMTP responses are possible for this form of delivery. All
+it is doing is using SMTP commands as a way of transmitting the envelope along
+with the message.
+</p>
+<p>
+The message is written to the file or pipe preceded by the SMTP commands
+<font size=-1>MAIL</font> and <font size=-1>RCPT</font>, and followed by a line containing a single dot. Lines in
+the message that start with a dot have an extra dot added. The SMTP command
+<font size=-1>HELO</font> is not normally used. If it is required, the <tt>message&#095;prefix</tt> option
+can be used to specify it.
+</p>
+<p>
+Because <b>appendfile</b> and <b>pipe</b> are both local transports, they accept only
+one recipient address at a time by default. However, you can arrange for them
+to handle several addresses at once by setting the <tt>batch&#095;max</tt> option. When
+this is done for BSMTP, messages may contain multiple <font size=-1>RCPT</font> commands. See
+chapter <a href="spec_25.html">25</a> for more details.
+</p>
+<p>
+When one or more addresses are routed to a BSMTP transport by a router that
+sets up a host list, the name of the first host on the list is available to the
+transport in the variable <tt>$host</tt>. Here is an example of such a transport and
+router:
+<pre>
+&nbsp;&nbsp;begin routers
+&nbsp;&nbsp;route_append:
+&nbsp;&nbsp;  driver = manualroute
+&nbsp;&nbsp;  transport = smtp_appendfile
+&nbsp;&nbsp;  route_list = domain.example  batch.host.example
+&nbsp;&nbsp;
+&nbsp;&nbsp;begin transports
+&nbsp;&nbsp;smtp_appendfile:
+&nbsp;&nbsp;  driver = appendfile
+&nbsp;&nbsp;  directory = /var/bsmtp/$host
+&nbsp;&nbsp;  batch_max = 1000
+&nbsp;&nbsp;  use_bsmtp
+&nbsp;&nbsp;  user = exim
+</pre>
+</p>
+<p>
+This causes messages addressed to <i>domain.example</i> to be written in BSMTP
+format to <i>/var/bsmtp/batch.host.example</i>, with only a single copy of each
+message (unless there are more than 1000 recipients).
+</p>
+<a name="IX2559"></a>
+<a name="IX2560"></a>
+<h2>
+<a name="SECT43.12" href="spec_toc.html#TOC345">
+43.12. Incoming batched SMTP
+</a></h2>
+<p>
+The <i>-bS</i> command line option causes Exim to accept one or more messages by
+reading SMTP on the standard input, but to generate no responses. If the caller
+is trusted, the senders in the <font size=-1>MAIL</font> commands are believed; otherwise the
+sender is always the caller of Exim. Unqualified senders and receivers are not
+rejected (there seems little point) but instead just get qualified. <font size=-1>HELO</font>
+and <font size=-1>EHLO</font> act as <font size=-1>RSET</font>; <font size=-1>VRFY</font>, <font size=-1>EXPN</font>, <font size=-1>ETRN</font> and  <font size=-1>HELP</font>, act
+as <font size=-1>NOOP</font>; <font size=-1>QUIT</font> quits.
+</p>
+<p>
+No policy checking is done for BSMTP input. That is, no ACL is run at anytime.
+In this respect it is like non-SMTP local input.
+</p>
+<p>
+If an error is detected while reading a message, including a missing &#147;.&#148; at
+the end, Exim gives up immediately. It writes details of the error to the
+standard output in a stylized way that the calling program should be able to
+make some use of automatically, for example:
+<pre>
+&nbsp;&nbsp;554 Unexpected end of file
+&nbsp;&nbsp;Transaction started in line 10
+&nbsp;&nbsp;Error detected in line 14
+</pre>
+</p>
+<p>
+It writes a more verbose version, for human consumption, to the standard error
+file, for example:
+<pre>
+&nbsp;&nbsp;An error was detected while processing a file of BSMTP input.
+&nbsp;&nbsp;The error message was:
+&nbsp;&nbsp;
+&nbsp;&nbsp;  501 '&#062;' missing at end of address
+&nbsp;&nbsp;
+&nbsp;&nbsp;The SMTP transaction started in line 10.
+&nbsp;&nbsp;The error was detected in line 12.
+&nbsp;&nbsp;The SMTP command at fault was:
+&nbsp;&nbsp;
+&nbsp;&nbsp;   rcpt to:&#060;malformed@in.com.plete
+&nbsp;&nbsp;
+&nbsp;&nbsp;1 previous message was successfully processed.
+&nbsp;&nbsp;The rest of the batch was abandoned.
+</pre>
+</p>
+<p>
+The return code from Exim is zero only if there were no errors. It is 1 if some
+messages were accepted before an error was detected, and 2 if no messages were
+accepted.
+<hr>
+</p>
+<font size=2>
+<a href="spec_42.html">Previous</a>&nbsp;&nbsp;<a href="spec_44.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

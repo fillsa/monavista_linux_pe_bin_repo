@@ -1,0 +1,361 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 49</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_48.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_50.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2829"></a>
+<a name="IX2830"></a>
+<a name="IX2831"></a>
+<a name="IX2832"></a>
+<h1>
+<a name="CHAP49" href="spec_toc.html#TOC418">
+49. Format of spool files
+</a></h1>
+<p>
+A message on Exim's queue consists of two files, whose names are the message id
+followed by -D and -H, respectively. The data portion of the message is kept in
+the -D file on its own. The message's envelope, status, and headers are all
+kept in the -H file, whose format is described in this chapter. Each of these
+two files contains the final component of its own name as its first line. This
+is insurance against disk crashes where the directory is lost but the files
+themselves are recoverable.
+</p>
+<p>
+<font color=green>
+Some people are tempted into editing -D files in order to modify messages. You
+need to be extremely careful if you do this; it is not recommended and you are
+on your own if you do it. Here are some of the pitfalls:
+</p>
+<ul>
+<li><p>
+You must use the <i>exim&#095;lock</i> utility to ensure that Exim does not try to
+deliver the message while you are fiddling with it. The lock is implemented
+by opening the -D file and taking out a write lock on it. If you update the
+file in place, the lock will be retained. If you write a new file and rename
+it, the lock will be lost at the instant of rename.
+</p>
+</li>
+<li><p>
+If you change the number of lines in the file, the value of
+<tt>$body&#095;linecount</tt>, which is stored in the -H file, will be incorrect.
+</p>
+</li>
+<li><p>
+If the message is in MIME format, you must take care not to break it.
+</p>
+</li>
+<li><p>
+If the message is cryptographically signed, any change will invalidate the 
+signature.
+</p>
+</li>
+</ul>
+</font><p>
+Files whose names end with -J may also be seen in the <i>input</i> directory (or
+its subdirectories when <tt>split&#095;spool&#095;directory</tt> is set). These are journal
+files, used to record addresses to which the message has been delivered during
+the course of a delivery run. At the end of the run, the -H file is updated,
+and the -J file is deleted.
+</p>
+<a name="IX2833"></a>
+<a name="IX2834"></a>
+<h2>
+<a name="SECT49.1" href="spec_toc.html#TOC419">
+49.1. Format of the -H file
+</a></h2>
+<p>
+The second line of the -H file contains the login name for the uid of the
+process that called Exim to read the message, followed by the numerical uid and
+gid. For a locally generated message, this is normally the user who sent the
+message. For a message received over TCP/IP, it is normally the Exim user.
+</p>
+<p>
+The third line of the file contains the address of the message's sender as
+transmitted in the envelope, contained in angle brackets. The sender address is
+empty for bounce messages. For incoming SMTP mail, the sender address is given
+in the <font size=-1>MAIL</font> command. For locally generated mail, the sender address is
+created by Exim from the login name of the current user and the configured
+<tt>qualify&#095;domain</tt>. However, this can be overridden by the <i>-f</i> option or a
+leading &#147;From&#148; line if the caller is trusted, or if the supplied address is
+&#147;&#060;&#062;&#148; or an address that matches <tt>untrusted&#095;set&#095;senders</tt>.
+</p>
+<p>
+The fourth line contains two numbers. The first is the time that the message
+was received, in the conventional Unix form &#150; the number of seconds since the
+start of the epoch. The second number is a count of the number of messages
+warning of delayed delivery that have been sent to the sender.
+</p>
+<p>
+There follow a number of lines starting with a hyphen. These can appear in any
+order, and are omitted when not relevant:
+</p>
+<ul>
+<li><p>
+<font color=green>
+<i>-acl &#060;<em>number</em>&#062; &#060;<em>length</em>&#062;</i>: A line of this form is present for every ACL 
+variable that is not empty. The number identifies the variable; the 
+<tt>acl&#095;c</tt>*x*<tt>$</tt> variables are numbered 0&#150;9 and the <tt>acl&#095;m</tt>*x*<tt>$</tt> variables 
+are numbered 10&#150;19. The length is the length of the data string for the 
+variable. The string itself starts at the beginning of the next line, and is
+followed by a newline character. It may contain internal newlines.
+</p>
+</li>
+<li><p>
+<i>-allow&#095;unqualified&#095;recipient</i>: This is present if unqualified recipient 
+addresses are permitted in header lines (to stop such addresses from being 
+qualified if rewriting occurs at transport time). Local messages that were 
+input using <i>-bnq</i> and remote messages from hosts that match 
+<tt>recipient&#095;unqualified&#095;hosts</tt> set this flag.
+</p>
+</li>
+<li><p>
+<i>-allow&#095;unqualified&#095;sender</i>: This is present if unqualified sender 
+addresses are permitted in header lines (to stop such addresses from being 
+qualified if rewriting occurs at transport time). Local messages that were 
+input using <i>-bnq</i> and remote messages from hosts that match 
+<tt>sender&#095;unqualified&#095;hosts</tt> set this flag.
+</font>
+</p>
+</li>
+<li><p>
+<i>-auth&#095;id &#060;<em>text</em>&#062;</i>: The id information for a message received on an
+authenticated SMTP connection &#150; the value of the <tt>$authenticated&#095;id</tt>
+variable.
+</p>
+</li>
+<li><p>
+<i>-auth&#095;sender &#060;<em>address</em>&#062;</i>: The address of an authenticated sender &#150; the
+value of the <tt>$authenticated&#095;sender</tt> variable.
+</p>
+</li>
+<li><p>
+<i>-body&#095;linecount &#060;<em>number</em>&#062;</i>: This records the number of lines in the body of
+the message, and is always present.
+</p>
+</li>
+<li><p>
+<i>-deliver&#095;firsttime</i>: This is written when a new message is first added to
+the spool. When the spool file is updated after a deferral, it is omitted.
+</p>
+</li>
+<li><a name="IX2835"></a>
+<p>
+<i>-frozen &#060;<em>time</em>&#062;</i>: The message is frozen, and the freezing happened at
+&#060;<em>time</em>&#062;.
+</p>
+</li>
+<li><p>
+<i>-helo&#095;name &#060;<em>text</em>&#062;</i>: This records the host name as specified by a remote
+host in a <font size=-1>HELO</font> or <font size=-1>EHLO</font> command.
+</p>
+</li>
+<li><p>
+<i>-host&#095;address &#060;<em>address</em>&#062;.&#060;<em>port</em>&#062;</i>: This records the IP address of the host
+from which the message was received and the remote port number that was used.
+It is omitted for locally generated messages.
+</p>
+</li>
+<li><p>
+<i>-host&#095;auth &#060;<em>text</em>&#062;</i>: If the message was received on an authenticated SMTP
+connection, this records the name of the authenticator &#150; the value of the
+<tt>$sender&#095;host&#095;authenticated</tt> variable.
+</p>
+</li>
+<li><p>
+<i>-host&#095;lookup&#095;failed</i>: This is present if an attempt to look up the sending
+host's name from its IP address failed. It corresponds to the
+<tt>$host&#095;lookup&#095;failed</tt> variable.
+</p>
+</li>
+<li><a name="IX2836"></a>
+<a name="IX2837"></a>
+<p>
+<i>-host&#095;name &#060;<em>text</em>&#062;</i>: This records the name of the remote host from which
+the message was received, if the host name was looked up from the IP address
+when the message was being received. It is not present if no reverse lookup was
+done.
+</p>
+</li>
+<li><p>
+<i>-ident &#060;<em>text</em>&#062;</i>: For locally submitted messages, this records the login of
+the originating user, unless it was a trusted user and the <i>-oMt</i> option was
+used to specify an ident value. For messages received over TCP/IP, this records
+the ident string supplied by the remote host, if any.
+</p>
+</li>
+<li><p>
+<i>-interface&#095;address &#060;<em>address</em>&#062;.&#060;<em>port</em>&#062;</i>: This records the IP address of the
+local interface and the port number through which a message was received from a
+remote host. It is omitted for locally generated messages.
+</p>
+</li>
+<li><p>
+<i>-local</i>: The message is from a local sender.
+</p>
+</li>
+<li><p>
+<i>-localerror</i>: The message is a locally-generated bounce message.
+</p>
+</li>
+<li><p>
+<i>-local&#095;scan &#060;<em>string</em>&#062;</i>: This records the data string that was
+returned by the <i>local&#095;scan()</i> function when the message was received &#150; the
+value of the <tt>$local&#095;scan&#095;data</tt> variable. It is omitted if no data was
+returned.
+</p>
+</li>
+<li><p>
+<i>-manual&#095;thaw</i>: The message was frozen but has been thawed manually, that is,
+by an explicit Exim command rather than via the auto-thaw process.
+</p>
+</li>
+<li><p>
+<i>-N</i>: A testing delivery process was started using the <i>-N</i> option to
+suppress any actual deliveries, but delivery was deferred. At any further
+delivery attempts, <i>-N</i> is assumed.
+</p>
+</li>
+<li><p>
+<i>-received&#095;protocol</i>: This records the value of the <tt>$received&#095;protocol</tt>
+variable, which contains the name of the protocol by which the message was
+received.
+</p>
+</li>
+<li><p>
+<i>-sender&#095;set&#095;untrusted</i>: The envelope sender of this message was set by an
+untrusted local caller (used to ensure that the caller is displayed in queue
+listings).
+</p>
+</li>
+<li><p>
+<i>-tls&#095;certificate&#095;verified</i>: A TLS certificate was received from the client 
+that sent this message, and the certificate was verified by the server.
+</p>
+</li>
+<li><p>
+<i>-tls&#095;cipher &#060;<em>cipher name</em>&#062;</i>: When the message was received over an
+encrypted connection, this records the name of the cipher suite that was used.
+</p>
+</li>
+<li><p>
+<i>-tls&#095;peerdn &#060;<em>peer DN</em>&#062;</i>: When the message was received over an encrypted
+connection, and a certificate was received from the client, this records the
+Distinguished Name from that certificate.
+</p>
+</li>
+</ul>
+<p>
+Following the options there is a list of those addresses to which the message
+is not to be delivered. This set of addresses is initialized from the command
+line when the <i>-t</i> option is used and <tt>extract_addresses_remove_arguments</tt>
+is set; otherwise it starts out empty. Whenever a successful delivery is made,
+the address is added to this set. The addresses are kept internally as a
+balanced binary tree, and it is a representation of that tree which is written
+to the spool file. If an address is expanded via an alias or forward file, the
+original address is added to the tree when deliveries to all its child
+addresses are complete.
+</p>
+<p>
+If the tree is empty, there is a single line in the spool file containing just
+the text &#147;XX&#148;. Otherwise, each line consists of two letters, which are either Y
+or N, followed by an address. The address is the value for the node of the
+tree, and the letters indicate whether the node has a left branch and/or a
+right branch attached to it, respectively. If branches exist, they immediately
+follow. Here is an example of a three-node tree:
+<pre>
+&nbsp;&nbsp;YY darcy@austen.fict.example
+&nbsp;&nbsp;NN alice@wonderland.fict.example
+&nbsp;&nbsp;NN editor@thesaurus.ref.example
+</pre>
+</p>
+<p>
+After the non-recipients tree, there is a list of the message's recipients.
+This is a simple list, preceded by a count. It includes all the original
+recipients of the message, including those to whom the message has already been
+delivered. In the simplest case, the list contains one address per line. For
+example:
+<pre>
+&nbsp;&nbsp;4
+&nbsp;&nbsp;editor@thesaurus.ref.example
+&nbsp;&nbsp;darcy@austen.fict.example
+&nbsp;&nbsp;rdo@foundation
+&nbsp;&nbsp;alice@wonderland.fict.example
+</pre>
+</p>
+<p>
+However, when a child address has been added to the top-level addresses as a
+result of the use of the <tt>one&#095;time</tt> option on a <b>redirect</b> router, each line
+is of the following form:
+</p>
+<p>
+<tt>&nbsp;&nbsp;</tt><tt>&#060;<em>top-level address</em>&#062; &#060;<em>errors&#095;to address</em>&#062; &#060;<em>length</em>&#062;,&#060;<em>parent number</em>&#062;&#035;&#060;<em>flag bits</em>&#062;</tt><br>
+</p>
+<p>
+The 01 flag bit indicates the presence of the three other fields that follow
+the top-level address. Other bits may be used in future to support additional
+fields. The &#060;<em>parent number</em>&#062; is the offset in the recipients list of the
+original parent of the &#147;one time&#148; address. The first two fields are the
+envelope sender that is associated with this address and its length. If the
+length is zero, there is no special envelope sender (there are then two space
+characters in the line). A non-empty field can arise from a <b>redirect</b> router
+that has an <tt>errors&#095;to</tt> setting.
+</p>
+<p>
+A blank line separates the envelope and status information from the headers
+which follow. A header may occupy several lines of the file, and to save effort
+when reading it in, each header is preceded by a number and an identifying
+character. The number is the number of characters in the header, including any
+embedded newlines and the terminating newline. The character is one of the
+following:
+</p>
+<p>
+<table cellspacing=0 cellpadding=0>
+<tr><td>&nbsp;&nbsp;<tt>&#060;<em>blank</em>&#062;&nbsp;&nbsp;</tt></td><td>header in which Exim has no special interest</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&nbsp;B&nbsp;&nbsp;</tt></td><td><i>Bcc:</i> header</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&nbsp;C&nbsp;&nbsp;</tt></td><td><i>Cc:</i> header</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&nbsp;F&nbsp;&nbsp;</tt></td><td><i>From:</i> header</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&nbsp;I&nbsp;&nbsp;</tt></td><td><i>Message-id:</i> header</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&nbsp;P&nbsp;&nbsp;</tt></td><td><i>Received:</i> header &#150; P for &#147;postmark&#148;</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&nbsp;R&nbsp;&nbsp;</tt></td><td><i>Reply-To:</i> header</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&nbsp;S&nbsp;&nbsp;</tt></td><td><i>Sender:</i> header</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&nbsp;T&nbsp;&nbsp;</tt></td><td><i>To:</i> header</td></tr>
+<tr><td>&nbsp;&nbsp;<tt>&nbsp;*&nbsp;&nbsp;</tt></td><td>replaced or deleted header</td></tr>
+</table>
+</p>
+<p>
+Deleted or replaced (rewritten) headers remain in the spool file for debugging
+purposes. They are not transmitted when the message is delivered. Here is a
+typical set of headers:
+<pre>
+&nbsp;&nbsp;111P Received: by hobbit.fict.example with local (Exim 4.00)
+&nbsp;&nbsp;        id 14y9EI-00026G-00; Fri, 11 May 2001 10:28:59 +0100
+&nbsp;&nbsp;049  Message-Id: &#060;E14y9EI-00026G-00@hobbit.fict.example&#062;
+&nbsp;&nbsp;038* X-rewrote-sender: bb@hobbit.fict.example
+&nbsp;&nbsp;042* From: Bilbo Baggins &#060;bb@hobbit.fict.example&#062;
+&nbsp;&nbsp;049F From: Bilbo Baggins &#060;B.Baggins@hobbit.fict.example&#062;
+&nbsp;&nbsp;099* To: alice@wonderland.fict.example, rdo@foundation,
+&nbsp;&nbsp; darcy@austen.fict.example, editor@thesaurus.ref.example
+&nbsp;&nbsp;109T To: alice@wonderland.fict.example, rdo@foundation.fict.example,
+&nbsp;&nbsp; darcy@austen.fict.example, editor@thesaurus.ref.example
+&nbsp;&nbsp;038  Date: Fri, 11 May 2001 10:28:59 +0100
+</pre>
+</p>
+<p>
+The asterisked headers indicate that the envelope sender, <i>From:</i> header, and
+<i>To:</i> header have been rewritten, the last one because routing expanded the
+unqualified domain <i>foundation</i>.
+<hr>
+</p>
+<font size=2>
+<a href="spec_48.html">Previous</a>&nbsp;&nbsp;<a href="spec_50.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

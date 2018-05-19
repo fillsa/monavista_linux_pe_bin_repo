@@ -1,0 +1,12 @@
+prefix=/usr
+exec_prefix=/usr
+libdir=/usr/lib
+includedir=/usr/include
+
+
+Name: libXML
+Version: 2.6.16
+Description: libXML library version2.
+Requires:
+Libs: -L${libdir} -lxml2 -lpthread -lz  -lm 
+Cflags: -I${includedir}/libxml2 -I${includedir}/libxml2 

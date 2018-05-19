@@ -1,0 +1,159 @@
+\hypertarget{structblockCipher}{
+\section{block\-Cipher Struct Reference}
+\label{structblockCipher}\index{blockCipher@{blockCipher}}
+}
+Holds information and pointers to code specific to each cipher.  
+
+
+{\tt \#include $<$beecrypt.h$>$}
+
+\subsection*{Data Fields}
+\begin{CompactItemize}
+\item 
+const char $\ast$ \hyperlink{structblockCipher_o0}{name}
+\begin{CompactList}\small\item\em The blockcipher's name. \item\end{CompactList}\item 
+const size\_\-t \hyperlink{structblockCipher_o1}{paramsize}
+\begin{CompactList}\small\item\em The size of the parameters required by this cipher, in bytes. \item\end{CompactList}\item 
+const size\_\-t \hyperlink{structblockCipher_o2}{blocksize}
+\begin{CompactList}\small\item\em The size of one block of data, in bytes. \item\end{CompactList}\item 
+const size\_\-t \hyperlink{structblockCipher_o3}{keybitsmin}
+\begin{CompactList}\small\item\em The minimum number of key bits. \item\end{CompactList}\item 
+const size\_\-t \hyperlink{structblockCipher_o4}{keybitsmax}
+\begin{CompactList}\small\item\em The maximum number of key bits. \item\end{CompactList}\item 
+const size\_\-t \hyperlink{structblockCipher_o5}{keybitsinc}
+\begin{CompactList}\small\item\em The allowed increment in key bits between min and max. \item\end{CompactList}\item 
+const \hyperlink{group__BC__m_ga0}{block\-Cipher\-Setup} \hyperlink{structblockCipher_o6}{setup}
+\begin{CompactList}\small\item\em Pointer to the cipher's setup function. \item\end{CompactList}\item 
+const \hyperlink{group__BC__m_ga2}{block\-Cipher\-Set\-IV} \hyperlink{structblockCipher_o7}{setiv}
+\begin{CompactList}\small\item\em Pointer to the cipher's initialization vector setup function. \item\end{CompactList}\item 
+const \hyperlink{structblockCipherRaw}{block\-Cipher\-Raw} \hyperlink{structblockCipher_o8}{raw}
+\begin{CompactList}\small\item\em The cipher's raw functions. \item\end{CompactList}\item 
+const \hyperlink{structblockCipherMode}{block\-Cipher\-Mode} \hyperlink{structblockCipher_o9}{ecb}
+\begin{CompactList}\small\item\em The cipher's ECB functions. \item\end{CompactList}\item 
+const \hyperlink{structblockCipherMode}{block\-Cipher\-Mode} \hyperlink{structblockCipher_o10}{cbc}
+\item 
+const \hyperlink{beecrypt_8h_a20}{block\-Cipher\-Feedback} \hyperlink{structblockCipher_o11}{getfb}
+\begin{CompactList}\small\item\em Pointer to the cipher's feedback-returning function. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Holds information and pointers to code specific to each cipher. 
+
+Specific block ciphers {\em may\/} be written to be multithread-safe. 
+
+Definition at line 558 of file beecrypt.h.
+
+\subsection{Field Documentation}
+\hypertarget{structblockCipher_o2}{
+\index{blockCipher@{block\-Cipher}!blocksize@{blocksize}}
+\index{blocksize@{blocksize}!blockCipher@{block\-Cipher}}
+\subsubsection[blocksize]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structblockCipher_o2}{block\-Cipher::blocksize}}}
+\label{structblockCipher_o2}
+
+
+The size of one block of data, in bytes. 
+
+\hypertarget{structblockCipher_o10}{
+\index{blockCipher@{block\-Cipher}!cbc@{cbc}}
+\index{cbc@{cbc}!blockCipher@{block\-Cipher}}
+\subsubsection[cbc]{\setlength{\rightskip}{0pt plus 5cm}const \hyperlink{structblockCipherMode}{block\-Cipher\-Mode} \hyperlink{structblockCipher_o10}{block\-Cipher::cbc}}}
+\label{structblockCipher_o10}
+
+
+Definition at line 601 of file beecrypt.h.\hypertarget{structblockCipher_o9}{
+\index{blockCipher@{block\-Cipher}!ecb@{ecb}}
+\index{ecb@{ecb}!blockCipher@{block\-Cipher}}
+\subsubsection[ecb]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structblockCipher_o9}{block\-Cipher::ecb}}}
+\label{structblockCipher_o9}
+
+
+The cipher's ECB functions. 
+
+\hypertarget{structblockCipher_o11}{
+\index{blockCipher@{block\-Cipher}!getfb@{getfb}}
+\index{getfb@{getfb}!blockCipher@{block\-Cipher}}
+\subsubsection[getfb]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structblockCipher_o11}{block\-Cipher::getfb}}}
+\label{structblockCipher_o11}
+
+
+Pointer to the cipher's feedback-returning function. 
+
+\hypertarget{structblockCipher_o5}{
+\index{blockCipher@{block\-Cipher}!keybitsinc@{keybitsinc}}
+\index{keybitsinc@{keybitsinc}!blockCipher@{block\-Cipher}}
+\subsubsection[keybitsinc]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structblockCipher_o5}{block\-Cipher::keybitsinc}}}
+\label{structblockCipher_o5}
+
+
+The allowed increment in key bits between min and max. 
+
+\begin{Desc}
+\item[See also:]\hyperlink{structblockCipher_o3}{keybitsmin} and \hyperlink{structblockCipher_o4}{keybitsmax}. \end{Desc}
+\hypertarget{structblockCipher_o4}{
+\index{blockCipher@{block\-Cipher}!keybitsmax@{keybitsmax}}
+\index{keybitsmax@{keybitsmax}!blockCipher@{block\-Cipher}}
+\subsubsection[keybitsmax]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structblockCipher_o4}{block\-Cipher::keybitsmax}}}
+\label{structblockCipher_o4}
+
+
+The maximum number of key bits. 
+
+\hypertarget{structblockCipher_o3}{
+\index{blockCipher@{block\-Cipher}!keybitsmin@{keybitsmin}}
+\index{keybitsmin@{keybitsmin}!blockCipher@{block\-Cipher}}
+\subsubsection[keybitsmin]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structblockCipher_o3}{block\-Cipher::keybitsmin}}}
+\label{structblockCipher_o3}
+
+
+The minimum number of key bits. 
+
+\hypertarget{structblockCipher_o0}{
+\index{blockCipher@{block\-Cipher}!name@{name}}
+\index{name@{name}!blockCipher@{block\-Cipher}}
+\subsubsection[name]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structblockCipher_o0}{block\-Cipher::name}}}
+\label{structblockCipher_o0}
+
+
+The blockcipher's name. 
+
+\hypertarget{structblockCipher_o1}{
+\index{blockCipher@{block\-Cipher}!paramsize@{paramsize}}
+\index{paramsize@{paramsize}!blockCipher@{block\-Cipher}}
+\subsubsection[paramsize]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structblockCipher_o1}{block\-Cipher::paramsize}}}
+\label{structblockCipher_o1}
+
+
+The size of the parameters required by this cipher, in bytes. 
+
+\hypertarget{structblockCipher_o8}{
+\index{blockCipher@{block\-Cipher}!raw@{raw}}
+\index{raw@{raw}!blockCipher@{block\-Cipher}}
+\subsubsection[raw]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structblockCipher_o8}{block\-Cipher::raw}}}
+\label{structblockCipher_o8}
+
+
+The cipher's raw functions. 
+
+\hypertarget{structblockCipher_o7}{
+\index{blockCipher@{block\-Cipher}!setiv@{setiv}}
+\index{setiv@{setiv}!blockCipher@{block\-Cipher}}
+\subsubsection[setiv]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structblockCipher_o7}{block\-Cipher::setiv}}}
+\label{structblockCipher_o7}
+
+
+Pointer to the cipher's initialization vector setup function. 
+
+\hypertarget{structblockCipher_o6}{
+\index{blockCipher@{block\-Cipher}!setup@{setup}}
+\index{setup@{setup}!blockCipher@{block\-Cipher}}
+\subsubsection[setup]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{structblockCipher_o6}{block\-Cipher::setup}}}
+\label{structblockCipher_o6}
+
+
+Pointer to the cipher's setup function. 
+
+
+
+The documentation for this struct was generated from the following file:\begin{CompactItemize}
+\item 
+\hyperlink{beecrypt_8h}{beecrypt.h}\end{CompactItemize}

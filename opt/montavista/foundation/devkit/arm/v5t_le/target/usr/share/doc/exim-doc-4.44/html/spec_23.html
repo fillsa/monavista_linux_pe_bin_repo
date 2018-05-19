@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 23</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_22.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_24.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX1831"></a>
+<a name="IX1832"></a>
+<a name="IX1833"></a>
+<h1>
+<a name="CHAP23" href="spec_toc.html#TOC191">
+23. Environment for running local transports
+</a></h1>
+<p>
+Local transports handle deliveries to files and pipes. (The <b>autoreply</b>
+transport can be thought of as similar to a pipe.) Exim always runs transports
+in subprocesses, under specified uids and gids. Typical deliveries to local
+mailboxes run under the uid and gid of the local user.
+</p>
+<p>
+Exim also sets a specific current directory while running the transport; for
+some transports a home directory setting is also relevant. The <b>pipe</b>
+transport is the only one which sets up environment variables; see section
+<a href="spec_29.html#SECT29.3">29.3</a> for details.
+</p>
+<p>
+The values used for the uid, gid, and the directories may come from several
+different places. In many cases, the router that handles the address associates
+settings with that address as a result of its <tt>check&#095;local&#095;user</tt>, <tt>group</tt>, or
+<tt>user</tt> options. However, values may also be given in the transport's own
+configuration, and these override anything that comes from the router.
+</p>
+<a name="IX1834"></a>
+<a name="IX1835"></a>
+<h2>
+<a name="SECT23.1" href="spec_toc.html#TOC192">
+23.1. Uids and gids
+</a></h2>
+<p>
+All transports have the options <tt>group</tt> and <tt>user</tt>. If <tt>group</tt> is set, it
+overrides any group that the router set in the address, even if <tt>user</tt> is not
+set for the transport. This makes it possible, for example, to run local mail
+delivery under the uid of the recipient (set by the router), but in a special
+group (set by the transport). For example:
+<pre>
+&nbsp;&nbsp;# Routers ...
+&nbsp;&nbsp;# User/group are set by check_local_user in this router
+&nbsp;&nbsp;local_users:
+&nbsp;&nbsp;  driver = accept
+&nbsp;&nbsp;  check_local_user
+&nbsp;&nbsp;  transport = group_delivery  
+&nbsp;&nbsp;
+&nbsp;&nbsp;# Transports ...
+&nbsp;&nbsp;# This transport overrides the group
+&nbsp;&nbsp;group_delivery:
+&nbsp;&nbsp;  driver = appendfile
+&nbsp;&nbsp;  file = /var/spool/mail/$local_part
+&nbsp;&nbsp;  group = mail
+</pre>
+</p>
+<p>
+If <tt>user</tt> is set for a transport, its value overrides what is set in the
+address. If <tt>user</tt> is non-numeric and <tt>group</tt> is not set, the gid associated
+with the user is used. If <tt>user</tt> is numeric, <tt>group</tt> must be set.
+<a name="IX1836"></a>
+</p>
+<p>
+When the uid is taken from the transport's configuration, the <i>initgroups()</i>
+function is called for the groups associated with that uid if the <tt>initgroups</tt>
+option is set for the transport. When the uid is not specified by the
+transport, but is associated with the address by a router, the option for
+calling <i>initgroups()</i> is taken from the router configuration.
+<a name="IX1837"></a>
+</p>
+<p>
+The <b>pipe</b> transport contains the special option <tt>pipe&#095;as&#095;creator</tt>. If this
+is set and <tt>user</tt> is not set, the uid of the process that called Exim to
+receive the message is used, and if <tt>group</tt> is not set, the corresponding
+original gid is also used.
+</p>
+<a name="IX1838"></a>
+<a name="IX1839"></a>
+<a name="IX1840"></a>
+<a name="IX1841"></a>
+<h2>
+<a name="SECT23.2" href="spec_toc.html#TOC193">
+23.2. Current and home directories
+</a></h2>
+<p>
+Routers may set current and home directories for local transports by means of
+the <tt>transport_current&#095;directory</tt> and <tt>transport&#095;home&#095;directory</tt> options.
+However, if the transport's <tt>current_directory</tt> or <tt>home&#095;directory</tt> options
+are set, they override the router's values. In detail, the home directory
+for a local transport is taken from the first of these values that is set:
+</p>
+<ul>
+<li><p>
+The <tt>home&#095;directory</tt> option on the transport;
+</p>
+</li>
+<li><p>
+The <tt>transport&#095;home&#095;directory</tt> option on the router;
+</p>
+</li>
+<li><p>
+The password data if <tt>check&#095;local&#095;user</tt> is set on the router;
+</p>
+</li>
+<li><p>
+The <tt>router&#095;home&#095;directory</tt> option on the router.
+</p>
+</li>
+</ul>
+<p>
+The current directory is taken from the first of these values that is set:
+</p>
+<ul>
+<li><p>
+The <tt>current&#095;directory</tt> option on the transport;
+</p>
+</li>
+<li><p>
+The <tt>transport&#095;current&#095;directory</tt> option on the router.
+</p>
+</li>
+</ul>
+<p>
+If neither the router nor the transport sets a current directory, Exim uses the
+value of the home directory, if it is set. Otherwise it sets the current
+directory to <i>/</i> before running a local transport.
+</p>
+<h2>
+<a name="SECT23.3" href="spec_toc.html#TOC194">
+23.3. Expansion variables derived from the address
+</a></h2>
+<p>
+Normally a local delivery is handling a single address, and in that case the
+variables such as <tt>$domain</tt> and <tt>$local&#095;part</tt> are set during local
+deliveries. However, in some circumstances more than one address may be handled
+at once (for example, while writing batch SMTP for onward transmission by some
+other means). In this case, the variables associated with the local part are
+never set, <tt>$domain</tt> is set only if all the addresses have the same
+domain, and <tt>$original&#095;domain</tt> is never set.
+<hr>
+</p>
+<font size=2>
+<a href="spec_22.html">Previous</a>&nbsp;&nbsp;<a href="spec_24.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

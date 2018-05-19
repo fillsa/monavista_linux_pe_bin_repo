@@ -1,0 +1,416 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Exim 4.40 Specification chapter 47</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<font size=2>
+<a href="spec_46.html">Previous</a>&nbsp;&nbsp;
+<a href="spec_48.html">Next</a>&nbsp;&nbsp;
+<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font><hr>
+<a name="IX2783"></a>
+<a name="IX2784"></a>
+<a name="IX2785"></a>
+<a name="IX2786"></a>
+<a name="IX2787"></a>
+<a name="IX2788"></a>
+<h1>
+<a name="CHAP47" href="spec_toc.html#TOC396">
+47. The Exim monitor
+</a></h1>
+<p>
+The Exim monitor is an application which displays in an X window information
+about the state of Exim's queue and what Exim is doing. An admin user can
+perform certain operations on messages from this GUI interface; however all
+such facilities are also available from the command line, and indeed, the
+monitor itself makes use of the command line to perform any actions requested.
+</p>
+<h2>
+<a name="SECT47.1" href="spec_toc.html#TOC397">
+47.1. Running the monitor
+</a></h2>
+<p>
+The monitor is started by running the script called <i>eximon</i>. This is a shell
+script that sets up a number of environment variables, and then runs the
+binary called <i>eximon.bin</i>. The default appearance of the monitor window can
+be changed by editing the <i>Local/eximon.conf</i> file created by editing
+<i>exim&#095;monitor/EDITME</i>. Comments in that file describe what the various
+parameters are for.
+</p>
+<p>
+The parameters that get built into the <i>eximon</i> script can be overridden for a
+particular invocation by setting up environment variables of the same names,
+preceded by &#147;<tt>EXIMON&#095;</tt>&#148;. For example, a shell command such as
+<pre>
+&nbsp;&nbsp;EXIMON_LOG_DEPTH=400 eximon
+</pre>
+</p>
+<p>
+(in a Bourne-compatible shell) runs <i>eximon</i> with an overriding setting of the
+<font size=-1>LOG&#095;DEPTH</font> parameter. If <font size=-1>EXIMON&#095;LOG&#095;FILE&#095;PATH</font> is set in the
+environment, it overrides the Exim log file configuration. This makes it
+possible to have <i>eximon</i> tailing log data that is written to syslog, provided
+that MAIL.INFO syslog messages are routed to a file on the local host.
+</p>
+<p>
+X resources can be used to change the appearance of the window in the normal
+way. For example, a resource setting of the form
+<pre>
+&nbsp;&nbsp;Eximon*background: gray94
+</pre>
+</p>
+<p>
+changes the colour of the background to light grey rather than white. The
+stripcharts are drawn with both the data lines and the reference lines in
+black. This means that the reference lines are not visible when on top of the
+data. However, their colour can be changed by setting a resource called
+&#147;highlight&#148; (an odd name, but that's what the Athena stripchart widget uses).
+For example, if your X server is running Unix, you could set up lighter
+reference lines in the stripcharts by obeying
+<pre>
+&nbsp;&nbsp;xrdb -merge &#060;&#060;End
+&nbsp;&nbsp;Eximon*highlight: gray
+&nbsp;&nbsp;End
+</pre>
+<a name="IX2789"></a>
+</p>
+<p>
+In order to see the contents of messages on the queue, and to operate on them,
+<i>eximon</i> must either be run as root or by an admin user.
+</p>
+<p>
+The monitor's window is divided into three parts. The first contains one or
+more stripcharts and two action buttons, the second contains a &#147;tail&#148; of the
+main log file, and the third is a display of the queue of messages awaiting
+delivery, with two more action buttons. The following sections describe these
+different parts of the display.
+</p>
+<a name="IX2790"></a>
+<h2>
+<a name="SECT47.2" href="spec_toc.html#TOC398">
+47.2. The stripcharts
+</a></h2>
+<p>
+The first stripchart is always a count of messages on the queue. Its name can
+be configured by setting <font size=-1>QUEUE&#095;STRIPCHART&#095;NAME</font> in the
+<i>Local/eximon.conf</i> file. The remaining stripcharts are defined in the
+configuration script by regular expression matches on log file entries, making
+it possible to display, for example, counts of messages delivered to certain
+hosts or using certain transports. The supplied defaults display counts of
+received and delivered messages, and of local and SMTP deliveries. The default
+period between stripchart updates is one minute; this can be adjusted by a
+parameter in the <i>Local/eximon.conf</i> file.
+</p>
+<p>
+The stripchart displays rescale themselves automatically as the value they are
+displaying changes. There are always 10 horizontal lines in each chart; the
+title string indicates the value of each division when it is greater than one.
+For example, &#147;x2&#148; means that each division represents a value of 2.
+</p>
+<p>
+<a name="IX2791"></a>
+It is also possible to have a stripchart which shows the percentage fullness of
+a particular disk partition, which is useful when local deliveries are confined
+to a single partition.
+This relies on the availability of the <i>statvfs()</i> function or equivalent in
+the operating system. Most, but not all versions of Unix that support Exim have
+this. For this particular stripchart, the top of the chart always represents
+100%, and the scale is given as &#147;x10%&#148;. This chart is configured by setting
+<font size=-1>SIZE&#095;STRIPCHART</font> and (optionally) <font size=-1>SIZE&#095;STRIPCHART&#095;NAME</font> in the
+<i>Local/eximon.conf</i> file.
+</p>
+<a name="IX2792"></a>
+<a name="IX2793"></a>
+<a name="IX2794"></a>
+<h2>
+<a name="SECT47.3" href="spec_toc.html#TOC399">
+47.3. Main action buttons
+</a></h2>
+<p>
+Below the stripcharts there is an action button for quitting the monitor. Next
+to this is another button marked &#147;Size&#148;. They are placed here so that shrinking
+the window to its default minimum size leaves just the queue count stripchart
+and these two buttons visible. Pressing the &#147;Size&#148; button causes the window to
+expand to its maximum size, unless it is already at the maximum, in which case
+it is reduced to its minimum.
+</p>
+<p>
+When expanding to the maximum, if the window cannot be fully seen where it
+currently is, it is moved back to where it was the last time it was at full
+size. When it is expanding from its minimum size, the old position is
+remembered, and next time it is reduced to the minimum it is moved back there.
+</p>
+<p>
+The idea is that you can keep a reduced window just showing one or two
+stripcharts at a convenient place on your screen, easily expand it to show
+the full window when required, and just as easily put it back to what it was.
+The idea is copied from what the <i>twm</i> window manager does for its
+<i>f.fullzoom</i> action. The minimum size of the window can be changed by setting
+the <font size=-1>MIN&#095;HEIGHT</font> and <font size=-1>MIN&#095;WIDTH</font> values in <i>Local/eximon.conf</i>.
+</p>
+<p>
+Normally, the monitor starts up with the window at its full size, but it can be
+built so that it starts up with the window at its smallest size, by setting
+<font size=-1>START&#095;SMALL</font>=yes in <i>Local/eximon.conf</i>.
+</p>
+<a name="IX2795"></a>
+<h2>
+<a name="SECT47.4" href="spec_toc.html#TOC400">
+47.4. The log display
+</a></h2>
+<p>
+The second section of the window is an area in which a display of the tail of
+the main log is maintained. 
+To save space on the screen, the timestamp on each log line is shortened by
+removing the date and, if <tt>log&#095;timezone</tt> is set, the timezone.
+The log tail is not available when the only destination for logging data is
+syslog, unless the syslog lines are routed to a local file whose name is passed
+to <i>eximon</i> via the <font size=-1>EXIMON&#095;LOG&#095;FILE&#095;PATH</font> environment variable.
+</p>
+<p>
+The log sub-window has a scroll bar at its lefthand side which can be used to
+move back to look at earlier text, and the up and down arrow keys also have a
+scrolling effect. The amount of log that is kept depends on the setting of
+<font size=-1>LOG&#095;BUFFER</font> in <i>Local/eximon.conf</i>, which specifies the amount of memory
+to use. When this is full, the earlier 50% of data is discarded &#150; this is much
+more efficient than throwing it away line by line. The sub-window also has a
+horizontal scroll bar for accessing the ends of long log lines. This is the
+only means of horizontal scrolling; the right and left arrow keys are not
+available. Text can be cut from this part of the window using the mouse in the
+normal way. The size of this subwindow is controlled by parameters in the
+configuration file <i>Local/eximon.conf</i>.
+</p>
+<p>
+Searches of the text in the log window can be carried out by means of the ^R
+and ^S keystrokes, which default to a reverse and a forward search,
+respectively. The search covers only the text that is displayed in the window.
+It cannot go further back up the log.
+</p>
+<p>
+The point from which the search starts is indicated by a caret marker. This is
+normally at the end of the text in the window, but can be positioned explicitly
+by pointing and clicking with the left mouse button, and is moved automatically
+by a successful search. If new text arrives in the window when it is scrolled
+back, the caret remains where it is, but if the window is not scrolled back,
+the caret is moved to the end of the new text.
+</p>
+<p>
+Pressing ^R or ^S pops up a window into which the search text can be typed.
+There are buttons for selecting forward or reverse searching, for carrying out
+the search, and for cancelling. If the &#147;Search&#148; button is pressed, the search
+happens and the window remains so that further searches can be done. If the
+&#147;Return&#148; key is pressed, a single search is done and the window is closed. If
+^C is typed the search is cancelled.
+</p>
+<p>
+The searching facility is implemented using the facilities of the Athena text
+widget. By default this pops up a window containing both &#147;search&#148; and &#147;replace&#148;
+options. In order to suppress the unwanted &#147;replace&#148; portion for eximon, a
+modified version of the <tt>TextPop</tt> widget is distributed with Exim. However, the
+linkers in BSDI and HP-UX seem unable to handle an externally provided version
+of <tt>TextPop</tt> when the remaining parts of the text widget come from the standard
+libraries. The compile-time option <font size=-1>EXIMON&#095;TEXTPOP</font> can be unset to cut out
+the modified <tt>TextPop</tt>, making it possible to build Eximon on these systems, at
+the expense of having unwanted items in the search popup window.
+</p>
+<a name="IX2796"></a>
+<h2>
+<a name="SECT47.5" href="spec_toc.html#TOC401">
+47.5. The queue display
+</a></h2>
+<p>
+The bottom section of the monitor window contains a list of all messages that
+are on the queue, which includes those currently being received or delivered,
+as well as those awaiting delivery. The size of this subwindow is controlled by
+parameters in the configuration file <i>Local/eximon.conf</i>, and the frequency
+at which it is updated is controlled by another parameter in the same file &#150;
+the default is 5 minutes, since queue scans can be quite expensive. However,
+there is an &#147;Update&#148; action button just above the display which can be used to
+force an update of the queue display at any time.
+</p>
+<p>
+When a host is down for some time, a lot of pending mail can build up for it,
+and this can make it hard to deal with other messages on the queue. To help
+with this situation there is a button next to &#147;Update&#148; called &#147;Hide&#148;. If
+pressed, a dialogue box called &#147;Hide addresses ending with&#148; is put up. If you
+type anything in here and press &#147;Return&#148;, the text is added to a chain of such
+texts, and if every undelivered address in a message matches at least one
+of the texts, the message is not displayed.
+</p>
+<p>
+If there is an address that does not match any of the texts, all the addresses
+are displayed as normal. The matching happens on the ends of addresses so, for
+example, <i>cam.ac.uk</i> specifies all addresses in Cambridge, while
+<i>xxx&#064;foo.com.example</i> specifies just one specific address. When any hiding
+has been set up, a button called &#147;Unhide&#148; is displayed. If pressed, it cancels
+all hiding. Also, to ensure that hidden messages do not get forgotten, a hide
+request is automatically cancelled after one hour.
+</p>
+<p>
+While the dialogue box is displayed, you can't press any buttons or do anything
+else to the monitor window. For this reason, if you want to cut text from the
+queue display to use in the dialogue box, you have to do the cutting before
+pressing the &#147;Hide&#148; button.
+</p>
+<p>
+<a name="IX2797"></a>
+The queue display contains, for each unhidden queued message, the length of
+time it has been on the queue, the size of the message, the message id, the
+message sender, and the first undelivered recipient, all on one line. If it is
+a bounce message, the sender is shown as &#147;&#060;&#062;&#148;. If there is more than one
+recipient to which the message has not yet been delivered, subsequent ones are
+listed on additional lines, up to a maximum configured number, following which
+an ellipsis is displayed. Recipients that have already received the message are
+not shown.
+If a message is frozen, an asterisk is displayed at the left-hand side.
+</p>
+<p>
+The queue display has a vertical scroll bar, and can also be scrolled by means
+of the arrow keys. Text can be cut from it using the mouse in the normal way.
+The text searching facilities, as described above for the log window, are also
+available, but the caret is always moved to the end of the text when the queue
+display is updated.
+</p>
+<a name="IX2798"></a>
+<h2>
+<a name="SECT47.6" href="spec_toc.html#TOC402">
+47.6. The queue menu
+</a></h2>
+<p>
+If the <tt>shift</tt> key is held down and the left button is clicked when the mouse
+pointer is over the text for any message, an action menu pops up, and the first
+line of the queue display for the message is highlighted. This does not affect
+any selected text.
+</p>
+<p>
+If you want to use some other event for popping up the menu, you can set the
+<font size=-1>MENU&#095;EVENT</font> parameter in <i>Local/eximon.conf</i> to change the default, or
+set <font size=-1>EXIMON&#095;MENU&#095;EVENT</font> in the environment before starting the monitor. The
+value set in this parameter is a standard X event description. For example, to
+run eximon using <tt>ctrl</tt> rather than <tt>shift</tt> you could use
+<pre>
+&nbsp;&nbsp;EXIMON_MENU_EVENT='Ctrl&#060;Btn1Down&#062;' eximon
+</pre>
+</p>
+<p>
+The title of the menu is the message id, and it contains entries which act as
+follows:
+</p>
+<ul>
+<li><p>
+<i>message log</i>: The contents of the message log for the message are displayed in
+a new text window.
+</p>
+</li>
+<li><p>
+<i>headers</i>: Information from the spool file that contains the envelope
+information and headers is displayed in a new text window. See chapter
+<a href="spec_49.html">49</a> for a description of the format of spool files.
+</p>
+</li>
+<li><p>
+<i>body</i>: The contents of the spool file containing the body of the message are
+displayed in a new text window. There is a default limit of 20,000 bytes to the
+amount of data displayed. This can be changed by setting the <font size=-1>BODY&#095;MAX</font>
+option at compile time, or the <font size=-1>EXIMON&#095;BODY&#095;MAX</font> option at run time.
+</p>
+</li>
+<li><p>
+<i>deliver message</i>: A call to Exim is made using the <i>-M</i> option to request
+delivery of the message. This causes an automatic thaw if the message is
+frozen. The <i>-v</i> option is also set, and the output from Exim is displayed in
+a new text window. The delivery is run in a separate process, to avoid holding
+up the monitor while the delivery proceeds.
+</p>
+</li>
+<li><p>
+<i>freeze message</i>: A call to Exim is made using the <i>-Mf</i> option to request
+that the message be frozen.
+</p>
+</li>
+<li><a name="IX2799"></a>
+<a name="IX2800"></a>
+<a name="IX2801"></a>
+<p>
+<i>thaw message</i>: A call to Exim is made using the <i>-Mt</i> option to request that
+the message be thawed.
+</p>
+</li>
+<li><a name="IX2802"></a>
+<p>
+<i>give up on msg</i>: A call to Exim is made using the <i>-Mg</i> option to request
+that Exim gives up trying to deliver the message. A bounce message is generated
+for any remaining undelivered addresses.
+</p>
+</li>
+<li><p>
+<i>remove message</i>: A call to Exim is made using the <i>-Mrm</i> option to request
+that the message be deleted from the system without generating a bounce
+message.
+</p>
+</li>
+<li><p>
+<i>add recipient</i>: A dialog box is displayed into which a recipient address can
+be typed. If the address is not qualified and the <font size=-1>QUALIFY&#095;DOMAIN</font> parameter
+is set in <i>Local/eximon.conf</i>, the address is qualified with that domain.
+Otherwise it must be entered as a fully qualified address. Pressing <font size=-1>RETURN</font>
+causes a call to Exim to be made using the <i>-Mar</i> option to request that an
+additional recipient be added to the message, unless the entry box is empty, in
+which case no action is taken.
+</p>
+</li>
+<li><p>
+<i>mark delivered</i>: A dialog box is displayed into which a recipient address can
+be typed. If the address is not qualified and the <font size=-1>QUALIFY&#095;DOMAIN</font> parameter
+is set in <i>Local/eximon.conf</i>, the address is qualified with that domain.
+Otherwise it must be entered as a fully qualified address. Pressing <font size=-1>RETURN</font>
+causes a call to Exim to be made using the <i>-Mmd</i> option to mark the given
+recipient address as already delivered, unless the entry box is empty, in which
+case no action is taken.
+</p>
+</li>
+<li><p>
+<i>mark all delivered</i>: A call to Exim is made using the <i>-Mmad</i> option to mark
+all recipient addresses as already delivered.
+</p>
+</li>
+<li><p>
+<i>edit sender</i>: A dialog box is displayed initialized with the current sender's
+address. Pressing <font size=-1>RETURN</font> causes a call to Exim to be made using the <i>-Mes</i>
+option to replace the sender address, unless the entry box is empty, in which
+case no action is taken. If you want to set an empty sender (as in bounce
+messages), you must specify it as &#147;&#060;&#062;&#148;. Otherwise, if the address is not
+qualified and the <font size=-1>QUALIFY&#095;DOMAIN</font> parameter is set in
+<i>Local/eximon.conf</i>, the address is qualified with that domain.
+</p>
+</li>
+</ul>
+<p>
+When a delivery is forced, a window showing the <i>-v</i> output is displayed. In
+other cases when a call to Exim is made, if there is any output from Exim (in
+particular, if the command fails) a window containing the command and the
+output is displayed. Otherwise, the results of the action are normally apparent
+from the log and queue displays. However, if you set <font size=-1>ACTION&#095;OUTPUT</font>=yes in
+<i>Local/eximon.conf</i>, a window showing the Exim command is always opened, even
+if no output is generated.
+</p>
+<p>
+The queue display is automatically updated for actions such as freezing and
+thawing, unless <font size=-1>ACTION&#095;QUEUE&#095;UPDATE</font>=no has been set in
+<i>Local/eximon.conf</i>. In this case the &#147;Update&#148; button has to be used to force
+an update of the display after one of these actions.
+</p>
+<p>
+In any text window that is displayed as result of a menu action, the normal
+cut-and-paste facility is available, and searching can be carried out using ^R
+and ^S, as described above for the log tail window.
+<hr>
+</p>
+<font size=2>
+<a href="spec_46.html">Previous</a>&nbsp;&nbsp;<a href="spec_48.html">Next</a>&nbsp;&nbsp;<a href="spec_toc.html">Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Exim 4.40 Specification)
+</font>
+</body>
+</html>

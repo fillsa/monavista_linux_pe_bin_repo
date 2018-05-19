@@ -1,0 +1,48 @@
+<html>
+<head>
+<title>The Exim FAQ Section 12</title>
+</head>
+<body bgcolor="#F8F8F8" text="#00005A" link="#FF6600" alink="#FF9933" vlink="#990000">
+<h1>The Exim FAQ</h1>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_11.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_13.html">Next</a>
+<hr><br>
+<h2><a href="FAQ.html#TOC296">12. FETCHMAIL</a></h2>
+<p>
+<a name="TOC297" href="FAQ.html#TOC297">Q1201:</a>&nbsp;&nbsp;When I run fetchmail, I get the error <i>SMTP listener doesn't like
+recipient address xxx@localhost</i>.
+</p>
+<p>
+<font color="#00BB00">A1201:</font>&nbsp;&nbsp;Make sure that <i>localhost</i> is recognized as a domain that is to be
+delivered locally. If you are using the default Exim run time
+configuration, you'll see a line near the top like this:
+</p>
+<pre>
+   domainlist local_domains = @</pre>
+<p>
+Change it to
+</p>
+<pre>
+   domainlist local_domains = @ : localhost</pre>
+<p>
+<a name="TOC298" href="FAQ.html#TOC298">Q1202:</a>&nbsp;&nbsp;I'm currently using Exim with fetchmail and I'd like to use the RBL on
+Exim, but will it work? Do I need to configure fetchmail any particular
+way? As far as Exim knows, all mail is coming from 127.0.0.1. Will it
+check the source address against RBL? Or will it check the <i>From:</i> header?
+</p>
+<p>
+<font color="#00BB00">A1202:</font>&nbsp;&nbsp;It will check 127.0.0.1 (not very useful). The point of the RBL is to
+keep messages from black-listed hosts out of your machine. If you are
+using fetchmail, you have got the messages into your machine before you
+approach Exim. That kind of defeats the purpose of the RBL. The right
+way to do this would be for the host from which you fetch your mail to
+do the RBL checking and insert some kind of warning header for you to
+test, as Exim does if you run RBL checks in warning mode.
+</p>
+<hr><br>
+<a href="FAQ.html#TOC">Contents</a>&nbsp;&nbsp;
+<a href="FAQ_11.html">Previous</a>&nbsp;&nbsp;
+<a href="FAQ_13.html">Next</a>
+</body>
+</html>

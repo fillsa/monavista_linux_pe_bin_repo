@@ -1,0 +1,167 @@
+<html lang="en">
+<head>
+<title>Cleanup Handlers - The GNU C Library</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU C Library">
+<meta name="generator" content="makeinfo 4.7">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="POSIX-Threads.html#POSIX-Threads" title="POSIX Threads">
+<link rel="prev" href="Cancellation.html#Cancellation" title="Cancellation">
+<link rel="next" href="Mutexes.html#Mutexes" title="Mutexes">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc { font-variant:small-caps }
+  span.roman { font-family: serif; font-weight: normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Cleanup-Handlers"></a>Next:&nbsp;<a rel="next" accesskey="n" href="Mutexes.html#Mutexes">Mutexes</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Cancellation.html#Cancellation">Cancellation</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="POSIX-Threads.html#POSIX-Threads">POSIX Threads</a>
+<hr><br>
+</div>
+
+<h3 class="section">34.4 Cleanup Handlers</h3>
+
+<p>Cleanup handlers are functions that get called when a thread terminates,
+either by calling <code>pthread_exit</code> or because of
+cancellation. Cleanup handlers are installed and removed following a
+stack-like discipline.
+
+   <p>The purpose of cleanup handlers is to free the resources that a thread
+may hold at the time it terminates. In particular, if a thread exits or
+is canceled while it owns a locked mutex, the mutex will remain locked
+forever and prevent other threads from executing normally. The best way
+to avoid this is, just before locking the mutex, to install a cleanup
+handler whose effect is to unlock the mutex. Cleanup handlers can be
+used similarly to free blocks allocated with <code>malloc</code> or close file
+descriptors on thread termination.
+
+   <p>Here is how to lock a mutex <var>mut</var> in such a way that it will be
+unlocked if the thread is canceled while <var>mut</var> is locked:
+
+<pre class="smallexample">     pthread_cleanup_push(pthread_mutex_unlock, (void *) &amp;mut);
+     pthread_mutex_lock(&amp;mut);
+     /* do some work */
+     pthread_mutex_unlock(&amp;mut);
+     pthread_cleanup_pop(0);
+</pre>
+   <p>Equivalently, the last two lines can be replaced by
+
+<pre class="smallexample">     pthread_cleanup_pop(1);
+</pre>
+   <p>Notice that the code above is safe only in deferred cancellation mode
+(see <code>pthread_setcanceltype</code>). In asynchronous cancellation mode, a
+cancellation can occur between <code>pthread_cleanup_push</code> and
+<code>pthread_mutex_lock</code>, or between <code>pthread_mutex_unlock</code> and
+<code>pthread_cleanup_pop</code>, resulting in both cases in the thread trying
+to unlock a mutex not locked by the current thread. This is the main
+reason why asynchronous cancellation is difficult to use.
+
+   <p>If the code above must also work in asynchronous cancellation mode,
+then it must switch to deferred mode for locking and unlocking the
+mutex:
+
+<pre class="smallexample">     pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, &amp;oldtype);
+     pthread_cleanup_push(pthread_mutex_unlock, (void *) &amp;mut);
+     pthread_mutex_lock(&amp;mut);
+     /* do some work */
+     pthread_cleanup_pop(1);
+     pthread_setcanceltype(oldtype, NULL);
+</pre>
+   <p>The code above can be rewritten in a more compact and efficient way,
+using the non-portable functions <code>pthread_cleanup_push_defer_np</code>
+and <code>pthread_cleanup_pop_restore_np</code>:
+
+<pre class="smallexample">     pthread_cleanup_push_defer_np(pthread_mutex_unlock, (void *) &amp;mut);
+     pthread_mutex_lock(&amp;mut);
+     /* do some work */
+     pthread_cleanup_pop_restore_np(1);
+</pre>
+   <!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: void <b>pthread_cleanup_push</b> (<var>void </var>(<var>*routine</var>) (<var>void *</var>)<var>, void *arg</var>)<var><a name="index-pthread_005fcleanup_005fpush-3723"></a></var><br>
+<blockquote>
+<p><code>pthread_cleanup_push</code> installs the <var>routine</var> function with
+argument <var>arg</var> as a cleanup handler. From this point on to the
+matching <code>pthread_cleanup_pop</code>, the function <var>routine</var> will be
+called with arguments <var>arg</var> when the thread terminates, either
+through <code>pthread_exit</code> or by cancellation. If several cleanup
+handlers are active at that point, they are called in LIFO order: the
+most recently installed handler is called first. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- POSIX -->
+<div class="defun">
+&mdash; Function: void <b>pthread_cleanup_pop</b> (<var>int execute</var>)<var><a name="index-pthread_005fcleanup_005fpop-3724"></a></var><br>
+<blockquote><p><code>pthread_cleanup_pop</code> removes the most recently installed cleanup
+handler. If the <var>execute</var> argument is not 0, it also executes the
+handler, by calling the <var>routine</var> function with arguments
+<var>arg</var>. If the <var>execute</var> argument is 0, the handler is only
+removed but not executed. 
+</p></blockquote></div>
+
+   <p>Matching pairs of <code>pthread_cleanup_push</code> and
+<code>pthread_cleanup_pop</code> must occur in the same function, at the same
+level of block nesting.  Actually, <code>pthread_cleanup_push</code> and
+<code>pthread_cleanup_pop</code> are macros, and the expansion of
+<code>pthread_cleanup_push</code> introduces an open brace <code>{</code> with the
+matching closing brace <code>}</code> being introduced by the expansion of the
+matching <code>pthread_cleanup_pop</code>.
+
+<!-- pthread.h -->
+<!-- GNU -->
+<div class="defun">
+&mdash; Function: void <b>pthread_cleanup_push_defer_np</b> (<var>void </var>(<var>*routine</var>) (<var>void *</var>)<var>, void *arg</var>)<var><a name="index-pthread_005fcleanup_005fpush_005fdefer_005fnp-3725"></a></var><br>
+<blockquote><p><code>pthread_cleanup_push_defer_np</code> is a non-portable extension that
+combines <code>pthread_cleanup_push</code> and <code>pthread_setcanceltype</code>. 
+It pushes a cleanup handler just as <code>pthread_cleanup_push</code> does,
+but also saves the current cancellation type and sets it to deferred
+cancellation. This ensures that the cleanup mechanism is effective even
+if the thread was initially in asynchronous cancellation mode. 
+</p></blockquote></div>
+
+<!-- pthread.h -->
+<!-- GNU -->
+<div class="defun">
+&mdash; Function: void <b>pthread_cleanup_pop_restore_np</b> (<var>int execute</var>)<var><a name="index-pthread_005fcleanup_005fpop_005frestore_005fnp-3726"></a></var><br>
+<blockquote><p><code>pthread_cleanup_pop_restore_np</code> pops a cleanup handler introduced
+by <code>pthread_cleanup_push_defer_np</code>, and restores the cancellation
+type to its value at the time <code>pthread_cleanup_push_defer_np</code> was
+called. 
+</p></blockquote></div>
+
+   <p><code>pthread_cleanup_push_defer_np</code> and
+<code>pthread_cleanup_pop_restore_np</code> must occur in matching pairs, at
+the same level of block nesting.
+
+   <p>The sequence
+
+<pre class="smallexample">     pthread_cleanup_push_defer_np(routine, arg);
+     ...
+     pthread_cleanup_pop_restore_np(execute);
+</pre>
+   <p class="noindent">is functionally equivalent to (but more compact and efficient than)
+
+<pre class="smallexample">     {
+       int oldtype;
+       pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, &amp;oldtype);
+       pthread_cleanup_push(routine, arg);
+       ...
+       pthread_cleanup_pop(execute);
+       pthread_setcanceltype(oldtype, NULL);
+     }
+</pre>
+   </body></html>
+

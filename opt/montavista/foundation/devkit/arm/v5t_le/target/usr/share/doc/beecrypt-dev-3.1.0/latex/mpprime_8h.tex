@@ -1,0 +1,115 @@
+\hypertarget{mpprime_8h}{
+\section{mpprime.h File Reference}
+\label{mpprime_8h}\index{mpprime.h@{mpprime.h}}
+}
+Multi-precision primes, headers. 
+
+{\tt \#include \char`\"{}mpbarrett.h\char`\"{}}\par
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \hyperlink{mpprime_8h_a0}{SMALL\_\-PRIMES\_\-PRODUCT\_\-MAX}\ 32
+\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{mpprime_8h_a2}{mpptrials} (size\_\-t)
+\item 
+int \hyperlink{mpprime_8h_a3}{mppmilrab\_\-w} (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, int, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpprime_8h_a4}{mpprnd\_\-w} (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t, int, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+int \hyperlink{mpprime_8h_a5}{mpprndr\_\-w} (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t, int, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpprime_8h_a6}{mpprndsafe\_\-w} (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t, int, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpprime_8h_a7}{mpprndcon\_\-w} (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t, int, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\item 
+void \hyperlink{mpprime_8h_a8}{mpprndconone\_\-w} (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t, int, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$, int, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)
+\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+\hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$ \hyperlink{mpprime_8h_a1}{mpspprod} \mbox{[}32\mbox{]}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Multi-precision primes, headers. 
+
+\begin{Desc}
+\item[Author:]Bob Deblier $<$\href{mailto:bob.deblier@pandora.be}{\tt bob.deblier@pandora.be}$>$\end{Desc}
+
+
+Definition in file \hyperlink{mpprime_8h-source}{mpprime.h}.
+
+\subsection{Define Documentation}
+\hypertarget{mpprime_8h_a0}{
+\index{mpprime.h@{mpprime.h}!SMALL_PRIMES_PRODUCT_MAX@{SMALL\_\-PRIMES\_\-PRODUCT\_\-MAX}}
+\index{SMALL_PRIMES_PRODUCT_MAX@{SMALL\_\-PRIMES\_\-PRODUCT\_\-MAX}!mpprime.h@{mpprime.h}}
+\subsubsection[SMALL\_\-PRIMES\_\-PRODUCT\_\-MAX]{\setlength{\rightskip}{0pt plus 5cm}\#define SMALL\_\-PRIMES\_\-PRODUCT\_\-MAX\ 32}}
+\label{mpprime_8h_a0}
+
+
+Definition at line 31 of file mpprime.h.
+
+\subsection{Function Documentation}
+\hypertarget{mpprime_8h_a3}{
+\index{mpprime.h@{mpprime.h}!mppmilrab_w@{mppmilrab\_\-w}}
+\index{mppmilrab_w@{mppmilrab\_\-w}!mpprime.h@{mpprime.h}}
+\subsubsection[mppmilrab\_\-w]{\setlength{\rightskip}{0pt plus 5cm}int mppmilrab\_\-w (const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, int, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpprime_8h_a3}
+
+
+\hypertarget{mpprime_8h_a4}{
+\index{mpprime.h@{mpprime.h}!mpprnd_w@{mpprnd\_\-w}}
+\index{mpprnd_w@{mpprnd\_\-w}!mpprime.h@{mpprime.h}}
+\subsubsection[mpprnd\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpprnd\_\-w (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t, int, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpprime_8h_a4}
+
+
+\hypertarget{mpprime_8h_a7}{
+\index{mpprime.h@{mpprime.h}!mpprndcon_w@{mpprndcon\_\-w}}
+\index{mpprndcon_w@{mpprndcon\_\-w}!mpprime.h@{mpprime.h}}
+\subsubsection[mpprndcon\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpprndcon\_\-w (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t, int, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpprime_8h_a7}
+
+
+\hypertarget{mpprime_8h_a8}{
+\index{mpprime.h@{mpprime.h}!mpprndconone_w@{mpprndconone\_\-w}}
+\index{mpprndconone_w@{mpprndconone\_\-w}!mpprime.h@{mpprime.h}}
+\subsubsection[mpprndconone\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpprndconone\_\-w (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t, int, const \hyperlink{structmpbarrett}{mpbarrett} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{structmpnumber}{mpnumber} $\ast$, int, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpprime_8h_a8}
+
+
+\hypertarget{mpprime_8h_a5}{
+\index{mpprime.h@{mpprime.h}!mpprndr_w@{mpprndr\_\-w}}
+\index{mpprndr_w@{mpprndr\_\-w}!mpprime.h@{mpprime.h}}
+\subsubsection[mpprndr\_\-w]{\setlength{\rightskip}{0pt plus 5cm}int mpprndr\_\-w (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t, int, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, const \hyperlink{structmpnumber}{mpnumber} $\ast$, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpprime_8h_a5}
+
+
+\hypertarget{mpprime_8h_a6}{
+\index{mpprime.h@{mpprime.h}!mpprndsafe_w@{mpprndsafe\_\-w}}
+\index{mpprndsafe_w@{mpprndsafe\_\-w}!mpprime.h@{mpprime.h}}
+\subsubsection[mpprndsafe\_\-w]{\setlength{\rightskip}{0pt plus 5cm}void mpprndsafe\_\-w (\hyperlink{structmpbarrett}{mpbarrett} $\ast$, \hyperlink{structrandomGeneratorContext}{random\-Generator\-Context} $\ast$, size\_\-t, int, \hyperlink{beecrypt_8api_8h_a9}{mpw} $\ast$)}}
+\label{mpprime_8h_a6}
+
+
+\hypertarget{mpprime_8h_a2}{
+\index{mpprime.h@{mpprime.h}!mpptrials@{mpptrials}}
+\index{mpptrials@{mpptrials}!mpprime.h@{mpprime.h}}
+\subsubsection[mpptrials]{\setlength{\rightskip}{0pt plus 5cm}int mpptrials (size\_\-t)}}
+\label{mpprime_8h_a2}
+
+
+
+
+\subsection{Variable Documentation}
+\hypertarget{mpprime_8h_a1}{
+\index{mpprime.h@{mpprime.h}!mpspprod@{mpspprod}}
+\index{mpspprod@{mpspprod}!mpprime.h@{mpprime.h}}
+\subsubsection[mpspprod]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{beecrypt_8api_8h_a9}{mpw}$\ast$ \hyperlink{mpprime_8h_a1}{mpspprod}\mbox{[}32\mbox{]}}}
+\label{mpprime_8h_a1}
+
+
